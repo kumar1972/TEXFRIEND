@@ -47,7 +47,6 @@
         .btn-edit { width: 100%; background: #2563EB; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
         .btn-edit:hover { background: #1D4ED8; }
         
-        /* 3 Column Menu Tabs Styling with Larger Icons */
         .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         
         .menu-btn { 
@@ -70,17 +69,14 @@
         .menu-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
         .menu-btn .tab-icon { font-size: 24px; }
 
-        /* Elegant Gradients */
         .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1D4ED8); } 
         .btn-theme-2 { background: linear-gradient(135deg, #14B8A6, #0D9488); } 
         .btn-theme-3 { background: linear-gradient(135deg, #8B5CF6, #6D28D9); } 
         .btn-theme-4 { background: linear-gradient(135deg, #EC4899, #BE185D); } 
 
-        /* Custom Full Width & Span Elements */
         .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 10px; padding: 14px; font-size: 11px; }
         .menu-btn.full-span .tab-icon { font-size: 22px; }
 
-        /* Custom Muted/Dull Orange Shape for Total Saved Designs List */
         .btn-m-all { 
             background: linear-gradient(135deg, #D48B60, #C26A38);
             grid-column: span 3; 
@@ -127,7 +123,6 @@
                 <button class="btn-add" onclick="addDesign()">+ Add</button>
             </div>
             
-            <!-- Modified: Added Warp 2 (Top Beam Count) and made it 4 columns -->
             <div class="form-row">
                 <div class="form-group"><label>Warp 1 (Grnd)</label><input type="text" id="warpCount" placeholder="2/60"></div>
                 <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
@@ -150,7 +145,6 @@
             <button class="btn-edit" onclick="updateDesign()">✏️ Update / Edit Design</button>
         </div>
 
-        <!-- 3 Column Menu Grid with Larger Icons -->
         <div class="menu-grid">
             <a href="Party_Orders.html" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</a>
             <a href="warp_entry.html" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</a>
@@ -165,10 +159,8 @@
             <a href="report.html" class="menu-btn btn-theme-3"><span class="tab-icon">📊</span> 9. Report</a>
             <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
             
-            <!-- Yarn Calculation (Full Row across 3 columns) -->
             <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
             
-            <!-- Light Orange Unique Main Shape Tab -->
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
         </div>
 
@@ -209,7 +201,7 @@
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title.">Washing Design</div>
+                <div class="status-title">Washing Design</div>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('washing', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('washing', 'completed')">Completed</button>
@@ -219,223 +211,216 @@
     </div>
 
     <script>
-let designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-let tempBitmapData = "";
+        let designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let tempBitmapData = "";
 
-window.onload = function(){
-    let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
-    document.getElementById('appHeading').innerText = heading;
-    loadDesignDropdown();
-    loadCompanyLogo();
-}
-
-function loadCompanyLogo() {
-    let logoData = localStorage.getItem('company_logo') || localStorage.getItem('logo') || localStorage.getItem('master_logo') || '';
-    let logoContainer = document.getElementById('companyLogoContainer');
-    if (logoData) {
-        logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
-    } else {
-        logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
-    }
-}
-
-function uploadQuickLogo(input) {
-    if (input.files && input.files[0]) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            localStorage.setItem('company_logo', e.target.result);
+        window.onload = function(){
+            let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+            document.getElementById('appHeading').innerText = heading;
+            loadDesignDropdown();
             loadCompanyLogo();
         }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
 
-function previewBitmap(input) {
-    if (input.files && input.files[0]) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            tempBitmapData = e.target.result;
-            let imgTag = document.getElementById('bitmapImgTag');
-            imgTag.src = tempBitmapData;
-            document.getElementById('bitmapPreviewBox').style.display = 'block';
+        function loadCompanyLogo() {
+            let logoData = localStorage.getItem('company_logo') || localStorage.getItem('logo') || localStorage.getItem('master_logo') || '';
+            let logoContainer = document.getElementById('companyLogoContainer');
+            if (logoData) {
+                logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
+            } else {
+                logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
+            }
         }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
 
-function addDesign(){
-    let designNo = document.getElementById('newDesign').value.trim();
-    let warp = document.getElementById('warpCount').value.trim();
-    let warp2 = document.getElementById('warpCount2').value.trim(); // Added Top Beam Input Read
-    let weft = document.getElementById('weftCount').value.trim();
-    let width = document.getElementById('width').value.trim();
-    let reed = document.getElementById('reed').value.trim();
-    let pick = document.getElementById('pick').value.trim();
-    let weave = document.getElementById('weave').value.trim();
+        function uploadQuickLogo(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('company_logo', e.target.result);
+                    loadCompanyLogo();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-    if(!designNo) { alert("Design Number type pannu"); return; }
-    if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
+        function previewBitmap(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    tempBitmapData = e.target.result;
+                    let imgTag = document.getElementById('bitmapImgTag');
+                    imgTag.src = tempBitmapData;
+                    document.getElementById('bitmapPreviewBox').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-    designList.push(designNo);
-    localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-    localStorage.setItem('selected_design_number', designNo);
+        function addDesign(){
+            let designNo = document.getElementById('newDesign').value.trim();
+            let warp = document.getElementById('warpCount').value.trim();
+            let warp2 = document.getElementById('warpCount2').value.trim();
+            let weft = document.getElementById('weftCount').value.trim();
+            let width = document.getElementById('width').value.trim();
+            let reed = document.getElementById('reed').value.trim();
+            let pick = document.getElementById('pick').value.trim();
+            let weave = document.getElementById('weave').value.trim();
 
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData }; // Saved warp2
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            if(!designNo) { alert("Design Number type pannu"); return; }
+            if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
 
-    loadDesignDropdown();
-    document.getElementById('newDesign').value = '';
-    alert("Design " + designNo + " Saved ✅");
-}
+            designList.push(designNo);
+            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+            localStorage.setItem('selected_design_number', designNo);
 
-function updateDesign() {
-    let designNo = document.getElementById('designSelect').value;
-    if(!designNo) { alert("Select Design!"); return; }
-    let warp = document.getElementById('warpCount').value.trim();
-    let warp2 = document.getElementById('warpCount2').value.trim(); // Added Top Beam Input Read
-    let weft = document.getElementById('weftCount').value.trim();
-    let width = document.getElementById('width').value.trim();
-    let reed = document.getElementById('reed').value.trim();
-    let pick = document.getElementById('pick').value.trim();
-    let weave = document.getElementById('weave').value.trim();
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData };
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    let existingBitmap = designSpecs[designNo] ? designSpecs[designNo].bitmap : "";
-    
-    designSpecs[designNo] = { 
-        warp, warp2, weft, width, reed, pick, weave, // Updated warp2
-        bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
-    };
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-    alert("Updated successfully! ✅");
-}
+            loadDesignDropdown();
+            document.getElementById('newDesign').value = '';
+            alert("Design " + designNo + " Saved ✅");
+        }
 
-function deleteDesign(){
-    let designNo = document.getElementById('designSelect').value;
-    if(!designNo) { alert("Select Design!"); return; }
-    if(confirm(designNo + " delete pannalama?")){
-        designList = designList.filter(x => x != designNo);
-        localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-        
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        delete designSpecs[designNo];
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        function updateDesign() {
+            let designNo = document.getElementById('designSelect').value;
+            if(!designNo) { alert("Select Design!"); return; }
+            let warp = document.getElementById('warpCount').value.trim();
+            let warp2 = document.getElementById('warpCount2').value.trim();
+            let weft = document.getElementById('weftCount').value.trim();
+            let width = document.getElementById('width').value.trim();
+            let reed = document.getElementById('reed').value.trim();
+            let pick = document.getElementById('pick').value.trim();
+            let weave = document.getElementById('weave').value.trim();
 
-        localStorage.removeItem('selected_design_number');
-        loadDesignDropdown();
-        clearForm();
-        alert("Deleted successfully! 🗑️");
-    }
-}
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let existingBitmap = designSpecs[designNo] ? designSpecs[designNo].bitmap : "";
+            
+            designSpecs[designNo] = { 
+                warp, warp2, weft, width, reed, pick, weave, 
+                bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
+            };
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            alert("Updated successfully! ✅");
+        }
 
-function loadDesignDropdown(){
-    designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-    let select = document.getElementById('designSelect');
-    let html = '<option value="">Select Design</option>';
-    designList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
-    select.innerHTML = html;
-    
-    let active = localStorage.getItem('selected_design_number');
-    if(active && designList.includes(active)) { 
-        select.value = active; 
-        selectDesign(active); 
-    } else if(designList.length > 0) {
-        select.value = designList[0];
-        selectDesign(designList[0]);
-    } else {
-        clearForm();
-    }
-}
+        function deleteDesign(){
+            let designNo = document.getElementById('designSelect').value;
+            if(!designNo) { alert("Select Design!"); return; }
+            if(confirm(designNo + " delete pannalama?")){
+                designList = designList.filter(x => x != designNo);
+                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+                
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                delete designSpecs[designNo];
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-function selectDesign(val){
-    localStorage.setItem('selected_design_number', val);
-    if(val) {
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        let specs = designSpecs[val] || {};
-        document.getElementById('warpCount').value = specs.warp || '';
-        document.getElementById('warpCount2').value = specs.warp2 || ''; // Display Top Beam Input
-        document.getElementById('weftCount').value = specs.weft || '';
-        document.getElementById('width').value = specs.width || '';
-        document.getElementById('reed').value = specs.reed || '';
-        document.getElementById('pick').value = specs.pick || '';
-        document.getElementById('weave').value = specs.weave || '';
-        
-        if(specs.bitmap) {
-            tempBitmapData = specs.bitmap;
-            document.getElementById('bitmapImgTag').src = specs.bitmap;
-            document.getElementById('bitmapPreviewBox').style.display = 'block';
-        } else { 
+                localStorage.removeItem('selected_design_number');
+                loadDesignDropdown();
+                clearForm();
+                alert("Deleted successfully! 🗑️");
+            }
+        }
+
+        function loadDesignDropdown(){
+            designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            let select = document.getElementById('designSelect');
+            let html = '<option value="">Select Design</option>';
+            designList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+            select.innerHTML = html;
+            
+            let active = localStorage.getItem('selected_design_number');
+            if(active && designList.includes(active)) { 
+                select.value = active; 
+                selectDesign(active); 
+            } else if(designList.length > 0) {
+                select.value = designList[0];
+                selectDesign(designList[0]);
+            } else {
+                clearForm();
+            }
+        }
+
+        function selectDesign(val){
+            localStorage.setItem('selected_design_number', val);
+            if(val) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                let specs = designSpecs[val] || {};
+                document.getElementById('warpCount').value = specs.warp || '';
+                document.getElementById('warpCount2').value = specs.warp2 || '';
+                document.getElementById('weftCount').value = specs.weft || '';
+                document.getElementById('width').value = specs.width || '';
+                document.getElementById('reed').value = specs.reed || '';
+                document.getElementById('pick').value = specs.pick || '';
+                document.getElementById('weave').value = specs.weave || '';
+                
+                if(specs.bitmap) {
+                    tempBitmapData = specs.bitmap;
+                    document.getElementById('bitmapImgTag').src = specs.bitmap;
+                    document.getElementById('bitmapPreviewBox').style.display = 'block';
+                } else { 
+                    tempBitmapData = "";
+                    document.getElementById('bitmapPreviewBox').style.display = 'none'; 
+                }
+            } else {
+                clearForm();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('warpCount').value = '';
+            document.getElementById('warpCount2').value = '';
+            document.getElementById('weftCount').value = '';
+            document.getElementById('width').value = '';
+            document.getElementById('reed').value = '';
+            document.getElementById('pick').value = '';
+            document.getElementById('weave').value = '';
             tempBitmapData = "";
-            document.getElementById('bitmapPreviewBox').style.display = 'none'; 
+            document.getElementById('bitmapPreviewBox').style.display = 'none';
         }
-    } else {
-        clearForm();
-    }
-}
 
-function clearForm() {
-    document.getElementById('warpCount').value = '';
-    document.getElementById('warpCount2').value = ''; // Cleared Top Beam input
-    document.getElementById('weftCount').value = '';
-    document.getElementById('width').value = '';
-    document.getElementById('reed').value = '';
-    document.getElementById('pick').value = '';
-    document.getElementById('weave').value = '';
-    tempBitmapData = "";
-    document.getElementById('bitmapPreviewBox').style.display = 'none';
-}
-
-function goToStatus(type, status){
-    window.location.href = `design_list.html?type=${type}&status=${status}`;
-}
-        <!-- Firebase App SDK (CDN) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // உங்கள் Firebase Config விபரங்கள்
-  const firebaseConfig = {
-    apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-    authDomain: "texfriend.firebaseapp.com",
-    projectId: "texfriend",
-    storageBucket: "texfriend.appspot.com",
-    messagingSenderId: "331673079578",
-    appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-    measurementId: "G-2NP13ZTKCN"
-  };
-
-  // Firebase Initialize
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // உங்களது டேட்டாவை கிளவுட்டில் சேமிக்க மற்றும் எடுக்க இதைப் பயன்படுத்தலாம்
-  window.db = db;
-  window.firebaseSave = async function(key, data) {
-      try {
-          await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-      } catch (e) {
-          console.error("Firebase Save Error: ", e);
-      }
-  };
-
-  window.firebaseLoad = async function(key) {
-      try {
-          const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-          if (docSnap.exists()) {
-              return JSON.parse(docSnap.data().content);
-          }
-      } catch (e) {
-          console.error("Firebase Load Error: ", e);
-      }
-      return null;
-  };
         function goToStatus(type, status){
-    window.location.href = `design_list.html?type=${type}&status=${status}`;
-}
+            window.location.href = `design_list.html?type=${type}&status=${status}`;
+        }
+    </script>
 
-</script>
+    <!-- Firebase App SDK (CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-</script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+            authDomain: "texfriend.firebaseapp.com",
+            projectId: "texfriend",
+            storageBucket: "texfriend.appspot.com",
+            messagingSenderId: "331673079578",
+            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+            measurementId: "G-2NP13ZTKCN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.firebaseSave = async function(key, data) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+            } else {
+                console.error("Firebase Save Error");
+            }
+        };
+
+        window.firebaseLoad = async function(key) {
+            try {
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                if (docSnap.exists()) {
+                    return JSON.parse(docSnap.data().content);
+                }
+            } catch (e) {
+                console.error("Firebase Load Error: ", e);
+            }
+            return null;
+        };
+    </script>
 </body>
 </html>
