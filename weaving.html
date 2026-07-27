@@ -1051,6 +1051,17 @@
             document.getElementById('previewContent').innerHTML = html;
             document.getElementById('previewModal').style.display = 'flex';
         }
+        window.firebaseLoad = async function(key) {
+            try {
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                if (docSnap.exists()) {
+                    return JSON.parse(docSnap.data().content);
+                }
+            } catch (e) {
+                console.error("Firebase Load Error: ", e);
+            }
+            return null;
+        };
     </script>
 </body>
 </html>
