@@ -389,6 +389,49 @@ function clearForm() {
 function goToStatus(type, status){
     window.location.href = `design_list.html?type=${type}&status=${status}`;
 }
+        <!-- Firebase App SDK (CDN) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // உங்கள் Firebase Config விபரங்கள்
+  const firebaseConfig = {
+    apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+    authDomain: "texfriend.firebaseapp.com",
+    projectId: "texfriend",
+    storageBucket: "texfriend.appspot.com",
+    messagingSenderId: "331673079578",
+    appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+    measurementId: "G-2NP13ZTKCN"
+  };
+
+  // Firebase Initialize
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // உங்களது டேட்டாவை கிளவுட்டில் சேமிக்க மற்றும் எடுக்க இதைப் பயன்படுத்தலாம்
+  window.db = db;
+  window.firebaseSave = async function(key, data) {
+      try {
+          await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+      } catch (e) {
+          console.error("Firebase Save Error: ", e);
+      }
+  };
+
+  window.firebaseLoad = async function(key) {
+      try {
+          const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+          if (docSnap.exists()) {
+              return JSON.parse(docSnap.data().content);
+          }
+      } catch (e) {
+          console.error("Firebase Load Error: ", e);
+      }
+      return null;
+  };
+</script>
+
 </script>
 </body>
 </html>
