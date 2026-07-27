@@ -405,8 +405,8 @@
         window.firebaseSave = async function(key, data) {
             try {
                 await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-            } else {
-                console.error("Firebase Save Error");
+            } catch (e) {
+                console.error("Firebase Save Error: ", e);
             }
         };
 
