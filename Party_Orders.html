@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PARTY ORDERS - TEXFRIEND</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        html, body { 
+            width: 100%;
+            min-height: 100vh;
+            background: #D5DDD3;
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: #E8ECE7;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(82, 110, 81, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        #bitmapDisplayContainer {
+            text-align: right;
+        }
+        #bitmapDisplayContainer img {
+            max-height: 45px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 0px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #3F5A3E;
+            font-size: 9px;
+            margin-bottom: 3px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            border-radius: 6px;
+            font-size: 11px;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-weight: 500;
+        }
+
+        input:focus, select:focus {
+            border-color: #526E51;
+            outline: none;
+            background: #F4F6F4;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 4px 0;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            background: #526E51;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease;
+        }
+        .btn-main:hover { background: #3F5A3E; }
+
+        .card-header {
+            font-size: 13px;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(82, 110, 81, 0.3);
+            color: #3F5A3E;
+            text-align: center;
+        }
+
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            font-size: 10px;
+        }
+
+        .excel-table th, .excel-table td {
+            border: 1px solid rgba(82, 110, 81, 0.3);
+            padding: 6px 6px;
+            text-align: left;
+            color: #1E2B23;
+        }
+
+        .excel-table th {
+            background: #D8DFD6;
+            color: #3F5A3E;
+            font-weight: 700;
+        }
+
+        /* Action Buttons Container for Single Row Alignment */
+        .action-cell {
+            display: flex;
+            flex-direction: row;
+            gap: 3px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-del, .action-edit, .action-complete, .action-running {
+            text-align: center;
+            border: none;
+            padding: 5px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .action-del { background: #D97706; }
+        .action-del:hover { background: #B45309; }
+
+        .action-edit { background: #3F5A3E; }
+        .action-edit:hover { background: #2C3E2B; }
+
+        .action-complete { background: #526E51; }
+        .action-complete:hover { background: #3F5A3E; }
+
+        .action-running { background: #D97706; }
+        .action-running:hover { background: #B45309; }
+
+        .back-link {
+            color: #3F5A3E; 
+            text-decoration: none; 
+            font-size: 10px; 
+            font-weight: 600; 
+            display: inline-block; 
+            background: rgba(82, 110, 81, 0.15); 
+            padding: 4px 8px; 
+            border-radius: 5px; 
+            border: 1px solid rgba(82, 110, 81, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-nav">
+            <a href="index.html" class="back-link">← Back to Menu</a>
+            <div id="bitmapDisplayContainer"></div>
+        </div>
+        
+        <h2 class="card-header">Add New Party Order</h2>
+
+        <form id="partyOrderForm" onsubmit="savePartyOrder(event)">
+            <!-- 1st Row: Order Date, Delivery Date, Party Name, PO Number -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="orderDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Date</label>
+                    <input type="date" id="deliveryDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Party Name</label>
+                    <input type="text" id="partyName" placeholder="Party Name" required>
+                </div>
+                <div class="form-group">
+                    <label>PO Number</label>
+                    <input type="text" id="poNumber" placeholder="PO No" required>
+                </div>
+            </div>
+
+            <!-- 2nd Row: Design Number, Warp Count, Weft Count, Reed, Pick, Width -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Design No</label>
+                    <select id="designNumber" onchange="onDesignSelect(this.value)" required>
+                        <option value="">Select</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Warp Count</label>
+                    <input type="text" id="warpCount" placeholder="Warp">
+                </div>
+                <div class="form-group">
+                    <label>Weft Count</label>
+                    <input type="text" id="weftCount" placeholder="Weft">
+                </div>
+                <div class="form-group">
+                    <label>Reed</label>
+                    <input type="text" id="reed" placeholder="Reed" required>
+                </div>
+                <div class="form-group">
+                    <label>Pick</label>
+                    <input type="text" id="pick" placeholder="Pick" required>
+                </div>
+                <div class="form-group">
+                    <label>Width</label>
+                    <input type="text" id="width" placeholder="Width" required>
+                </div>
+            </div>
+
+            <!-- 3rd Row: Weave Type, Order Mtr, Rate/Mtr -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Weave Type</label>
+                    <input type="text" id="weaveType" placeholder="Weave Type" required>
+                </div>
+                <div class="form-group">
+                    <label>Order Mtr</label>
+                    <input type="text" id="orderMtr" placeholder="Total Mtr" required>
+                </div>
+                <div class="form-group">
+                    <label>Rate / Mtr</label>
+                    <input type="text" id="rateMtr" placeholder="0.00" required>
+                </div>
+            </div>
+
+            <!-- Save Order Button -->
+            <button type="submit" id="saveBtn" class="btn-main">Save Order</button>
+        </form>
+
+        <div class="card-header" style="margin-top:6px;">Saved Orders Data</div>
+        <div style="overflow-x: auto;">
+            <table id="partyOrderTable" class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Party</th>
+                        <th>PO No</th>
+                        <th>Design</th>
+                        <th>Mtr</th>
+                        <th>Rate</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        let editingId = null;
+        
+        window.onload = function() {
+            document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+            
+            var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            var designSelect = document.getElementById('designNumber');
+            var html = '<option value="">Select</option>';
+            preDesignList.forEach(function(d) {
+                html += '<option value="' + d + '">' + d + '</option>';
+            });
+            designSelect.innerHTML = html;
+
+            var activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign) {
+                designSelect.value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+
+            updatePartyTable();
+            loadBitmapImage();
+        };
+
+        function loadBitmapImage() {
+            let activeDesign = localStorage.getItem('selected_design_number');
+            let designSelect = document.getElementById('designNumber');
+            if(designSelect && designSelect.value) {
+                activeDesign = designSelect.value;
+            }
+            
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+            
+            if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+                bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+            } else {
+                bitmapContainer.innerHTML = '';
+            }
+        }
+
+        function onDesignSelect(val) {
+            loadBitmapImage();
+            if(val) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                let specs = designSpecs[val] || { warp: '', weft: '', reed: '', pick: '' };
+                document.getElementById('warpCount').value = specs.warp;
+                document.getElementById('weftCount').value = specs.weft;
+                document.getElementById('reed').value = specs.reed;
+                document.getElementById('pick').value = specs.pick;
+            } else {
+                document.getElementById('warpCount').value = '';
+                document.getElementById('weftCount').value = '';
+                document.getElementById('reed').value = '';
+                document.getElementById('pick').value = '';
+            }
+        }
+
+        function savePartyOrder(e) {
+            e.preventDefault();
+            const orderData = {
+                id: editingId !== null ? editingId : Date.now(),
+                date: document.getElementById('orderDate').value,
+                partyName: document.getElementById('partyName').value.trim(),
+                poNo: document.getElementById('poNumber').value.trim(),
+                designNumber: document.getElementById('designNumber').value,
+                warpCount: document.getElementById('warpCount').value.trim(),
+                weftCount: document.getElementById('weftCount').value.trim(),
+                reed: document.getElementById('reed').value.trim(),
+                pick: document.getElementById('pick').value.trim(),
+                width: document.getElementById('width').value.trim(),
+                weaveType: document.getElementById('weaveType').value.trim(),
+                orderMtr: document.getElementById('orderMtr').value.trim(),
+                rateMtr: document.getElementById('rateMtr').value.trim(),
+                deliveryDate: document.getElementById('deliveryDate').value,
+                status: editingId !== null ? (partyOrders.find(x => x.id === editingId)?.status || 'running') : 'running'
+            };
+
+            if(editingId !== null) {
+                let index = partyOrders.findIndex(x => x.id === editingId);
+                if(index > -1) {
+                    partyOrders[index] = orderData;
+                }
+                editingId = null;
+                document.getElementById('saveBtn').innerText = "Save Order";
+                alert("Party Order updated successfully! ✅");
+            } else {
+                partyOrders.push(orderData);
+                alert("Party Order saved successfully! ✅");
+            }
+
+            localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+            updatePartyTable();
+            
+            document.getElementById('partyOrderForm').reset();
+            document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+            
+            var activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign) {
+                document.getElementById('designNumber').value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+            loadBitmapImage();
+        }
+
+        function editOrder(id) {
+            let item = partyOrders.find(x => x.id === id);
+            if(!item) return;
+
+            editingId = id;
+            document.getElementById('orderDate').value = item.date || '';
+            document.getElementById('deliveryDate').value = item.deliveryDate || '';
+            document.getElementById('partyName').value = item.partyName || '';
+            document.getElementById('poNumber').value = item.poNo || '';
+            document.getElementById('designNumber').value = item.designNumber || '';
+            document.getElementById('warpCount').value = item.warpCount || '';
+            document.getElementById('weftCount').value = item.weftCount || '';
+            document.getElementById('reed').value = item.reed || '';
+            document.getElementById('pick').value = item.pick || '';
+            document.getElementById('width').value = item.width || '';
+            document.getElementById('weaveType').value = item.weaveType || '';
+            document.getElementById('orderMtr').value = item.orderMtr || '';
+            document.getElementById('rateMtr').value = item.rateMtr || '';
+
+            document.getElementById('saveBtn').innerText = "Update Order";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            loadBitmapImage();
+        }
+
+        function updatePartyTable() {
+            const tbody = document.querySelector('#partyOrderTable tbody');
+            tbody.innerHTML = '';
+            partyOrders.forEach(item => {
+                let statusColor = item.status == 'running' ? '#D97706' : '#526E51';
+                let statusBtn = item.status == 'running' 
+                    ? `<button class="action-complete" onclick="toggleStatus(${item.id}, 'completed')">Complete</button>` 
+                    : `<button class="action-running" onclick="toggleStatus(${item.id}, 'running')">Running</button>`;
+                
+                let row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${item.partyName}</td>
+                    <td>${item.poNo}</td>
+                    <td>${item.designNumber}</td>
+                    <td>${item.orderMtr}</td>
+                    <td>${item.rateMtr}</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
+                    <td>
+                        <div class="action-cell">
+                            ${statusBtn}
+                            <button class="action-edit" onclick="editOrder(${item.id})">Edit</button>
+                            <button class="action-del" onclick="deleteOrder(${item.id})">Del</button>
+                        </div>
+                    </td>
+                `;
+            });
+        }
+
+        function toggleStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Indha order-ai Completed-aga maatranuma?" : "Indha order-ai Running-ku maatranuma?";
+            if(confirm(msg)) {
+                partyOrders = partyOrders.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                updatePartyTable();
+                alert("Status successfully updated! ✅");
+            }
+        }
+
+        function deleteOrder(id) {
+            if(confirm("Indha order-ai delete pannanuma?")){
+                partyOrders = partyOrders.filter(x => x.id !== id);
+                localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                updatePartyTable();
+            }
+        }
+    </script>
+</body>
+</html>

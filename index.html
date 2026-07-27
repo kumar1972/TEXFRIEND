@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Index - Kora ERP Pro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        html, body { width: 100%; min-height: 100vh; background: #8B7FC6; color: #FFFFFF; }
+        body { padding: 12px; display: flex; flex-direction: column; }
+        
+        .container { width: 100%; max-width: 100%; margin: 0; background: #9E92D8; padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border: 1px solid rgba(255, 255, 255, 0.4); flex: 1; display: flex; flex-direction: column; gap: 14px; position: relative; }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: -4px; }
+        
+        #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
+        #companyLogoContainer img {
+            height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8);
+            object-fit: cover; background: rgba(0,0,0,0.2); box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .logo-placeholder { font-size: 9px; background: rgba(0,0,0,0.25); padding: 4px 6px; border-radius: 4px; border: 1px dashed rgba(255,255,255,0.5); color: #E9D5FF; text-align: center; }
+
+        h1 { text-align: center; color: #FFFFFF; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.15); flex: 1; }
+        .settings-icon { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; text-decoration: none; transition: background 0.2s; }
+        .settings-icon:hover { background: rgba(0,0,0,0.4); }
+
+        .subtitle { text-align: center; color: #F3E8FF; font-size: 10px; font-weight: 500; letter-spacing: 1px; margin-top: -6px; }
+        
+        .base-setup { background: #4D3F8C; padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: inset 0 2px 6px rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 10px; }
+        .base-setup-title { color: #FFFFFF; font-weight: 600; font-size: 11px; }
+        
+        .form-row { display: flex; gap: 10px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-size: 9px; color: #E9D5FF; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        input, select, textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.3); background: #3B2E75; color: #FFFFFF; font-size: 11px; font-weight: 500; }
+        input:focus, select:focus, textarea:focus { border-color: #FFFFFF; outline: none; background: #5B4B9E; }
+        
+        .btn-add { background: #7C3AED; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
+        .btn-add:hover { background: #6D28D9; }
+        
+        .btn-del { background: #EF4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
+        .btn-del:hover { background: #DC2626; }
+        
+        .btn-edit { width: 100%; background: #2563EB; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
+        .btn-edit:hover { background: #1D4ED8; }
+        
+        /* 3 Column Menu Tabs Styling with Larger Icons */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        
+        .menu-btn { 
+            color: #FFFFFF; 
+            padding: 14px 6px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            gap: 6px; 
+            font-size: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.2s ease;
+        }
+        .menu-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+        .menu-btn .tab-icon { font-size: 24px; }
+
+        /* Elegant Gradients */
+        .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1D4ED8); } 
+        .btn-theme-2 { background: linear-gradient(135deg, #14B8A6, #0D9488); } 
+        .btn-theme-3 { background: linear-gradient(135deg, #8B5CF6, #6D28D9); } 
+        .btn-theme-4 { background: linear-gradient(135deg, #EC4899, #BE185D); } 
+
+        /* Custom Full Width & Span Elements */
+        .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 10px; padding: 14px; font-size: 11px; }
+        .menu-btn.full-span .tab-icon { font-size: 22px; }
+
+        /* Custom Muted/Dull Orange Shape for Total Saved Designs List */
+        .btn-m-all { 
+            background: linear-gradient(135deg, #D48B60, #C26A38);
+            grid-column: span 3; 
+            text-align: center; 
+            justify-content: center; 
+            flex-direction: row;
+            gap: 10px;
+            padding: 16px; 
+            font-size: 12px; 
+            border-radius: 14px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(194, 106, 56, 0.3);
+        }
+        .btn-m-all .tab-icon { font-size: 22px; }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .status-box { background: rgba(0, 0, 0, 0.06); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; flex-direction: column; gap: 8px; }
+        .status-title { font-size: 11px; color: #FFFFFF; font-weight: 600; text-align: center; }
+        .status-options { display: flex; gap: 6px; }
+        .status-btn { flex: 1; color: white; border: none; padding: 7px; border-radius: 6px; font-size: 9px; font-weight: 600; cursor: pointer; text-align: center; }
+        .status-btn.running { background: #D97706; color: white; border: 1px solid rgba(217, 119, 6, 0.4); }
+        .status-btn.completed { background: #7C3AED; color: white; border: 1px solid rgba(255, 255, 255, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
+            <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
+            
+            <h1 id="appHeading">TEXFRIEND ERP</h1>
+            <a href="settings.html" class="settings-icon">⚙️</a>
+        </div>
+        <p class="subtitle">SELECT A MODULE</p>
+
+        <div class="base-setup">
+            <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
+            <div class="form-row">
+                <select id="designSelect" onchange="selectDesign(this.value)"></select>
+                <button class="btn-del" onclick="deleteDesign()">Delete</button>
+            </div>
+            <div class="form-row">
+                <input type="text" id="newDesign" placeholder="New Design">
+                <button class="btn-add" onclick="addDesign()">+ Add</button>
+            </div>
+            
+            <!-- Modified: Added Warp 2 (Top Beam Count) and made it 4 columns -->
+            <div class="form-row">
+                <div class="form-group"><label>Warp 1 (Grnd)</label><input type="text" id="warpCount" placeholder="2/60"></div>
+                <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
+                <div class="form-group"><label>Weft Count</label><input type="text" id="weftCount" placeholder="40s"></div>
+                <div class="form-group"><label>Width (Inch)</label><input type="number" id="width" placeholder="66" step="0.01"></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>Reed</label><input type="text" id="reed"></div>
+                <div class="form-group"><label>Pick</label><input type="text" id="pick"></div>
+                <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
+            </div>
+            <div class="form-group">
+                <label>Design Bitmap / Photo Upload</label>
+                <input type="file" id="designBitmap" accept="image/*" onchange="previewBitmap(this)">
+            </div>
+            <div id="bitmapPreviewBox" style="text-align:center; display:none;">
+                <img id="bitmapImgTag" src="" style="max-height:60px; border-radius:4px; border:1px solid #fff;" alt="Bitmap">
+            </div>
+            <button class="btn-edit" onclick="updateDesign()">✏️ Update / Edit Design</button>
+        </div>
+
+        <!-- 3 Column Menu Grid with Larger Icons -->
+        <div class="menu-grid">
+            <a href="Party_Orders.html" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</a>
+            <a href="warp_entry.html" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</a>
+            <a href="weft_entry.html" class="menu-btn btn-theme-3"><span class="tab-icon">🧶</span> 2.1 Weft Entry</a>
+            <a href="kora_yarn.html" class="menu-btn btn-theme-4"><span class="tab-icon">🧵</span> 3. Kora</a>
+            <a href="dyeing_issue.html" class="menu-btn btn-theme-2"><span class="tab-icon">🧶</span> 4. Dyeing Issue</a>
+            <a href="dyeing_receive.html" class="menu-btn btn-theme-1"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</a>
+            <a href="warping.html" class="menu-btn btn-theme-3"><span class="tab-icon">📏</span> 5. Warping</a>
+            <a href="weaving.html" class="menu-btn btn-theme-4"><span class="tab-icon">🏭</span> 6. Weaving</a>
+            <a href="washing.html" class="menu-btn btn-theme-1"><span class="tab-icon">🌊</span> 7. Washing</a>
+            <a href="Despatch.html" class="menu-btn btn-theme-2"><span class="tab-icon">📦</span> 8. Despatch</a>
+            <a href="report.html" class="menu-btn btn-theme-3"><span class="tab-icon">📊</span> 9. Report</a>
+            <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
+            
+            <!-- Yarn Calculation (Full Row across 3 columns) -->
+            <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
+            
+            <!-- Light Orange Unique Main Shape Tab -->
+            <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-box">
+                <div class="status-title">Order Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('order', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('order', 'completed')">Completed</button>
+                </div>
+            </div>
+            <div class="status-box">
+                <div class="status-title">Weaving Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('weaving', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('weaving', 'completed')">Completed</button>
+                </div>
+            </div>
+            <div class="status-box">
+                <div class="status-title">Dyeing Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('dyeing', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('dyeing', 'completed')">Completed</button>
+                </div>
+            </div>
+            <div class="status-box">
+                <div class="status-title">Warping Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('warping', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('warping', 'completed')">Completed</button>
+                </div>
+            </div>
+            <div class="status-box">
+                <div class="status-title">Despatch Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('despatch', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('despatch', 'completed')">Completed</button>
+                </div>
+            </div>
+            <div class="status-box">
+                <div class="status-title.">Washing Design</div>
+                <div class="status-options">
+                    <button class="status-btn running" onclick="goToStatus('washing', 'running')">Running</button>
+                    <button class="status-btn completed" onclick="goToStatus('washing', 'completed')">Completed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+let designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+let tempBitmapData = "";
+
+window.onload = function(){
+    let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+    document.getElementById('appHeading').innerText = heading;
+    loadDesignDropdown();
+    loadCompanyLogo();
+}
+
+function loadCompanyLogo() {
+    let logoData = localStorage.getItem('company_logo') || localStorage.getItem('logo') || localStorage.getItem('master_logo') || '';
+    let logoContainer = document.getElementById('companyLogoContainer');
+    if (logoData) {
+        logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
+    } else {
+        logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
+    }
+}
+
+function uploadQuickLogo(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            localStorage.setItem('company_logo', e.target.result);
+            loadCompanyLogo();
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewBitmap(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            tempBitmapData = e.target.result;
+            let imgTag = document.getElementById('bitmapImgTag');
+            imgTag.src = tempBitmapData;
+            document.getElementById('bitmapPreviewBox').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function addDesign(){
+    let designNo = document.getElementById('newDesign').value.trim();
+    let warp = document.getElementById('warpCount').value.trim();
+    let warp2 = document.getElementById('warpCount2').value.trim(); // Added Top Beam Input Read
+    let weft = document.getElementById('weftCount').value.trim();
+    let width = document.getElementById('width').value.trim();
+    let reed = document.getElementById('reed').value.trim();
+    let pick = document.getElementById('pick').value.trim();
+    let weave = document.getElementById('weave').value.trim();
+
+    if(!designNo) { alert("Design Number type pannu"); return; }
+    if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
+
+    designList.push(designNo);
+    localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+    localStorage.setItem('selected_design_number', designNo);
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData }; // Saved warp2
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    loadDesignDropdown();
+    document.getElementById('newDesign').value = '';
+    alert("Design " + designNo + " Saved ✅");
+}
+
+function updateDesign() {
+    let designNo = document.getElementById('designSelect').value;
+    if(!designNo) { alert("Select Design!"); return; }
+    let warp = document.getElementById('warpCount').value.trim();
+    let warp2 = document.getElementById('warpCount2').value.trim(); // Added Top Beam Input Read
+    let weft = document.getElementById('weftCount').value.trim();
+    let width = document.getElementById('width').value.trim();
+    let reed = document.getElementById('reed').value.trim();
+    let pick = document.getElementById('pick').value.trim();
+    let weave = document.getElementById('weave').value.trim();
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let existingBitmap = designSpecs[designNo] ? designSpecs[designNo].bitmap : "";
+    
+    designSpecs[designNo] = { 
+        warp, warp2, weft, width, reed, pick, weave, // Updated warp2
+        bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
+    };
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+    alert("Updated successfully! ✅");
+}
+
+function deleteDesign(){
+    let designNo = document.getElementById('designSelect').value;
+    if(!designNo) { alert("Select Design!"); return; }
+    if(confirm(designNo + " delete pannalama?")){
+        designList = designList.filter(x => x != designNo);
+        localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+        
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        delete designSpecs[designNo];
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        localStorage.removeItem('selected_design_number');
+        loadDesignDropdown();
+        clearForm();
+        alert("Deleted successfully! 🗑️");
+    }
+}
+
+function loadDesignDropdown(){
+    designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('designSelect');
+    let html = '<option value="">Select Design</option>';
+    designList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    select.innerHTML = html;
+    
+    let active = localStorage.getItem('selected_design_number');
+    if(active && designList.includes(active)) { 
+        select.value = active; 
+        selectDesign(active); 
+    } else if(designList.length > 0) {
+        select.value = designList[0];
+        selectDesign(designList[0]);
+    } else {
+        clearForm();
+    }
+}
+
+function selectDesign(val){
+    localStorage.setItem('selected_design_number', val);
+    if(val) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let specs = designSpecs[val] || {};
+        document.getElementById('warpCount').value = specs.warp || '';
+        document.getElementById('warpCount2').value = specs.warp2 || ''; // Display Top Beam Input
+        document.getElementById('weftCount').value = specs.weft || '';
+        document.getElementById('width').value = specs.width || '';
+        document.getElementById('reed').value = specs.reed || '';
+        document.getElementById('pick').value = specs.pick || '';
+        document.getElementById('weave').value = specs.weave || '';
+        
+        if(specs.bitmap) {
+            tempBitmapData = specs.bitmap;
+            document.getElementById('bitmapImgTag').src = specs.bitmap;
+            document.getElementById('bitmapPreviewBox').style.display = 'block';
+        } else { 
+            tempBitmapData = "";
+            document.getElementById('bitmapPreviewBox').style.display = 'none'; 
+        }
+    } else {
+        clearForm();
+    }
+}
+
+function clearForm() {
+    document.getElementById('warpCount').value = '';
+    document.getElementById('warpCount2').value = ''; // Cleared Top Beam input
+    document.getElementById('weftCount').value = '';
+    document.getElementById('width').value = '';
+    document.getElementById('reed').value = '';
+    document.getElementById('pick').value = '';
+    document.getElementById('weave').value = '';
+    tempBitmapData = "";
+    document.getElementById('bitmapPreviewBox').style.display = 'none';
+}
+
+function goToStatus(type, status){
+    window.location.href = `design_list.html?type=${type}&status=${status}`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Design List - TEXFRIEND ERP</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    
+    body { 
+        background: #B4BCC6; 
+        padding: 12px; 
+        display: flex; 
+        flex-direction: column; 
+        min-height: 100vh; 
+        color: #1E293B;
+    }
+    
+    .main-card { 
+        background: #CED4DA; 
+        border-radius: 16px; 
+        padding: 18px; 
+        flex: 1; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .top-nav {
+        margin-bottom: 15px;
+    }
+
+    .back-btn { 
+        background: rgba(0,0,0,0.08); 
+        padding: 8px 12px; 
+        border-radius: 6px; 
+        text-decoration: none; 
+        color: #333; 
+        font-size: 11px; 
+        font-weight: 600; 
+        display: inline-block; 
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    h3 { 
+        text-align: center; 
+        color: #1E293B; 
+        font-size: 14px; 
+        border-bottom: 2px solid #94A3B8; 
+        padding-bottom: 12px; 
+        margin-bottom: 15px; 
+        text-transform: uppercase; 
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        background: #E2E8F0;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    th {
+        background: #CBD5E1;
+        color: #0F172A;
+        padding: 10px 6px;
+        font-weight: 700;
+        border-bottom: 2px solid #94A3B8;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 10px 6px;
+        color: #1E293B;
+        border-bottom: 1px solid #CBD5E1;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    td b {
+        color: #000;
+        font-weight: 700;
+    }
+
+    .summary-box { 
+        background: #E2E8F0; 
+        padding: 15px; 
+        border-radius: 8px; 
+        font-size: 12px; 
+        color: #0F172A; 
+        font-weight: 700; 
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08); 
+        line-height: 1.6;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .empty-msg {
+        text-align: center;
+        padding: 30px 20px;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 12px;
+        background: #E2E8F0;
+        border-radius: 8px;
+    }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+    
+    <h3 id="pageTitle">LOADING DATA...</h3>
+    
+    <div id="listContainer">
+        <!-- Dynamic Table will populate here -->
+    </div>
+    
+    <div class="summary-box" id="summaryBox" style="display: none;">
+        <div>Total Records: <span id="totRecords">0</span></div>
+        <div>Total Value: <span id="totValue">0.00</span></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Read URL Parameters sent from index.html
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'all';
+    const status = urlParams.get('status') || 'all';
+
+    const pageTitle = document.getElementById('pageTitle');
+    const listContainer = document.getElementById('listContainer');
+    const summaryBox = document.getElementById('summaryBox');
+
+    // Set Page Title
+    if (type === 'all') {
+        pageTitle.innerText = "TOTAL SAVED DESIGNS LIST";
+    } else {
+        pageTitle.innerText = `${type} DESIGN - ${status}`.toUpperCase();
+    }
+
+    let totalRecordsCount = 0;
+    let totalValueSum = 0;
+    let theadHtml = '';
+    let tbodyHtml = '';
+
+    // Logic to Fetch & Build Table
+    
+    // --- 1. TOTAL DESIGNS (ALL) ---
+    if (type === 'all') {
+        theadHtml = `<tr><th>S.No</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th></tr>`;
+        
+        let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+        designs.forEach((dNo, index) => {
+            let s = specs[dNo] || {};
+            let orderItems = orders.filter(o => o.designNo === dNo);
+            let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters) || 0), 0);
+            
+            tbodyHtml += `<tr>
+                <td>${index + 1}</td>
+                <td><b>${dNo}</b></td>
+                <td>${s.warp || 20}</td>
+                <td>${s.reed || '-'}</td>
+                <td>${s.pick || '-'}</td>
+                <td>${mtrSum.toFixed(2)}</td>
+            </tr>`;
+            
+            totalRecordsCount++;
+            totalValueSum += mtrSum;
+        });
+    } 
+    
+    // --- 2. ORDER DESIGNS ---
+    else if (type === 'order') {
+        theadHtml = `<tr><th>S.No</th><th>Date</th><th>Party Name</th><th>Design</th><th>Meters</th></tr>`;
+        
+        let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        
+        orders.forEach((o, index) => {
+            let mtr = parseFloat(o.meters) || 0;
+            tbodyHtml += `<tr>
+                <td>${index + 1}</td>
+                <td>${o.date || '-'}</td>
+                <td><b>${o.partyName || o.party || '-'}</b></td>
+                <td>${o.designNo}</td>
+                <td>${mtr.toFixed(2)}</td>
+            </tr>`;
+            
+            totalRecordsCount++;
+            totalValueSum += mtr;
+        });
+    } 
+    
+    // --- 3. OTHER MODULES ---
+    else {
+        let storageKey = type + '_issue_records';
+        if(type === 'despatch') storageKey = 'despatch_records';
+        
+        let records = JSON.parse(localStorage.getItem(storageKey)) || [];
+        
+        // Filter Status
+        if (status === 'running') {
+            records = records.filter(r => r.status === 'Pending' || !r.status);
+        } else if (status === 'completed') {
+            records = records.filter(r => r.status === 'Received' || r.status === 'Completed');
+        }
+
+        let valUnit = (type === 'dyeing' || type === 'warping') ? 'KG' : 'Mtr';
+        theadHtml = `<tr><th>S.No</th><th>Date</th><th>Unit / Name</th><th>Design</th><th>Value (${valUnit})</th><th>Status</th></tr>`;
+
+        records.forEach((r, index) => {
+            let unitName = r.unit || r.dyeingName || r.weaverName || r.partyName || '-';
+            let value = parseFloat(r.issueWt || r.mtr || r.meters || r.weight) || 0;
+            
+            tbodyHtml += `<tr>
+                <td>${index + 1}</td>
+                <td>${r.date || r.botDate || '-'}</td>
+                <td><b>${unitName}</b></td>
+                <td>${r.designNo || '-'}</td>
+                <td>${value.toFixed(3)}</td>
+                <td style="color: ${r.status === 'Pending' ? '#B45309' : '#15803D'}; font-weight: 700;">${r.status || 'Pending'}</td>
+            </tr>`;
+            
+            totalRecordsCount++;
+            totalValueSum += value;
+        });
+    }
+
+    // Render output
+    if(tbodyHtml === '') {
+        listContainer.innerHTML = `<div class="empty-msg">No ${status} records found for ${type.toUpperCase()} module!</div>`;
+        summaryBox.style.display = 'none';
+    } else {
+        listContainer.innerHTML = `
+            <div class="table-container">
+                <table>
+                    <thead>${theadHtml}</thead>
+                    <tbody>${tbodyHtml}</tbody>
+                </table>
+            </div>
+        `;
+        document.getElementById('totRecords').innerText = totalRecordsCount;
+        document.getElementById('totValue').innerText = totalValueSum.toFixed(2);
+        summaryBox.style.display = 'flex';
+    }
+});
+</script>
+</body>
+</html>

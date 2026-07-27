@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Weft Entry - TEXFRIEND ERP</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    html, body { 
+        width: 100%;
+        min-height: 100vh;
+        background: #E8F0E8; 
+        color: #1E2B23; 
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: #F4F9F4;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 2px; 
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #3F5A3E;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+        background: rgba(82, 110, 81, 0.15);
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+    }
+
+    h3 {
+        font-size: 15px;
+        color: #3F5A3E;
+        font-weight: 700;
+        margin-bottom: 4px;
+        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
+        padding-bottom: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .form-group label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    select, input {
+        width: 100%;
+        padding: 7px 4px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+        background: #FFFFFF;
+        color: #1E2B23;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        outline: none;
+    }
+
+    select:focus, input:focus {
+        border-color: #526E51;
+        background: #FFFFFF;
+    }
+
+    /* Design Number Full Row */
+    .design-row-single {
+        margin-bottom: 4px;
+    }
+
+    /* Compact 4-Column Grid for Top Fields */
+    .compact-top-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        background: #E2E8F0;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+    }
+
+    .section-title {
+        font-size: 12px;
+        color: #526E51;
+        font-weight: 700;
+        margin-top: 2px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Weft specific grid */
+    .header-grid {
+        display: grid;
+        grid-template-columns: 30px 1fr 1.2fr 1fr 30px;
+        gap: 4px;
+        padding: 5px 0;
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
+    }
+
+    .row-grid {
+        display: grid;
+        grid-template-columns: 30px 1fr 1.2fr 1fr 30px;
+        gap: 4px;
+        margin-bottom: 6px;
+        align-items: center;
+    }
+
+    .row-grid .line-no {
+        font-size: 10px;
+        font-weight: bold;
+        color: #526E51;
+        text-align: center;
+        background: #D8DFD6;
+        padding: 8px 0;
+        border-radius: 4px;
+    }
+
+    .header-grid-range {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 30px;
+        gap: 6px;
+        padding: 5px 0;
+        font-size: 10px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
+    }
+
+    .row-grid-range {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 30px;
+        gap: 6px;
+        margin-bottom: 8px;
+        align-items: center;
+    }
+
+    .row-grid input, .row-grid select, .row-grid-range input {
+        text-align: center;
+        padding: 8px 2px;
+        font-size: 10px;
+    }
+
+    .btn-add { background: #3B82F6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .btn-del { background: #EF4444; color: white; border: none; width: 100%; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+    
+    .action-btns-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+    
+    .preview-btn { background: #3B82F6; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .save-btn { background: #3F5A3E; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(63, 90, 62, 0.2); }
+    .save-btn:hover { background: #2D402C; }
+    .list-btn { background: #D97706; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+    .divider { border-bottom: 1px dashed rgba(82, 110, 81, 0.4); margin: 10px 0; }
+
+    .calc-box {
+        background: #D8DFD6; padding: 10px; border-radius: 6px;
+        font-size: 11px; font-weight: 700; color: #1E2B23; margin-top: 8px;
+        border: 1px solid rgba(82, 110, 81, 0.3); display: flex; justify-content: space-between;
+    }
+
+    /* Modals */
+    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
+    .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+    .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
+    .modal-header h3 { border: none; padding: 0; margin: 0; }
+    
+    .modal-actions { display: flex; gap: 8px; }
+    .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+    
+    .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid rgba(82, 110, 81, 0.2); }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; background: #FFFFFF; }
+    
+    th { background: #D8DFD6; color: #3F5A3E; padding: 10px 6px; border-bottom: 2px solid #ccc; font-weight: 700; border-right: 1px solid #c8d1c6; }
+    td { padding: 8px 6px; border-bottom: 1px solid #eee; color: #1E2B23; font-weight: 500; border-right: 1px solid #e2e8f0; }
+    th:last-child, td:last-child { border-right: none; }
+    
+    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 4px; }
+    .del-action-btn { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    @media print {
+        body * { visibility: hidden; }
+        #previewModal, #previewModal * { visibility: visible; }
+        #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
+        .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+        .no-print { display: none !important; }
+        td, th { border: 1px solid #ddd !important; }
+    }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <h3>🧶 Weft Pattern Entry</h3>
+
+    <!-- Design Number Full Row -->
+    <div class="design-row-single">
+        <div class="form-group">
+            <label>Select Design Number</label>
+            <select id="designNo" onchange="loadWeftDesignData()" style="padding: 8px; font-weight: 700;">
+                <option value="">Select Design No</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Compact 4-Column Top Row for Weft -->
+    <div class="compact-top-grid">
+        <div class="form-group">
+            <label>Weft Width</label>
+            <input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()">
+        </div>
+        <div class="form-group">
+            <label>Weft Count</label>
+            <input type="text" id="infoWeftCount" placeholder="Count">
+        </div>
+        <div class="form-group">
+            <label>Pick</label>
+            <input type="text" id="infoPick" placeholder="Pick" oninput="calculateWeftValues()">
+        </div>
+        <div class="form-group">
+            <label>Weave</label>
+            <input type="text" id="infoWeave" placeholder="Weave">
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 1. WEFT LINES ENTRY -->
+    <div class="section-title">
+        <span>1. Weft Thread Pattern</span>
+        <span style="font-size: 9px; color: #10B981; font-weight: 600;">(Press Enter in Picks to add new line)</span>
+    </div>
+    
+    <div class="header-grid">
+        <div>#</div>
+        <div>Count</div>
+        <div>Colour</div>
+        <div>Picks</div>
+        <div></div>
+    </div>
+    <div id="weftLinesContainer"></div>
+
+    <div class="divider"></div>
+
+    <!-- 2. REPEATS (GROUPS) ENTRY -->
+    <div class="section-title">
+        <span>2. Pattern Repeats (Set)</span>
+        <button class="btn-add" onclick="addWeftRange()">+ Add</button>
+    </div>
+    
+    <div class="header-grid-range">
+        <div>Start Line</div>
+        <div>End Line</div>
+        <div>Set (Times)</div>
+        <div></div>
+    </div>
+    <div id="weftRangesContainer"></div>
+
+    <!-- Calculations Display -->
+    <div class="calc-box">
+        <span>Total Pattern Picks: <span id="displayTotalPicks" style="color:#D97706;">0</span></span>
+        <span id="displayTotalCalc" style="color:#10B981;">Total Pick: 0</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-btns-row">
+        <button class="preview-btn" onclick="previewWeftPattern()">👁️ Preview</button>
+        <button class="save-btn" onclick="saveWeftDesign()" id="saveBtnTxt">💾 Save</button>
+        <button class="list-btn" onclick="openSavedModal()">📂 Saved List</button>
+    </div>
+</div>
+
+<!-- Preview Modal (Printable) -->
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <h3>👁️ Weft Pattern Preview</h3>
+            <div class="modal-actions">
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+            </div>
+        </div>
+        <div class="modal-body" id="previewContent" style="padding: 15px;">
+            <!-- Preview Content injects here -->
+        </div>
+    </div>
+</div>
+
+<!-- Saved Patterns Modal -->
+<div id="savedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📋 Saved Weft Patterns</h3>
+            <button class="close-btn" onclick="document.getElementById('savedListModal').style.display='none'">Close ❌</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Design No</th>
+                            <th>Total Lines</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedPatternsBody">
+                        <!-- Data here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function translateColorToTamil(colorName) {
+    if (!colorName) return '-';
+    var c = colorName.trim().toLowerCase();
+    var map = {
+        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
+        'red': 'சிகப்பு', 'green': 'பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
+        'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'grey': 'சாம்பல்',
+        'gold': 'தங்கம்', 'pink': 'பிங்க்', 'navy': 'நேவி', 'maroon': 'மெரூன்'
+    };
+    return map[c] || colorName; 
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDesignDropdown();
+    addWeftLine(); 
+});
+
+function loadDesignDropdown() {
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('designNo');
+    let html = '<option value="">Select Design No</option>';
+    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    select.innerHTML = html;
+}
+
+function loadWeftDesignData() {
+    let dNo = document.getElementById('designNo').value;
+    let linesContainer = document.getElementById('weftLinesContainer');
+    let rangesContainer = document.getElementById('weftRangesContainer');
+    let saveBtn = document.getElementById('saveBtnTxt');
+    
+    linesContainer.innerHTML = '';
+    rangesContainer.innerHTML = '';
+    
+    document.getElementById('infoWeftWidth').value = '';
+    document.getElementById('infoWeftCount').value = '';
+    document.getElementById('infoPick').value = '';
+    document.getElementById('infoWeave').value = '';
+    document.getElementById('displayTotalPicks').innerText = '0';
+    document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
+
+    if(!dNo) {
+        saveBtn.innerText = "💾 Save";
+        addWeftLine();
+        return;
+    }
+
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let sp = specs[dNo] || {};
+
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = masters.find(m => m.name === dNo);
+
+    let autoWeftWidth = '';
+    if (found && found.width) {
+        autoWeftWidth = (parseFloat(found.width) + 3).toFixed(2);
+    } else if (sp.width) {
+        autoWeftWidth = (parseFloat(sp.width) + 3).toFixed(2);
+    }
+
+    let basePick = parseFloat(sp.pick) || 0;
+    let autoPick = basePick > 0 ? basePick - 4 : '';
+
+    if (found) {
+        saveBtn.innerText = "✏️ Update"; 
+        document.getElementById('infoWeftWidth').value = found.weftWidth || autoWeftWidth || '';
+        document.getElementById('infoWeftCount').value = found.weftCount || sp.weft || '';
+        document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
+        document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
+
+        if(found.weftLines && found.weftLines.length > 0) {
+            found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
+        } else {
+            addWeftLine();
+        }
+
+        if(found.weftRanges && found.weftRanges.length > 0) {
+            found.weftRanges.forEach(r => addWeftRange(r.start, r.end, r.set));
+        }
+    } else {
+        saveBtn.innerText = "💾 Save";
+        document.getElementById('infoWeftWidth').value = autoWeftWidth;
+        document.getElementById('infoWeftCount').value = sp.weft || '';
+        document.getElementById('infoPick').value = autoPick;
+        document.getElementById('infoWeave').value = sp.weave || '';
+        addWeftLine();
+    }
+    
+    updateLineNumbers();
+    calculateWeftValues();
+}
+
+function addWeftLine(count = '', color = '', picks = '') {
+    let container = document.getElementById('weftLinesContainer');
+    let row = document.createElement('div');
+    row.className = 'row-grid line-item';
+    row.innerHTML = `
+        <div class="line-no"></div>
+        <input type="text" class="inp-count" placeholder="Count" value="${count}">
+        <input type="text" class="inp-color" placeholder="Colour" value="${color}">
+        <input type="number" class="inp-picks" placeholder="Picks" value="${picks}" 
+               oninput="calculateWeftValues()"
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
+        <button class="btn-del" onclick="this.parentElement.remove(); updateLineNumbers(); calculateWeftValues();">×</button>
+    `;
+    container.appendChild(row);
+    updateLineNumbers();
+}
+
+function addWeftRange(start = '', end = '', set = '') {
+    let container = document.getElementById('weftRangesContainer');
+    let row = document.createElement('div');
+    row.className = 'row-grid-range range-item';
+    row.innerHTML = `
+        <input type="number" class="inp-start" placeholder="Start" value="${start}" oninput="calculateWeftValues()">
+        <input type="number" class="inp-end" placeholder="End" value="${end}" oninput="calculateWeftValues()">
+        <input type="number" class="inp-set" placeholder="Set" value="${set}" oninput="calculateWeftValues()"
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftRange(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-start'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
+        <button class="btn-del" onclick="this.parentElement.remove(); calculateWeftValues();">×</button>
+    `;
+    container.appendChild(row);
+    calculateWeftValues();
+}
+
+function updateLineNumbers() {
+    let lines = document.querySelectorAll('.line-item .line-no');
+    lines.forEach((elem, idx) => {
+        elem.innerText = idx + 1;
+    });
+}
+
+function calculateWeftValues() {
+    let wWidth = parseFloat(document.getElementById('infoWeftWidth').value) || 0;
+    let pick = parseFloat(document.getElementById('infoPick').value) || 0;
+    
+    let totalPickCalc = wWidth * pick;
+    document.getElementById('displayTotalCalc').innerText = `Total Pick: ${wWidth} x ${pick} = ${totalPickCalc.toFixed(2)}`;
+
+    let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        lines.push(parseFloat(row.querySelector('.inp-picks').value) || 0);
+    });
+
+    let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let s = parseInt(row.querySelector('.inp-start').value) || 0;
+        let e = parseInt(row.querySelector('.inp-end').value) || 0;
+        let set = parseInt(row.querySelector('.inp-set').value) || 0;
+        if(s && e && set) ranges.push({start: s, end: e, set: set});
+    });
+
+    let totalPatternPicks = 0;
+    let i = 0;
+    while (i < lines.length) {
+        let currentLineNum = i + 1;
+        let range = ranges.find(r => r.start === currentLineNum);
+        
+        if (range && range.end >= range.start) {
+            let blockPicks = 0;
+            for (let j = range.start; j <= range.end; j++) {
+                if (lines[j - 1] !== undefined) {
+                    blockPicks += lines[j - 1];
+                }
+            }
+            totalPatternPicks += blockPicks * range.set;
+            i = range.end;
+        } else {
+            totalPatternPicks += lines[i] || 0;
+            i++;
+        }
+    }
+
+    document.getElementById('displayTotalPicks').innerText = totalPatternPicks;
+}
+
+function saveWeftDesign() {
+    let dNo = document.getElementById('designNo').value;
+    if(!dNo) {
+        alert("Please select a Design Number!");
+        return;
+    }
+
+    let wWidth = document.getElementById('infoWeftWidth').value.trim();
+    let wCount = document.getElementById('infoWeftCount').value.trim();
+    let pick = document.getElementById('infoPick').value.trim();
+    let weave = document.getElementById('infoWeave').value.trim();
+
+    let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim();
+        let color = row.querySelector('.inp-color').value.trim();
+        let picks = row.querySelector('.inp-picks').value.trim();
+        if(count || color || picks) {
+            lines.push({ count: count, color: color, picks: parseFloat(picks) || 0 });
+        }
+    });
+
+    let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let start = row.querySelector('.inp-start').value.trim();
+        let end = row.querySelector('.inp-end').value.trim();
+        let set = row.querySelector('.inp-set').value.trim();
+        if(start && end && set) {
+            ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
+        }
+    });
+
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let idx = masters.findIndex(m => m.name === dNo);
+    
+    if(idx === -1) {
+        masters.push({ 
+            name: dNo, 
+            weftWidth: wWidth, 
+            weftCount: wCount, 
+            weftPick: pick, 
+            weaveType: weave, 
+            weftLines: lines, 
+            weftRanges: ranges 
+        });
+    } else {
+        masters[idx].weftWidth = wWidth;
+        masters[idx].weftCount = wCount;
+        masters[idx].weftPick = pick;
+        masters[idx].weaveType = weave;
+        masters[idx].weftLines = lines;
+        masters[idx].weftRanges = ranges;
+    }
+
+    localStorage.setItem('design_masters_data', JSON.stringify(masters));
+    alert("Weft Pattern Saved Successfully! ✅");
+}
+
+function openSavedModal() {
+    renderSavedList();
+    document.getElementById('savedListModal').style.display = 'flex';
+}
+
+function renderSavedList() {
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let tbody = document.getElementById('savedPatternsBody');
+    tbody.innerHTML = '';
+
+    let hasData = false;
+    masters.forEach(m => {
+        if (m.weftLines && m.weftLines.length > 0) {
+            hasData = true;
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${m.name}</b></td>
+                    <td>${m.weftLines.length} Lines</td>
+                    <td>
+                        <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+    if(!hasData) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; color:#D97706;">No Weft Patterns saved yet.</td></tr>`;
+    }
+}
+
+function editDesignPattern(dNo) {
+    document.getElementById('savedListModal').style.display = 'none'; 
+    document.getElementById('designNo').value = dNo;
+    loadWeftDesignData();
+    window.scrollTo(0, 0);
+}
+
+function previewWeftPattern() {
+    calculateWeftValues();
+    let dNo = document.getElementById('designNo').value;
+    
+    let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim();
+        let color = row.querySelector('.inp-color').value.trim();
+        let picks = parseFloat(row.querySelector('.inp-picks').value) || 0;
+        if(count || color || picks) {
+            lines.push({ count: count, color: color, picks: picks });
+        }
+    });
+
+    let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let start = parseInt(row.querySelector('.inp-start').value) || 0;
+        let end = parseInt(row.querySelector('.inp-end').value) || 0;
+        let set = parseInt(row.querySelector('.inp-set').value) || 0;
+        if(start && end && set) ranges.push({ start, end, set });
+    });
+
+    if(lines.length === 0) {
+        alert("No pattern to preview! Please add lines.");
+        return;
+    }
+
+    let wWidth = document.getElementById('infoWeftWidth').value || '-';
+    let wCount = document.getElementById('infoWeftCount').value || '-';
+    let pick = document.getElementById('infoPick').value || '-';
+    let weave = document.getElementById('infoWeave').value || '-';
+
+    let headerHtml = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F0FDF4; border:1px solid #10B981; padding:10px; border-radius:8px; margin-bottom:15px; font-size:11px; font-weight:bold; color:#065F46;">
+            <span style="margin-right:8px;">Design: ${dNo || '-'}</span>
+            <span style="margin-right:8px;">Weft Count: ${wCount}</span>
+            <span style="margin-right:8px;">Weft Width: ${wWidth}"</span>
+            <span style="margin-right:8px;">Pick: ${pick}</span>
+            <span>Weave: ${weave}</span>
+        </div>
+    `;
+
+    let tbodyHtml = '';
+    let totalPicksPattern = 0;
+    let i = 0;
+    
+    let tdStyle = "padding:8px; border-bottom:1px dashed #cbd5e1; border-right:1px dotted #94a3b8; text-align:center;";
+    let tdStyleLast = "padding:8px; border-bottom:1px dashed #cbd5e1; vertical-align:middle; color:#0F172A; text-align:left;";
+
+    while (i < lines.length) {
+        let currentLineNum = i + 1;
+        let range = ranges.find(r => r.start === currentLineNum);
+        
+        if (range && range.end >= range.start) {
+            let blockLines = [];
+            let blockPicks = 0;
+            
+            for (let j = range.start; j <= range.end; j++) {
+                if (lines[j - 1]) {
+                    let lineItem = Object.assign({}, lines[j - 1]);
+                    lineItem.lineNo = j;
+                    blockLines.push(lineItem);
+                    blockPicks += lines[j-1].picks;
+                }
+            }
+            
+            let blockTotalPicks = blockPicks * range.set;
+            totalPicksPattern += blockTotalPicks;
+
+            blockLines.forEach((item, index) => {
+                let colorTamil = translateColorToTamil(item.color); 
+                
+                tbodyHtml += `<tr>
+                    <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                    <td style="${tdStyle}">${item.count || '-'}</td>
+                    <td style="${tdStyle}">${colorTamil}</td>
+                    <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>`;
+                
+                if (index === 0) {
+                    tbodyHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
+                        <span style="font-size:18px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalPicks}</span></b>
+                    </td>`;
+                }
+                tbodyHtml += `</tr>`;
+            });
+            i = range.end; 
+        } else {
+            let item = Object.assign({}, lines[i]);
+            item.lineNo = i + 1;
+            totalPicksPattern += item.picks;
+            
+            let colorTamil = translateColorToTamil(item.color);
+            
+            tbodyHtml += `<tr>
+                <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                <td style="${tdStyle}">${item.count || '-'}</td>
+                <td style="${tdStyle}">${colorTamil}</td>
+                <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>
+                <td style="padding:8px; border-bottom:1px dashed #cbd5e1;"></td>
+            </tr>`;
+            i++;
+        }
+    }
+
+    let html = headerHtml;
+    html += '<div class="table-container"><table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #d1d5db;">';
+    html += `<tr style="background:#f2f2f2; border-bottom:2px solid #ccc;">
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">#</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Count</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Colour</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Picks</th>
+                <th style="padding:10px; text-align:center;">Set</th>
+             </tr>`;
+    html += tbodyHtml;
+    
+    html += `<tr style="font-weight:bold; font-size:13px; background:#e8f0e8; border-top:1px solid #94a3b8;">
+        <td colspan="3" style="padding:12px; text-align:right; border-right:1px dotted #94a3b8;">Total Pattern Picks:</td>
+        <td colspan="2" style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; color:#10B981;">${totalPicksPattern}</td>
+    </tr>`;
+
+    let pickNum = parseFloat(pick) || 0;
+    let wWidthNum = parseFloat(wWidth) || 0;
+    if (pickNum > 0 && wWidthNum > 0) {
+        let overallCalc = wWidthNum * pickNum;
+        html += `<tr style="font-weight:700; font-size:14px; background:#fff; color:#3F5A3E; border-top:1px solid #94a3b8;">
+            <td colspan="5" style="padding:12px; text-align:center;">
+                Weft Width ${wWidthNum} X Pick ${pickNum} = <span style="font-size:15px; color:#1E2B23;">${overallCalc.toFixed(2)} Total Pick</span>
+            </td>
+        </tr>`;
+    }
+
+    html += '</table></div>';
+
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('previewModal').style.display = 'flex';
+}
+</script>
+</body>
+</html>

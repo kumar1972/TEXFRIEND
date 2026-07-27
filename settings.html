@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ERP Master Settings</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { background: #8B7FC6; min-height: 100vh; padding: 12px; color: #FFFFFF; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; background: #9E92D8; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.4); }
+        
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .back-btn { color: #F3E8FF; text-decoration: none; font-weight: 600; font-size: 12px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        h2 { text-align: center; color: #FFFFFF; font-size: 16px; font-weight: 700; margin-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 8px; }
+        
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 10px; color: #E9D5FF; font-weight: 600; margin-bottom: 4px; }
+        input, select, textarea { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.3); background: #3B2E75; color: #FFFFFF; font-size: 11px; font-weight: 500; }
+        textarea { resize: vertical; height: 60px; }
+        input:focus, select:focus, textarea:focus { border-color: #FFFFFF; outline: none; background: #5B4B9E; }
+        
+        .form-row { display: flex; gap: 8px; margin-bottom: 6px; }
+        .btn-add { background: #7C3AED; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; width: 100%; margin-top: 6px; }
+        .btn-del { background: #EF4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 11px; }
+        
+        .btn-submit { width: 100%; background: #059669; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .btn-submit:hover { background: #047857; }
+
+        .btn-reset { width: 100%; background: #DC2626; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .btn-reset:hover { background: #B91C1C; }
+
+        .btn-backup { width: 100%; background: #2563EB; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .btn-backup:hover { background: #1D4ED8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+        <span style="font-size: 11px; font-weight: 600;">⚙️ Settings</span>
+    </div>
+
+    <h2>ERP Master Settings</h2>
+
+    <div class="form-group">
+        <label>Change Main Heading Name</label>
+        <input type="text" id="set_heading" placeholder="Enter App Heading...">
+    </div>
+
+    <div class="form-group">
+        <label>Company Logo Upload</label>
+        <input type="file" id="set_logo_file" accept="image/*" onchange="previewLogo(this)">
+        <div id="logoPreviewBox" style="margin-top:6px; text-align:center; display:none;">
+            <img id="logoImgTag" src="" style="max-height:50px; border-radius:4px;" alt="Logo">
+        </div>
+    </div>
+
+    <!-- Design Number Specific Bitmap Upload Section -->
+    <div class="form-group" style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+        <label>🎨 Select Design No for Bitmap Image</label>
+        <select id="settingDesignSelect" onchange="loadDesignBitmap(this.value)" style="margin-bottom: 8px;">
+            <option value="">Select Design Number</option>
+        </select>
+        
+        <label>Upload Bitmap Image for Selected Design</label>
+        <input type="file" id="designBitmapFile" accept="image/*" onchange="previewDesignBitmap(this)">
+        <div id="designBitmapPreviewBox" style="margin-top:6px; text-align:center; display:none;">
+            <img id="designBitmapImgTag" src="" style="max-height:60px; border-radius:4px; border:1px solid #fff;" alt="Design Bitmap">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Default Company Address (For Invoice)</label>
+        <textarea id="set_comp_addr" placeholder="Enter Company Address..."></textarea>
+    </div>
+
+    <!-- Manage Party Master with Address Entry -->
+    <div class="form-group" style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+        <label>🏢 Manage Party Master (Add / Edit Party Address)</label>
+        <select id="partyListSelect" onchange="selectPartyToEdit(this.value)" style="margin-bottom: 8px;">
+            <option value="">Select Party to Edit/View</option>
+        </select>
+
+        <div class="form-group">
+            <label>Party Name</label>
+            <input type="text" id="partyNameInput" placeholder="Enter Party Name...">
+        </div>
+        <div class="form-group">
+            <label>Party Address & GST Details</label>
+            <textarea id="partyAddressInput" placeholder="Enter Full Address & GST No..."></textarea>
+        </div>
+        
+        <div class="form-row">
+            <button class="btn-add" onclick="savePartyMaster()">💾 Save / Add Party</button>
+            <button class="btn-del" onclick="deletePartyMaster()" style="margin-top:6px;">🗑️ Delete Party</button>
+        </div>
+    </div>
+
+    <!-- Advanced Changes Editor Section -->
+    <div class="form-group" style="margin-top: 10px; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+        <label style="color: #F3E8FF; font-weight: bold; margin-bottom: 5px; display: block;">🛠️ Advanced Changes Editor (Local Data JSON)</label>
+        <textarea id="advancedJsonEditor" rows="5" style="width: 100%; background: #3B2E75; color: #E9D5FF; font-family: monospace; font-size: 10px; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); outline: none;" placeholder="Load local storage data here..."></textarea>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button type="button" onclick="loadStorageDataToEditor()" style="flex: 1; background: #7C3AED; color: white; border: none; padding: 6px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer;">📥 Load Data</button>
+            <button type="button" onclick="saveStorageDataFromEditor()" style="flex: 1; background: #059669; color: white; border: none; padding: 6px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer;">💾 Save Changes</button>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="saveSettings()">Save Settings & Exit</button>
+    <button class="btn-backup" onclick="backupAllData()">📥 Backup All Data</button>
+    <button class="btn-reset" onclick="resetAllData()">🗑️ Reset All Data</button>
+</div>
+
+<script>
+let tempLogoData = "";
+let tempDesignBitmapData = "";
+
+window.onload = function() {
+    let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+    document.getElementById('set_heading').value = heading;
+
+    let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
+    document.getElementById('set_comp_addr').value = compAddr;
+
+    let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo');
+    if(logo) {
+        tempLogoData = logo;
+        let imgTag = document.getElementById('logoImgTag');
+        imgTag.src = logo;
+        document.getElementById('logoPreviewBox').style.display = 'block';
+    }
+
+    loadDesignDropdownInSettings();
+    loadPartyDropdown();
+}
+
+function loadDesignDropdownInSettings() {
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('settingDesignSelect');
+    let html = '<option value="">Select Design Number</option>';
+    preDesigns.forEach(d => {
+        html += `<option value="${d}">${d}</option>`;
+    });
+    select.innerHTML = html;
+}
+
+function loadDesignBitmap(designNo) {
+    if(!designNo) {
+        tempDesignBitmapData = "";
+        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+        return;
+    }
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    if(designSpecs[designNo] && designSpecs[designNo].bitmap) {
+        tempDesignBitmapData = designSpecs[designNo].bitmap;
+        document.getElementById('designBitmapImgTag').src = tempDesignBitmapData;
+        document.getElementById('designBitmapPreviewBox').style.display = 'block';
+    } else {
+        tempDesignBitmapData = "";
+        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+    }
+}
+
+function previewLogo(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            tempLogoData = e.target.result;
+            let imgTag = document.getElementById('logoImgTag');
+            imgTag.src = tempLogoData;
+            document.getElementById('logoPreviewBox').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewDesignBitmap(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            tempDesignBitmapData = e.target.result;
+            let imgTag = document.getElementById('designBitmapImgTag');
+            imgTag.src = tempDesignBitmapData;
+            document.getElementById('designBitmapPreviewBox').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function getPartyDatabase() {
+    let raw = localStorage.getItem('party_master_db');
+    if(raw) {
+        try { return JSON.parse(raw); } catch(e) {}
+    }
+    return {};
+}
+
+function loadPartyDropdown() {
+    let db = getPartyDatabase();
+    let select = document.getElementById('partyListSelect');
+    let html = '<option value="">Select Party to Edit/View</option>';
+    Object.keys(db).forEach(p => {
+        html += `<option value="${p}">${p}</option>`;
+    });
+    select.innerHTML = html;
+}
+
+function selectPartyToEdit(partyName) {
+    if(!partyName) {
+        document.getElementById('partyNameInput').value = '';
+        document.getElementById('partyAddressInput').value = '';
+        return;
+    }
+    let db = getPartyDatabase();
+    document.getElementById('partyNameInput').value = partyName;
+    document.getElementById('partyAddressInput').value = db[partyName] || '';
+}
+
+function savePartyMaster() {
+    let pName = document.getElementById('partyNameInput').value.trim();
+    let pAddr = document.getElementById('partyAddressInput').value.trim();
+
+    if(!pName) {
+        alert("Party name enter pannunga!");
+        return;
+    }
+
+    let db = getPartyDatabase();
+    db[pName] = pAddr;
+
+    localStorage.setItem('party_master_db', JSON.stringify(db));
+    localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
+
+    loadPartyDropdown();
+    alert("Party Details Saved Successfully! ✅");
+}
+
+function deletePartyMaster() {
+    let select = document.getElementById('partyListSelect');
+    let val = select.value;
+    if(!val) {
+        alert("Delete panna party select pannunga!");
+        return;
+    }
+    if(confirm(`Are you sure to delete party: ${val}?`)) {
+        let db = getPartyDatabase();
+        delete db[val];
+        localStorage.setItem('party_master_db', JSON.stringify(db));
+        localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
+
+        document.getElementById('partyNameInput').value = '';
+        document.getElementById('partyAddressInput').value = '';
+        loadPartyDropdown();
+        alert("Party deleted successfully!");
+    }
+}
+
+function saveSettings() {
+    let heading = document.getElementById('set_heading').value.trim() || "TEXFRIEND ERP";
+    localStorage.setItem('app_heading_name', heading);
+
+    let compAddr = document.getElementById('set_comp_addr').value;
+    localStorage.setItem('company_full_address', compAddr);
+
+    if(tempLogoData) {
+        localStorage.setItem('company_logo_base64', tempLogoData);
+        localStorage.setItem('company_logo', tempLogoData);
+        localStorage.setItem('logo', tempLogoData);
+    }
+
+    let selectedDesign = document.getElementById('settingDesignSelect').value;
+    if(selectedDesign && tempDesignBitmapData) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        if(!designSpecs[selectedDesign]) designSpecs[selectedDesign] = {};
+        designSpecs[selectedDesign].bitmap = tempDesignBitmapData;
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+    }
+
+    alert("Settings Saved Successfully! ✅");
+    window.location.href = 'index.html';
+}
+
+function resetAllData() {
+    let confirmReset = confirm("⚠️ எச்சரிக்கை: அனைத்து டேட்டாக்களையும் (All Data) முழுமையாக அழிக்க விரும்புகிறீர்களா?\n\n(Yes - அழிக்கவும் / No - ரத்து செய்)");
+    if (confirmReset) {
+        localStorage.clear();
+        alert("அனைத்து தரவுகளும் அழிக்கப்பட்டன (All Data Erased Successfully)! ✅");
+        location.reload();
+    }
+}
+
+function backupAllData() {
+    let confirmBackup = confirm("📁 சேமிக்கப்பட்ட அனைத்து தரவுகளையும் (All Data) பேக்கப் (Backup) எடுக்க விரும்புகிறீர்களா?");
+    if (confirmBackup) {
+        let dataObj = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            dataObj[key] = localStorage.getItem(key);
+        }
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "texfriend_erp_backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        alert("Backup Downloaded Successfully! 📥");
+    }
+}
+
+// Advanced Changes Editor Functions
+function loadStorageDataToEditor() {
+    let allData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        try {
+            allData[key] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+            allData[key] = localStorage.getItem(key);
+        }
+    }
+    document.getElementById('advancedJsonEditor').value = JSON.stringify(allData, null, 4);
+    alert("Local Storage data loaded to editor! 📥");
+}
+
+function saveStorageDataFromEditor() {
+    try {
+        let jsonText = document.getElementById('advancedJsonEditor').value;
+        let parsedData = JSON.parse(jsonText);
+        
+        if(confirm("Are you sure you want to overwrite local storage data with these changes?")) {
+            for (let key in parsedData) {
+                let val = typeof parsedData[key] === 'object' ? JSON.stringify(parsedData[key]) : parsedData[key];
+                localStorage.setItem(key, val);
+            }
+            alert("Changes saved successfully! ✅ Please refresh the app.");
+            location.reload();
+        }
+    } catch (err) {
+        alert("Invalid JSON format! Please check your code. ❌\nError: " + err.message);
+    }
+}
+</script>
+
+</body>
+</html>

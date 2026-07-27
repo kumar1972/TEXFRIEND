@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weaving Order - TEXFRIEND</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        html, body { 
+            width: 100%;
+            min-height: 100vh;
+            background: #EAF4EE;
+            color: #23382B; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: #F4F9F5;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(118, 150, 129, 0.25);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .back-link {
+            color: #2F4F38; 
+            text-decoration: none; 
+            font-size: 10px; 
+            font-weight: 600; 
+            display: inline-block; 
+            background: rgba(118, 150, 129, 0.12); 
+            padding: 4px 8px; 
+            border-radius: 5px; 
+            border: 1px solid rgba(118, 150, 129, 0.25);
+        }
+
+        #bitmapDisplayContainer { text-align: right; }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(118, 150, 129, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #2F4F38;
+            font-size: 13px;
+            border-bottom: 2px solid rgba(118, 150, 129, 0.25);
+            padding-bottom: 4px;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .form-group { margin-bottom: 6px; }
+        .form-group label {
+            display: block; font-size: 9px; color: #3B5F47; font-weight: 600; margin-bottom: 3px;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], select {
+            width: 100%; padding: 8px 10px; border: 1px solid rgba(118, 150, 129, 0.35);
+            border-radius: 6px; box-sizing: border-box; font-size: 11px; background: #FFFFFF;
+            color: #23382B; font-weight: 500;
+        }
+
+        input:focus, select:focus { border-color: #4A7C59; outline: none; background: #FAFCFA; }
+
+        .form-grid-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 6px;
+        }
+        
+        .form-grid-row-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin-bottom: 6px;
+        }
+
+        .line-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+        .line-table th { font-size: 9px; color: #2F4F38; text-align: left; padding-bottom: 4px; font-weight: bold; }
+        .line-table td { padding: 3px 4px 5px 0; }
+
+        .section-sub-title {
+            font-size: 10px; font-weight: 700; color: #2F4F38; margin-top: 8px; margin-bottom: 4px;
+            background: #E2ECE5; padding: 4px 6px; border-radius: 5px; border: 1px solid rgba(118, 150, 129, 0.2);
+        }
+
+        .btn-weave {
+            background-color: #4A7C59; color: white; border: none; padding: 10px; border-radius: 8px;
+            font-weight: 700; cursor: pointer; width: 100%; font-size: 12px; margin-top: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.15s ease;
+        }
+        .btn-weave:hover { background-color: #3B5F47; }
+
+        .action-btn { background: #4A7C59; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .action-del { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-del:hover { background: #B45309; }
+        .action-complete { background: #4A7C59; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
+
+        .report-btn-group { display: flex; gap: 6px; float: right; margin-bottom: 6px; }
+        .report-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+
+        .excel-table {
+            width: 100%; border-collapse: collapse; text-align: center; background: #F4F9F5;
+            font-size: 10px; margin-top: 6px; margin-bottom: 10px; color: #23382B;
+        }
+        .excel-table th, .excel-table td { border: 1px solid rgba(118, 150, 129, 0.25); padding: 6px; }
+        .excel-table th { background-color: #E2ECE5; color: #2F4F38; font-weight: bold; }
+
+        /* Modals */
+        .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
+        .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+        .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
+        .modal-header h3 { border: none; padding: 0; margin: 0; color: #3F5A3E; font-size: 14px; }
+        .modal-actions { display: flex; gap: 8px; }
+        .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+
+        #designModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;
+        }
+        .design-modal-content {
+            background: #F4F9F5; width: 90%; max-width: 350px; border-radius: 12px;
+            border: 1px solid rgba(118, 150, 129, 0.4); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .design-modal-header {
+            background: #E2ECE5; color: #2F4F38; padding: 10px 12px; font-weight: bold;
+            font-size: 11px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(118, 150, 129, 0.3);
+        }
+        .design-modal-body { padding: 8px 12px; max-height: 250px; overflow-y: auto; }
+        .design-option {
+            display: flex; justify-content: space-between; align-items: center; padding: 8px 4px;
+            border-bottom: 1px solid rgba(118, 150, 129, 0.2); cursor: pointer; font-size: 11px; color: #23382B;
+        }
+        .design-option:hover { background: #E2ECE5; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #previewModal, #previewModal * { visibility: visible; }
+            #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
+            .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-nav">
+            <a href="index.html" class="back-link">← Back to Menu</a>
+            <div id="bitmapDisplayContainer"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 6px;">
+            <h2 style="border:none; margin:0; color:#2F4F38;">Weaving Order</h2>
+            <div class="report-btn-group">
+                <button type="button" class="report-btn" onclick="openPreview('warp')">👁️ Warp Preview</button>
+                <button type="button" class="report-btn" onclick="openPreview('weft')">👁️ Weft Preview</button>
+            </div>
+        </div>
+
+        <form id="topForm" onsubmit="saveTopData(event)">
+            <h2>1. Weaving Order Details (Top)</h2>
+            
+            <div class="form-grid-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="topDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Weaver Name</label>
+                    <input type="text" id="topWeaverName" placeholder="Enter Weaver Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Design Number (Auto)</label>
+                    <input type="text" id="topDesignNo" placeholder="Select Design" readonly onclick="openDesignModal('top')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+                </div>
+            </div>
+
+            <div class="form-grid-row-4">
+                <div class="form-group">
+                    <label>Order Mtrs</label>
+                    <input type="number" step="0.01" id="weavingMts" placeholder="Meters" value="100" oninput="recalculateWeights()" required>
+                </div>
+                <div class="form-group">
+                    <label>Warp 1 (Grnd)</label>
+                    <input type="text" id="warpCount" placeholder="Count 1" readonly style="background:#FFFFFF;">
+                </div>
+                <div class="form-group">
+                    <label>Warp 2 (Top)</label>
+                    <input type="text" id="warpCount2" placeholder="Count 2" readonly style="background:#FFFFFF;">
+                </div>
+                <div class="form-group">
+                    <label>Weft Count</label>
+                    <input type="text" id="weftCount" placeholder="Weft Count" readonly style="background:#FFFFFF;">
+                </div>
+            </div>
+
+            <div class="section-sub-title">Warp Yarn Header</div>
+            <div class="form-group">
+                <table id="warpRowsTable" class="line-table">
+                    <thead>
+                        <tr>
+                            <th>Count</th>
+                            <th>Colour</th>
+                            <th>Order Wt</th>
+                            <th>Issued Wt</th>
+                            <th style="width: 35px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="Count" class="w-count" required></td>
+                            <td><input type="text" placeholder="Colour" class="w-colour" required></td>
+                            <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
+                            <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
+                            <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWarpRow()">＋</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-sub-title">Weft Yarn Header</div>
+            <div class="form-group">
+                <table id="weftRowsTable" class="line-table">
+                    <thead>
+                        <tr>
+                            <th>Count</th>
+                            <th>Colour</th>
+                            <th>Order Wt</th>
+                            <th>Issued Wt</th>
+                            <th style="width: 35px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="Count" class="wf-count" required></td>
+                            <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
+                            <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
+                            <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
+                            <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWeftRow()">＋</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" class="btn-weave">Save Top Order</button>
+        </form>
+
+        <hr style="border: 0; border-top: 1px dashed rgba(118, 150, 129, 0.3); margin: 15px 0;">
+
+        <form id="bottomForm" onsubmit="saveBottomData(event)">
+            <h2>2. Weaving Production & Return (Bottom)</h2>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="botDate" required>
+            </div>
+            <div class="form-group">
+                <label>Design Number (Select)</label>
+                <input type="text" id="botDesignNo" placeholder="Select Design No" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+            </div>
+
+            <div class="section-sub-title">Warp Details (Manual Entry)</div>
+            <div class="form-group">
+                <table id="botWarpTable" class="line-table"></table>
+            </div>
+
+            <div class="section-sub-title">Weft Details (Manual Entry)</div>
+            <div class="form-group">
+                <table id="botWeftTable" class="line-table"></table>
+            </div>
+
+            <button type="submit" class="btn-weave">Save Bottom Entry</button>
+        </form>
+
+        <h3 style="font-size: 11px; color: #2F4F38; margin-top: 15px; font-weight: 700;">📊 Saved Warp Data</h3>
+        <div style="overflow-x: auto;">
+            <table id="warpTable" class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Design No</th>
+                        <th>Count</th>
+                        <th>Colour</th>
+                        <th>Order Wt</th>
+                        <th>Issued Wt</th>
+                        <th>Return Wt</th>
+                        <th>Excess / Bal</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <h3 style="font-size: 11px; color: #2F4F38; margin-top: 15px; font-weight: 700;">📊 Saved Weft Data</h3>
+        <div style="overflow-x: auto;">
+            <table id="weftTable" class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Design No</th>
+                        <th>Count</th>
+                        <th>Colour</th>
+                        <th>Order Wt</th>
+                        <th>Issued Wt</th>
+                        <th>Return Wt</th>
+                        <th>Excess / Bal</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Design Selection Modal -->
+    <div id="designModal">
+        <div class="design-modal-content">
+            <div class="design-modal-header">
+                <span>Select Design</span>
+                <span style="cursor: pointer; font-size: 14px;" onclick="closeDesignModal()">✕</span>
+            </div>
+            <div class="design-modal-body" id="modalDesignList"></div>
+        </div>
+    </div>
+
+    <!-- Preview & Print Modal -->
+    <div id="previewModal" class="overlay-modal">
+        <div class="modal-content">
+            <div class="modal-header no-print">
+                <h3 id="previewModalTitle">👁️ Weaving Order Preview</h3>
+                <div class="modal-actions">
+                    <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                    <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+                </div>
+            </div>
+            <div class="modal-body" id="previewContent" style="padding: 15px;">
+                <!-- Preview content injects here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+        let warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
+        let weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];
+        let activeTargetInput = '';
+
+        document.getElementById('topDate').valueAsDate = new Date();
+        document.getElementById('botDate').valueAsDate = new Date();
+
+        window.onload = function() {
+            loadActiveDesignNumber();
+            updateTables();
+            loadBitmapImage();
+        };
+
+        function parseYarnCount(val) {
+            if(!val) return 0;
+            let str = String(val).trim();
+            if(str.includes('/')) {
+                let p = str.split('/');
+                let ply = parseFloat(p[0]) || 1;
+                let c = parseFloat(p[1]) || 1;
+                if(ply > 0 && c > 0) return c / ply; 
+            }
+            return parseFloat(str) || 0;
+        }
+
+        function loadBitmapImage() {
+            let activeDesign = localStorage.getItem('selected_design_number');
+            let topDesignInput = document.getElementById('topDesignNo');
+            let botDesignInput = document.getElementById('botDesignNo');
+            
+            if(botDesignInput && botDesignInput.value) {
+                activeDesign = botDesignInput.value;
+            } else if(topDesignInput && topDesignInput.value) {
+                activeDesign = topDesignInput.value;
+            }
+            
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+            
+            if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+                bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+            } else {
+                bitmapContainer.innerHTML = '';
+            }
+        }
+
+        function formatDecimal(input) {
+            let val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                input.value = val.toFixed(3);
+            }
+        }
+
+        function loadActiveDesignNumber() {
+            let activeDesign = localStorage.getItem('selected_design_number') || localStorage.getItem('active_design_number') || '';
+            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            
+            if(!activeDesign && preDesigns.length > 0) {
+                activeDesign = preDesigns[0];
+            }
+
+            if(activeDesign) {
+                document.getElementById('topDesignNo').value = activeDesign;
+                onDesignSelect(activeDesign);
+                document.getElementById('botDesignNo').value = activeDesign;
+                loadBottomRows();
+            }
+            loadBitmapImage();
+        }
+
+        let baseWarpWeights = {};
+        let baseWeftWeights = {};
+
+        function onDesignSelect(val) {
+            loadBitmapImage();
+            if(val) {
+                localStorage.setItem('selected_design_number', val);
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                let specs = designSpecs[val] || { warp: '', warp2: '', weft: '', reed: '', pick: '' };
+                
+                document.getElementById('warpCount').value = specs.warp || '';
+                document.getElementById('warpCount2').value = specs.warp2 || ''; 
+                document.getElementById('weftCount').value = specs.weft || '';
+
+                let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+                let found = designMastersList.find(d => d.name === val);
+                
+                if(found) {
+                    let defaultCount = parseYarnCount(specs.warp) || 30; 
+                    
+                    baseWarpWeights[val] = [];
+                    baseWeftWeights[val] = [];
+
+                    if(found.warpLines && found.warpLines.length > 0) {
+                        let rawTotalWarp = 0;
+                        found.warpLines.forEach((item, idx) => {
+                            let lineNum = idx + 1;
+                            let ends = parseFloat(item.ends) || 0;
+                            let multiplier = 1;
+                            if(found.warpRanges) {
+                                found.warpRanges.forEach(range => {
+                                    if(lineNum >= range.start && lineNum <= range.end) {
+                                        multiplier = range.set || 1;
+                                    }
+                                });
+                            }
+                            rawTotalWarp += (ends * multiplier);
+                        });
+
+                        let reedVal = parseFloat(found.reed) || 72;
+                        let divisionResult = ((reedVal + 8) * 58) / rawTotalWarp;
+                        let repeatVal = Math.floor(divisionResult);
+
+                        let warpColorMap = {};
+                        found.warpLines.forEach((item, idx) => {
+                            let lineNum = idx + 1;
+                            let color = item.color ? item.color.trim() : 'Unknown';
+                            let countOriginalText = item.count || specs.warp;
+                            let countNumeric = parseYarnCount(item.count) || defaultCount; 
+                            
+                            let ends = parseFloat(item.ends) || 0;
+                            let multiplier = 1;
+                            if(found.warpRanges) {
+                                found.warpRanges.forEach(range => {
+                                    if(lineNum >= range.start && lineNum <= range.end) {
+                                        multiplier = range.set || 1;
+                                    }
+                                });
+                            }
+                            let totalEndsForLine = ends * multiplier;
+                            if(!warpColorMap[color]) {
+                                warpColorMap[color] = { countNumeric: countNumeric, countText: countOriginalText, baseSum: 0 };
+                            }
+                            warpColorMap[color].baseSum += totalEndsForLine;
+                        });
+
+                        let targetTotalEnds = Math.round(((reedVal + 8) * 58));
+                        let currentAssignedTotal = 0;
+                        let calculatedColorTotals = {};
+                        Object.keys(warpColorMap).forEach(col => {
+                            let base = warpColorMap[col].baseSum;
+                            let scaled = base * repeatVal;
+                            calculatedColorTotals[col] = scaled;
+                            currentAssignedTotal += scaled;
+                        });
+
+                        let difference = targetTotalEnds - currentAssignedTotal;
+                        if(difference > 0) {
+                            for(let i = 0; i < found.warpLines.length && difference > 0; i++) {
+                                let colName = found.warpLines[i].color ? found.warpLines[i].color.trim() : 'Unknown';
+                                let singleEnds = parseFloat(found.warpLines[i].ends) || 0;
+                                if(calculatedColorTotals[colName] !== undefined) {
+                                    let addAmount = Math.min(singleEnds, difference);
+                                    calculatedColorTotals[colName] += addAmount;
+                                    difference -= addAmount;
+                                }
+                            }
+                        }
+
+                        Object.keys(warpColorMap).forEach(col => {
+                            let data = warpColorMap[col];
+                            let scaledTotal = calculatedColorTotals[col];
+                            let baseLengthYards = 100 * 1.09361;
+                            let weightLbs = (scaledTotal * baseLengthYards) / (840 * data.countNumeric);
+                            let weightKg = (weightLbs * 453.592) / 1000;
+                            
+                            baseWarpWeights[val].push({ count: data.countText, colour: col, baseWt: weightKg });
+                        });
+                    }
+
+                    if(found.weftLines && found.weftLines.length > 0) {
+                        let rawTotalWeftPicks = 0;
+                        found.weftLines.forEach((item, idx) => {
+                            let lineNum = idx + 1;
+                            let picks = parseFloat(item.picks) || 0;
+                            let multiplier = 1;
+                            if(found.weftRanges) {
+                                found.weftRanges.forEach(range => {
+                                    if(lineNum >= range.start && lineNum <= range.end) {
+                                        multiplier = range.set || 1;
+                                    }
+                                });
+                            }
+                            rawTotalWeftPicks += (picks * multiplier);
+                        });
+
+                        let effectiveWidth = 3 + (parseFloat(found.widthOnloom) || 64.4);
+                        let pickVal = parseFloat(found.pick) || 68;
+                        let totalWeftProduct = effectiveWidth * pickVal;
+                        let weftMultiplier = rawTotalWeftPicks > 0 ? totalWeftProduct / rawTotalWeftPicks : 1;
+
+                        let defaultWeftNumeric = parseYarnCount(specs.weft) || 40;
+
+                        let weftColorMap = {};
+                        found.weftLines.forEach((item, idx) => {
+                            let lineNum = idx + 1;
+                            let color = item.color ? item.color.trim() : 'Unknown';
+                            let countOriginalText = item.count || specs.weft;
+                            let countNumeric = parseYarnCount(item.count) || defaultWeftNumeric;
+                            
+                            let picks = parseFloat(item.picks) || 0;
+                            let multiplier = 1;
+                            if(found.weftRanges) {
+                                found.weftRanges.forEach(range => {
+                                    if(lineNum >= range.start && lineNum <= range.end) {
+                                        multiplier = range.set || 1;
+                                    }
+                                });
+                            }
+                            let totalPicksForLine = picks * multiplier;
+                            if(!weftColorMap[color]) {
+                                weftColorMap[color] = { countNumeric: countNumeric, countText: countOriginalText, baseSum: 0 };
+                            }
+                            weftColorMap[color].baseSum += totalPicksForLine;
+                        });
+
+                        Object.keys(weftColorMap).forEach(col => {
+                            let data = weftColorMap[col];
+                            let scaledWeftTotal = (data.baseSum * weftMultiplier) * (100 / 100);
+                            let baseLengthYards = 100 * 1.09361;
+                            let weightLbs = (scaledWeftTotal * baseLengthYards) / (840 * data.countNumeric);
+                            let weightKg = (weightLbs * 453.592) / 1000;
+
+                            baseWeftWeights[val].push({ count: data.countText, colour: col, baseWt: weightKg });
+                        });
+                    }
+
+                    renderWeightsByMeters(val);
+                }
+            } else {
+                document.getElementById('warpCount').value = '';
+                document.getElementById('warpCount2').value = '';
+                document.getElementById('weftCount').value = '';
+            }
+        }
+
+        function renderWeightsByMeters(val) {
+            let currentMts = parseFloat(document.getElementById('weavingMts').value) || 100;
+            let ratio = currentMts / 100;
+
+            if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
+                const warpTbody = document.querySelector('#warpRowsTable tbody');
+                warpTbody.innerHTML = '';
+                baseWarpWeights[val].forEach(r => {
+                    let calculatedWt = (r.baseWt * ratio).toFixed(3);
+                    addWarpRow(r.count, r.colour, calculatedWt, calculatedWt);
+                });
+            }
+
+            if(baseWeftWeights[val] && baseWeftWeights[val].length > 0) {
+                const weftTbody = document.querySelector('#weftRowsTable tbody');
+                weftTbody.innerHTML = '';
+                baseWeftWeights[val].forEach(r => {
+                    let calculatedWt = (r.baseWt * ratio).toFixed(3);
+                    addWeftRow(r.count, r.colour, calculatedWt, calculatedWt);
+                });
+            }
+        }
+
+        function recalculateWeights() {
+            let activeDesign = document.getElementById('topDesignNo').value;
+            if(activeDesign && baseWarpWeights[activeDesign]) {
+                renderWeightsByMeters(activeDesign);
+            }
+        }
+
+        function openDesignModal(target) {
+            activeTargetInput = target;
+            const modalList = document.getElementById('modalDesignList');
+            modalList.innerHTML = '';
+
+            let allDesignSet = new Set();
+            let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            preDesignList.forEach(d => allDesignSet.add(d));
+
+            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+            designMasters.forEach(d => allDesignSet.add(d.name));
+
+            weavingMasterData.forEach(item => allDesignSet.add(item.designNo));
+
+            let currentVal = document.getElementById(target + 'DesignNo').value;
+
+            if(allDesignSet.size === 0) {
+                modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No designs found</div>';
+            } else {
+                allDesignSet.forEach(designNo => {
+                    if(designNo) {
+                        let isChecked = (designNo === currentVal) ? 'checked' : '';
+                        let div = document.createElement('div');
+                        div.className = 'design-option';
+                        div.innerHTML = `<span>${designNo}</span> <input type="radio" name="modalDesignRadio" value="${designNo}" ${isChecked} onclick="selectDesign('${designNo}')">`;
+                        div.onclick = function() { selectDesign(designNo); };
+                        modalList.appendChild(div);
+                    }
+                });
+            }
+
+            document.getElementById('designModal').style.display = 'flex';
+        }
+
+        function selectDesign(designNo) {
+            if(activeTargetInput === 'top') {
+                document.getElementById('topDesignNo').value = designNo;
+                onDesignSelect(designNo);
+            } else if(activeTargetInput === 'bot') {
+                document.getElementById('botDesignNo').value = designNo;
+                loadBottomRows();
+            }
+            closeDesignModal();
+            loadBitmapImage();
+        }
+
+        function closeDesignModal() {
+            document.getElementById('designModal').style.display = 'none';
+        }
+
+        function addWarpRow(c = '', col = '', w = '', iss = '') {
+            const table = document.getElementById('warpRowsTable').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td><input type="text" placeholder="Count" class="w-count" value="${c}" required></td>
+                <td><input type="text" placeholder="Colour" class="w-colour" value="${col}" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" value="${w}" onblur="formatDecimal(this)" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
+                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+            `;
+        }
+
+        function addWeftRow(c = '', col = '', w = '', iss = '') {
+            const table = document.getElementById('weftRowsTable').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td><input type="text" placeholder="Count" class="wf-count" value="${c}" required></td>
+                <td><input type="text" placeholder="Colour" class="wf-colour" value="${col}" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" value="${w}" onblur="formatDecimal(this)" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
+                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+            `;
+        }
+
+        function saveTopData(e) {
+            e.preventDefault();
+            const designNo = document.getElementById('topDesignNo').value.trim();
+            const weaverName = document.getElementById('topWeaverName').value.trim();
+            const topDate = document.getElementById('topDate').value;
+            const weavingMts = document.getElementById('weavingMts').value;
+
+            if(!designNo || !weaverName) {
+                alert("Please fill Weaver Name and Design Number!");
+                return;
+            }
+
+            if(!confirm("Indha weaving order-ai save pannanuma?")) {
+                return;
+            }
+
+            let warpRows = [];
+            document.querySelectorAll('#warpRowsTable tbody tr').forEach(tr => {
+                const c = tr.querySelector('.w-count').value;
+                const col = tr.querySelector('.w-colour').value;
+                const w = parseFloat(tr.querySelector('.w-weight').value || 0).toFixed(3);
+                const iss = parseFloat(tr.querySelector('.w-issued').value || 0).toFixed(3);
+                if(c || col || w || iss) {
+                    warpRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                }
+            });
+
+            let weftRows = [];
+            document.querySelectorAll('#weftRowsTable tbody tr').forEach(tr => {
+                const c = tr.querySelector('.wf-count').value;
+                const col = tr.querySelector('.wf-colour').value;
+                const w = parseFloat(tr.querySelector('.wf-weight').value || 0).toFixed(3);
+                const iss = parseFloat(tr.querySelector('.wf-issued').value || 0).toFixed(3);
+                if(c || col || w || iss) {
+                    weftRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                }
+            });
+
+            if(warpRows.length === 0 && weftRows.length === 0) {
+                alert("Please add at least one Warp or Weft row detail!");
+                return;
+            }
+
+            const data = {
+                id: Date.now(),
+                date: topDate,
+                weaverName: weaverName,
+                designNo: designNo,
+                weavingMts: weavingMts,
+                warpRows: warpRows,
+                weftRows: weftRows
+            };
+
+            let existingIndex = weavingMasterData.findIndex(x => x.designNo === designNo);
+            if(existingIndex > -1) {
+                weavingMasterData[existingIndex] = data;
+            } else {
+                weavingMasterData.push(data);
+            }
+
+            warpRows.forEach((r, idx) => {
+                let existingTrans = warpTransactions.find(x => x.designNo === designNo && x.count === r.count && x.colour === r.colour);
+                if(existingTrans) {
+                    existingTrans.orderWt = parseFloat(r.weight) || 0;
+                    existingTrans.issuedWt = parseFloat(r.issuedWt) || 0;
+                } else {
+                    warpTransactions.push({
+                        id: Date.now() + idx,
+                        designNo: designNo,
+                        count: r.count,
+                        colour: r.colour,
+                        orderWt: parseFloat(r.weight) || 0,
+                        issuedWt: parseFloat(r.issuedWt) || 0,
+                        returnWt: '',
+                        diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                        status: 'running'
+                    });
+                }
+            });
+
+            weftRows.forEach((r, idx) => {
+                let existingTrans = weftTransactions.find(x => x.designNo === designNo && x.count === r.count && x.colour === r.colour);
+                if(existingTrans) {
+                    existingTrans.orderWt = parseFloat(r.weight) || 0;
+                    existingTrans.issuedWt = parseFloat(r.issuedWt) || 0;
+                } else {
+                    weftTransactions.push({
+                        id: Date.now() + 1000 + idx,
+                        designNo: designNo,
+                        count: r.count,
+                        colour: r.colour,
+                        orderWt: parseFloat(r.weight) || 0,
+                        issuedWt: parseFloat(r.issuedWt) || 0,
+                        returnWt: '',
+                        diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                        status: 'running'
+                    });
+                }
+            });
+
+            localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
+            localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+            localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+
+            updateTables();
+            alert("Top Weaving Order saved successfully! ✅");
+            document.getElementById('topDesignNo').value = '';
+            document.getElementById('topWeaverName').value = '';
+            document.getElementById('warpCount').value = '';
+            document.getElementById('warpCount2').value = '';
+            document.getElementById('weftCount').value = '';
+            loadBitmapImage();
+        }
+
+        function loadBottomRows() {
+            loadBitmapImage();
+            const selectedDesign = document.getElementById('botDesignNo').value;
+            const warpTable = document.getElementById('botWarpTable');
+            const weftTable = document.getElementById('botWeftTable');
+            warpTable.innerHTML = '';
+            weftTable.innerHTML = '';
+
+            const matchedWarpTrans = warpTransactions.filter(x => x.designNo === selectedDesign);
+            if(matchedWarpTrans.length > 0) {
+                let h1 = warpTable.insertRow();
+                h1.innerHTML = `<th>Count</th><th>Colour</th><th>Order Wt</th><th>Issued Wt</th><th>Return Wt</th>`;
+                matchedWarpTrans.forEach(r => {
+                    let retVal = (r.returnWt !== '' && r.returnWt !== undefined) ? r.returnWt : '';
+                    let row = warpTable.insertRow();
+                    row.innerHTML = `
+                        <td><input type="text" value="${r.count}" class="bw-count" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${r.colour}" class="bw-colour" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${Number(r.orderWt).toFixed(3)}" class="bw-order" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${r.issuedWt !== '' ? Number(r.issuedWt).toFixed(3) : ''}" class="bw-issued" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="bw-return" value="${retVal}" onblur="formatDecimal(this)"></td>
+                    `;
+                });
+            }
+
+            const matchedWeftTrans = weftTransactions.filter(x => x.designNo === selectedDesign);
+            if(matchedWeftTrans.length > 0) {
+                let h2 = weftTable.insertRow();
+                h2.innerHTML = `<th>Count</th><th>Colour</th><th>Order Wt</th><th>Issued Wt</th><th>Return Wt</th>`;
+                matchedWeftTrans.forEach(r => {
+                    let retVal = (r.returnWt !== '' && r.returnWt !== undefined) ? r.returnWt : '';
+                    let row = weftTable.insertRow();
+                    row.innerHTML = `
+                        <td><input type="text" value="${r.count}" class="bft-count" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${r.colour}" class="bft-colour" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${Number(r.orderWt).toFixed(3)}" class="bft-order" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="text" value="${r.issuedWt !== '' ? Number(r.issuedWt).toFixed(3) : ''}" class="bft-issued" readonly style="background:#FFFFFF;"></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="bft-return" value="${retVal}" onblur="formatDecimal(this)"></td>
+                    `;
+                });
+            }
+        }
+
+        function saveBottomData(e) {
+            e.preventDefault();
+            const designNo = document.getElementById('botDesignNo').value;
+            if(!designNo) {
+                alert("Please select a Design Number!");
+                return;
+            }
+
+            if(!confirm("Indha bottom entry-ai save pannanuma?")) {
+                return;
+            }
+
+            const warpRows = document.querySelectorAll('#botWarpTable tr:not(:first-child)');
+            warpRows.forEach((tr) => {
+                const c = tr.querySelector('.bw-count').value;
+                const col = tr.querySelector('.bw-colour').value;
+                const returnWtStr = tr.querySelector('.bw-return').value.trim();
+                
+                let returnWt = returnWtStr !== '' ? parseFloat(returnWtStr) || 0 : '';
+
+                let existing = warpTransactions.find(x => x.designNo === designNo && x.count === c && x.colour === col);
+                if(existing) {
+                    existing.returnWt = returnWt;
+                }
+            });
+
+            const weftRows = document.querySelectorAll('#botWeftTable tr:not(:first-child)');
+            weftRows.forEach((tr) => {
+                const c = tr.querySelector('.bft-count').value;
+                const col = tr.querySelector('.bft-colour').value;
+                const returnWtStr = tr.querySelector('.bft-return').value.trim();
+
+                let returnWt = returnWtStr !== '' ? parseFloat(returnWtStr) || 0 : '';
+
+                let existing = weftTransactions.find(x => x.designNo === designNo && x.count === c && x.colour === col);
+                if(existing) {
+                    existing.returnWt = returnWt;
+                }
+            });
+
+            localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+            localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+
+            updateTables();
+            alert("Bottom Weaving Entry updated successfully! ✅");
+            document.getElementById('botDesignNo').value = '';
+            document.getElementById('botWarpTable').innerHTML = '';
+            document.getElementById('botWeftTable').innerHTML = '';
+            loadBitmapImage();
+        }
+
+        function updateTables() {
+            const warpTbody = document.querySelector('#warpTable tbody');
+            warpTbody.innerHTML = '';
+            warpTransactions.forEach((item) => {
+                if(!item.status) item.status = "running";
+
+                let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
+                let statusBtn = item.status == 'running' 
+                    ? `<button class="action-complete" onclick="toggleWarpStatus(${item.id}, 'completed')">Complete</button>` 
+                    : `<button class="action-running" onclick="toggleWarpStatus(${item.id}, 'running')">Running</button>`;
+
+                let row = warpTbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.designNo}</td>
+                    <td>${item.count}</td>
+                    <td>${item.colour}</td>
+                    <td>${Number(item.orderWt).toFixed(3)}</td>
+                    <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
+                    <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
+                    <td>-</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
+                    <td style="white-space:nowrap;">
+                        ${statusBtn}
+                        <button class="action-del" onclick="deleteWarp(${item.id})">Del</button>
+                    </td>
+                `;
+            });
+
+            const weftTbody = document.querySelector('#weftTable tbody');
+            weftTbody.innerHTML = '';
+            weftTransactions.forEach((item) => {
+                if(!item.status) item.status = "running";
+
+                let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
+                let statusBtn = item.status == 'running' 
+                    ? `<button class="action-complete" onclick="toggleWeftStatus(${item.id}, 'completed')">Complete</button>` 
+                    : `<button class="action-running" onclick="toggleWeftStatus(${item.id}, 'running')">Running</button>`;
+
+                let row = weftTbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.designNo}</td>
+                    <td>${item.count}</td>
+                    <td>${item.colour}</td>
+                    <td>${Number(item.orderWt).toFixed(3)}</td>
+                    <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
+                    <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
+                    <td>-</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
+                    <td style="white-space:nowrap;">
+                        ${statusBtn}
+                        <button class="action-del" onclick="deleteWeft(${item.id})">Del</button>
+                    </td>
+                `;
+            });
+        }
+
+        function toggleWarpStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Indha warp entry-ai Completed-aga maatranuma?" : "Indha warp entry-ai Running-ku maatranuma?";
+            if(confirm(msg)) {
+                warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                updateTables();
+                alert("Status successfully updated! ✅");
+            }
+        }
+
+        function toggleWeftStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Indha weft entry-ai Completed-aga maatranuma?" : "Indha weft entry-ai Running-ku maatranuma?";
+            if(confirm(msg)) {
+                weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                updateTables();
+                alert("Status successfully updated! ✅");
+            }
+        }
+
+        function deleteWarp(id) {
+            if(confirm("Indha warp entry-ai delete pannanuma?")) {
+                warpTransactions = warpTransactions.filter(item => item.id !== id);
+                localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                updateTables();
+                alert("Deleted successfully! ✅");
+            }
+        }
+
+        function deleteWeft(id) {
+            if(confirm("Indha weft entry-ai delete pannanuma?")) {
+                weftTransactions = weftTransactions.filter(item => item.id !== id);
+                localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                updateTables();
+                alert("Deleted successfully! ✅");
+            }
+        }
+
+        function openPreview(type) {
+            let tableId = type === 'warp' ? 'warpTable' : 'weftTable';
+            let titleText = type === 'warp' ? '👁️ Warp Order Report Preview' : '👁️ Weft Order Report Preview';
+            
+            document.getElementById('previewModalTitle').innerText = titleText;
+            
+            let table = document.getElementById(tableId);
+            if(!table) return;
+            
+            let html = `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
+            
+            // Header
+            let headers = table.querySelectorAll('thead th');
+            html += `<tr style="background:#f2f2f2;">`;
+            headers.forEach((th, idx) => {
+                if(idx < headers.length - 1) { // Skip Action column in preview
+                    html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
+                }
+            });
+            html += `</tr>`;
+            
+            // Body
+            let rows = table.querySelectorAll('tbody tr');
+            if(rows.length === 0) {
+                html += `<tr><td colspan="${headers.length - 1}" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
+            } else {
+                rows.forEach(tr => {
+                    let cells = tr.querySelectorAll('td');
+                    html += `<tr>`;
+                    cells.forEach((td, idx) => {
+                        if(idx < cells.length - 1) { // Skip Action column
+                            html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
+                        }
+                    });
+                    html += `</tr>`;
+                });
+            }
+            
+            html += `</table></div>`;
+            document.getElementById('previewContent').innerHTML = html;
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Warping - TEXFRIEND</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    html, body { 
+        width: 100%;
+        min-height: 100vh;
+        background: #E8F0E8; 
+        color: #1E2B23; 
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: #F4F9F4;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 4px; 
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #3F5A3E;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 10px;
+        background: rgba(82, 110, 81, 0.15);
+        padding: 6px 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+    }
+
+    .page-title {
+        font-size: 16px;
+        color: #3F5A3E;
+        font-weight: 700;
+        margin-bottom: 8px;
+        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
+        padding-bottom: 8px;
+    }
+
+    h3 {
+        font-size: 13px;
+        color: #3F5A3E;
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-row-multi {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 0.8fr 0.8fr 1fr;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    
+    .form-row-single {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form-group label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+        background: #FFFFFF;
+        color: #1E2B23;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    input:focus, select:focus {
+        border-color: #526E51;
+        outline: none;
+    }
+
+    input[readonly] {
+        background: #E8ECE7;
+        color: #3F5A3E;
+    }
+
+    .grid-header {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1.2fr 1.2fr 32px;
+        gap: 6px;
+        padding: 0 4px;
+        margin-bottom: 6px;
+    }
+    
+    .grid-header-bot {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px;
+        padding: 0 4px;
+        margin-bottom: 6px;
+    }
+
+    .grid-header div, .grid-header-bot div {
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
+    }
+
+    .line-row {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1.2fr 1.2fr 32px;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+    
+    .line-row-bot {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .line-row input, .line-row-bot input {
+        text-align: center;
+        padding: 8px 4px;
+        font-size: 10px;
+    }
+
+    .add-btn {
+        background: #526E51; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;
+    }
+
+    .del-btn {
+        background: #D97706; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;
+    }
+
+    .save-btn {
+        background: #526E51; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(82, 110, 81, 0.2);
+    }
+    .save-btn:hover { background: #3F5A3E; }
+
+    .section-divider {
+        border-bottom: 1px dashed rgba(82, 110, 81, 0.4);
+        margin: 15px 0;
+    }
+
+    .table-container {
+        margin-top: 10px;
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9px;
+        text-align: center;
+        background: #F4F9F4;
+    }
+
+    th {
+        background: #D8DFD6;
+        color: #3F5A3E;
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.3);
+        font-weight: 700;
+    }
+
+    td {
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.15);
+        color: #1E2B23;
+        font-weight: 500;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <div class="page-title">Warping Entry System</div>
+
+    <!-- 1. TOP SECTION (ORDER DETAILS) -->
+    <div id="sectionTop">
+        <h3>1. Warping Order Details (Top)</h3>
+        
+        <div class="form-row-multi">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="topDate">
+            </div>
+            <div class="form-group">
+                <label>Warping Unit</label>
+                <input type="text" id="topUnit" placeholder="Name">
+            </div>
+            <div class="form-group">
+                <label>Design No</label>
+                <select id="topDesignNo" onchange="loadTopWarpData()">
+                    <option value="">Select</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Reed</label>
+                <input type="number" id="topReed" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Count</label>
+                <input type="number" id="topCount" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Warping Mts</label>
+                <input type="number" id="topMts" value="100" oninput="loadTopWarpData()">
+            </div>
+        </div>
+
+        <div>
+            <div class="grid-header">
+                <div>Count</div>
+                <div>Colour</div>
+                <div>Order Wt</div>
+                <div>Issued Wt</div>
+                <div></div>
+            </div>
+            <div id="topLinesContainer"></div>
+        </div>
+
+        <button class="save-btn" style="margin-top: 10px;" onclick="saveTopOrder()">Save Top Order</button>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 2. BOTTOM SECTION (RECEIVED DETAILS) -->
+    <div id="sectionBottom">
+        <h3>2. Warping Received & Loss (Bottom)</h3>
+        
+        <div class="form-row-single">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="botDate">
+            </div>
+            <div class="form-group">
+                <label>Design Number (Select)</label>
+                <select id="botDesignNo" onchange="loadBottomData()">
+                    <option value="">Select Pending Design</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- RECEIVED GRID (Removed Loss & Loss %) -->
+        <div id="botGridWrapper" style="display: none; margin-top: 5px;">
+            <div class="grid-header-bot">
+                <div>Count</div>
+                <div>Colour</div>
+                <div>Issued Wt</div>
+                <div>Rcvd Wt</div>
+                <div>Excess(>5%)</div>
+            </div>
+            <div id="botLinesContainer"></div>
+        </div>
+
+        <button class="save-btn" style="margin-top: 15px;" onclick="saveBottomEntry()">Save Bottom Entry</button>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 3. SAVED DATA TABLE -->
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>📊 Saved Warping Data</h3>
+            <select style="width: auto; padding: 4px; font-size: 9px;" id="filterTable" onchange="renderTable()">
+                <option value="All">All Designs</option>
+            </select>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Design</th>
+                        <th>Count</th>
+                        <th>Colour</th>
+                        <th>Order Wt</th>
+                        <th>Issued Wt</th>
+                        <th>Rcvd Wt</th>
+                        <th>Excess</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody">
+                    <!-- Data populates here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('topDate').valueAsDate = new Date();
+    document.getElementById('botDate').valueAsDate = new Date();
+    loadDesignDropdowns();
+    renderTable();
+});
+
+function loadDesignDropdowns() {
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let topSelect = document.getElementById('topDesignNo');
+    let topHtml = '<option value="">Select</option>';
+    preDesignList.forEach(d => { topHtml += `<option value="${d}">${d}</option>`; });
+    topSelect.innerHTML = topHtml;
+
+    updateBottomDropdown();
+}
+
+function updateBottomDropdown() {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let pendingDesigns = [...new Set(issues.filter(r => r.status === 'Pending').map(r => r.designNo))];
+    
+    let botSelect = document.getElementById('botDesignNo');
+    let botHtml = '<option value="">Select Pending Design</option>';
+    pendingDesigns.forEach(d => { botHtml += `<option value="${d}">${d}</option>`; });
+    botSelect.innerHTML = botHtml;
+}
+
+// TOP SECTION LOGIC
+function resolveWarpPattern(dName, defaultCount, mts) {
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let baseSetups = JSON.parse(localStorage.getItem('base_design_setups')) || [];
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    
+    let foundMaster = masters.find(d => d.name === dName) || {};
+    let foundBase = baseSetups.find(d => d.name === dName) || {};
+    let sp = specs[dName] || {};
+
+    let uiReed = parseFloat(foundMaster.reed || foundBase.reed || sp.reed) || 52;
+    let baseWidth = parseFloat(foundMaster.widthOnloom || sp.width || foundBase.widthOnloom || foundBase.width) || 66.92;
+    
+    document.getElementById('topReed').value = uiReed;
+    document.getElementById('topCount').value = defaultCount;
+
+    let totalEnds = Math.round(uiReed * baseWidth);
+    let lines = foundMaster.warpLines || [];
+    let ranges = foundMaster.warpRanges || [];
+
+    if(lines.length === 0) return [];
+
+    let covered = new Array(lines.length).fill(false);
+    let orderedPattern = [];
+
+    if(ranges.length > 0) {
+        ranges.forEach(r => {
+            for(let s=0; s<r.set; s++) {
+                for(let j = r.start; j <= r.end; j++) {
+                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                }
+            }
+            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+        });
+    }
+    lines.forEach((l, idx) => { if(!covered[idx]) orderedPattern.push({...l}); });
+
+    let exactSeq = [];
+    orderedPattern.forEach(item => {
+        let val = parseFloat(item.ends) || 0;
+        let c = parseFloat(item.count) || defaultCount;
+        let clr = item.color || '-';
+        for(let k=0; k<val; k++) exactSeq.push({ count: c, color: clr });
+    });
+
+    let summaryMap = new Map();
+    exactSeq.forEach(item => {
+        let key = item.count + '_' + item.color.toLowerCase().trim();
+        if(!summaryMap.has(key)) summaryMap.set(key, { count: item.count, color: item.color.trim(), val: 0 });
+        summaryMap.get(key).val++;
+    });
+
+    let totalPatternVal = exactSeq.length;
+    let finalMap = new Map();
+
+    if(totalPatternVal > 0) {
+        let repeats = Math.floor(totalEnds / totalPatternVal);
+        let rem = totalEnds % totalPatternVal;
+        
+        let summaryArr = Array.from(summaryMap.values());
+        summaryArr.forEach(obj => { obj.totalVal = obj.val * repeats; });
+        
+        for(let i=0; i<rem; i++) {
+            let item = exactSeq[i];
+            let obj = summaryArr.find(o => o.count == item.count && o.color.toLowerCase() == item.color.toLowerCase());
+            if(obj) obj.totalVal++;
+        }
+
+        summaryArr.forEach(obj => {
+            let wgt = (obj.totalVal * mts) / (1693.33 * obj.count);
+            let key = obj.count + '_' + obj.color.toLowerCase();
+            if(!finalMap.has(key)) finalMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
+            finalMap.get(key).weight += wgt;
+        });
+    }
+
+    return Array.from(finalMap.values());
+}
+
+function loadTopWarpData() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let container = document.getElementById('topLinesContainer');
+    container.innerHTML = '';
+    
+    if(!dNo) return;
+
+    let mts = parseFloat(document.getElementById('topMts').value) || 100;
+    let defCount = parseFloat(document.getElementById('topCount').value) || 20;
+
+    let calcData = resolveWarpPattern(dNo, defCount, mts);
+
+    if(calcData.length > 0) {
+        calcData.forEach(item => {
+            let wgt = item.weight.toFixed(3);
+            addTopRow(item.count, item.color, wgt, wgt);
+        });
+    } else {
+        addTopRow('', '', '', '');
+    }
+}
+
+function addTopRow(count, color, ordWt, issWt) {
+    let container = document.getElementById('topLinesContainer');
+    let row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `
+        <input type="text" class="t-count" value="${count}">
+        <input type="text" class="t-color" value="${color}">
+        <input type="number" class="t-order" value="${ordWt}" step="0.001">
+        <input type="number" class="t-issue" value="${issWt}" step="0.001">
+        <button class="add-btn" onclick="addNewTopRow(this)">+</button>
+    `;
+    container.appendChild(row);
+}
+
+function addNewTopRow(btn) {
+    let container = document.getElementById('topLinesContainer');
+    let row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `
+        <input type="text" class="t-count" value="">
+        <input type="text" class="t-color" value="">
+        <input type="number" class="t-order" value="" step="0.001">
+        <input type="number" class="t-issue" value="" step="0.001">
+        <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    container.insertBefore(row, btn.parentElement.nextSibling);
+}
+
+function saveTopOrder() {
+    let dateVal = document.getElementById('topDate').value;
+    let unit = document.getElementById('topUnit').value;
+    let dNo = document.getElementById('topDesignNo').value;
+
+    if(!dNo) { alert("Please select a Design Number!"); return; }
+
+    let rows = document.querySelectorAll('#topLinesContainer .line-row');
+    if(rows.length === 0) return;
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+
+    rows.forEach(row => {
+        let count = row.querySelector('.t-count').value.trim();
+        let color = row.querySelector('.t-color').value.trim();
+        let orderWt = parseFloat(row.querySelector('.t-order').value) || 0;
+        let issueWt = parseFloat(row.querySelector('.t-issue').value) || 0;
+
+        if(count && color && issueWt > 0) {
+            issues.push({
+                id: Date.now() + Math.random(),
+                date: dateVal,
+                unit: unit,
+                designNo: dNo,
+                count: count,
+                color: color,
+                orderWt: orderWt.toFixed(3),
+                issueWt: issueWt.toFixed(3),
+                status: 'Pending'
+            });
+        }
+    });
+
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    alert("Top Order Saved Successfully! ✅");
+    
+    document.getElementById('topLinesContainer').innerHTML = '';
+    document.getElementById('topDesignNo').value = '';
+    
+    updateBottomDropdown();
+    renderTable();
+}
+
+// BOTTOM SECTION LOGIC (Received Details & Accurate Excess Calculation only)
+function loadBottomData() {
+    let dNo = document.getElementById('botDesignNo').value;
+    let wrapper = document.getElementById('botGridWrapper');
+    let container = document.getElementById('botLinesContainer');
+    container.innerHTML = '';
+    
+    if(!dNo) {
+        wrapper.style.display = 'none';
+        return;
+    }
+    
+    wrapper.style.display = 'block';
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let pendingItems = issues.filter(r => r.status === 'Pending' && r.designNo === dNo);
+
+    pendingItems.forEach(item => {
+        let row = document.createElement('div');
+        row.className = 'line-row-bot';
+        row.setAttribute('data-id', item.id);
+        
+        row.innerHTML = `
+            <input type="text" class="b-count" value="${item.count}" readonly>
+            <input type="text" class="b-color" value="${item.color}" readonly>
+            <input type="text" class="b-issued" value="${parseFloat(item.issueWt).toFixed(3)}" readonly>
+            <input type="number" class="b-received" placeholder="Wt" oninput="calculateWarpingLoss(this)">
+            <input type="text" class="b-excess-wt" placeholder="-" readonly>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function calculateWarpingLoss(inp) {
+    let row = inp.parentElement;
+    let issuedWt = parseFloat(row.querySelector('.b-issued').value) || 0;
+    let receivedWt = parseFloat(inp.value) || 0;
+
+    let excessWtInp = row.querySelector('.b-excess-wt');
+
+    // In Warping, Loss = Issued Wt - Received Wt
+    if(receivedWt > 0 && receivedWt <= issuedWt) {
+        let lossWt = issuedWt - receivedWt;
+        let lossPerc = (lossWt / issuedWt) * 100;
+        
+        // 5% Allowed Loss Check
+        if(lossPerc > 5) {
+            let allowedLoss = issuedWt * 0.05;
+            let excess = lossWt - allowedLoss;
+            
+            excessWtInp.value = excess.toFixed(3);
+            excessWtInp.style.color = "#D32F2F";
+            excessWtInp.style.fontWeight = "bold";
+        } else {
+            excessWtInp.value = "0.000";
+            excessWtInp.style.color = "#3F5A3E";
+            excessWtInp.style.fontWeight = "500";
+        }
+    } else if (receivedWt > issuedWt) {
+        excessWtInp.value = "0.000";
+    } else {
+        excessWtInp.value = "";
+    }
+}
+
+function saveBottomEntry() {
+    let dateVal = document.getElementById('botDate').value;
+    let dNo = document.getElementById('botDesignNo').value;
+
+    if(!dNo) { alert("Please select a Design Number!"); return; }
+
+    let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+    if(rows.length === 0) return;
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let savedCount = 0;
+
+    rows.forEach(row => {
+        let rcvWt = parseFloat(row.querySelector('.b-received').value);
+        let recId = row.getAttribute('data-id');
+        
+        if(rcvWt > 0) {
+            let issueIndex = issues.findIndex(r => r.id == recId);
+            if(issueIndex !== -1) {
+                issues[issueIndex].status = "Received";
+                
+                let excessVal = row.querySelector('.b-excess-wt').value;
+                let finalExcess = (excessVal && excessVal !== "-") ? excessVal : "0.000";
+
+                receives.push({
+                    id: Date.now() + Math.random(),
+                    issueId: recId,
+                    botDate: dateVal,
+                    designNo: dNo,
+                    receivedWt: rcvWt.toFixed(3),
+                    excessWt: finalExcess
+                });
+                savedCount++;
+            }
+        }
+    });
+
+    if(savedCount > 0) {
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+        alert("Bottom Entry Saved Successfully! ✅");
+        
+        document.getElementById('botDesignNo').value = '';
+        document.getElementById('botGridWrapper').style.display = 'none';
+        updateBottomDropdown();
+        renderTable();
+    } else {
+        alert("Please enter Received Weight for at least one item.");
+    }
+}
+
+// ACTION BUTTONS (EDIT & DELETE)
+function editWarpingRecord(recId) {
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    
+    let index = receives.findIndex(r => r.id == recId);
+    if(index !== -1) {
+        let record = receives[index];
+        let issueId = record.issueId;
+        
+        // Revert status to Pending
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) issues[issueIndex].status = "Pending";
+        
+        // Remove from received table
+        receives.splice(index, 1);
+        
+        localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        // Populate Bottom Form
+        document.getElementById('botDate').value = record.botDate || document.getElementById('botDate').value;
+        updateBottomDropdown();
+        document.getElementById('botDesignNo').value = record.designNo;
+        loadBottomData();
+        
+        // Auto-fill received weight and calculate
+        setTimeout(() => {
+            let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+            rows.forEach(row => {
+                if(row.getAttribute('data-id') == issueId) {
+                    let rcvInp = row.querySelector('.b-received');
+                    rcvInp.value = record.receivedWt;
+                    calculateWarpingLoss(rcvInp);
+                }
+            });
+        }, 100);
+        
+        renderTable();
+    }
+}
+
+function deleteWarpingRecord(recId) {
+    if(!confirm("Are you sure you want to delete this record? It will revert to Pending status.")) return;
+    
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    
+    let index = receives.findIndex(r => r.id == recId);
+    if(index !== -1) {
+        let issueId = receives[index].issueId;
+        
+        // Revert issue status to "Pending"
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) issues[issueIndex].status = "Pending";
+        
+        // Remove receive record entirely
+        receives.splice(index, 1);
+        
+        localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        updateBottomDropdown();
+        renderTable();
+        
+        document.getElementById('botLinesContainer').innerHTML = '';
+        document.getElementById('botDesignNo').value = '';
+        document.getElementById('botGridWrapper').style.display = 'none';
+    }
+}
+
+// RENDER MERGED DATA TABLE (Without Loss Wt and Loss %)
+function renderTable() {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let filterVal = document.getElementById('filterTable').value;
+
+    let tbody = document.getElementById('dataTableBody');
+    tbody.innerHTML = '';
+
+    // Update Filter Options Dynamically
+    let uniqueDesigns = [...new Set(issues.map(r => r.designNo))];
+    let filterHtml = '<option value="All">All Designs</option>';
+    uniqueDesigns.forEach(d => { filterHtml += `<option value="${d}">${d}</option>`; });
+    document.getElementById('filterTable').innerHTML = filterHtml;
+    document.getElementById('filterTable').value = filterVal;
+
+    let displayRecords = issues;
+    if(filterVal !== 'All') {
+        displayRecords = issues.filter(r => r.designNo === filterVal);
+    }
+
+    if(displayRecords.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="padding:15px;">No Records Found.</td></tr>`;
+        return;
+    }
+
+    displayRecords.reverse().forEach(issue => {
+        let matchingRec = receives.find(r => r.issueId == issue.id);
+        
+        let dateStr = "-";
+        if (issue.date) {
+            let dObj = new Date(issue.date);
+            dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
+        } else if (matchingRec && matchingRec.botDate) {
+            let dObj = new Date(matchingRec.botDate);
+            dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
+        }
+
+        let rcvWt = matchingRec ? matchingRec.receivedWt : "-";
+        
+        let excessWt = matchingRec ? matchingRec.excessWt : "0.000";
+        let excessDisplay = (parseFloat(excessWt) > 0) ? `<span style="color:#D32F2F; font-weight:700;">${excessWt}</span>` : excessWt;
+        
+        let actionBtns = matchingRec 
+            ? `<div class="action-btns"><button class="edit-action-btn" onclick="editWarpingRecord(${matchingRec.id})">✏️</button><button class="del-action-btn" onclick="deleteWarpingRecord(${matchingRec.id})">🗑️</button></div>`
+            : `<span style="color:#D97706; font-size:9px; font-weight:bold;">Pending</span>`;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${dateStr}</td>
+                <td>${issue.designNo}</td>
+                <td>${issue.count}</td>
+                <td>${issue.color}</td>
+                <td>${issue.orderWt}</td>
+                <td>${parseFloat(issue.issueWt).toFixed(3)}</td>
+                <td>${rcvWt}</td>
+                <td>${excessDisplay}</td>
+                <td>${actionBtns}</td>
+            </tr>
+        `;
+    });
+}
+</script>
+</body>
+</html>

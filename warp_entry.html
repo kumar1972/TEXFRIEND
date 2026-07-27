@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Warp Entry - TEXFRIEND ERP</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    html, body { 
+        width: 100%;
+        min-height: 100vh;
+        background: #E8F0E8; 
+        color: #1E2B23; 
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: #F4F9F4;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 2px; 
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #3F5A3E;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+        background: rgba(82, 110, 81, 0.15);
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+    }
+
+    h3 {
+        font-size: 15px;
+        color: #3F5A3E;
+        font-weight: 700;
+        margin-bottom: 4px;
+        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
+        padding-bottom: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .form-group label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    select, input {
+        width: 100%;
+        padding: 7px 4px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+        background: #FFFFFF;
+        color: #1E2B23;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        outline: none;
+    }
+
+    select:focus, input:focus {
+        border-color: #526E51;
+        background: #FFFFFF;
+    }
+
+    /* Design Number Full Row */
+    .design-row-single {
+        margin-bottom: 4px;
+    }
+
+    /* Order Mtr, Top Beam Mtrs & Type Grid (3 columns) */
+    .design-top-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+
+    .compact-top-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        background: #E2E8F0;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+    }
+
+    .section-title {
+        font-size: 12px;
+        color: #526E51;
+        font-weight: 700;
+        margin-top: 2px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-grid {
+        display: grid;
+        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 30px;
+        gap: 4px;
+        padding: 5px 0;
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
+    }
+
+    .row-grid {
+        display: grid;
+        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 30px;
+        gap: 4px;
+        margin-bottom: 6px;
+        align-items: center;
+    }
+
+    .row-grid .line-no {
+        font-size: 10px;
+        font-weight: bold;
+        color: #526E51;
+        text-align: center;
+        background: #D8DFD6;
+        padding: 8px 0;
+        border-radius: 4px;
+    }
+
+    .header-grid-range {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 30px;
+        gap: 6px;
+        padding: 5px 0;
+        font-size: 10px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
+    }
+
+    .row-grid-range {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 30px;
+        gap: 6px;
+        margin-bottom: 8px;
+        align-items: center;
+    }
+
+    .row-grid input, .row-grid select, .row-grid-range input {
+        text-align: center;
+        padding: 8px 2px;
+        font-size: 10px;
+    }
+
+    .btn-add { background: #3B82F6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .btn-del { background: #EF4444; color: white; border: none; width: 100%; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+    
+    .action-btns-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+    
+    .preview-btn { background: #3B82F6; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .save-btn { background: #3F5A3E; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(63, 90, 62, 0.2); }
+    .save-btn:hover { background: #2D402C; }
+    .list-btn { background: #D97706; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+    .divider { border-bottom: 1px dashed rgba(82, 110, 81, 0.4); margin: 10px 0; }
+
+    /* Modals */
+    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
+    .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+    .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
+    .modal-header h3 { border: none; padding: 0; margin: 0; }
+    
+    .modal-actions { display: flex; gap: 8px; }
+    .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+    
+    .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid rgba(82, 110, 81, 0.2); }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; background: #FFFFFF; }
+    
+    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 4px; }
+    .del-action-btn { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    @media print {
+        body * { visibility: hidden; }
+        #previewModal, #previewModal * { visibility: visible; }
+        #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
+        .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+        .no-print { display: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <h3>📐 Warp Pattern Entry</h3>
+
+    <!-- Design Number Full Row -->
+    <div class="design-row-single">
+        <div class="form-group">
+            <label>Design Number</label>
+            <select id="designNo" onchange="loadDesignData()" style="padding: 8px; font-weight: 700;">
+                <option value="">Select Design No</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Order Mtr, Top Beam Mtrs & Type Grid (3 columns) -->
+    <div class="design-top-grid">
+        <div class="form-group">
+            <label>Order Mtr</label>
+            <input type="number" id="infoOrderMtr" placeholder="Mtrs" step="0.01" oninput="calculateTopBeam()">
+        </div>
+        <div class="form-group">
+            <label>Top Beam Mtrs</label>
+            <input type="text" id="infoTopBeam" placeholder="e.g. 130 or +30%" onblur="calculateTopBeam()" onchange="calculateTopBeam()">
+        </div>
+        <div class="form-group">
+            <label>Type</label>
+            <select id="infoType">
+                <option value="Plain">Plain</option>
+                <option value="Twill">Twill</option>
+                <option value="Dobby">Dobby</option>
+                <option value="Seersucker">Seersucker</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Compact 5-Column Top Row -->
+    <div class="compact-top-grid">
+        <div class="form-group">
+            <label>Count 1</label>
+            <input type="text" id="infoCount1" placeholder="2/60">
+        </div>
+        <div class="form-group">
+            <label>Count 2</label>
+            <input type="text" id="infoCount2" placeholder="2/40">
+        </div>
+        <div class="form-group">
+            <label>O.Reed</label>
+            <input type="text" id="infoReed" placeholder="Reed" oninput="calculateOnloomWidth()">
+        </div>
+        <div class="form-group">
+            <label>O.Pick</label>
+            <input type="text" id="infoPick" placeholder="Pick">
+        </div>
+        <div class="form-group">
+            <label>O.Width</label>
+            <input type="text" id="infoWidth" placeholder="Width">
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 1. WARP LINES ENTRY -->
+    <div class="section-title">
+        <span>1. Warp Thread Pattern</span>
+        <span style="font-size: 9px; color: #10B981; font-weight: 600;">(Press Enter in Ends to add new line)</span>
+    </div>
+    
+    <div class="header-grid" style="grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 30px;">
+        <div>#</div>
+        <div>Count</div>
+        <div>Colour</div>
+        <div>Beam</div>
+        <div>Ends</div>
+        <div></div>
+    </div>
+    <div id="warpLinesContainer"></div>
+
+    <div class="divider"></div>
+
+    <!-- 2. REPEATS (GROUPS) ENTRY -->
+    <div class="section-title">
+        <span>2. Pattern Repeats (Groups)</span>
+        <button class="btn-add" onclick="addWarpRange()">+ Add</button>
+    </div>
+    
+    <div class="header-grid-range">
+        <div>Start Line</div>
+        <div>End Line</div>
+        <div>X (Times)</div>
+        <div></div>
+    </div>
+    <div id="warpRangesContainer"></div>
+
+    <!-- Action Buttons -->
+    <div class="action-btns-row">
+        <button class="preview-btn" onclick="previewPattern()">👁️ Preview</button>
+        <button class="save-btn" onclick="saveWarpDesign()" id="saveBtnTxt">💾 Save</button>
+        <button class="list-btn" onclick="openSavedModal()">📂 Saved List</button>
+    </div>
+</div>
+
+<!-- Preview Modal (Printable) -->
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <h3>👁️ Warp Pattern Preview</h3>
+            <div class="modal-actions">
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+            </div>
+        </div>
+        <div class="modal-body" id="previewContent" style="padding: 15px;">
+            <!-- Preview Content injects here -->
+        </div>
+    </div>
+</div>
+
+<!-- Saved Patterns Modal -->
+<div id="savedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📋 Saved Warp Patterns</h3>
+            <button class="close-btn" onclick="document.getElementById('savedListModal').style.display='none'">Close ❌</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Design No</th>
+                            <th>Total Lines</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedPatternsBody">
+                        <!-- Data here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentBaseSpecs = {};
+
+function translateColorToTamil(colorName) {
+    if (!colorName) return '-';
+    var c = colorName.trim().toLowerCase();
+    var map = {
+        'white': 'வெள்ளை',
+        'black': 'கருப்பு',
+        'blue': 'ப்ளூ',
+        'yellow': 'மஞ்சள்',
+        'red': 'சிகப்பு',
+        'green': 'பச்சை',
+        'brown': 'பிரவுன்',
+        'khaki': 'காக்கி',
+        'rose': 'ரோஸ்',
+        'orange': 'ஆரஞ்சு',
+        'violet': 'வயோலெட்',
+        'grey': 'சாம்பல்',
+        'gold': 'தங்கம்',
+        'pink': 'பிங்க்',
+        'navy': 'நேவி',
+        'maroon': 'மெரூன்'
+    };
+    return map[c] || colorName; 
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDesignDropdown();
+    addWarpLine(); 
+});
+
+function loadDesignDropdown() {
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('designNo');
+    let html = '<option value="">Select Design No</option>';
+    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    select.innerHTML = html;
+}
+
+function loadDesignData() {
+    let dNo = document.getElementById('designNo').value;
+    let linesContainer = document.getElementById('warpLinesContainer');
+    let rangesContainer = document.getElementById('warpRangesContainer');
+    let saveBtn = document.getElementById('saveBtnTxt');
+    
+    linesContainer.innerHTML = '';
+    rangesContainer.innerHTML = '';
+    
+    document.getElementById('infoCount1').value = '';
+    document.getElementById('infoCount2').value = '';
+    document.getElementById('infoOrderMtr').value = '';
+    document.getElementById('infoTopBeam').value = '';
+    document.getElementById('infoType').value = 'Plain';
+    document.getElementById('infoReed').value = '';
+    document.getElementById('infoPick').value = '';
+    document.getElementById('infoWidth').value = '';
+
+    if(!dNo) {
+        saveBtn.innerText = "💾 Save";
+        addWarpLine();
+        return;
+    }
+
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    currentBaseSpecs = specs[dNo] || {};
+
+    let baseReed = parseFloat(currentBaseSpecs.reed) || 0;
+    let basePick = parseFloat(currentBaseSpecs.pick) || 0;
+    let baseWidth = parseFloat(currentBaseSpecs.width) || 0;
+
+    let autoReed = baseReed > 0 ? baseReed - 8 : 0;
+    let autoPick = basePick > 0 ? basePick - 4 : 0;
+    let autoWidth = 0;
+    if (baseWidth > 0 && baseReed > 0 && autoReed > 0) {
+        autoWidth = (baseReed * baseWidth) / autoReed;
+    } else {
+        autoWidth = baseWidth;
+    }
+
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let designOrders = orders.filter(o => o.designNo === dNo);
+    let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters) || 0), 0);
+
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = masters.find(m => m.name === dNo);
+
+    if (found) {
+        saveBtn.innerText = "✏️ Update"; 
+        document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || '';
+        document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || '';
+        document.getElementById('infoOrderMtr').value = found.orderMtr || (totalOrderMtr > 0 ? totalOrderMtr : '');
+        document.getElementById('infoTopBeam').value = found.topBeam || '';
+        document.getElementById('infoType').value = found.type || 'Plain';
+        
+        document.getElementById('infoReed').value = found.reed || (autoReed > 0 ? autoReed : '');
+        document.getElementById('infoPick').value = found.pick || (autoPick > 0 ? autoPick : '');
+        document.getElementById('infoWidth').value = found.width || (autoWidth > 0 ? autoWidth.toFixed(2) : '');
+
+        if(found.warpLines && found.warpLines.length > 0) {
+            found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends));
+        } else {
+            addWarpLine();
+        }
+        
+        if(found.warpRanges) {
+            found.warpRanges.forEach(r => addWarpRange(r.start, r.end, r.set));
+        }
+    } else {
+        saveBtn.innerText = "💾 Save";
+        document.getElementById('infoCount1').value = currentBaseSpecs.warp || '';
+        document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || '';
+        document.getElementById('infoOrderMtr').value = totalOrderMtr > 0 ? totalOrderMtr : '';
+        document.getElementById('infoReed').value = autoReed > 0 ? autoReed : '';
+        document.getElementById('infoPick').value = autoPick > 0 ? autoPick : '';
+        document.getElementById('infoWidth').value = autoWidth > 0 ? autoWidth.toFixed(2) : '';
+        addWarpLine();
+    }
+    updateLineNumbers();
+}
+
+function calculateOnloomWidth() {
+    let baseReed = parseFloat(currentBaseSpecs.reed) || 0;
+    let baseWidth = parseFloat(currentBaseSpecs.width) || 0;
+    let onloomReed = parseFloat(document.getElementById('infoReed').value) || 0;
+
+    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) {
+        let calcWidth = (baseReed * baseWidth) / onloomReed;
+        document.getElementById('infoWidth').value = calcWidth.toFixed(2);
+    }
+}
+
+function calculateTopBeam() {
+    let orderMtr = parseFloat(document.getElementById('infoOrderMtr').value) || 0;
+    let topBeamInput = document.getElementById('infoTopBeam');
+    let topBeamStr = topBeamInput.value.trim();
+
+    if (orderMtr > 0 && topBeamStr) {
+        let cleanStr = topBeamStr.replace('+', '').replace('%', '').trim();
+        let val = parseFloat(cleanStr) || 0;
+
+        if (topBeamStr.includes('%') || (val > 0 && val < 50 && !topBeamStr.includes('.'))) {
+            let calculated = orderMtr + (orderMtr * val / 100);
+            topBeamInput.value = calculated.toFixed(2);
+        }
+    }
+}
+
+function addWarpLine(count = '', color = '', beam = 'Ground', ends = '') {
+    let container = document.getElementById('warpLinesContainer');
+    let row = document.createElement('div');
+    row.className = 'row-grid line-item';
+    row.style.gridTemplateColumns = '25px 1fr 1fr 0.9fr 1fr 30px';
+    row.innerHTML = `
+        <div class="line-no"></div>
+        <input type="text" class="inp-count" placeholder="Count" value="${count}">
+        <input type="text" class="inp-color" placeholder="Colour" value="${color}">
+        <select class="inp-beam">
+            <option value="Ground" ${beam === 'Ground' ? 'selected' : ''}>Ground</option>
+            <option value="Top Beam" ${beam === 'Top Beam' ? 'selected' : ''}>Top Beam</option>
+        </select>
+        <input type="number" class="inp-ends" placeholder="Ends" value="${ends}" 
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWarpLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
+        <button class="btn-del" onclick="this.parentElement.remove(); updateLineNumbers();">×</button>
+    `;
+    container.appendChild(row);
+    updateLineNumbers();
+}
+
+function addWarpRange(start = '', end = '', set = '') {
+    let container = document.getElementById('warpRangesContainer');
+    let row = document.createElement('div');
+    row.className = 'row-grid-range range-item';
+    row.innerHTML = `
+        <input type="number" class="inp-start" placeholder="Start" value="${start}">
+        <input type="number" class="inp-end" placeholder="End" value="${end}">
+        <input type="number" class="inp-set" placeholder="Times" value="${set}"
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWarpRange(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-start'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
+        <button class="btn-del" onclick="this.parentElement.remove()">×</button>
+    `;
+    container.appendChild(row);
+}
+
+function updateLineNumbers() {
+    let lines = document.querySelectorAll('.line-item .line-no');
+    lines.forEach((elem, idx) => {
+        elem.innerText = idx + 1;
+    });
+}
+
+function saveWarpDesign() {
+    let dNo = document.getElementById('designNo').value;
+    if(!dNo) {
+        alert("Please select a Design Number!");
+        return;
+    }
+
+    calculateTopBeam();
+
+    let count1 = document.getElementById('infoCount1').value.trim();
+    let count2 = document.getElementById('infoCount2').value.trim();
+    let orderMtr = document.getElementById('infoOrderMtr').value.trim();
+    let topBeam = document.getElementById('infoTopBeam').value.trim();
+    let type = document.getElementById('infoType').value;
+    let reed = document.getElementById('infoReed').value.trim();
+    let pick = document.getElementById('infoPick').value.trim();
+    let width = document.getElementById('infoWidth').value.trim();
+
+    let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim();
+        let color = row.querySelector('.inp-color').value.trim();
+        let beam = row.querySelector('.inp-beam').value;
+        let ends = row.querySelector('.inp-ends').value.trim();
+        if(count || color || ends) {
+            lines.push({ count: count, color: color, beam: beam, ends: ends });
+        }
+    });
+
+    let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let start = row.querySelector('.inp-start').value.trim();
+        let end = row.querySelector('.inp-end').value.trim();
+        let set = row.querySelector('.inp-set').value.trim();
+        if(start && end && set) {
+            ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
+        }
+    });
+
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let idx = masters.findIndex(m => m.name === dNo);
+    
+    let patternData = { 
+        name: dNo, 
+        count1: count1, 
+        count2: count2, 
+        orderMtr: orderMtr,
+        topBeam: topBeam,
+        type: type,
+        reed: reed, 
+        pick: pick, 
+        width: width, 
+        warpLines: lines, 
+        warpRanges: ranges 
+    };
+
+    if(idx === -1) {
+        masters.push(patternData);
+    } else {
+        masters[idx] = patternData;
+    }
+
+    localStorage.setItem('design_masters_data', JSON.stringify(masters));
+    alert("Warp Pattern Saved Successfully! ✅");
+}
+
+function openSavedModal() {
+    renderSavedList();
+    document.getElementById('savedListModal').style.display = 'flex';
+}
+
+function renderSavedList() {
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let tbody = document.getElementById('savedPatternsBody');
+    tbody.innerHTML = '';
+
+    let hasData = false;
+    masters.forEach(m => {
+        if (m.warpLines && m.warpLines.length > 0) {
+            hasData = true;
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${m.name}</b></td>
+                    <td>${m.warpLines.length} Lines</td>
+                    <td>
+                        <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
+                        <button class="del-action-btn" onclick="deleteDesignPattern('${m.name}')">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+    if(!hasData) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; color:#D97706;">No Warp Patterns saved yet.</td></tr>`;
+    }
+}
+
+function editDesignPattern(dNo) {
+    document.getElementById('savedListModal').style.display = 'none'; 
+    document.getElementById('designNo').value = dNo;
+    loadDesignData();
+    window.scrollTo(0, 0);
+}
+
+function deleteDesignPattern(dNo) {
+    if(!confirm("Are you sure you want to delete Warp Pattern for " + dNo + "?")) return;
+    
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let idx = masters.findIndex(m => m.name === dNo);
+    if(idx !== -1) {
+        masters[idx].warpLines = [];
+        masters[idx].warpRanges = [];
+        localStorage.setItem('design_masters_data', JSON.stringify(masters));
+    }
+    
+    if(document.getElementById('designNo').value === dNo) {
+        document.getElementById('designNo').value = '';
+        document.getElementById('infoCount1').value = '';
+        document.getElementById('infoCount2').value = '';
+        document.getElementById('infoOrderMtr').value = '';
+        document.getElementById('infoTopBeam').value = '';
+        document.getElementById('infoType').value = 'Plain';
+        document.getElementById('infoReed').value = '';
+        document.getElementById('infoPick').value = '';
+        document.getElementById('infoWidth').value = '';
+        document.getElementById('warpLinesContainer').innerHTML = '';
+        document.getElementById('warpRangesContainer').innerHTML = '';
+        document.getElementById('saveBtnTxt').innerText = "💾 Save";
+        addWarpLine();
+    }
+    renderSavedList();
+}
+
+function previewPattern() {
+    calculateTopBeam();
+    let dNo = document.getElementById('designNo').value;
+    
+    let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim();
+        let color = row.querySelector('.inp-color').value.trim();
+        let beam = row.querySelector('.inp-beam').value;
+        let ends = parseFloat(row.querySelector('.inp-ends').value) || 0;
+        if(count || color || ends) {
+            lines.push({ count: count, color: color, beam: beam, ends: ends });
+        }
+    });
+
+    let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let start = parseInt(row.querySelector('.inp-start').value) || 0;
+        let end = parseInt(row.querySelector('.inp-end').value) || 0;
+        let set = parseInt(row.querySelector('.inp-set').value) || 0;
+        if(start && end && set) ranges.push({ start, end, set });
+    });
+
+    if(lines.length === 0) {
+        alert("No pattern to preview! Please add lines.");
+        return;
+    }
+
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let sp = specs[dNo] || {};
+    let baseReed = parseFloat(sp.reed) || 0;
+    let baseWidth = parseFloat(sp.width) || 0;
+    let baseTotalEnds = Math.round(baseReed * baseWidth);
+
+    let c1 = document.getElementById('infoCount1').value || '-';
+    let c2 = document.getElementById('infoCount2').value || '-';
+    let orderMtr = document.getElementById('infoOrderMtr').value || '-';
+    let topBeam = document.getElementById('infoTopBeam').value || '-';
+    let type = document.getElementById('infoType').value || 'Plain';
+    let reed = document.getElementById('infoReed').value || '-';
+    let pick = document.getElementById('infoPick').value || '-';
+    let width = document.getElementById('infoWidth').value || '-';
+
+    let headerHtml = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F0FDF4; border:1px solid #10B981; padding:10px; border-radius:8px; margin-bottom:15px; font-size:11px; font-weight:bold; color:#065F46;">
+            <span style="margin-right:8px;">Design: ${dNo || '-'}</span>
+            <span style="margin-right:8px;">Counts: ${c1}, ${c2}</span>
+            <span style="margin-right:8px;">Order Mtr: ${orderMtr}</span>
+            <span style="margin-right:8px;">Top Beam: ${topBeam}</span>
+            <span style="margin-right:8px;">Type: ${type}</span>
+            <span style="margin-right:8px;">Reed: ${reed}</span>
+            <span style="margin-right:8px;">Pick: ${pick}</span>
+            <span>Width: ${width}"</span>
+        </div>
+    `;
+
+    let flatPattern = [];
+    let idxFlat = 0;
+    while (idxFlat < lines.length) {
+        let currentLineNum = idxFlat + 1;
+        let range = ranges.find(r => r.start === currentLineNum);
+        if (range && range.end >= range.start) {
+            for(let rep = 0; rep < range.set; rep++) {
+                for(let j = range.start; j <= range.end; j++) {
+                    if(lines[j-1]) {
+                        flatPattern.push({
+                            lineNo: j,
+                            count: lines[j-1].count || '-', 
+                            color: lines[j-1].color || '-',
+                            ends: parseFloat(lines[j-1].ends) || 0, 
+                            beam: lines[j-1].beam
+                        });
+                    }
+                }
+            }
+            idxFlat = range.end;
+        } else {
+            flatPattern.push({
+                lineNo: idxFlat + 1,
+                count: lines[idxFlat].count || '-', 
+                color: lines[idxFlat].color || '-',
+                ends: parseFloat(lines[idxFlat].ends) || 0, 
+                beam: lines[idxFlat].beam
+            });
+            idxFlat++;
+        }
+    }
+
+    let tbodyHtml = '';
+    let groundTotal = 0;
+    let topTotal = 0;
+    let grandTotalPattern = 0;
+    let i = 0;
+    
+    let tdStyle = "padding:8px; border-bottom:1px dashed #cbd5e1; border-right:1px dotted #94a3b8; text-align:center;";
+    let tdStyleLast = "padding:8px; border-bottom:1px dashed #cbd5e1; vertical-align:middle; color:#0F172A; text-align:left;";
+
+    while (i < lines.length) {
+        let currentLineNum = i + 1;
+        let range = ranges.find(r => r.start === currentLineNum);
+        
+        if (range && range.end >= range.start) {
+            let blockLines = [];
+            let blockGroundEnds = 0;
+            let blockTopEnds = 0;
+            
+            for (let j = range.start; j <= range.end; j++) {
+                if (lines[j - 1]) {
+                    let lineItem = Object.assign({}, lines[j - 1]);
+                    lineItem.lineNo = j;
+                    blockLines.push(lineItem);
+                    if(lines[j - 1].beam === 'Top Beam') {
+                        blockTopEnds += lines[j-1].ends;
+                    } else {
+                        blockGroundEnds += lines[j-1].ends;
+                    }
+                }
+            }
+            
+            let blockTotalEnds = (blockGroundEnds + blockTopEnds) * range.set;
+            groundTotal += blockGroundEnds * range.set;
+            topTotal += blockTopEnds * range.set;
+
+            blockLines.forEach((item, index) => {
+                let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 35px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 35px;">${item.ends}</span>`;
+                let colorTamil = translateColorToTamil(item.color);
+                
+                tbodyHtml += `<tr>
+                    <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                    <td style="${tdStyle}">${item.count || '-'}</td>
+                    <td style="${tdStyle}">${colorTamil}</td>
+                    <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>`;
+                
+                if (index === 0) {
+                    tbodyHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
+                        <span style="font-size:18px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalEnds}</span></b>
+                    </td>`;
+                }
+                tbodyHtml += `</tr>`;
+            });
+            i = range.end; 
+        } else {
+            let item = Object.assign({}, lines[i]);
+            item.lineNo = i + 1;
+
+            if(item.beam === 'Top Beam') {
+                topTotal += item.ends;
+            } else {
+                groundTotal += item.ends;
+            }
+            
+            let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 35px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 35px;">${item.ends}</span>`;
+            let colorTamil = translateColorToTamil(item.color);
+            
+            tbodyHtml += `<tr>
+                <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                <td style="${tdStyle}">${item.count || '-'}</td>
+                <td style="${tdStyle}">${colorTamil}</td>
+                <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>
+                <td style="padding:8px; border-bottom:1px dashed #cbd5e1;"></td>
+            </tr>`;
+            i++;
+        }
+    }
+
+    grandTotalPattern = groundTotal + topTotal;
+    let finalTotalDisplay = topTotal > 0 ? `<span style="color:#3F5A3E;">${groundTotal} <span style="font-size:10px;">(Grnd)</span></span> + <span style="color:#D97706;">${topTotal} <span style="font-size:10px;">(Top)</span></span> = ${grandTotalPattern}` : `${grandTotalPattern}`;
+
+    let html = headerHtml;
+    html += '<div class="table-container"><table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #d1d5db;">';
+    html += `<tr style="background:#f2f2f2; border-bottom:2px solid #ccc;">
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">#</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Count</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Colour / Beam</th>
+                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8; line-height:1.3;">Ends<br><span style="font-size:10px; color:#555; font-weight:500;">Bottom &nbsp;&nbsp;|&nbsp;&nbsp; Top</span></th>
+                <th style="padding:10px; text-align:center;">Set</th>
+             </tr>`;
+    html += tbodyHtml;
+    
+    html += `<tr style="font-weight:bold; font-size:13px; background:#e8f0e8; border-top:1px solid #94a3b8;">
+        <td colspan="4" style="padding:12px; text-align:right; border-right:1px dotted #94a3b8;">Total Pattern Ends:</td>
+        <td style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; white-space:nowrap;">${finalTotalDisplay}</td>
+    </tr>`;
+
+    if (baseReed > 0 && baseWidth > 0 && grandTotalPattern > 0) {
+        let repeats = Math.floor(baseTotalEnds / grandTotalPattern);
+        let remEnds = baseTotalEnds % grandTotalPattern;
+
+        let countTotals = {};
+        flatPattern.forEach(item => {
+            let c = item.count;
+            countTotals[c] = (countTotals[c] || 0) + (item.ends * repeats);
+        });
+
+        let endsToDistribute = remEnds;
+        for (let item of flatPattern) {
+            if (endsToDistribute <= 0) break;
+            let c = item.count;
+            let take = Math.min(item.ends, endsToDistribute);
+            countTotals[c] = (countTotals[c] || 0) + take;
+            endsToDistribute -= take;
+        }
+
+        html += `<tr style="font-weight:700; font-size:14px; background:#fff; color:#3F5A3E; border-top:1px solid #94a3b8;">
+            <td colspan="5" style="padding:12px; text-align:center;">
+                ${repeats} Set + ${remEnds} Ends = <span style="font-size:15px; color:#1E2B23;">${baseTotalEnds}</span>
+            </td>
+        </tr>`;
+
+        let breakdownHtml = Object.keys(countTotals).map(c => `<span style="color:#0F172A;"><b>${c}</b>: ${countTotals[c]} Ends</span>`).join(' &nbsp;|&nbsp; ');
+        html += `<tr style="font-size:13px; background:#F4F9F4; border-top:1px solid #94a3b8;">
+            <td colspan="5" style="padding:12px; text-align:center;">
+                <span style="color:#3F5A3E; font-weight:700; margin-right:8px;">Count Wise Total:</span> ${breakdownHtml}
+            </td>
+        </tr>`;
+    }
+
+    html += '</table></div>';
+
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('previewModal').style.display = 'flex';
+}
+</script>
+</body>
+</html>

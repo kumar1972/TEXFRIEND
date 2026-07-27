@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kora Yarn - TEXFRIEND</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    html, body { 
+        width: 100%;
+        min-height: 100vh;
+        background: #E8F0E8; 
+        color: #1E2B23; 
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: #F4F9F4;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 4px; 
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #3F5A3E;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 10px;
+        background: rgba(82, 110, 81, 0.15);
+        padding: 6px 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+    }
+
+    .page-title {
+        font-size: 16px;
+        color: #3F5A3E;
+        font-weight: 700;
+        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
+        padding-bottom: 8px;
+    }
+
+    h3 {
+        font-size: 13px;
+        color: #3F5A3E;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form-group label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #3F5A3E;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.3);
+        background: #FFFFFF;
+        color: #1E2B23;
+        font-size: 12px;
+        font-weight: 500;
+        outline: none;
+    }
+
+    input:focus, select:focus {
+        border-color: #526E51;
+    }
+
+    .save-btn {
+        background: #526E51; 
+        color: white; 
+        padding: 12px; 
+        border: none; 
+        border-radius: 8px; 
+        font-size: 13px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        box-shadow: 0 4px 12px rgba(82, 110, 81, 0.2); 
+        margin-top: 5px; 
+        width: 100%;
+    }
+    .save-btn:hover { background: #3F5A3E; }
+
+    .issue-btn { background: #D97706; }
+    .issue-btn:hover { background: #B45309; }
+
+    .section-divider {
+        border-bottom: 1px dashed rgba(82, 110, 81, 0.4);
+        margin: 10px 0;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        text-align: center;
+        background: #FFFFFF;
+    }
+
+    th {
+        background: #D8DFD6;
+        color: #3F5A3E;
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.3);
+        font-weight: 700;
+    }
+
+    td {
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.15);
+        color: #1E2B23;
+        font-weight: 500;
+    }
+    
+    .bal-text { font-weight: 700; color: #D32F2F; }
+    .bal-text.positive { color: #526E51; }
+
+    .action-btns {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <div class="page-title">🧵 Kora Yarn Management</div>
+
+    <!-- 1. KORA STOCK INWARD -->
+    <div>
+        <h3>📥 Add Kora Stock (Inward)</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="inwardDate">
+            </div>
+            <div class="form-group">
+                <label>Supplier / Mill Name</label>
+                <input type="text" id="supplierName" placeholder="mill name">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Count</label>
+                <input type="text" id="inwardCount" placeholder="count">
+            </div>
+            <div class="form-group">
+                <label>Weight (KG)</label>
+                <input type="number" id="inwardWt" placeholder="0.000" step="0.001">
+            </div>
+        </div>
+        <button class="save-btn" id="saveInwardBtn" onclick="saveInward()">Save Kora Stock</button>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 2. KORA ISSUE -->
+    <div>
+        <h3>📤 Issue Kora Yarn (Outward)</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="issueDate">
+            </div>
+            <div class="form-group">
+                <label>Dyeing / Unit Name</label>
+                <input type="text" id="dyeingName" placeholder="Dyeing name">
+            </div>
+        </div>
+        <div class="form-row full">
+            <div class="form-group">
+                <label>Design Number</label>
+                <select id="designNo">
+                    <option value="">Select Design</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Count</label>
+                <input type="text" id="issueCount" placeholder="count">
+            </div>
+            <div class="form-group">
+                <label>Issue KG</label>
+                <input type="number" id="issueWt" placeholder="0.000" step="0.001">
+            </div>
+        </div>
+        <button class="save-btn issue-btn" id="saveIssueBtn" onclick="saveIssue()">+ Add Issue</button>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 3. STOCK BALANCE TABLE -->
+    <div>
+        <h3>📊 Live Stock Balance</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Count</th>
+                        <th>Total Inward</th>
+                        <th>Total Issued</th>
+                        <th>Balance (KG)</th>
+                    </tr>
+                </thead>
+                <tbody id="stockBody">
+                    <!-- Balance calculates here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. HISTORY TABLES -->
+    <div>
+        <h3>📋 Inward History (வரவு)</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th>Count</th>
+                        <th>Weight</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inwardHistoryBody"></tbody>
+            </table>
+        </div>
+
+        <h3>📋 Issue History (செலவு)</h3>
+        <div class="table-container" style="margin-bottom: 0;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Unit</th>
+                        <th>Design</th>
+                        <th>Count</th>
+                        <th>Weight</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="issueHistoryBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+let editingInwardId = null;
+let editingIssueId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('inwardDate').valueAsDate = new Date();
+    document.getElementById('issueDate').valueAsDate = new Date();
+    loadDesignDropdown();
+    refreshAllTables();
+});
+
+function loadDesignDropdown() {
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('designNo');
+    let html = '<option value="">Select Design No</option>';
+    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    select.innerHTML = html;
+}
+
+// 1. SAVE INWARD STOCK
+function saveInward() {
+    let dateVal = document.getElementById('inwardDate').value;
+    let supplier = document.getElementById('supplierName').value.trim();
+    let count = document.getElementById('inwardCount').value.trim();
+    let weight = parseFloat(document.getElementById('inwardWt').value) || 0;
+
+    if(!supplier || !count || weight <= 0) {
+        alert("Please enter Supplier Name, Count, and valid Weight!");
+        return;
+    }
+
+    let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+
+    if (editingInwardId) {
+        let idx = records.findIndex(r => r.id == editingInwardId);
+        if(idx !== -1) {
+            records[idx].date = dateVal;
+            records[idx].supplier = supplier;
+            records[idx].count = count;
+            records[idx].weight = weight.toFixed(3);
+        }
+        editingInwardId = null;
+        document.getElementById('saveInwardBtn').innerText = "Save Kora Stock";
+        alert("Kora Stock Updated Successfully! ✅");
+    } else {
+        records.push({
+            id: Date.now() + Math.random(),
+            date: dateVal,
+            supplier: supplier,
+            count: count,
+            weight: weight.toFixed(3)
+        });
+        alert("Kora Stock Added Successfully! ✅");
+    }
+
+    localStorage.setItem('kora_stock_records', JSON.stringify(records));
+    
+    document.getElementById('supplierName').value = '';
+    document.getElementById('inwardCount').value = '';
+    document.getElementById('inwardWt').value = '';
+    
+    refreshAllTables();
+}
+
+// 2. SAVE OUTWARD ISSUE
+function saveIssue() {
+    let dateVal = document.getElementById('issueDate').value;
+    let dyeingName = document.getElementById('dyeingName').value.trim();
+    let dNo = document.getElementById('designNo').value;
+    let count = document.getElementById('issueCount').value.trim();
+    let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
+
+    if(!dyeingName || !dNo || !count || issueWt <= 0) {
+        alert("Please fill all details to issue yarn!");
+        return;
+    }
+
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+
+    let totalIn = inwards.filter(i => i.count === count).reduce((sum, i) => sum + parseFloat(i.weight), 0);
+    let totalOut = issues.filter(i => i.count === count).reduce((sum, i) => sum + parseFloat(i.issueWt), 0);
+    
+    // If editing, exclude the old weight of this specific record from totalOut
+    if (editingIssueId) {
+        let oldRec = issues.find(i => i.id == editingIssueId);
+        if(oldRec && oldRec.count === count) {
+            totalOut -= parseFloat(oldRec.issueWt);
+        }
+    }
+
+    let availableBal = totalIn - totalOut;
+
+    if(issueWt > availableBal) {
+        alert(`⚠️ Stock Warning!\nAvailable balance for Count '${count}' is only ${availableBal.toFixed(3)} KG.\nYou are trying to issue ${issueWt.toFixed(3)} KG.`);
+        return;
+    }
+
+    if (editingIssueId) {
+        let idx = issues.findIndex(r => r.id == editingIssueId);
+        if(idx !== -1) {
+            issues[idx].date = dateVal;
+            issues[idx].dyeingName = dyeingName;
+            issues[idx].designNo = dNo;
+            issues[idx].count = count;
+            issues[idx].issueWt = issueWt.toFixed(3);
+        }
+        editingIssueId = null;
+        document.getElementById('saveIssueBtn').innerText = "+ Add Issue";
+        alert("Kora Issue Updated Successfully! ✅");
+    } else {
+        issues.push({
+            id: Date.now() + Math.random(),
+            date: dateVal,
+            dyeingName: dyeingName,
+            designNo: dNo,
+            count: count,
+            issueWt: issueWt.toFixed(3)
+        });
+        alert("Kora Yarn Issued Successfully! ✅");
+    }
+
+    localStorage.setItem('kora_issue_records', JSON.stringify(issues));
+    
+    document.getElementById('dyeingName').value = '';
+    document.getElementById('designNo').value = '';
+    document.getElementById('issueCount').value = '';
+    document.getElementById('issueWt').value = '';
+    
+    refreshAllTables();
+}
+
+// 3. REFRESH ALL TABLES
+function refreshAllTables() {
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+
+    // --- A. LIVE STOCK BALANCE ---
+    let stockMap = new Map();
+    inwards.forEach(item => {
+        if(!stockMap.has(item.count)) stockMap.set(item.count, { inWt: 0, outWt: 0 });
+        stockMap.get(item.count).inWt += parseFloat(item.weight);
+    });
+    issues.forEach(item => {
+        if(!stockMap.has(item.count)) stockMap.set(item.count, { inWt: 0, outWt: 0 });
+        stockMap.get(item.count).outWt += parseFloat(item.issueWt);
+    });
+
+    let stockBody = document.getElementById('stockBody');
+    stockBody.innerHTML = '';
+    if(stockMap.size === 0) {
+        stockBody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#D97706;">No Kora Stock Available.</td></tr>`;
+    } else {
+        stockMap.forEach((data, countKey) => {
+            let bal = data.inWt - data.outWt;
+            let balClass = bal > 0 ? 'bal-text positive' : 'bal-text';
+            stockBody.innerHTML += `
+                <tr>
+                    <td><b>${countKey}</b></td>
+                    <td>${data.inWt.toFixed(3)}</td>
+                    <td>${data.outWt.toFixed(3)}</td>
+                    <td class="${balClass}">${bal.toFixed(3)}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // --- B. INWARD HISTORY ---
+    let inBody = document.getElementById('inwardHistoryBody');
+    inBody.innerHTML = '';
+    if(inwards.length === 0) {
+        inBody.innerHTML = `<tr><td colspan="5" style="padding:10px;">No inward records.</td></tr>`;
+    } else {
+        [...inwards].reverse().forEach(item => {
+            let dObj = new Date(item.date);
+            let dStr = ("0"+dObj.getDate()).slice(-2)+"/"+("0"+(dObj.getMonth()+1)).slice(-2)+"/"+dObj.getFullYear();
+            inBody.innerHTML += `
+                <tr>
+                    <td>${dStr}</td>
+                    <td>${item.supplier}</td>
+                    <td>${item.count}</td>
+                    <td>${item.weight}</td>
+                    <td class="action-btns">
+                        <button class="edit-action-btn" onclick="editInward(${item.id})">✏️</button>
+                        <button class="del-action-btn" onclick="deleteInward(${item.id})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // --- C. ISSUE HISTORY ---
+    let outBody = document.getElementById('issueHistoryBody');
+    outBody.innerHTML = '';
+    if(issues.length === 0) {
+        outBody.innerHTML = `<tr><td colspan="6" style="padding:10px;">No issue records.</td></tr>`;
+    } else {
+        [...issues].reverse().forEach(item => {
+            let dObj = new Date(item.date);
+            let dStr = ("0"+dObj.getDate()).slice(-2)+"/"+("0"+(dObj.getMonth()+1)).slice(-2)+"/"+dObj.getFullYear();
+            outBody.innerHTML += `
+                <tr>
+                    <td>${dStr}</td>
+                    <td>${item.dyeingName}</td>
+                    <td>${item.designNo}</td>
+                    <td>${item.count}</td>
+                    <td>${item.issueWt}</td>
+                    <td class="action-btns">
+                        <button class="edit-action-btn" onclick="editIssue(${item.id})">✏️</button>
+                        <button class="del-action-btn" onclick="deleteIssue(${item.id})">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+}
+
+// 4. EDIT & DELETE FUNCTIONS
+function editInward(id) {
+    let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let rec = records.find(r => r.id == id);
+    if(rec) {
+        editingInwardId = id;
+        document.getElementById('inwardDate').value = rec.date;
+        document.getElementById('supplierName').value = rec.supplier;
+        document.getElementById('inwardCount').value = rec.count;
+        document.getElementById('inwardWt').value = rec.weight;
+        document.getElementById('saveInwardBtn').innerText = "Update Kora Stock";
+        window.scrollTo(0, 0);
+    }
+}
+
+function deleteInward(id) {
+    if(!confirm("Are you sure you want to delete this Inward record? It may affect your stock balance!")) return;
+    let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    records = records.filter(r => r.id != id);
+    localStorage.setItem('kora_stock_records', JSON.stringify(records));
+    refreshAllTables();
+}
+
+function editIssue(id) {
+    let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let rec = records.find(r => r.id == id);
+    if(rec) {
+        editingIssueId = id;
+        document.getElementById('issueDate').value = rec.date;
+        document.getElementById('dyeingName').value = rec.dyeingName;
+        document.getElementById('designNo').value = rec.designNo;
+        document.getElementById('issueCount').value = rec.count;
+        document.getElementById('issueWt').value = rec.issueWt;
+        document.getElementById('saveIssueBtn').innerText = "Update Issue";
+        document.getElementById('dyeingName').scrollIntoView({behavior: 'smooth'});
+    }
+}
+
+function deleteIssue(id) {
+    if(!confirm("Are you sure you want to delete this Issue record?")) return;
+    let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    records = records.filter(r => r.id != id);
+    localStorage.setItem('kora_issue_records', JSON.stringify(records));
+    refreshAllTables();
+}
+</script>
+</body>
+</html>

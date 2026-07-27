@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Yarn Calculation - TEXFRIEND</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    html, body { 
+        width: 100%;
+        min-height: 100vh;
+        background: #081E12; /* Dark Green Theme */
+        color: #E8ECE7; 
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: #0C2B1B;
+        border: 1px solid #1A5A3D;
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 4px; 
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #4CAF50;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+        background: rgba(76, 175, 80, 0.1);
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #1A5A3D;
+        padding-bottom: 8px;
+        margin-bottom: 6px;
+    }
+
+    .header-bar h3 {
+        font-size: 14px;
+        color: #4CAF50;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .header-btns {
+        display: flex;
+        gap: 6px;
+    }
+
+    .preview-btn { background: #3B82F6; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .print-btn { background: #10B981; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+
+    .top-form-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .top-form-row-2 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 9px;
+        font-weight: 600;
+        color: #A7C9B8;
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #1A5A3D;
+        background: #103626;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    input:focus, select:focus {
+        border-color: #4CAF50;
+        outline: none;
+    }
+
+    .table-container {
+        background: #081E12;
+        border: 1px solid #1A5A3D;
+        border-radius: 8px;
+        padding: 10px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        text-align: center;
+        border: 1px solid #1A5A3D;
+    }
+
+    th {
+        color: #4CAF50;
+        padding: 10px 4px;
+        border-bottom: 1px solid #1A5A3D;
+        border-right: 1px dotted rgba(26, 90, 61, 0.8);
+        font-weight: 600;
+    }
+    th:last-child { border-right: none; }
+
+    td {
+        padding: 10px 4px;
+        border-bottom: 1px dashed rgba(26, 90, 61, 0.6);
+        border-right: 1px dotted rgba(26, 90, 61, 0.8);
+        color: #E8ECE7;
+    }
+    td:last-child { border-right: none; }
+
+    .total-row td {
+        font-weight: 700;
+        color: #FFFFFF;
+        border-top: 1px solid #1A5A3D;
+        border-bottom: none;
+        border-right: none;
+        padding-top: 12px;
+    }
+
+    h3.section-title {
+        font-size: 12px;
+        color: #4CAF50;
+        font-weight: 700;
+        margin-bottom: 6px;
+        background: rgba(76, 175, 80, 0.1);
+        padding: 6px 10px;
+        border-radius: 6px;
+        border-left: 3px solid #4CAF50;
+    }
+
+    /* Modal for Print Preview */
+    #previewModal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #FFFFFF; color: #000000; z-index: 99999; overflow-y: auto; padding: 20px;
+    }
+    
+    @media print {
+        body * { visibility: hidden; }
+        #previewModal, #previewModal * { visibility: visible; }
+        #previewModal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+        .no-print { display: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <div class="header-bar">
+        <h3>🧵 Yarn Calculation</h3>
+        <div class="header-btns">
+            <button class="preview-btn" onclick="previewReport()">👁️ Preview</button>
+            <button class="print-btn" onclick="printReport()">🖨️ Print</button>
+        </div>
+    </div>
+
+    <div class="top-form-row">
+        <div class="form-group">
+            <label>Design Number</label>
+            <select id="designNumber" onchange="loadInitialData()">
+                <option value="">Select</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Reed</label>
+            <input type="number" id="calcReed" oninput="loadYarnData()" placeholder="Reed">
+        </div>
+        <div class="form-group">
+            <label>Pick</label>
+            <input type="number" id="calcPick" oninput="loadYarnData()" placeholder="Pick">
+        </div>
+    </div>
+
+    <div class="top-form-row-2">
+        <div class="form-group">
+            <label>Base Counts</label>
+            <input type="text" id="baseCounts" placeholder="e.g., 2/60, 2/40" oninput="loadYarnData()">
+        </div>
+        <div class="form-group">
+            <label>Order Mtrs (Grnd)</label>
+            <input type="number" id="lengthMeters" value="100" oninput="loadYarnData()">
+        </div>
+        <div class="form-group">
+            <label>Top Beam Mtrs</label>
+            <input type="number" id="topLengthMeters" value="125" oninput="loadYarnData()">
+        </div>
+    </div>
+
+    <!-- GROUND BEAM SECTION -->
+    <h3 class="section-title" style="margin-top: 10px;">🧵 WARP YARN - GROUND BEAM</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Count</th>
+                    <th>Colour</th>
+                    <th>Ends</th>
+                    <th>Total</th>
+                    <th>Weight (Kg)</th>
+                </tr>
+            </thead>
+            <tbody id="warpGroundTableBody">
+                <!-- Ground Warp Data -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TOP BEAM SECTION (Will hide if no data) -->
+    <div id="topBeamWrapper" style="display: none;">
+        <h3 class="section-title" style="margin-top: 15px;">🧵 WARP YARN - TOP BEAM</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Count</th>
+                        <th>Colour</th>
+                        <th>Ends</th>
+                        <th>Total</th>
+                        <th>Weight (Kg)</th>
+                    </tr>
+                </thead>
+                <tbody id="warpTopTableBody">
+                    <!-- Top Warp Data -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- WEFT SECTION -->
+    <h3 class="section-title" style="margin-top: 15px;">🧶 WEFT YARN CALCULATION</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Count</th>
+                    <th>Colour</th>
+                    <th>Picks</th>
+                    <th>Total</th>
+                    <th>Weight (Kg)</th>
+                </tr>
+            </thead>
+            <tbody id="weftTableBody">
+                <!-- Weft Data -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Print Preview Modal -->
+<div id="previewModal">
+    <div class="no-print" style="margin-bottom: 20px;">
+        <button onclick="document.getElementById('previewModal').style.display='none'" style="float:right; background:#EF4444; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Close ❌</button>
+        <button onclick="window.print()" style="float:right; background:#10B981; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer; margin-right:10px;">Print 🖨️</button>
+        <div style="clear:both;"></div>
+    </div>
+    <div id="previewContent" style="color: #000;"></div>
+</div>
+
+<script>
+// Translation Helper function English to Tamil Colors (Only used in Print/Preview)
+function translateColorToTamil(colorName) {
+    if (!colorName) return '-';
+    var c = colorName.trim().toLowerCase();
+    var map = {
+        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
+        'red': 'சிகப்பு', 'green': 'பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
+        'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'grey': 'சாம்பல்',
+        'gold': 'தங்கம்', 'pink': 'பிங்க்', 'navy': 'நேவி', 'maroon': 'மெரூன்'
+    };
+    return map[c] || colorName; 
+}
+
+// Global object to store structured data for Preview Generation
+window.calculatedYarnData = {
+    ground: [], top: [], weft: [],
+    groundTotals: { p: 0, t: 0, w: 0 },
+    topTotals: { p: 0, t: 0, w: 0 },
+    weftTotals: { p: 0, t: 0, w: 0 }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    var select = document.getElementById('designNumber');
+    var html = '<option value="">Select</option>';
+    
+    preDesignList.forEach(function(d) {
+        html += '<option value="' + d + '">' + d + '</option>';
+    });
+    select.innerHTML = html;
+
+    var activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && preDesignList.includes(activeDesign)) {
+        select.value = activeDesign;
+        loadInitialData();
+    }
+});
+
+function loadInitialData() {
+    let dName = document.getElementById('designNumber').value;
+    if(!dName) {
+        document.getElementById('warpGroundTableBody').innerHTML = '';
+        document.getElementById('warpTopTableBody').innerHTML = '';
+        document.getElementById('weftTableBody').innerHTML = '';
+        document.getElementById('topBeamWrapper').style.display = 'none';
+        document.getElementById('baseCounts').value = '';
+        return;
+    }
+
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = designMastersList.find(d => d.name === dName) || {};
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let sp = specs[dName] || {};
+
+    let uiReed = foundMaster.reed || sp.reed || 52;
+    let uiPick = foundMaster.pick || sp.pick || 56;
+
+    document.getElementById('calcReed').value = uiReed;
+    document.getElementById('calcPick').value = uiPick;
+
+    // Load Base Counts dynamically based on Master/Specs data
+    let c1 = foundMaster.count1 || sp.warp || '';
+    let c2 = foundMaster.count2 || sp.warp2 || '';
+    let countsArr = [];
+    if (c1) countsArr.push(c1);
+    if (c2) countsArr.push(c2);
+    let uniqueCounts = [...new Set(countsArr)].join(', ');
+    document.getElementById('baseCounts').value = uniqueCounts || '20';
+    
+    let defaultMtr = 100;
+    if (foundMaster.orderMtr) {
+        document.getElementById('lengthMeters').value = foundMaster.orderMtr;
+        defaultMtr = parseFloat(foundMaster.orderMtr) || 100;
+    }
+    
+    if (foundMaster.topBeam) {
+        let rawTop = String(foundMaster.topBeam);
+        if (rawTop.includes('%')) {
+            let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
+            document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
+        } else {
+            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
+        }
+    } else {
+        document.getElementById('topLengthMeters').value = defaultMtr;
+    }
+
+    loadYarnData();
+}
+
+function getResultantCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
+}
+
+function resolvePattern(lines, ranges, type, defaultCount) {
+    if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
+
+    let covered = new Array(lines.length).fill(false);
+    let orderedPattern = [];
+
+    if(ranges && ranges.length > 0) {
+        ranges.forEach(r => {
+            for(let s=0; s<r.set; s++) {
+                for(let j = r.start; j <= r.end; j++) {
+                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                }
+            }
+            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+        });
+    }
+    lines.forEach((l, idx) => {
+        if(!covered[idx]) orderedPattern.push({...l});
+    });
+
+    let exactSequence = [];
+    orderedPattern.forEach(item => {
+        let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+        let clr = item.color ? String(item.color).trim() : '-';
+        let bm = item.beam || 'Ground'; 
+        
+        for(let k=0; k<val; k++) {
+            exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+        }
+    });
+
+    let summaryMap = new Map();
+    let order = [];
+
+    exactSequence.forEach(item => {
+        let key = item.count + "||" + item.color + "||" + item.beam; 
+        if(!summaryMap.has(key)) {
+            summaryMap.set(key, { count: item.count, color: item.color, beam: item.beam, patternVal: 0, totalVal: 0 });
+            order.push(key);
+        }
+        summaryMap.get(key).patternVal++;
+    });
+
+    return {
+        sequence: exactSequence,
+        summary: order.map(k => summaryMap.get(k)),
+        totalPatternVal: exactSequence.length
+    };
+}
+
+function loadYarnData() {
+    let dName = document.getElementById('designNumber').value;
+    if(!dName) return;
+
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let foundMaster = designMastersList.find(d => d.name === dName) || {};
+    let sp = specs[dName] || {};
+
+    let uiReed = parseFloat(document.getElementById('calcReed').value) || 0;
+    let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
+    
+    let baseCountsInput = document.getElementById('baseCounts').value || '20';
+    let defaultCountText = baseCountsInput.split(',')[0].trim();
+    let defaultCountNum = getResultantCount(defaultCountText) || 20;
+
+    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 100; 
+    let topLengthM = parseFloat(document.getElementById('topLengthMeters').value) || lengthM;
+
+    // Reset Global Data
+    window.calculatedYarnData = {
+        ground: [], top: [], weft: [],
+        groundTotals: { p: 0, t: 0, w: 0 },
+        topTotals: { p: 0, t: 0, w: 0 },
+        weftTotals: { p: 0, t: 0, w: 0 }
+    };
+
+    // --- WARP ---
+    let baseWidth = parseFloat(foundMaster.width || sp.width) || 66.92;
+    let totalWarpEnds = Math.round(uiReed * baseWidth);
+    let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
+
+    if (warpData.totalPatternVal > 0) {
+        let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
+        let rem = totalWarpEnds % warpData.totalPatternVal;
+
+        warpData.summary.forEach(obj => obj.totalVal = obj.patternVal * repeats);
+        for(let i=0; i<rem; i++) {
+            let item = warpData.sequence[i];
+            let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color && o.beam === item.beam);
+            if(obj) obj.totalVal++;
+        }
+    }
+
+    // Process and Split Warp Data
+    warpData.summary.forEach(obj => {
+        let calcCount = getResultantCount(obj.count);
+        if (calcCount <= 0) calcCount = defaultCountNum;
+        
+        let currentLength = (obj.beam === 'Top Beam') ? topLengthM : lengthM;
+        let wgt = (obj.totalVal * currentLength) / (1693.33 * calcCount);
+        
+        let rowObj = { count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: obj.totalVal, weight: wgt };
+
+        if (obj.beam === 'Top Beam') {
+            window.calculatedYarnData.top.push(rowObj);
+            window.calculatedYarnData.topTotals.p += obj.patternVal;
+            window.calculatedYarnData.topTotals.t += obj.totalVal;
+            window.calculatedYarnData.topTotals.w += wgt;
+        } else {
+            window.calculatedYarnData.ground.push(rowObj);
+            window.calculatedYarnData.groundTotals.p += obj.patternVal;
+            window.calculatedYarnData.groundTotals.t += obj.totalVal;
+            window.calculatedYarnData.groundTotals.w += wgt;
+        }
+    });
+
+    // Render Ground Beam UI
+    let gHtml = '';
+    let gd = window.calculatedYarnData.ground;
+    let gt = window.calculatedYarnData.groundTotals;
+    if (gd.length > 0) {
+        gd.forEach(r => {
+            // UI Color kept as English
+            gHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        });
+        gHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${gt.p}</td><td>${gt.t}</td><td>${gt.w.toFixed(3)} kg</td></tr>`;
+    } else {
+        gHtml = `<tr><td colspan="5">No Ground Beam Data Found</td></tr>`;
+    }
+    document.getElementById('warpGroundTableBody').innerHTML = gHtml;
+
+    // Render Top Beam UI
+    let tHtml = '';
+    let td = window.calculatedYarnData.top;
+    let tt = window.calculatedYarnData.topTotals;
+    if (td.length > 0) {
+        document.getElementById('topBeamWrapper').style.display = 'block';
+        td.forEach(r => {
+            tHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        });
+        tHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${tt.p}</td><td>${tt.t}</td><td>${tt.w.toFixed(3)} kg</td></tr>`;
+        document.getElementById('warpTopTableBody').innerHTML = tHtml;
+    } else {
+        document.getElementById('topBeamWrapper').style.display = 'none';
+    }
+
+    // --- WEFT ---
+    let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
+    let totalFabricPick = weftWidth * uiPick;
+    
+    // Use proper fallback count for weft calculation
+    let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
+    let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
+    
+    let weftData = resolvePattern(foundMaster.weftLines || [], foundMaster.weftRanges || [], 'weft', weftCountFallbackText);
+
+    if (weftData.totalPatternVal > 0) {
+        weftData.summary.forEach(obj => {
+            let calcCount = getResultantCount(obj.count);
+            if (calcCount <= 0) calcCount = weftCountNumFallback;
+            let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
+            let wgt = (tPick * lengthM) / (1693.33 * calcCount);
+
+            window.calculatedYarnData.weft.push({ count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: tPick, weight: wgt });
+            window.calculatedYarnData.weftTotals.p += obj.patternVal;
+            window.calculatedYarnData.weftTotals.t += tPick;
+            window.calculatedYarnData.weftTotals.w += wgt;
+        });
+    }
+
+    // Render Weft UI
+    let wfHtml = '';
+    let wfd = window.calculatedYarnData.weft;
+    let wft = window.calculatedYarnData.weftTotals;
+    if (wfd.length > 0) {
+        wfd.forEach(r => {
+            // UI Color kept as English
+            wfHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal.toFixed(2)}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        });
+        wfHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${wft.p}</td><td>${wft.t.toFixed(2)}</td><td>${wft.w.toFixed(3)} kg</td></tr>`;
+    } else {
+        wfHtml = `<tr><td colspan="5">No Weft Data Found</td></tr>`;
+    }
+    document.getElementById('weftTableBody').innerHTML = wfHtml;
+}
+
+// GENERATE PRINT TABLE (APPLIES TAMIL TRANSLATION)
+function generatePrintTableHtml(dataArray, totals, isWeft) {
+    if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
+    
+    let html = '';
+    dataArray.forEach(r => {
+        let colorDisplay = translateColorToTamil(r.color); // Translated for Preview/Print only!
+        let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
+        html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+    });
+    
+    let tTot = isWeft ? totals.t.toFixed(2) : totals.t;
+    html += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${totals.p}</td><td>${tTot}</td><td>${totals.w.toFixed(3)} kg</td></tr>`;
+    
+    return html;
+}
+
+// PRINT / PREVIEW FUNCTIONS
+function previewReport() {
+    let designNo = document.getElementById('designNumber').value || '-';
+    let reed = document.getElementById('calcReed').value || '-';
+    let pick = document.getElementById('calcPick').value || '-';
+    let length = document.getElementById('lengthMeters').value || '-';
+    let topLength = document.getElementById('topLengthMeters').value || '-';
+    
+    let d = window.calculatedYarnData;
+    
+    let html = `
+        <style>
+            .print-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 12px; text-align: center; border: 1px solid #999; margin-bottom: 20px; }
+            .print-tbl th { background: #f2f2f2; font-weight: bold; color: #000; padding: 8px; border-bottom: 2px solid #666; border-right: 1px dotted #999; }
+            .print-tbl th:last-child { border-right: none; }
+            .print-tbl td { padding: 8px; color: #000; border-bottom: 1px dashed #999; border-right: 1px dotted #999; }
+            .print-tbl td:last-child { border-right: none; }
+            .print-tbl .total-row td { border-top: 2px solid #000; border-bottom: none; border-right: none; font-weight: bold; }
+        </style>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
+            <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
+                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} <br> <b>Order Mtr:</b> ${length} Mts &nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts
+            </p>
+        </div>
+    `;
+
+    // Ground Table Print
+    html += `
+        <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - GROUND BEAM</h3>
+        <table class="print-tbl">
+            <thead><tr>
+                <th>Count</th>
+                <th>Colour</th>
+                <th>Ends</th>
+                <th>Total</th>
+                <th>Weight (Kg)</th>
+            </tr></thead>
+            <tbody>${generatePrintTableHtml(d.ground, d.groundTotals, false)}</tbody>
+        </table>
+    `;
+
+    // Top Table Print (If exists)
+    if (d.top.length > 0) {
+        html += `
+            <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - TOP BEAM</h3>
+            <table class="print-tbl">
+                <thead><tr>
+                    <th>Count</th>
+                    <th>Colour</th>
+                    <th>Ends</th>
+                    <th>Total</th>
+                    <th>Weight (Kg)</th>
+                </tr></thead>
+                <tbody>${generatePrintTableHtml(d.top, d.topTotals, false)}</tbody>
+            </table>
+        `;
+    }
+
+    // Weft Table Print
+    html += `
+        <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧶 WEFT YARN CALCULATION</h3>
+        <table class="print-tbl">
+            <thead><tr>
+                <th>Count</th>
+                <th>Colour</th>
+                <th>Picks</th>
+                <th>Total</th>
+                <th>Weight (Kg)</th>
+            </tr></thead>
+            <tbody>${generatePrintTableHtml(d.weft, d.weftTotals, true)}</tbody>
+        </table>
+    `;
+
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('previewModal').style.display = 'block';
+}
+
+function printReport() {
+    if(document.getElementById('previewModal').style.display !== 'block') {
+        previewReport();
+    }
+    setTimeout(() => {
+        window.print();
+    }, 300);
+}
+</script>
+</body>
+</html>

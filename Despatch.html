@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>despatch_details - TEXFRIEND</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        /* Sage & Cream Theme (50% Darker) */
+        html, body { 
+            width: 100%;
+            min-height: 100vh;
+            background: #D5DDD3;
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: #E8ECE7;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(82, 110, 81, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: #3F5A3E;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 10px;
+            background: rgba(82, 110, 81, 0.15);
+            padding: 4px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(82, 110, 81, 0.3);
+        }
+
+        /* Bitmap Image Display Styling on Right Corner */
+        #bitmapDisplayContainer {
+            text-align: right;
+        }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .excel-btn {
+            background: #526E51;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .excel-btn:hover { background: #3F5A3E; }
+
+        .card { 
+            background: #E8ECE7; 
+            padding: 0; 
+            border-radius: 0; 
+            margin-bottom: 0; 
+            box-shadow: none; 
+            border: none; 
+            width: 100%;
+        }
+
+        h3 { 
+            font-size: 13px; 
+            padding-bottom: 4px; 
+            margin-bottom: 12px; 
+            font-weight: 700; 
+            border-bottom: 2px solid rgba(82, 110, 81, 0.3); 
+            color: #3F5A3E; 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title {
+            background: #D8DFD6;
+            color: #3F5A3E;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin: 10px 0 8px 0;
+            border: 1px solid rgba(82, 110, 81, 0.25);
+        }
+
+        /* 3 Columns Grid Setup for Top Section */
+        .form-grid-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 6px;
+        }
+
+        label { 
+            display: block;
+            font-weight: 600; 
+            color: #3F5A3E; 
+            font-size: 9px; 
+            margin-bottom: 3px; 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 8px 10px; 
+            border: 1px solid rgba(82, 110, 81, 0.4); 
+            border-radius: 6px; 
+            font-size: 11px; 
+            background: #FFFFFF; 
+            color: #1E2B23; 
+            font-weight: 500; 
+        }
+
+        input:focus, select:focus { 
+            border-color: #526E51; 
+            outline: none; 
+            background: #F4F6F4; 
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1fr 1fr 1.2fr 35px;
+            gap: 4px;
+            align-items: center;
+            background: #D8DFD6;
+            padding: 6px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.25);
+        }
+
+        .item-col-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-col-group label {
+            font-size: 8px;
+            color: #3F5A3E;
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
+
+        .item-col-group input, .item-col-group select {
+            padding: 6px 4px;
+            font-size: 10px;
+            text-align: center;
+            background: #FFFFFF;
+        }
+
+        .add-item-btn {
+            background: #526E51;
+            color: white;
+            border: none;
+            height: 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .btn { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0 4px 0; 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-weight: 700; 
+            font-size: 12px; 
+            cursor: pointer; 
+            background: #526E51; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            transition: transform 0.15s ease; 
+        }
+
+        .btn:hover { background: #3F5A3E; }
+
+        .action-del { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-del:hover { background: #B45309; }
+        .action-edit { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+
+        .excel-table { width: 100%; border-collapse: collapse; text-align: center; background: #E8ECE7; font-size: 10px; margin-top: 6px; margin-bottom: 10px; color: #1E2B23; }
+        .excel-table th, .excel-table td { border: 1px solid rgba(82, 110, 81, 0.3); padding: 6px; }
+        .excel-table th { background-color: #D8DFD6; color: #3F5A3E; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+        <!-- Top-Right Bitmap Image Display Container -->
+        <div id="bitmapDisplayContainer"></div>
+    </div>
+
+    <div class="card">
+        <h3>🚚 Despatch Details Entry</h3>
+        
+        <div class="section-title">Despatch Order Details</div>
+
+        <!-- Row 1: Date, Invoice Number, PO Number -->
+        <div class="form-grid-row">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="despatch_date">
+            </div>
+            <div class="form-group">
+                <label>Invoice Number</label>
+                <input type="text" id="invoice_no" placeholder="Invoice No">
+            </div>
+            <div class="form-group">
+                <label>PO Number</label>
+                <select id="despatch_po" onchange="onPoSelect(this.value)">
+                    <option value="">Select PO</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 2: Party Name, Transport Name, LR Number -->
+        <div class="form-grid-row">
+            <div class="form-group">
+                <label>Party Name</label>
+                <input type="text" id="despatch_party" placeholder="Party Name" readonly style="background: #FFFFFF; color:#1E2B23;">
+            </div>
+            <div class="form-group">
+                <label>Transport Name</label>
+                <input type="text" id="transport_name" placeholder="Transport Name">
+            </div>
+            <div class="form-group">
+                <label>LR Number</label>
+                <input type="text" id="lr_number" placeholder="LR Number">
+            </div>
+        </div>
+
+        <div class="section-title">Item Details</div>
+
+        <div id="itemsContainer">
+            <div class="item-row">
+                <div class="item-col-group">
+                    <label>Design No</label>
+                    <select class="item-design" onchange="loadBitmapImage()"><option value="">Select</option></select>
+                </div>
+                <div class="item-col-group">
+                    <label>Bale No</label>
+                    <input type="text" class="item-bale" placeholder="Bale No">
+                </div>
+                <div class="item-col-group">
+                    <label>Order Mtr</label>
+                    <input type="number" class="item-ord-mtr" placeholder="Order Mtr" oninput="calculateBalance(this)">
+                </div>
+                <div class="item-col-group">
+                    <label>Despatched</label>
+                    <input type="number" class="item-des-mtr" placeholder="Despatched" oninput="calculateBalance(this)">
+                </div>
+                <div class="item-col-group">
+                    <label>Bal / Pen Mts</label>
+                    <input type="number" class="item-bal-mtr" placeholder="Bal Mts" readonly style="background: #FFFFFF; color:#1E2B23;">
+                </div>
+                <button class="add-item-btn" onclick="addItemRow()">➕</button>
+            </div>
+        </div>
+
+        <button class="btn" id="saveBtn" onclick="saveDespatchEntry()">Save Despatch Entry</button>
+    </div>
+
+    <!-- Saved Despatch List Table -->
+    <div class="card" style="margin-top: 10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <h3 style="font-size: 11px; color: #3F5A3E; margin-bottom: 0; border:none;">📊 Saved Despatch List</h3>
+            <button class="excel-btn" onclick="exportToExcel()">📊 Excel</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="despatchTable" class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Invoice No</th>
+                        <th>Party Name</th>
+                        <th>Design No</th>
+                        <th>Bale No</th>
+                        <th>Despatched</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+let editingIndex = null;
+
+window.onload = function() {
+    loadDesignDropdowns();
+
+    var partyOrdersList = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    var poSelect = document.getElementById('despatch_po');
+    var poHtml = '<option value="">Select PO</option>';
+    partyOrdersList.forEach(function(p) {
+        if(p.poNo) {
+            poHtml += '<option value="' + p.poNo + '">' + p.poNo + '</option>';
+        }
+    });
+    poSelect.innerHTML = poHtml;
+
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('despatch_date').value = today;
+    updateDespatchTable();
+    loadBitmapImage();
+}
+
+function loadBitmapImage() {
+    let activeDesign = localStorage.getItem('selected_design_number');
+    let firstDesignSelect = document.querySelector('.item-design');
+    if(firstDesignSelect && firstDesignSelect.value) {
+        activeDesign = firstDesignSelect.value;
+    }
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
+}
+
+function onPoSelect(poNo) {
+    if(!poNo) {
+        document.getElementById('despatch_party').value = '';
+        return;
+    }
+    var partyOrdersList = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    var matchedOrder = partyOrdersList.find(function(p) { return p.poNo === poNo; });
+    
+    if(matchedOrder) {
+        document.getElementById('despatch_party').value = matchedOrder.partyName || '';
+        if(matchedOrder.designNumber) {
+            var firstDesignSelect = document.querySelector('.item-design');
+            if(firstDesignSelect) {
+                firstDesignSelect.value = matchedOrder.designNumber;
+                loadBitmapImage();
+            }
+        }
+        if(matchedOrder.orderMtr) {
+            var firstOrdMtr = document.querySelector('.item-ord-mtr');
+            if(firstOrdMtr) {
+                firstOrdMtr.value = matchedOrder.orderMtr;
+                calculateBalance(firstOrdMtr);
+            }
+        }
+    }
+}
+
+function loadDesignDropdowns() {
+    var designSelects = document.querySelectorAll('.item-design');
+    designSelects.forEach(function(select) {
+        var currentVal = select.value;
+        var html = '<option value="">Select</option>';
+        preDesignList.forEach(function(d) {
+            html += '<option value="' + d + '">' + d + '</option>';
+        });
+        select.innerHTML = html;
+        select.value = currentVal;
+    });
+
+    var activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && designSelects.length > 0 && !designSelects[0].value) {
+        designSelects[0].value = activeDesign;
+    }
+    loadBitmapImage();
+}
+
+function calculateBalance(element) {
+    var row = element.closest('.item-row');
+    var orderMtr = parseFloat(row.querySelector('.item-ord-mtr').value) || 0;
+    var desMtr = parseFloat(row.querySelector('.item-des-mtr').value) || 0;
+    var balMtrField = row.querySelector('.item-bal-mtr');
+    
+    var balance = orderMtr - desMtr;
+    balMtrField.value = balance >= 0 ? balance.toFixed(2) : '0.00';
+}
+
+function addItemRow(design = '', bale = '', ord = '', des = '', bal = '') {
+    var container = document.getElementById('itemsContainer');
+    var newRow = document.createElement('div');
+    newRow.className = 'item-row';
+    newRow.innerHTML = `
+        <div class="item-col-group">
+            <label>Design No</label>
+            <select class="item-design" onchange="loadBitmapImage()"><option value="">Select</option></select>
+        </div>
+        <div class="item-col-group">
+            <label>Bale No</label>
+            <input type="text" class="item-bale" placeholder="Bale No" value="${bale}">
+        </div>
+        <div class="item-col-group">
+            <label>Order Mtr</label>
+            <input type="number" class="item-ord-mtr" placeholder="Order Mtr" value="${ord}" oninput="calculateBalance(this)">
+        </div>
+        <div class="item-col-group">
+            <label>Despatched</label>
+            <input type="number" class="item-des-mtr" placeholder="Despatched" value="${des}" oninput="calculateBalance(this)">
+        </div>
+        <div class="item-col-group">
+            <label>Bal / Pen Mts</label>
+            <input type="number" class="item-bal-mtr" placeholder="Bal Mts" value="${bal}" readonly style="background: #FFFFFF; color:#1E2B23;">
+        </div>
+        <button class="add-item-btn" style="background:#D97706;" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(newRow);
+    loadDesignDropdowns();
+    if(design) {
+        newRow.querySelector('.item-design').value = design;
+    }
+}
+
+function saveDespatchEntry() {
+    var date = document.getElementById('despatch_date').value;
+    var invoiceNo = document.getElementById('invoice_no').value.trim();
+    var partyName = document.getElementById('despatch_party').value.trim();
+
+    if(!invoiceNo || !partyName) {
+        alert('தயவுசெய்து Invoice Number மற்றும் Party Name ஆகியவற்றை நிரப்பவும்!');
+        return;
+    }
+
+    let confirmMsg = editingIndex !== null ? "Indha despatch entry-ai update pannanuma?" : "Indha despatch entry-ai save pannanuma?";
+    if(!confirm(confirmMsg)) {
+        return;
+    }
+
+    var items = [];
+    document.querySelectorAll('.item-row').forEach(function(row) {
+        items.push({
+            designNo: row.querySelector('.item-design').value,
+            baleNo: row.querySelector('.item-bale').value.trim(),
+            orderMtr: row.querySelector('.item-ord-mtr').value.trim(),
+            despatchedMtr: row.querySelector('.item-des-mtr').value.trim(),
+            balanceMtr: row.querySelector('.item-bal-mtr').value.trim()
+        });
+    });
+
+    var entryData = {
+        id: editingIndex !== null ? JSON.parse(localStorage.getItem('despatch_data'))[editingIndex].id : Date.now(),
+        date: date,
+        invoiceNo: invoiceNo,
+        partyName: partyName,
+        poNo: document.getElementById('despatch_po').value,
+        transportName: document.getElementById('transport_name').value.trim(),
+        lrNumber: document.getElementById('lr_number').value.trim(),
+        items: items,
+        status: editingIndex !== null ? JSON.parse(localStorage.getItem('despatch_data'))[editingIndex].status || 'running' : 'running'
+    };
+
+    var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+    if(editingIndex !== null) {
+        despatchList[editingIndex] = entryData;
+        editingIndex = null;
+        document.getElementById('saveBtn').innerText = "Save Despatch Entry";
+    } else {
+        despatchList.push(entryData);
+    }
+
+    localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+    updateDespatchTable();
+    alert('Despatch Entry Saved Successfully! ✅');
+    
+    document.getElementById('invoice_no').value = '';
+    document.getElementById('despatch_party').value = '';
+    document.getElementById('despatch_po').value = '';
+    document.getElementById('transport_name').value = '';
+    document.getElementById('lr_number').value = '';
+    document.getElementById('itemsContainer').innerHTML = `
+        <div class="item-row">
+            <div class="item-col-group">
+                <label>Design No</label>
+                <select class="item-design" onchange="loadBitmapImage()"><option value="">Select</option></select>
+            </div>
+            <div class="item-col-group">
+                <label>Bale No</label>
+                <input type="text" class="item-bale" placeholder="Bale No">
+            </div>
+            <div class="item-col-group">
+                <label>Order Mtr</label>
+                <input type="number" class="item-ord-mtr" placeholder="Order Mtr" oninput="calculateBalance(this)">
+            </div>
+            <div class="item-col-group">
+                <label>Despatched</label>
+                <input type="number" class="item-des-mtr" placeholder="Despatched" oninput="calculateBalance(this)">
+            </div>
+            <div class="item-col-group">
+                <label>Bal / Pen Mts</label>
+                <input type="number" class="item-bal-mtr" placeholder="Bal Mts" readonly style="background: #FFFFFF; color:#1E2B23;">
+            </div>
+            <button class="add-item-btn" onclick="addItemRow()">➕</button>
+        </div>
+    `;
+    loadDesignDropdowns();
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('despatch_date').value = today;
+}
+
+function updateDespatchTable() {
+    var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+    var tbody = document.querySelector('#despatchTable tbody');
+    tbody.innerHTML = '';
+
+    despatchList.forEach(function(entry, index) {
+        if(!entry.status) entry.status = "running";
+        let statusColor = entry.status == 'running' ? '#D97706' : '#526E51';
+        let statusBtn = entry.status == 'running' 
+            ? `<button class="action-complete" onclick="toggleStatus(${index}, 'completed')">Complete</button>` 
+            : `<button class="action-running" onclick="toggleStatus(${index}, 'running')">Running</button>`;
+
+        if(entry.items && entry.items.length > 0) {
+            entry.items.forEach(function(item, itemIdx) {
+                var row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.invoiceNo}</td>
+                    <td>${entry.partyName}</td>
+                    <td>${item.designNo || '-'}</td>
+                    <td>${item.baleNo || '-'}</td>
+                    <td>${item.despatchedMtr || '-'}</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${entry.status}</td>
+                    <td style="white-space:nowrap;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            ${itemIdx === 0 ? statusBtn : ''}
+                            ${itemIdx === 0 ? `<button class="action-edit" onclick="editDespatch(${index})">Edit</button>` : ''}
+                            ${itemIdx === 0 ? `<button class="action-del" onclick="deleteDespatch(${index})">Del</button>` : ''}
+                        </div>
+                    </td>
+                `;
+            });
+        }
+    });
+}
+
+function toggleStatus(index, newStatus) {
+    let msg = newStatus === 'completed' ? "Indha despatch entry-ai Completed-aga maatranuma?" : "Indha despatch entry-ai Running-ku maatranuma?";
+    if(confirm(msg)) {
+        var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+        despatchList[index].status = newStatus;
+        localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+        updateDespatchTable();
+        alert("Status successfully updated! ✅");
+    }
+}
+
+function editDespatch(index) {
+    if(confirm("Indha despatch entry-ai edit pannanuma?")) {
+        var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+        var entry = despatchList[index];
+        editingIndex = index;
+
+        document.getElementById('despatch_date').value = entry.date;
+        document.getElementById('invoice_no').value = entry.invoiceNo;
+        document.getElementById('despatch_party').value = entry.partyName;
+        document.getElementById('despatch_po').value = entry.poNo || '';
+        document.getElementById('transport_name').value = entry.transportName || '';
+        document.getElementById('lr_number').value = entry.lrNumber || '';
+
+        var container = document.getElementById('itemsContainer');
+        container.innerHTML = '';
+        if(entry.items && entry.items.length > 0) {
+            entry.items.forEach(function(item, idx) {
+                if(idx === 0) {
+                    container.innerHTML = `
+                        <div class="item-row">
+                            <div class="item-col-group">
+                                <label>Design No</label>
+                                <select class="item-design" onchange="loadBitmapImage()"><option value="">Select</option></select>
+                            </div>
+                            <div class="item-col-group">
+                                <label>Bale No</label>
+                                <input type="text" class="item-bale" placeholder="Bale No" value="${item.baleNo || ''}">
+                            </div>
+                            <div class="item-col-group">
+                                <label>Order Mtr</label>
+                                <input type="number" class="item-ord-mtr" placeholder="Order Mtr" value="${item.orderMtr || ''}" oninput="calculateBalance(this)">
+                            </div>
+                            <div class="item-col-group">
+                                <label>Despatched</label>
+                                <input type="number" class="item-des-mtr" placeholder="Despatched" value="${item.despatchedMtr || ''}" oninput="calculateBalance(this)">
+                            </div>
+                            <div class="item-col-group">
+                                <label>Bal / Pen Mts</label>
+                                <input type="number" class="item-bal-mtr" placeholder="Bal Mts" value="${item.balanceMtr || ''}" readonly style="background: #FFFFFF; color:#1E2B23;">
+                            </div>
+                            <button class="add-item-btn" onclick="addItemRow()">➕</button>
+                        </div>
+                    `;
+                    loadDesignDropdowns();
+                    document.querySelector('.item-design').value = item.designNo || '';
+                    loadBitmapImage();
+                } else {
+                    addItemRow(item.designNo, item.baleNo, item.orderMtr, item.despatchedMtr, item.balanceMtr);
+                }
+            });
+        }
+
+        document.getElementById('saveBtn').innerText = "Update Despatch Entry";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function deleteDespatch(index) {
+    if(confirm("Indha despatch entry-ai delete pannanuma?")) {
+        var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+        despatchList.splice(index, 1);
+        localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+        updateDespatchTable();
+        alert("Deleted successfully! ✅");
+    }
+}
+
+function exportToExcel() {
+    var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+    if(despatchList.length === 0) {
+        alert('Export செய்ய சேமிக்கப்பட்ட தரவுகள் எதுவும் இல்லை!');
+        return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Invoice No,Party Name,PO No,Transport Name,LR Number,Design No,Bale No,Order Mtr,Despatched Mtr,Balance Mtr\r\n";
+    
+    despatchList.forEach(function(entry) {
+        entry.items.forEach(function(item) {
+            let row = [
+                entry.date,
+                entry.invoiceNo,
+                `"${entry.partyName}"`,
+                entry.poNo,
+                `"${entry.transportName}"`,
+                entry.lrNumber,
+                item.designNo,
+                item.baleNo,
+                item.orderMtr,
+                item.despatchedMtr,
+                item.balanceMtr
+            ].join(",");
+            csvContent += row + "\r\n";
+        });
+    });
+
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "despatch_details.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+
+</body>
+</html>

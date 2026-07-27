@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invoice - TEXFRIEND ERP</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        /* Sage & Cream Theme (50% Darker) */
+        html, body { 
+            width: 100%;
+            min-height: 100vh;
+            background: #D5DDD3;
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #E8ECE7; 
+            padding: 18px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+            border: 1px solid rgba(82, 110, 81, 0.3); 
+        }
+        
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 2px; 
+        }
+
+        .back-btn { 
+            display: inline-block; 
+            color: #3F5A3E; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 10px; 
+            background: rgba(82, 110, 81, 0.15); 
+            padding: 4px 8px; 
+            border-radius: 5px; 
+            border: 1px solid rgba(82, 110, 81, 0.3); 
+        }
+
+        /* Bitmap Image Display Styling on Right Corner */
+        #bitmapDisplayContainer {
+            text-align: right;
+        }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h2 { 
+            text-align: center; 
+            color: #3F5A3E; 
+            font-size: 13px; 
+            font-weight: 700; 
+            margin-bottom: 12px; 
+            border-bottom: 2px solid rgba(82, 110, 81, 0.3); 
+            padding-bottom: 4px; 
+        }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+        .form-group { margin-bottom: 6px; }
+        
+        label { display: block; font-size: 9px; color: #3F5A3E; font-weight: 600; margin-bottom: 3px; }
+        input, select, textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4); background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 500; }
+        textarea { resize: vertical; height: 55px; }
+        input:focus, select:focus, textarea:focus { border-color: #526E51; outline: none; background: #F4F6F4; }
+        
+        .section-title { font-size: 10px; font-weight: 700; color: #3F5A3E; margin: 10px 0 6px 0; background: #D8DFD6; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.25); }
+        
+        .design-global-box { background: #D8DFD6; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(82, 110, 81, 0.25); }
+        .design-global-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr; gap: 6px; }
+
+        .item-table-wrapper { overflow-x: auto; margin-bottom: 8px; }
+        .item-row { display: grid; grid-template-columns: 35px 110px 80px 90px 100px 35px; gap: 6px; align-items: center; margin-bottom: 6px; background: #D8DFD6; padding: 6px; border-radius: 6px; min-width: 520px; border: 1px solid rgba(82, 110, 81, 0.25); }
+        .item-row input { padding: 6px 4px; font-size: 11px; text-align: center; background: #FFFFFF; }
+        
+        .add-row-btn { background: #526E51; color: white; border: none; height: 28px; width: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .del-row-btn { background: #D97706; color: white; border: none; height: 28px; width: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .del-row-btn:hover { background: #B45309; }
+        
+        .btn-submit { width: 100%; background: #526E51; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-submit:hover { background: #3F5A3E; }
+
+        .print-btn { background: #3F5A3E; margin-top: 6px; }
+        .print-btn:hover { background: #2E432D; }
+
+        .action-edit { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
+        .action-del { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-del:hover { background: #B45309; }
+
+        .excel-table { width: 100%; border-collapse: collapse; text-align: center; background: #E8ECE7; font-size: 10px; margin-top: 10px; margin-bottom: 15px; color: #1E2B23; }
+        .excel-table th, .excel-table td { border: 1px solid rgba(82, 110, 81, 0.3); padding: 6px; }
+        .excel-table th { background-color: #D8DFD6; color: #3F5A3E; font-weight: bold; }
+
+        /* Professional Business Invoice Layout - Row lines removed, only outer border & totals have grid lines */
+        #printPreviewContainer { display: none; background: #FFFFFF; color: #000000; padding: 25px; border-radius: 12px; margin-top: 10px; border: 1px solid #ccc; width: 100%; max-width: 100%; }
+        .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-size: 12px; align-items: flex-start; }
+        
+        .invoice-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 15px; font-size: 11px; border: 1px solid #000; }
+        .invoice-table th, .invoice-table td { border: none; border-right: 1px solid #000; padding: 6px 4px; text-align: center; word-wrap: break-word; }
+        .invoice-table th { background: #f8fafc; font-weight: 700; color: #1e293b; border-bottom: 1px solid #000; }
+        .invoice-table td { height: 28px; }
+        .invoice-table th:last-child, .invoice-table td:last-child { border-right: none; }
+
+        .invoice-table tfoot tr { border-top: 1px solid #000; font-weight: bold; }
+        .invoice-table tfoot td { border-top: 1px solid #000; padding: 6px 8px; }
+
+        @media print {
+            body { background: #FFFFFF; color: #000000; padding: 0; }
+            .no-print { display: none !important; }
+            #printPreviewContainer { display: block !important; padding: 0; box-shadow: none; border: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+        <!-- Top-Right Bitmap Image Display Container -->
+        <div id="bitmapDisplayContainer"></div>
+    </div>
+
+    <h2>Invoice / Bill Entry</h2>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Invoice Date</label>
+            <input type="date" id="inv_date">
+        </div>
+        <div class="form-group">
+            <label>Invoice Number</label>
+            <input type="text" id="inv_no" placeholder="Inv No">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Top-Left: Company Full Address</label>
+            <textarea id="comp_address" placeholder="Enter Company Full Address..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Top-Right: Party Full Address</label>
+            <textarea id="party_address" placeholder="Enter Party Full Address..."></textarea>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Transport Name</label>
+            <input type="text" id="inv_transport" placeholder="Transport Name">
+        </div>
+        <div class="form-group">
+            <label>LR Number</label>
+            <input type="text" id="inv_lr" placeholder="LR Number">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>GST Type / Rate</label>
+            <select id="gst_type">
+                <option value="none">No GST</option>
+                <option value="gst_5">CGST 2.5% + SGST 2.5% (5%)</option>
+                <option value="gst_12">CGST 6% + SGST 6% (12%)</option>
+                <option value="igst_5">IGST 5%</option>
+                <option value="igst_12">IGST 12%</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-title">Particular Details & Design Specification</div>
+
+    <div class="design-global-box">
+        <div class="design-global-grid">
+            <div class="form-group" style="margin:0;">
+                <label>Design No</label>
+                <select id="global_design" onchange="applyGlobalDesign(this.value)">
+                    <option value="">Select Design</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>Count</label>
+                <input type="text" id="global_count" placeholder="Count">
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>Reed</label>
+                <input type="text" id="global_reed" placeholder="Reed">
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>Pick</label>
+                <input type="text" id="global_pick" placeholder="Pick">
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>Weave</label>
+                <input type="text" id="global_weave" placeholder="Weave">
+            </div>
+        </div>
+    </div>
+
+    <div class="item-table-wrapper">
+        <div style="display: grid; grid-template-columns: 35px 110px 80px 90px 100px 35px; gap: 6px; font-size: 9px; font-weight: bold; text-align: center; color: #3F5A3E; margin-bottom: 4px; min-width: 520px;">
+            <div>S.No</div><div>Date</div><div>Pcs</div><div>Qty (Mtr)</div><div>Rate</div><div>Amount</div><div>Act</div>
+        </div>
+        <div id="invoiceItemsContainer">
+            <div class="item-row">
+                <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">1</div>
+                <div><input type="date" class="i-date"></div>
+                <div><input type="number" class="i-pcs" placeholder="Pcs"></div>
+                <div><input type="number" class="i-qty" placeholder="Qty" oninput="calcTotal(this)"></div>
+                <div><input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)"></div>
+                <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;"></div>
+                <div><button class="add-row-btn" onclick="addInvoiceRow()">+</button></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-submit" id="saveInvBtn" onclick="saveInvoice()">Save Invoice</button>
+    <button class="btn-submit print-btn" onclick="showFullPreview()">Print / PDF Bill Preview</button>
+
+    <h3 style="font-size: 11px; color: #3F5A3E; margin-top: 15px; font-weight: 700; border-bottom: 2px solid rgba(82, 110, 81, 0.3); padding-bottom: 4px;">📊 Saved Invoices List</h3>
+    <div style="overflow-x: auto;">
+        <table id="invoicesTable" class="excel-table">
+            <thead>
+                <tr>
+                    <th>Inv No</th>
+                    <th>Date</th>
+                    <th>Party Name</th>
+                    <th>Design No</th>
+                    <th>Total Qty</th>
+                    <th>Grand Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Professional Print Preview Container -->
+<div id="printPreviewContainer"></div>
+
+<script>
+let editingInvoiceId = null;
+let savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+
+window.onload = function() {
+    document.getElementById('inv_date').valueAsDate = new Date();
+    let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
+    document.getElementById('comp_address').value = defaultComp;
+    loadDesignDropdowns();
+    loadBitmapImage();
+    updateInvoicesTable();
+}
+
+function loadBitmapImage() {
+    let activeDesign = localStorage.getItem('selected_design_number');
+    let globalDesignSelect = document.getElementById('global_design');
+    if(globalDesignSelect && globalDesignSelect.value) {
+        activeDesign = globalDesignSelect.value;
+    }
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
+}
+
+function loadDesignDropdowns() {
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('global_design');
+    let current = select.value;
+    let html = '<option value="">Select Design</option>';
+    preDesigns.forEach(d => {
+        html += '<option value="' + d + '">' + d + '</option>';
+    });
+    select.innerHTML = html;
+    select.value = current;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && !select.value) {
+        select.value = activeDesign;
+        applyGlobalDesign(activeDesign);
+    }
+    loadBitmapImage();
+}
+
+function applyGlobalDesign(designNo) {
+    if(!designNo) return;
+    localStorage.setItem('selected_design_number', designNo);
+    loadBitmapImage();
+    
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let matchedOrder = partyOrders.find(p => p.designNumber === designNo);
+    
+    if(matchedOrder) {
+        if(matchedOrder.partyName && !document.getElementById('party_address').value) {
+            document.getElementById('party_address').value = matchedOrder.partyName;
+        }
+    }
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(designSpecs[designNo]) {
+        document.getElementById('global_reed').value = designSpecs[designNo].reed || '';
+        document.getElementById('global_pick').value = designSpecs[designNo].pick || '';
+        document.getElementById('global_weave').value = designSpecs[designNo].weave || designSpecs[designNo].warp || '';
+        document.getElementById('global_count').value = designSpecs[designNo].warp || designSpecs[designNo].weft || '';
+    }
+}
+
+function addInvoiceRow(date = '', pcs = '', qty = '', rate = '') {
+    let container = document.getElementById('invoiceItemsContainer');
+    let count = container.children.length + 1;
+    let div = document.createElement('div');
+    div.className = 'item-row';
+    div.innerHTML = `
+        <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">${count}</div>
+        <div><input type="date" class="i-date" value="${date}"></div>
+        <div><input type="number" class="i-pcs" placeholder="Pcs" value="${pcs}"></div>
+        <div><input type="number" class="i-qty" placeholder="Qty" value="${qty}" oninput="calcTotal(this)"></div>
+        <div><input type="number" class="i-rate" placeholder="Rate" value="${rate}" oninput="calcTotal(this)"></div>
+        <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;" value="${(qty && rate) ? (qty * rate).toFixed(2) : ''}"></div>
+        <div><button class="del-row-btn" onclick="this.parentElement.remove()">✕</button></div>
+    `;
+    container.appendChild(div);
+}
+
+function calcTotal(element) {
+    let row = element.closest('.item-row');
+    let qty = parseFloat(row.querySelector('.i-qty').value) || 0;
+    let rate = parseFloat(row.querySelector('.i-rate').value) || 0;
+    let totalField = row.querySelector('.i-total');
+    totalField.value = (qty * rate).toFixed(2);
+}
+
+function saveInvoice() {
+    let invNo = document.getElementById('inv_no').value.trim();
+    if(!invNo) {
+        alert("Invoice Number-ஐ உள்ளிடவும்!");
+        return;
+    }
+
+    let compAddress = document.getElementById('comp_address').value;
+    let partyAddress = document.getElementById('party_address').value;
+    let invDate = document.getElementById('inv_date').value;
+    let transport = document.getElementById('inv_transport').value;
+    let lr = document.getElementById('inv_lr').value;
+    let gstType = document.getElementById('gst_type').value;
+
+    let design = document.getElementById('global_design').value;
+    let countVal = document.getElementById('global_count').value;
+    let reed = document.getElementById('global_reed').value;
+    let pick = document.getElementById('global_pick').value;
+    let weave = document.getElementById('global_weave').value;
+
+    let items = [];
+    let totalQty = 0;
+    let subTotal = 0;
+
+    document.querySelectorAll('#invoiceItemsContainer .item-row').forEach(row => {
+        let date = row.querySelector('.i-date').value;
+        let pcs = row.querySelector('.i-pcs').value;
+        let qty = parseFloat(row.querySelector('.i-qty').value) || 0;
+        let rate = parseFloat(row.querySelector('.i-rate').value) || 0;
+        let amount = parseFloat(row.querySelector('.i-total').value) || 0;
+
+        totalQty += qty;
+        subTotal += amount;
+        items.push({ date, pcs, qty, rate, amount });
+    });
+
+    let calculatedTaxTotal = subTotal;
+    if (gstType === 'gst_5' || gstType === 'igst_5') calculatedTaxTotal += subTotal * 0.05;
+    else if (gstType === 'gst_12' || gstType === 'igst_12') calculatedTaxTotal += subTotal * 0.12;
+
+    let grandTotal = Math.round(calculatedTaxTotal);
+
+    let invoiceObj = {
+        id: editingInvoiceId !== null ? editingInvoiceId : Date.now(),
+        invNo, invDate, compAddress, partyAddress, transport, lr, gstType,
+        design, countVal, reed, pick, weave, items, totalQty, grandTotal
+    };
+
+    if(editingInvoiceId !== null) {
+        savedInvoices = savedInvoices.map(inv => inv.id === editingInvoiceId ? invoiceObj : inv);
+        editingInvoiceId = null;
+        document.getElementById('saveInvBtn').innerText = "Save Invoice";
+    } else {
+        savedInvoices.push(invoiceObj);
+    }
+
+    localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
+    updateInvoicesTable();
+    alert("Invoice Successfully Saved! ✅");
+    
+    // Reset Form
+    document.getElementById('inv_no').value = '';
+    document.getElementById('inv_transport').value = '';
+    document.getElementById('inv_lr').value = '';
+    document.getElementById('invoiceItemsContainer').innerHTML = `
+        <div class="item-row">
+            <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">1</div>
+            <div><input type="date" class="i-date"></div>
+            <div><input type="number" class="i-pcs" placeholder="Pcs"></div>
+            <div><input type="number" class="i-qty" placeholder="Qty" oninput="calcTotal(this)"></div>
+            <div><input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)"></div>
+            <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;"></div>
+            <div><button class="add-row-btn" onclick="addInvoiceRow()">+</button></div>
+        </div>
+    `;
+    document.getElementById('inv_date').valueAsDate = new Date();
+}
+
+function updateInvoicesTable() {
+    let tbody = document.querySelector('#invoicesTable tbody');
+    tbody.innerHTML = '';
+
+    savedInvoices.forEach(inv => {
+        let row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${inv.invNo}</td>
+            <td>${inv.invDate}</td>
+            <td>${inv.partyAddress ? inv.partyAddress.split('\n')[0] : '-'}</td>
+            <td>${inv.design || '-'}</td>
+            <td>${inv.totalQty.toFixed(2)}</td>
+            <td>${inv.grandTotal.toFixed(2)}</td>
+            <td style="white-space:nowrap;">
+                <button class="action-edit" onclick="editInvoice(${inv.id})">Edit</button>
+                <button class="action-del" onclick="deleteInvoice(${inv.id})">Del</button>
+            </td>
+        `;
+    });
+}
+
+function editInvoice(id) {
+    let inv = savedInvoices.find(x => x.id === id);
+    if(!inv) return;
+
+    editingInvoiceId = id;
+    document.getElementById('inv_no').value = inv.invNo;
+    document.getElementById('inv_date').value = inv.invDate;
+    document.getElementById('comp_address').value = inv.compAddress;
+    document.getElementById('party_address').value = inv.partyAddress;
+    document.getElementById('inv_transport').value = inv.transport || '';
+    document.getElementById('inv_lr').value = inv.lr || '';
+    document.getElementById('gst_type').value = inv.gstType || 'none';
+
+    document.getElementById('global_design').value = inv.design || '';
+    document.getElementById('global_count').value = inv.countVal || '';
+    document.getElementById('global_reed').value = inv.reed || '';
+    document.getElementById('global_pick').value = inv.pick || '';
+    document.getElementById('global_weave').value = inv.weave || '';
+
+    let container = document.getElementById('invoiceItemsContainer');
+    container.innerHTML = '';
+    if(inv.items && inv.items.length > 0) {
+        inv.items.forEach(item => {
+            addInvoiceRow(item.date, item.pcs, item.qty, item.rate);
+        });
+    } else {
+        addInvoiceRow();
+    }
+
+    document.getElementById('saveInvBtn').innerText = "Update Invoice";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteInvoice(id) {
+    if(confirm("Indha invoice-ai delete pannanuma?")) {
+        savedInvoices = savedInvoices.filter(x => x.id !== id);
+        localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
+        updateInvoicesTable();
+        alert("Deleted successfully! ✅");
+    }
+}
+
+function showFullPreview() {
+    let compAddr = document.getElementById('comp_address').value;
+    let partyAddr = document.getElementById('party_address').value;
+    let invNo = document.getElementById('inv_no').value;
+    let invDate = document.getElementById('inv_date').value;
+    let transport = document.getElementById('inv_transport').value;
+    let lr = document.getElementById('inv_lr').value;
+    let gstType = document.getElementById('gst_type').value;
+    
+    let design = document.getElementById('global_design').value;
+    let countVal = document.getElementById('global_count').value;
+    let reed = document.getElementById('global_reed').value;
+    let pick = document.getElementById('global_pick').value;
+    let weave = document.getElementById('global_weave').value;
+
+    let companyLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo') || '';
+    let logoHtml = '';
+    if (companyLogo) {
+        logoHtml = `<div style="display:flex; align-items:center;"><img src="${companyLogo}" alt="Company Logo" style="max-height:30px; max-width:45px; border-radius:3px; object-fit:contain;"></div>`;
+    }
+
+    let rowsHtml = '';
+    let subTotal = 0;
+
+    let itemRows = document.querySelectorAll('#invoiceItemsContainer .item-row');
+    itemRows.forEach(function(row, idx) {
+        let date = row.querySelector('.i-date').value;
+        let pcs = row.querySelector('.i-pcs').value;
+        let qty = row.querySelector('.i-qty').value;
+        let rate = row.querySelector('.i-rate').value;
+        let total = row.querySelector('.i-total').value;
+
+        subTotal += parseFloat(total) || 0;
+
+        rowsHtml += '<tr>' +
+            '<td>' + (idx + 1) + '</td>' +
+            '<td>' + date + '</td>' +
+            '<td>' + pcs + '</td>' +
+            '<td>' + qty + '</td>' +
+            '<td>' + rate + '</td>' +
+            '<td>' + total + '</td>' +
+        '</tr>';
+    });
+
+    let taxRowsHtml = '';
+    let calculatedTaxTotal = subTotal;
+
+    if (gstType === 'gst_5') {
+        let cgst = subTotal * 0.025;
+        let sgst = subTotal * 0.025;
+        calculatedTaxTotal += cgst + sgst;
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">CGST (2.5%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + cgst.toFixed(2) + '</td></tr>';
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">SGST (2.5%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + sgst.toFixed(2) + '</td></tr>';
+    } else if (gstType === 'gst_12') {
+        let cgst = subTotal * 0.06;
+        let sgst = subTotal * 0.06;
+        calculatedTaxTotal += cgst + sgst;
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">CGST (6%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + cgst.toFixed(2) + '</td></tr>';
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">SGST (6%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + sgst.toFixed(2) + '</td></tr>';
+    } else if (gstType === 'igst_5') {
+        let igst = subTotal * 0.05;
+        calculatedTaxTotal += igst;
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">IGST (5%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + igst.toFixed(2) + '</td></tr>';
+    } else if (gstType === 'igst_12') {
+        let igst = subTotal * 0.12;
+        calculatedTaxTotal += igst;
+        taxRowsHtml += '<tr><td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">IGST (12%):</td><td style="font-weight:bold; border-top:1px solid #000;">' + igst.toFixed(2) + '</td></tr>';
+    }
+
+    let grandTotalRounded = Math.round(calculatedTaxTotal);
+    let roundOff = (grandTotalRounded - calculatedTaxTotal).toFixed(2);
+
+    document.getElementById('mainContainer').style.display = 'none';
+    let previewContainer = document.getElementById('printPreviewContainer');
+    previewContainer.style.display = 'block';
+
+    previewContainer.innerHTML = 
+        '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:2px solid #333; padding-bottom:8px;">' +
+            '<div style="flex:1;">' + logoHtml + '</div>' +
+            '<div style="flex:2; text-align:center; font-size:18px; font-weight:bold; letter-spacing:1px;">TAX INVOICE</div>' +
+            '<div style="flex:1;"></div>' +
+        '</div>' +
+        '<div class="invoice-header">' +
+            '<div><strong>From:</strong><br>' + compAddr.replace(/\n/g, '<br>') + '</div>' +
+            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/\n/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
+        '</div>' +
+        '<div style="font-size:11px; margin-bottom:10px; background:#f8fafc; padding:6px; border:1px solid #ccc;"><strong>Design No:</strong> <span style="font-weight:bold;">' + design + '</span>, <strong>Count:</strong> <span style="font-weight:bold;">' + countVal + '</span>, <strong>Reed:</strong> <span style="font-weight:bold;">' + reed + '</span>, <strong>Pick:</strong> <span style="font-weight:bold;">' + pick + '</span>, <strong>Weave:</strong> <span style="font-weight:bold;">' + weave + '</span></div>' +
+        '<table class="invoice-table">' +
+            '<thead>' +
+                '<tr>' +
+                    '<th style="width:10%;">S.No</th>' +
+                    '<th style="width:20%;">Date</th>' +
+                    '<th style="width:15%;">Pcs</th>' +
+                    '<th style="width:20%;">Qty</th>' +
+                    '<th style="width:15%;">Rate</th>' +
+                    '<th style="width:20%;">Amount</th>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>' + rowsHtml + '</tbody>' +
+            '<tfoot>' +
+                '<tr>' +
+                    '<td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">Sub Total:</td>' +
+                    '<td style="font-weight:bold; border-top:1px solid #000;">' + subTotal.toFixed(2) + '</td>' +
+                '</tr>' +
+                taxRowsHtml +
+                '<tr>' +
+                    '<td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">Round Off:</td>' +
+                    '<td style="font-weight:bold; border-top:1px solid #000;">' + roundOff + '</td>' +
+                '</tr>' +
+                '<tr>' +
+                    '<td colspan="5" style="text-align:right; font-weight:bold; border-top:1px solid #000;">Grand Total:</td>' +
+                    '<td style="font-weight:bold; font-size:12px; border-top:1px solid #000;">' + grandTotalRounded.toFixed(2) + '</td>' +
+                '</tr>' +
+            '</tfoot>' +
+        '</table>' +
+        '<div style="margin-top:40px; display:flex; justify-content:space-between; font-size:11px; font-weight:bold;">' +
+            '<div>Receiver Signature</div>' +
+            '<div>For TEXFRIEND ERP<br><br><br>Authorized Signatory</div>' +
+        '</div>' +
+        '<div style="text-align:center; margin-top:25px; display:flex; gap:10px; justify-content:center;" class="no-print">' +
+            '<button onclick="window.print()" style="background:#526E51; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print / Save as PDF</button>' +
+            '<button onclick="goBackToForm()" style="background:#3F5A3E; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">✏️ Edit Invoice</button>' +
+        '</div>';
+
+    window.scrollTo(0, 0);
+}
+
+function goBackToForm() {
+    document.getElementById('printPreviewContainer').style.display = 'none';
+    document.getElementById('mainContainer').style.display = 'block';
+    window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
