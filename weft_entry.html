@@ -97,12 +97,10 @@
         background: #FFFFFF;
     }
 
-    /* Design Number Full Row */
     .design-row-single {
         margin-bottom: 4px;
     }
 
-    /* Compact 4-Column Grid for Top Fields */
     .compact-top-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -124,7 +122,6 @@
         align-items: center;
     }
 
-    /* Weft specific grid */
     .header-grid {
         display: grid;
         grid-template-columns: 30px 1fr 1.2fr 1fr 30px;
@@ -358,6 +355,11 @@
 </div>
 
 <script>
+// 📌 Helper function for safe # matching
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
 function translateColorToTamil(colorName) {
     if (!colorName) return '-';
     var c = colorName.trim().toLowerCase();
@@ -405,29 +407,33 @@ function loadWeftDesignData() {
         return;
     }
 
+    let cleanDNo = cleanDesignName(dNo);
+
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let sp = specs[dNo] || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = masters.find(m => m.name === dNo);
+    let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
 
     let autoWeftWidth = '';
     if (found && found.width) {
         autoWeftWidth = (parseFloat(found.width) + 3).toFixed(2);
-    } else if (sp.width) {
-        autoWeftWidth = (parseFloat(sp.width) + 3).toFixed(2);
+    } else if (sp.width || sp.baseWidth) {
+        autoWeftWidth = (parseFloat(sp.width || sp.baseWidth) + 3).toFixed(2);
     }
 
-    let basePick = parseFloat(sp.pick) || 0;
+    let basePick = parseFloat(sp.pick || sp.basePick) || 0;
     let autoPick = basePick > 0 ? basePick - 4 : '';
 
     if (found) {
         saveBtn.innerText = "✏️ Update"; 
         document.getElementById('infoWeftWidth').value = found.weftWidth || autoWeftWidth || '';
-        document.getElementById('infoWeftCount').value = found.weftCount || sp.weft || '';
+        document.getElementById('infoWeftCount').value = found.weftCount || sp.weft || sp.count1 || '';
         document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
         document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
 
+        // Safely check and render weft lines
         if(found.weftLines && found.weftLines.length > 0) {
             found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
         } else {
@@ -440,7 +446,7 @@ function loadWeftDesignData() {
     } else {
         saveBtn.innerText = "💾 Save";
         document.getElementById('infoWeftWidth').value = autoWeftWidth;
-        document.getElementById('infoWeftCount').value = sp.weft || '';
+        document.getElementById('infoWeftCount').value = sp.weft || sp.count1 || '';
         document.getElementById('infoPick').value = autoPick;
         document.getElementById('infoWeave').value = sp.weave || '';
         addWeftLine();
@@ -565,8 +571,9 @@ function saveWeftDesign() {
         }
     });
 
+    let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let idx = masters.findIndex(m => m.name === dNo);
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
     
     if(idx === -1) {
         masters.push({ 
@@ -776,6 +783,6 @@ window.firebaseLoad = async function(key) {
             }
             return null;
         };
-    </script>
+</script>
 </body>
 </html>

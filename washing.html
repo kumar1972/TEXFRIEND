@@ -70,19 +70,10 @@
         font-weight: 700;
     }
 
-    .excel-btn {
-        background: #526E51;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
+    /* 📌 NEW: Report Button Group Style */
+    .report-btn-group { display: flex; gap: 6px; }
+    .report-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .print-main-btn { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
 
     h3 {
         font-size: 13px;
@@ -232,6 +223,24 @@
     .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
     .shrink-text { color: #D32F2F; font-weight: 700; }
     .status-pending { color: #D97706; font-weight: 700; font-size: 9px; }
+
+    /* 📌 NEW: Modal & Print Styles */
+    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
+    .modal-content { background: #fff; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+    .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
+    .modal-header h3 { border: none; padding: 0; margin: 0; }
+    .modal-actions { display: flex; gap: 8px; }
+    .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+
+    @media print {
+        body * { visibility: hidden; }
+        #previewModal, #previewModal * { visibility: visible; }
+        #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
+        .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+        .no-print { display: none !important; }
+    }
 </style>
 </head>
 <body>
@@ -243,7 +252,11 @@
 
     <div class="page-header-row">
         <div class="page-title">Washing Production Entry</div>
-        <button class="excel-btn" onclick="exportToExcel()">📥 Excel</button>
+        <!-- 📌 CHANGED: Replaced Excel with Preview & Print -->
+        <div class="report-btn-group">
+            <button type="button" class="report-btn" onclick="openPreview()">👁️ Preview</button>
+            <button type="button" class="print-main-btn" onclick="printReport()">🖨️ Print</button>
+        </div>
     </div>
 
     <!-- 1. TOP SECTION (ORDER DETAILS) -->
@@ -347,6 +360,22 @@
                     <!-- Data populates here -->
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- 📌 NEW: Preview & Print Modal -->
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <h3 style="color: #3F5A3E; font-size: 14px;">👁️ Washing Order Preview</h3>
+            <div class="modal-actions">
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+            </div>
+        </div>
+        <div class="modal-body" id="previewContent">
+            <!-- Preview content injects here -->
         </div>
     </div>
 </div>
@@ -684,32 +713,77 @@ function renderTable() {
                 <td>${botDateStr}</td>
                 <td>${rcvMtr}</td>
                 <td>${shrinkDisplay}</td>
-                <td>${actionBtns}</td>
+                <td class="no-print">${actionBtns}</td>
             </tr>
         `;
     });
 }
 
-function exportToExcel() {
-    let table = document.getElementById('washingTable');
-    let html = table.outerHTML;
-    let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
-    let link = document.createElement('a');
-    link.href = url;
-    link.download = 'Washing_Report.xls';
-    link.click();
-}
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
+// 📌 NEW: PREVIEW & PRINT FUNCTIONS
+function openPreview() {
+    let tableBody = document.getElementById('dataTableBody'); 
+    let thead = document.querySelector('.table-container table onthead');
+    
+    if(!tableBody) return;
+    
+    let html = `<div style="text-align: center; margin-bottom: 15px;">
+                    <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Washing Production Report</h2>
+                </div>
+                <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
+    
+    // Header உருவாக்குதல்
+    html += `<tr style="background:#f2f2f2;">`;
+    let headers = document.querySelectorAll('.table-container table thead th');
+    headers.forEach((th, idx) => {
+        if(idx < headers.length - 1) { // Action காலத்தை தவிர்க்க
+            html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
+        }
+    });
+    html += `</tr>`;
+
+    // Body உருவாக்குதல்
+    let rows = tableBody.querySelectorAll('tr');
+    if(rows.length === 0 || rows[0].innerText.includes("No Records Found")) {
+        html += `<tr><td colspan="8" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
+    } else {
+        rows.forEach(tr => {
+            let cells = tr.querySelectorAll('td');
+            html += `<tr>`;
+            cells.forEach((td, idx) => {
+                if(idx < cells.length - 1) { // Action காலத்தை தவிர்க்க
+                    html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
                 }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+            });
+            html += `</tr>`;
+        });
+    }
+    
+    html += `</table></div>`;
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('previewModal').style.display = 'flex';
+}
+
+function printReport() {
+    if(document.getElementById('previewModal').style.display !== 'flex') {
+        openPreview();
+    }
+    setTimeout(() => {
+        window.print();
+    }, 300);
+}
+
+window.firebaseLoad = async function(key) {
+    try {
+        const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+        if (docSnap.exists()) {
+            return JSON.parse(docSnap.data().content);
+        }
+    } catch (e) {
+        console.error("Firebase Load Error: ", e);
+    }
+    return null;
+};
+</script>
 </body>
 </html>

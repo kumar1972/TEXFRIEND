@@ -226,12 +226,12 @@
             <input type="text" id="baseCounts" placeholder="e.g., 2/60, 2/40" oninput="loadYarnData()">
         </div>
         <div class="form-group">
-            <label>Order Mtrs (Grnd)</label>
-            <input type="number" id="lengthMeters" value="100" oninput="loadYarnData()">
+            <label>Warp Dyeing Order (Mtrs)</label>
+            <input type="number" id="lengthMeters" value="100" oninput="calculateWeftMtrs(); loadYarnData();">
         </div>
         <div class="form-group">
             <label>Top Beam Mtrs</label>
-            <input type="number" id="topLengthMeters" value="125" oninput="loadYarnData()">
+            <input type="number" id="topLengthMeters" placeholder="Top Beam Mtrs" oninput="loadYarnData()">
         </div>
     </div>
 
@@ -275,8 +275,22 @@
         </div>
     </div>
 
-    <!-- WEFT SECTION -->
+    <!-- WEFT SEPARATE SECTION -->
     <h3 class="section-title" style="margin-top: 15px;">🧶 WEFT YARN CALCULATION</h3>
+    <div class="top-form-row-2" style="margin-bottom: 8px;">
+        <div class="form-group">
+            <label>Crimp %</label>
+            <input type="number" id="crimpPercentage" value="6" placeholder="%" oninput="calculateWeftMtrs(); loadYarnData();">
+        </div>
+        <div class="form-group">
+            <label>Weft Mtrs</label>
+            <input type="number" id="weftLengthMeters" value="100" readonly style="background:#081E12; cursor:not-allowed;">
+        </div>
+        <div class="form-group">
+            <!-- Empty spacing for layout alignment -->
+        </div>
+    </div>
+
     <div class="table-container">
         <table>
             <thead>
@@ -306,7 +320,10 @@
 </div>
 
 <script>
-// Translation Helper function English to Tamil Colors (Only used in Print/Preview)
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
 function translateColorToTamil(colorName) {
     if (!colorName) return '-';
     var c = colorName.trim().toLowerCase();
@@ -319,7 +336,6 @@ function translateColorToTamil(colorName) {
     return map[c] || colorName; 
 }
 
-// Global object to store structured data for Preview Generation
 window.calculatedYarnData = {
     ground: [], top: [], weft: [],
     groundTotals: { p: 0, t: 0, w: 0 },
@@ -344,6 +360,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function calculateWeftMtrs() {
+    let warpOrder = parseFloat(document.getElementById('lengthMeters').value) || 0;
+    let crimp = parseFloat(document.getElementById('crimpPercentage').value) || 0;
+    
+    let weftMtrs = warpOrder - (warpOrder * (crimp / 100));
+    document.getElementById('weftLengthMeters').value = weftMtrs > 0 ? weftMtrs.toFixed(2) : '';
+}
+
 function loadInitialData() {
     let dName = document.getElementById('designNumber').value;
     if(!dName) {
@@ -352,21 +376,23 @@ function loadInitialData() {
         document.getElementById('weftTableBody').innerHTML = '';
         document.getElementById('topBeamWrapper').style.display = 'none';
         document.getElementById('baseCounts').value = '';
+        document.getElementById('topLengthMeters').value = '';
         return;
     }
 
+    let cleanDNo = cleanDesignName(dName);
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMastersList.find(d => d.name === dName) || {};
+    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let sp = specs[dName] || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
 
-    let uiReed = foundMaster.reed || sp.reed || 52;
-    let uiPick = foundMaster.pick || sp.pick || 56;
+    let uiReed = foundMaster.reed || sp.reed || sp.baseReed || 52;
+    let uiPick = foundMaster.pick || sp.pick || sp.basePick || 56;
 
     document.getElementById('calcReed').value = uiReed;
     document.getElementById('calcPick').value = uiPick;
 
-    // Load Base Counts dynamically based on Master/Specs data
     let c1 = foundMaster.count1 || sp.warp || '';
     let c2 = foundMaster.count2 || sp.warp2 || '';
     let countsArr = [];
@@ -380,19 +406,26 @@ function loadInitialData() {
         document.getElementById('lengthMeters').value = foundMaster.orderMtr;
         defaultMtr = parseFloat(foundMaster.orderMtr) || 100;
     }
-    
-    if (foundMaster.topBeam) {
-        let rawTop = String(foundMaster.topBeam);
-        if (rawTop.includes('%')) {
-            let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
-            document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
+
+    // 📌 TOP BEAM CHECK: Top Beam இருந்தால் மட்டும் Mtrs கணக்கிடும், இல்லை எனில் Blank ஆகும்
+    let hasTopBeamLines = foundMaster.warpLines && foundMaster.warpLines.some(l => l.beam === 'Top Beam');
+    if (hasTopBeamLines) {
+        if (foundMaster.topBeam) {
+            let rawTop = String(foundMaster.topBeam);
+            if (rawTop.includes('%')) {
+                let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
+                document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
+            } else {
+                document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
+            }
         } else {
-            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
+            document.getElementById('topLengthMeters').value = defaultMtr;
         }
     } else {
-        document.getElementById('topLengthMeters').value = defaultMtr;
+        document.getElementById('topLengthMeters').value = ''; // 📌 Keep empty if no Top Beam entry
     }
 
+    calculateWeftMtrs();
     loadYarnData();
 }
 
@@ -465,10 +498,12 @@ function loadYarnData() {
     let dName = document.getElementById('designNumber').value;
     if(!dName) return;
 
+    let cleanDNo = cleanDesignName(dName);
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let foundMaster = designMastersList.find(d => d.name === dName) || {};
-    let sp = specs[dName] || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
 
     let uiReed = parseFloat(document.getElementById('calcReed').value) || 0;
     let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
@@ -477,10 +512,10 @@ function loadYarnData() {
     let defaultCountText = baseCountsInput.split(',')[0].trim();
     let defaultCountNum = getResultantCount(defaultCountText) || 20;
 
-    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 100; 
+    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 0; 
     let topLengthM = parseFloat(document.getElementById('topLengthMeters').value) || lengthM;
+    let weftLengthM = parseFloat(document.getElementById('weftLengthMeters').value) || lengthM;
 
-    // Reset Global Data
     window.calculatedYarnData = {
         ground: [], top: [], weft: [],
         groundTotals: { p: 0, t: 0, w: 0 },
@@ -489,7 +524,7 @@ function loadYarnData() {
     };
 
     // --- WARP ---
-    let baseWidth = parseFloat(foundMaster.width || sp.width) || 66.92;
+    let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
     let totalWarpEnds = Math.round(uiReed * baseWidth);
     let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
 
@@ -505,7 +540,6 @@ function loadYarnData() {
         }
     }
 
-    // Process and Split Warp Data
     warpData.summary.forEach(obj => {
         let calcCount = getResultantCount(obj.count);
         if (calcCount <= 0) calcCount = defaultCountNum;
@@ -534,7 +568,6 @@ function loadYarnData() {
     let gt = window.calculatedYarnData.groundTotals;
     if (gd.length > 0) {
         gd.forEach(r => {
-            // UI Color kept as English
             gHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
         });
         gHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${gt.p}</td><td>${gt.t}</td><td>${gt.w.toFixed(3)} kg</td></tr>`;
@@ -562,7 +595,6 @@ function loadYarnData() {
     let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
     let totalFabricPick = weftWidth * uiPick;
     
-    // Use proper fallback count for weft calculation
     let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
     let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
     
@@ -573,7 +605,7 @@ function loadYarnData() {
             let calcCount = getResultantCount(obj.count);
             if (calcCount <= 0) calcCount = weftCountNumFallback;
             let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
-            let wgt = (tPick * lengthM) / (1693.33 * calcCount);
+            let wgt = (tPick * weftLengthM) / (1693.33 * calcCount);
 
             window.calculatedYarnData.weft.push({ count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: tPick, weight: wgt });
             window.calculatedYarnData.weftTotals.p += obj.patternVal;
@@ -582,13 +614,11 @@ function loadYarnData() {
         });
     }
 
-    // Render Weft UI
     let wfHtml = '';
     let wfd = window.calculatedYarnData.weft;
     let wft = window.calculatedYarnData.weftTotals;
     if (wfd.length > 0) {
         wfd.forEach(r => {
-            // UI Color kept as English
             wfHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal.toFixed(2)}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
         });
         wfHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${wft.p}</td><td>${wft.t.toFixed(2)}</td><td>${wft.w.toFixed(3)} kg</td></tr>`;
@@ -598,13 +628,12 @@ function loadYarnData() {
     document.getElementById('weftTableBody').innerHTML = wfHtml;
 }
 
-// GENERATE PRINT TABLE (APPLIES TAMIL TRANSLATION)
 function generatePrintTableHtml(dataArray, totals, isWeft) {
     if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
     
     let html = '';
     dataArray.forEach(r => {
-        let colorDisplay = translateColorToTamil(r.color); // Translated for Preview/Print only!
+        let colorDisplay = translateColorToTamil(r.color);
         let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
         html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
     });
@@ -615,16 +644,18 @@ function generatePrintTableHtml(dataArray, totals, isWeft) {
     return html;
 }
 
-// PRINT / PREVIEW FUNCTIONS
 function previewReport() {
     let designNo = document.getElementById('designNumber').value || '-';
     let reed = document.getElementById('calcReed').value || '-';
     let pick = document.getElementById('calcPick').value || '-';
     let length = document.getElementById('lengthMeters').value || '-';
     let topLength = document.getElementById('topLengthMeters').value || '-';
+    let weftLength = document.getElementById('weftLengthMeters').value || '-';
     
     let d = window.calculatedYarnData;
     
+    let topBeamHeaderInfo = topLength ? `&nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts` : '';
+
     let html = `
         <style>
             .print-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 12px; text-align: center; border: 1px solid #999; margin-bottom: 20px; }
@@ -638,12 +669,12 @@ function previewReport() {
         <div style="text-align: center; margin-bottom: 20px;">
             <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
             <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
-                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} <br> <b>Order Mtr:</b> ${length} Mts &nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts
+                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} <br> 
+                <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts
             </p>
         </div>
     `;
 
-    // Ground Table Print
     html += `
         <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - GROUND BEAM</h3>
         <table class="print-tbl">
@@ -658,7 +689,6 @@ function previewReport() {
         </table>
     `;
 
-    // Top Table Print (If exists)
     if (d.top.length > 0) {
         html += `
             <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - TOP BEAM</h3>
@@ -675,7 +705,6 @@ function previewReport() {
         `;
     }
 
-    // Weft Table Print
     html += `
         <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧶 WEFT YARN CALCULATION</h3>
         <table class="print-tbl">
@@ -713,6 +742,6 @@ window.firebaseLoad = async function(key) {
             }
             return null;
         };
-    </script>
+</script>
 </body>
 </html>

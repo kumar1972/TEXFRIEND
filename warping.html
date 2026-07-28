@@ -166,13 +166,8 @@
         font-size: 10px;
     }
 
-    .add-btn {
-        background: #526E51; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;
-    }
-
-    .del-btn {
-        background: #D97706; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;
-    }
+    .add-btn { background: #526E51; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+    .del-btn { background: #D97706; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
 
     .save-btn {
         background: #526E51; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(82, 110, 81, 0.2);
@@ -248,7 +243,7 @@
             </div>
             <div class="form-group">
                 <label>Design No</label>
-                <select id="topDesignNo" onchange="loadTopWarpData()">
+                <select id="topDesignNo" onchange="onDesignSelect()">
                     <option value="">Select</option>
                 </select>
             </div>
@@ -258,7 +253,7 @@
             </div>
             <div class="form-group">
                 <label>Count</label>
-                <input type="number" id="topCount" placeholder="0">
+                <input type="text" id="topCount" placeholder="Count">
             </div>
             <div class="form-group">
                 <label>Warping Mts</label>
@@ -277,7 +272,7 @@
             <div id="topLinesContainer"></div>
         </div>
 
-        <button class="save-btn" style="margin-top: 10px;" onclick="saveTopOrder()">Save Top Order</button>
+        <button class="save-btn" id="saveTopBtn" style="margin-top: 10px;" onclick="saveTopOrder()">Save Top Order</button>
     </div>
 
     <div class="section-divider"></div>
@@ -299,7 +294,6 @@
             </div>
         </div>
 
-        <!-- RECEIVED GRID (Removed Loss & Loss %) -->
         <div id="botGridWrapper" style="display: none; margin-top: 5px;">
             <div class="grid-header-bot">
                 <div>Count</div>
@@ -349,6 +343,26 @@
 </div>
 
 <script>
+let editingTopIssueId = null;
+
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+function getResultantCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('topDate').valueAsDate = new Date();
     document.getElementById('botDate').valueAsDate = new Date();
@@ -376,23 +390,35 @@ function updateBottomDropdown() {
     botSelect.innerHTML = botHtml;
 }
 
-// TOP SECTION LOGIC
-function resolveWarpPattern(dName, defaultCount, mts) {
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let baseSetups = JSON.parse(localStorage.getItem('base_design_setups')) || [];
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    
-    let foundMaster = masters.find(d => d.name === dName) || {};
-    let foundBase = baseSetups.find(d => d.name === dName) || {};
-    let sp = specs[dName] || {};
+function onDesignSelect() {
+    // Reset Edit State if user selects new design
+    editingTopIssueId = null;
+    document.getElementById('saveTopBtn').innerText = "Save Top Order";
 
-    let uiReed = parseFloat(foundMaster.reed || foundBase.reed || sp.reed) || 52;
-    let baseWidth = parseFloat(foundMaster.widthOnloom || sp.width || foundBase.widthOnloom || foundBase.width) || 66.92;
+    let dNo = document.getElementById('topDesignNo').value;
+    if(dNo) {
+        let cleanDNo = cleanDesignName(dNo);
+        let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        let foundMaster = masters.find(m => cleanDesignName(m.name) === cleanDNo) || {};
+        
+        let baseOrderMtr = parseFloat(foundMaster.orderMtr) || 100;
+        let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05); 
+        
+        document.getElementById('topMts').value = warpingMts.toFixed(2);
+    } else {
+        document.getElementById('topMts').value = '100';
+    }
     
-    document.getElementById('topReed').value = uiReed;
-    document.getElementById('topCount').value = defaultCount;
+    loadTopWarpData();
+}
 
+function resolveWarpPattern(foundMaster, sp, defaultCountText, mts) {
+    let uiReed = parseFloat(foundMaster.reed || sp.reed || sp.baseReed) || 52;
+    let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
+    
+    let defaultCountNum = getResultantCount(defaultCountText) || 20;
     let totalEnds = Math.round(uiReed * baseWidth);
+    
     let lines = foundMaster.warpLines || [];
     let ranges = foundMaster.warpRanges || [];
 
@@ -416,9 +442,9 @@ function resolveWarpPattern(dName, defaultCount, mts) {
     let exactSeq = [];
     orderedPattern.forEach(item => {
         let val = parseFloat(item.ends) || 0;
-        let c = parseFloat(item.count) || defaultCount;
-        let clr = item.color || '-';
-        for(let k=0; k<val; k++) exactSeq.push({ count: c, color: clr });
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCountText);
+        let clr = item.color ? String(item.color).trim() : '-';
+        for(let k=0; k<val; k++) exactSeq.push({ count: cDisplay, color: clr });
     });
 
     let summaryMap = new Map();
@@ -445,7 +471,10 @@ function resolveWarpPattern(dName, defaultCount, mts) {
         }
 
         summaryArr.forEach(obj => {
-            let wgt = (obj.totalVal * mts) / (1693.33 * obj.count);
+            let calcCount = getResultantCount(obj.count);
+            if(calcCount <= 0) calcCount = defaultCountNum;
+
+            let wgt = (obj.totalVal * mts) / (1693.33 * calcCount);
             let key = obj.count + '_' + obj.color.toLowerCase();
             if(!finalMap.has(key)) finalMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
             finalMap.get(key).weight += wgt;
@@ -455,22 +484,67 @@ function resolveWarpPattern(dName, defaultCount, mts) {
     return Array.from(finalMap.values());
 }
 
+// 📌 NEW: Fetch Received Wt from Dyeing Records for Issued Wt
+function getDyeingReceivedWt(dNo, color) {
+    let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+    let cleanDNo = cleanDesignName(dNo);
+    let cleanColor = color.trim().toLowerCase();
+    
+    let dIssue = issues.slice().reverse().find(r => 
+        cleanDesignName(r.designNo) === cleanDNo && 
+        r.yarnType === 'Warp' && 
+        r.color.trim().toLowerCase() === cleanColor
+    );
+    
+    if (dIssue) {
+        let dRec = receives.slice().reverse().find(r => String(r.issueId) === String(dIssue.id));
+        if (dRec && parseFloat(dRec.receivedWt) > 0) {
+            return parseFloat(dRec.receivedWt);
+        }
+    }
+    return null;
+}
+
 function loadTopWarpData() {
+    if(editingTopIssueId) return; // Prevent overwriting if user is in edit mode
+    
     let dNo = document.getElementById('topDesignNo').value;
     let container = document.getElementById('topLinesContainer');
     container.innerHTML = '';
     
-    if(!dNo) return;
+    if(!dNo) {
+        document.getElementById('topReed').value = '';
+        document.getElementById('topCount').value = '';
+        return;
+    }
+
+    let cleanDNo = cleanDesignName(dNo);
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    
+    let foundMaster = masters.find(m => cleanDesignName(m.name) === cleanDNo) || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
+
+    let uiReed = parseFloat(foundMaster.reed || sp.reed || sp.baseReed) || 52;
+    let defaultCountText = foundMaster.count1 || sp.warp || sp.count1 || '20';
+    
+    document.getElementById('topReed').value = uiReed;
+    document.getElementById('topCount').value = defaultCountText;
 
     let mts = parseFloat(document.getElementById('topMts').value) || 100;
-    let defCount = parseFloat(document.getElementById('topCount').value) || 20;
-
-    let calcData = resolveWarpPattern(dNo, defCount, mts);
+    
+    let calcData = resolveWarpPattern(foundMaster, sp, defaultCountText, mts);
 
     if(calcData.length > 0) {
         calcData.forEach(item => {
-            let wgt = item.weight.toFixed(3);
-            addTopRow(item.count, item.color, wgt, wgt);
+            let orderWgt = item.weight.toFixed(3);
+            // 📌 Auto Fill Issued Wt from Dyeing
+            let dyeingRcvWt = getDyeingReceivedWt(dNo, item.color);
+            let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : orderWgt;
+            
+            addTopRow(item.count, item.color, orderWgt, issWgt);
         });
     } else {
         addTopRow('', '', '', '');
@@ -486,7 +560,7 @@ function addTopRow(count, color, ordWt, issWt) {
         <input type="text" class="t-color" value="${color}">
         <input type="number" class="t-order" value="${ordWt}" step="0.001">
         <input type="number" class="t-issue" value="${issWt}" step="0.001">
-        <button class="add-btn" onclick="addNewTopRow(this)">+</button>
+        <button class="add-btn" onclick="addNewTopRow(this)" title="Add Row">+</button>
     `;
     container.appendChild(row);
 }
@@ -500,7 +574,7 @@ function addNewTopRow(btn) {
         <input type="text" class="t-color" value="">
         <input type="number" class="t-order" value="" step="0.001">
         <input type="number" class="t-issue" value="" step="0.001">
-        <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+        <button class="del-btn" onclick="this.parentElement.remove()" title="Remove Row">×</button>
     `;
     container.insertBefore(row, btn.parentElement.nextSibling);
 }
@@ -512,34 +586,55 @@ function saveTopOrder() {
 
     if(!dNo) { alert("Please select a Design Number!"); return; }
 
-    let rows = document.querySelectorAll('#topLinesContainer .line-row');
-    if(rows.length === 0) return;
-
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
 
-    rows.forEach(row => {
-        let count = row.querySelector('.t-count').value.trim();
-        let color = row.querySelector('.t-color').value.trim();
-        let orderWt = parseFloat(row.querySelector('.t-order').value) || 0;
-        let issueWt = parseFloat(row.querySelector('.t-issue').value) || 0;
-
-        if(count && color && issueWt > 0) {
-            issues.push({
-                id: Date.now() + Math.random(),
-                date: dateVal,
-                unit: unit,
-                designNo: dNo,
-                count: count,
-                color: color,
-                orderWt: orderWt.toFixed(3),
-                issueWt: issueWt.toFixed(3),
-                status: 'Pending'
-            });
+    // 📌 Handling Edit Mode for Top Order
+    if (editingTopIssueId) {
+        let idx = issues.findIndex(r => r.id == editingTopIssueId);
+        if (idx !== -1) {
+            let row = document.querySelector('#topLinesContainer .line-row');
+            if (row) {
+                issues[idx].date = dateVal;
+                issues[idx].unit = unit;
+                issues[idx].designNo = dNo;
+                issues[idx].issueWt = parseFloat(row.querySelector('.t-issue').value || 0).toFixed(3);
+                issues[idx].orderWt = parseFloat(row.querySelector('.t-order').value || 0).toFixed(3);
+                issues[idx].count = row.querySelector('.t-count').value.trim();
+                issues[idx].color = row.querySelector('.t-color').value.trim();
+            }
         }
-    });
+        editingTopIssueId = null;
+        document.getElementById('saveTopBtn').innerText = "Save Top Order";
+        alert("Top Order Updated Successfully! ✅");
+    } 
+    else {
+        let rows = document.querySelectorAll('#topLinesContainer .line-row');
+        if(rows.length === 0) return;
+
+        rows.forEach(row => {
+            let count = row.querySelector('.t-count').value.trim();
+            let color = row.querySelector('.t-color').value.trim();
+            let orderWt = parseFloat(row.querySelector('.t-order').value) || 0;
+            let issueWt = parseFloat(row.querySelector('.t-issue').value) || 0;
+
+            if(count && color && issueWt > 0) {
+                issues.push({
+                    id: Date.now() + Math.random(),
+                    date: dateVal,
+                    unit: unit,
+                    designNo: dNo,
+                    count: count,
+                    color: color,
+                    orderWt: orderWt.toFixed(3),
+                    issueWt: issueWt.toFixed(3),
+                    status: 'Pending'
+                });
+            }
+        });
+        alert("Top Order Saved Successfully! ✅");
+    }
 
     localStorage.setItem('warping_issue_records', JSON.stringify(issues));
-    alert("Top Order Saved Successfully! ✅");
     
     document.getElementById('topLinesContainer').innerHTML = '';
     document.getElementById('topDesignNo').value = '';
@@ -548,7 +643,6 @@ function saveTopOrder() {
     renderTable();
 }
 
-// BOTTOM SECTION LOGIC (Received Details & Accurate Excess Calculation only)
 function loadBottomData() {
     let dNo = document.getElementById('botDesignNo').value;
     let wrapper = document.getElementById('botGridWrapper');
@@ -562,8 +656,9 @@ function loadBottomData() {
     
     wrapper.style.display = 'block';
 
+    let cleanDNo = cleanDesignName(dNo);
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-    let pendingItems = issues.filter(r => r.status === 'Pending' && r.designNo === dNo);
+    let pendingItems = issues.filter(r => r.status === 'Pending' && cleanDesignName(r.designNo) === cleanDNo);
 
     pendingItems.forEach(item => {
         let row = document.createElement('div');
@@ -588,12 +683,10 @@ function calculateWarpingLoss(inp) {
 
     let excessWtInp = row.querySelector('.b-excess-wt');
 
-    // In Warping, Loss = Issued Wt - Received Wt
     if(receivedWt > 0 && receivedWt <= issuedWt) {
         let lossWt = issuedWt - receivedWt;
         let lossPerc = (lossWt / issuedWt) * 100;
         
-        // 5% Allowed Loss Check
         if(lossPerc > 5) {
             let allowedLoss = issuedWt * 0.05;
             let excess = lossWt - allowedLoss;
@@ -665,8 +758,46 @@ function saveBottomEntry() {
     }
 }
 
-// ACTION BUTTONS (EDIT & DELETE)
-function editWarpingRecord(recId) {
+// 📌 EDIT PENDING RECORD (TOP ORDER)
+function editPendingRecord(id) {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let issue = issues.find(r => r.id == id);
+    
+    if(issue) {
+        editingTopIssueId = id;
+        document.getElementById('topDate').value = issue.date || document.getElementById('topDate').value;
+        document.getElementById('topUnit').value = issue.unit || '';
+        document.getElementById('topDesignNo').value = issue.designNo;
+        
+        let container = document.getElementById('topLinesContainer');
+        container.innerHTML = '';
+        
+        let row = document.createElement('div');
+        row.className = 'line-row';
+        row.innerHTML = `
+            <input type="text" class="t-count" value="${issue.count}">
+            <input type="text" class="t-color" value="${issue.color}">
+            <input type="number" class="t-order" value="${issue.orderWt}" step="0.001">
+            <input type="number" class="t-issue" value="${issue.issueWt}" step="0.001">
+            <button class="del-btn" onclick="this.parentElement.remove()" title="Remove Row">×</button>
+        `;
+        container.appendChild(row);
+        
+        document.getElementById('saveTopBtn').innerText = "Update Top Order";
+        window.scrollTo(0, 0);
+    }
+}
+
+function deletePendingRecord(id) {
+    if(!confirm("Are you sure you want to delete this Pending Warping Order?")) return;
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    issues = issues.filter(r => r.id != id);
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    renderTable();
+    updateBottomDropdown();
+}
+
+function editReceivedRecord(recId) {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     
@@ -675,23 +806,19 @@ function editWarpingRecord(recId) {
         let record = receives[index];
         let issueId = record.issueId;
         
-        // Revert status to Pending
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) issues[issueIndex].status = "Pending";
         
-        // Remove from received table
         receives.splice(index, 1);
         
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
         
-        // Populate Bottom Form
         document.getElementById('botDate').value = record.botDate || document.getElementById('botDate').value;
         updateBottomDropdown();
         document.getElementById('botDesignNo').value = record.designNo;
         loadBottomData();
         
-        // Auto-fill received weight and calculate
         setTimeout(() => {
             let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
             rows.forEach(row => {
@@ -707,8 +834,8 @@ function editWarpingRecord(recId) {
     }
 }
 
-function deleteWarpingRecord(recId) {
-    if(!confirm("Are you sure you want to delete this record? It will revert to Pending status.")) return;
+function deleteReceivedRecord(recId) {
+    if(!confirm("Are you sure you want to delete this received record? It will revert to Pending status.")) return;
     
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
@@ -717,11 +844,9 @@ function deleteWarpingRecord(recId) {
     if(index !== -1) {
         let issueId = receives[index].issueId;
         
-        // Revert issue status to "Pending"
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) issues[issueIndex].status = "Pending";
         
-        // Remove receive record entirely
         receives.splice(index, 1);
         
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
@@ -736,7 +861,6 @@ function deleteWarpingRecord(recId) {
     }
 }
 
-// RENDER MERGED DATA TABLE (Without Loss Wt and Loss %)
 function renderTable() {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
@@ -745,7 +869,6 @@ function renderTable() {
     let tbody = document.getElementById('dataTableBody');
     tbody.innerHTML = '';
 
-    // Update Filter Options Dynamically
     let uniqueDesigns = [...new Set(issues.map(r => r.designNo))];
     let filterHtml = '<option value="All">All Designs</option>';
     uniqueDesigns.forEach(d => { filterHtml += `<option value="${d}">${d}</option>`; });
@@ -754,7 +877,7 @@ function renderTable() {
 
     let displayRecords = issues;
     if(filterVal !== 'All') {
-        displayRecords = issues.filter(r => r.designNo === filterVal);
+        displayRecords = issues.filter(r => cleanDesignName(r.designNo) === cleanDesignName(filterVal));
     }
 
     if(displayRecords.length === 0) {
@@ -779,9 +902,16 @@ function renderTable() {
         let excessWt = matchingRec ? matchingRec.excessWt : "0.000";
         let excessDisplay = (parseFloat(excessWt) > 0) ? `<span style="color:#D32F2F; font-weight:700;">${excessWt}</span>` : excessWt;
         
+        // 📌 PENDING AND RECEIVED ACTION BUTTONS
         let actionBtns = matchingRec 
-            ? `<div class="action-btns"><button class="edit-action-btn" onclick="editWarpingRecord(${matchingRec.id})">✏️</button><button class="del-action-btn" onclick="deleteWarpingRecord(${matchingRec.id})">🗑️</button></div>`
-            : `<span style="color:#D97706; font-size:9px; font-weight:bold;">Pending</span>`;
+            ? `<div class="action-btns">
+                <button class="edit-action-btn" onclick="editReceivedRecord(${matchingRec.id})" title="Edit Received Entry">✏️</button>
+                <button class="del-action-btn" onclick="deleteReceivedRecord(${matchingRec.id})" title="Delete Received Entry">🗑️</button>
+               </div>`
+            : `<div class="action-btns">
+                <button class="edit-action-btn" onclick="editPendingRecord(${issue.id})" title="Edit Top Order">✏️</button>
+                <button class="del-action-btn" onclick="deletePendingRecord(${issue.id})" title="Delete Top Order">🗑️</button>
+               </div>`;
 
         tbody.innerHTML += `
             <tr>
@@ -798,17 +928,18 @@ function renderTable() {
         `;
     });
 }
+
 window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+    try {
+        const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+        if (docSnap.exists()) {
+            return JSON.parse(docSnap.data().content);
+        }
+    } catch (e) {
+        console.error("Firebase Load Error: ", e);
+    }
+    return null;
+};
+</script>
 </body>
 </html>

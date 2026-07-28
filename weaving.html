@@ -203,8 +203,8 @@
 
             <div class="form-grid-row-4">
                 <div class="form-group">
-                    <label>Order Mtrs</label>
-                    <input type="number" step="0.01" id="weavingMts" placeholder="Meters" value="100" oninput="recalculateWeights()" required>
+                    <label>Order Mtrs (Warping)</label>
+                    <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="recalculateWeights()" required>
                 </div>
                 <div class="form-group">
                     <label>Warp 1 (Grnd)</label>
@@ -233,13 +233,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="text" placeholder="Count" class="w-count" required></td>
-                            <td><input type="text" placeholder="Colour" class="w-colour" required></td>
-                            <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
-                            <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
-                            <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWarpRow()">＋</button></td>
-                        </tr>
+                        <!-- Auto-filled -->
                     </tbody>
                 </table>
             </div>
@@ -257,13 +251,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="text" placeholder="Count" class="wf-count" required></td>
-                            <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
-                            <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
-                            <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
-                            <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWeftRow()">＋</button></td>
-                        </tr>
+                        <!-- Auto-filled -->
                     </tbody>
                 </table>
             </div>
@@ -380,16 +368,44 @@
             loadBitmapImage();
         };
 
-        function parseYarnCount(val) {
-            if(!val) return 0;
-            let str = String(val).trim();
-            if(str.includes('/')) {
-                let p = str.split('/');
-                let ply = parseFloat(p[0]) || 1;
-                let c = parseFloat(p[1]) || 1;
-                if(ply > 0 && c > 0) return c / ply; 
+        function cleanDesignName(str) {
+            return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+        }
+
+        function parseYarnCount(countStr) {
+            if (!countStr) return 0;
+            let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+            if (str.includes('/')) {
+                let parts = str.split('/');
+                if (parts.length === 2) {
+                    let ply = parseFloat(parts[0]) || 1;
+                    let singleCount = parseFloat(parts[1]) || 1;
+                    return singleCount / ply; 
+                }
             }
             return parseFloat(str) || 0;
+        }
+
+        // 📌 Fetch Received Wt from Dyeing Records for Issued Wt
+        function getDyeingReceivedWt(dNo, color, yarnType) {
+            let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+            let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+            let cleanDNo = cleanDesignName(dNo);
+            let cleanColor = color.trim().toLowerCase();
+            
+            let dIssue = issues.slice().reverse().find(r => 
+                cleanDesignName(r.designNo) === cleanDNo && 
+                r.yarnType === yarnType && 
+                r.color.trim().toLowerCase() === cleanColor
+            );
+            
+            if (dIssue) {
+                let dRec = receives.slice().reverse().find(r => String(r.issueId) === String(dIssue.id));
+                if (dRec && parseFloat(dRec.receivedWt) > 0) {
+                    return parseFloat(dRec.receivedWt);
+                }
+            }
+            return null;
         }
 
         function loadBitmapImage() {
@@ -440,179 +456,155 @@
         let baseWarpWeights = {};
         let baseWeftWeights = {};
 
+        function resolvePattern(lines, ranges, type, defaultCount) {
+            if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
+            let covered = new Array(lines.length).fill(false);
+            let orderedPattern = [];
+
+            if(ranges && ranges.length > 0) {
+                ranges.forEach(r => {
+                    for(let s=0; s<r.set; s++) {
+                        for(let j = r.start; j <= r.end; j++) {
+                            if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                        }
+                    }
+                    for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+                });
+            }
+            lines.forEach((l, idx) => {
+                if(!covered[idx]) orderedPattern.push({...l});
+            });
+
+            let exactSequence = [];
+            orderedPattern.forEach(item => {
+                let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+                let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+                let clr = item.color ? String(item.color).trim() : '-';
+                for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
+            });
+
+            let summaryMap = new Map();
+            let order = [];
+            exactSequence.forEach(item => {
+                let key = item.count + "||" + item.color.trim();
+                if(!summaryMap.has(key)) {
+                    summaryMap.set(key, { count: item.count, color: item.color.trim(), patternVal: 0, totalVal: 0 });
+                    order.push(key);
+                }
+                summaryMap.get(key).patternVal++;
+            });
+
+            return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
+        }
+
         function onDesignSelect(val) {
             loadBitmapImage();
             if(val) {
                 localStorage.setItem('selected_design_number', val);
+                let cleanDNo = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let specs = designSpecs[val] || { warp: '', warp2: '', weft: '', reed: '', pick: '' };
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
+                let specs = specKey ? designSpecs[specKey] : { warp: '', warp2: '', weft: '', reed: '', pick: '' };
                 
-                document.getElementById('warpCount').value = specs.warp || '';
-                document.getElementById('warpCount2').value = specs.warp2 || ''; 
+                document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
+                document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || ''; 
                 document.getElementById('weftCount').value = specs.weft || '';
 
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-                let found = designMastersList.find(d => d.name === val);
+                let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                if(found) {
-                    let defaultCount = parseYarnCount(specs.warp) || 30; 
+                // 📌 Auto fill Order Mtrs from Warping (Base Order - 5%)
+                let baseOrderMtr = parseFloat(found.orderMtr) || 100;
+                let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
+                document.getElementById('weavingMts').value = warpingMts.toFixed(2);
+
+                let defaultWarpCount = found.count1 || specs.warp || '20';
+                let defaultWeftCount = found.weftCount || specs.weft || '40';
+
+                baseWarpWeights[val] = [];
+                baseWeftWeights[val] = [];
+
+                // 📌 WARP CALCULATION (Same as yarn_cal)
+                let uiReed = parseFloat(found.reed || specs.reed || specs.baseReed) || 52;
+                let baseWidth = parseFloat(found.width || specs.width || specs.baseWidth) || 66.92;
+                let totalWarpEnds = Math.round(uiReed * baseWidth);
+                
+                let warpData = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
+                if (warpData.totalPatternVal > 0) {
+                    let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
+                    let rem = totalWarpEnds % warpData.totalPatternVal;
                     
-                    baseWarpWeights[val] = [];
-                    baseWeftWeights[val] = [];
-
-                    if(found.warpLines && found.warpLines.length > 0) {
-                        let rawTotalWarp = 0;
-                        found.warpLines.forEach((item, idx) => {
-                            let lineNum = idx + 1;
-                            let ends = parseFloat(item.ends) || 0;
-                            let multiplier = 1;
-                            if(found.warpRanges) {
-                                found.warpRanges.forEach(range => {
-                                    if(lineNum >= range.start && lineNum <= range.end) {
-                                        multiplier = range.set || 1;
-                                    }
-                                });
-                            }
-                            rawTotalWarp += (ends * multiplier);
-                        });
-
-                        let reedVal = parseFloat(found.reed) || 72;
-                        let divisionResult = ((reedVal + 8) * 58) / rawTotalWarp;
-                        let repeatVal = Math.floor(divisionResult);
-
-                        let warpColorMap = {};
-                        found.warpLines.forEach((item, idx) => {
-                            let lineNum = idx + 1;
-                            let color = item.color ? item.color.trim() : 'Unknown';
-                            let countOriginalText = item.count || specs.warp;
-                            let countNumeric = parseYarnCount(item.count) || defaultCount; 
-                            
-                            let ends = parseFloat(item.ends) || 0;
-                            let multiplier = 1;
-                            if(found.warpRanges) {
-                                found.warpRanges.forEach(range => {
-                                    if(lineNum >= range.start && lineNum <= range.end) {
-                                        multiplier = range.set || 1;
-                                    }
-                                });
-                            }
-                            let totalEndsForLine = ends * multiplier;
-                            if(!warpColorMap[color]) {
-                                warpColorMap[color] = { countNumeric: countNumeric, countText: countOriginalText, baseSum: 0 };
-                            }
-                            warpColorMap[color].baseSum += totalEndsForLine;
-                        });
-
-                        let targetTotalEnds = Math.round(((reedVal + 8) * 58));
-                        let currentAssignedTotal = 0;
-                        let calculatedColorTotals = {};
-                        Object.keys(warpColorMap).forEach(col => {
-                            let base = warpColorMap[col].baseSum;
-                            let scaled = base * repeatVal;
-                            calculatedColorTotals[col] = scaled;
-                            currentAssignedTotal += scaled;
-                        });
-
-                        let difference = targetTotalEnds - currentAssignedTotal;
-                        if(difference > 0) {
-                            for(let i = 0; i < found.warpLines.length && difference > 0; i++) {
-                                let colName = found.warpLines[i].color ? found.warpLines[i].color.trim() : 'Unknown';
-                                let singleEnds = parseFloat(found.warpLines[i].ends) || 0;
-                                if(calculatedColorTotals[colName] !== undefined) {
-                                    let addAmount = Math.min(singleEnds, difference);
-                                    calculatedColorTotals[colName] += addAmount;
-                                    difference -= addAmount;
-                                }
-                            }
-                        }
-
-                        Object.keys(warpColorMap).forEach(col => {
-                            let data = warpColorMap[col];
-                            let scaledTotal = calculatedColorTotals[col];
-                            let baseLengthYards = 100 * 1.09361;
-                            let weightLbs = (scaledTotal * baseLengthYards) / (840 * data.countNumeric);
-                            let weightKg = (weightLbs * 453.592) / 1000;
-                            
-                            baseWarpWeights[val].push({ count: data.countText, colour: col, baseWt: weightKg });
-                        });
+                    warpData.summary.forEach(obj => obj.totalVal = obj.patternVal * repeats);
+                    for(let i=0; i<rem; i++) {
+                        let item = warpData.sequence[i];
+                        let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color);
+                        if(obj) obj.totalVal++;
                     }
 
-                    if(found.weftLines && found.weftLines.length > 0) {
-                        let rawTotalWeftPicks = 0;
-                        found.weftLines.forEach((item, idx) => {
-                            let lineNum = idx + 1;
-                            let picks = parseFloat(item.picks) || 0;
-                            let multiplier = 1;
-                            if(found.weftRanges) {
-                                found.weftRanges.forEach(range => {
-                                    if(lineNum >= range.start && lineNum <= range.end) {
-                                        multiplier = range.set || 1;
-                                    }
-                                });
-                            }
-                            rawTotalWeftPicks += (picks * multiplier);
-                        });
-
-                        let effectiveWidth = 3 + (parseFloat(found.widthOnloom) || 64.4);
-                        let pickVal = parseFloat(found.pick) || 68;
-                        let totalWeftProduct = effectiveWidth * pickVal;
-                        let weftMultiplier = rawTotalWeftPicks > 0 ? totalWeftProduct / rawTotalWeftPicks : 1;
-
-                        let defaultWeftNumeric = parseYarnCount(specs.weft) || 40;
-
-                        let weftColorMap = {};
-                        found.weftLines.forEach((item, idx) => {
-                            let lineNum = idx + 1;
-                            let color = item.color ? item.color.trim() : 'Unknown';
-                            let countOriginalText = item.count || specs.weft;
-                            let countNumeric = parseYarnCount(item.count) || defaultWeftNumeric;
-                            
-                            let picks = parseFloat(item.picks) || 0;
-                            let multiplier = 1;
-                            if(found.weftRanges) {
-                                found.weftRanges.forEach(range => {
-                                    if(lineNum >= range.start && lineNum <= range.end) {
-                                        multiplier = range.set || 1;
-                                    }
-                                });
-                            }
-                            let totalPicksForLine = picks * multiplier;
-                            if(!weftColorMap[color]) {
-                                weftColorMap[color] = { countNumeric: countNumeric, countText: countOriginalText, baseSum: 0 };
-                            }
-                            weftColorMap[color].baseSum += totalPicksForLine;
-                        });
-
-                        Object.keys(weftColorMap).forEach(col => {
-                            let data = weftColorMap[col];
-                            let scaledWeftTotal = (data.baseSum * weftMultiplier) * (100 / 100);
-                            let baseLengthYards = 100 * 1.09361;
-                            let weightLbs = (scaledWeftTotal * baseLengthYards) / (840 * data.countNumeric);
-                            let weightKg = (weightLbs * 453.592) / 1000;
-
-                            baseWeftWeights[val].push({ count: data.countText, colour: col, baseWt: weightKg });
-                        });
-                    }
-
-                    renderWeightsByMeters(val);
+                    warpData.summary.forEach(obj => {
+                        let calcCount = parseYarnCount(obj.count) || parseYarnCount(defaultWarpCount) || 20;
+                        baseWarpWeights[val].push({ count: obj.count, colour: obj.color, ends: obj.totalVal, calcCount: calcCount });
+                    });
                 }
+
+                // 📌 WEFT CALCULATION (Same as yarn_cal)
+                let uiPick = parseFloat(found.pick || specs.pick || specs.basePick) || 56;
+                let weftWidth = parseFloat(found.weftWidth || specs.weftWidth) || (baseWidth + 3);
+                let totalFabricPick = weftWidth * uiPick;
+
+                let weftData = resolvePattern(found.weftLines || [], found.weftRanges || [], 'weft', defaultWeftCount);
+                if (weftData.totalPatternVal > 0) {
+                    weftData.summary.forEach(obj => {
+                        let calcCount = parseYarnCount(obj.count) || parseYarnCount(defaultWeftCount) || 40;
+                        let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
+                        
+                        baseWeftWeights[val].push({ count: obj.count, colour: obj.color, tPick: tPick, calcCount: calcCount });
+                    });
+                }
+
+                renderWeightsByMeters(val);
             } else {
                 document.getElementById('warpCount').value = '';
                 document.getElementById('warpCount2').value = '';
                 document.getElementById('weftCount').value = '';
+                document.getElementById('weavingMts').value = '100';
+                
+                document.querySelector('#warpRowsTable tbody').innerHTML = `<tr>
+                    <td><input type="text" placeholder="Count" class="w-count" required></td>
+                    <td><input type="text" placeholder="Colour" class="w-colour" required></td>
+                    <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
+                    <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
+                    <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWarpRow()">＋</button></td>
+                </tr>`;
+                document.querySelector('#weftRowsTable tbody').innerHTML = `<tr>
+                    <td><input type="text" placeholder="Count" class="wf-count" required></td>
+                    <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
+                    <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
+                    <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
+                    <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWeftRow()">＋</button></td>
+                </tr>`;
             }
         }
 
         function renderWeightsByMeters(val) {
-            let currentMts = parseFloat(document.getElementById('weavingMts').value) || 100;
-            let ratio = currentMts / 100;
+            let currentWeavingMts = parseFloat(document.getElementById('weavingMts').value) || 100; // This represents Warping Mts
+            
+            // As per yarn_calc: weft length is base order - crimp(6%). Warping mts = base order - 5%.
+            // So Weft length = currentWeavingMts * (0.94 / 0.95).
+            let weftMtrs = currentWeavingMts * (0.94 / 0.95);
 
             if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
                 const warpTbody = document.querySelector('#warpRowsTable tbody');
                 warpTbody.innerHTML = '';
                 baseWarpWeights[val].forEach(r => {
-                    let calculatedWt = (r.baseWt * ratio).toFixed(3);
-                    addWarpRow(r.count, r.colour, calculatedWt, calculatedWt);
+                    let weightKg = (r.ends * currentWeavingMts) / (1693.33 * r.calcCount);
+                    let calculatedWt = weightKg.toFixed(3);
+                    
+                    // 📌 Auto Fill Issued Wt from Dyeing
+                    let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Warp');
+                    let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
+                    
+                    addWarpRow(r.count, r.colour, calculatedWt, issWgt);
                 });
             }
 
@@ -620,8 +612,14 @@
                 const weftTbody = document.querySelector('#weftRowsTable tbody');
                 weftTbody.innerHTML = '';
                 baseWeftWeights[val].forEach(r => {
-                    let calculatedWt = (r.baseWt * ratio).toFixed(3);
-                    addWeftRow(r.count, r.colour, calculatedWt, calculatedWt);
+                    let weightKg = (r.tPick * weftMtrs) / (1693.33 * r.calcCount);
+                    let calculatedWt = weightKg.toFixed(3);
+                    
+                    // 📌 Auto Fill Issued Wt from Dyeing
+                    let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Weft');
+                    let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
+                    
+                    addWeftRow(r.count, r.colour, calculatedWt, issWgt);
                 });
             }
         }
@@ -719,10 +717,6 @@
                 return;
             }
 
-            if(!confirm("Indha weaving order-ai save pannanuma?")) {
-                return;
-            }
-
             let warpRows = [];
             document.querySelectorAll('#warpRowsTable tbody tr').forEach(tr => {
                 const c = tr.querySelector('.w-count').value;
@@ -767,44 +761,36 @@
                 weavingMasterData.push(data);
             }
 
+            // Remove old pending items for this design before inserting updated ones
+            warpTransactions = warpTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
+            weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
+
             warpRows.forEach((r, idx) => {
-                let existingTrans = warpTransactions.find(x => x.designNo === designNo && x.count === r.count && x.colour === r.colour);
-                if(existingTrans) {
-                    existingTrans.orderWt = parseFloat(r.weight) || 0;
-                    existingTrans.issuedWt = parseFloat(r.issuedWt) || 0;
-                } else {
-                    warpTransactions.push({
-                        id: Date.now() + idx,
-                        designNo: designNo,
-                        count: r.count,
-                        colour: r.colour,
-                        orderWt: parseFloat(r.weight) || 0,
-                        issuedWt: parseFloat(r.issuedWt) || 0,
-                        returnWt: '',
-                        diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                        status: 'running'
-                    });
-                }
+                warpTransactions.push({
+                    id: Date.now() + idx,
+                    designNo: designNo,
+                    count: r.count,
+                    colour: r.colour,
+                    orderWt: parseFloat(r.weight) || 0,
+                    issuedWt: parseFloat(r.issuedWt) || 0,
+                    returnWt: '',
+                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                    status: 'running'
+                });
             });
 
             weftRows.forEach((r, idx) => {
-                let existingTrans = weftTransactions.find(x => x.designNo === designNo && x.count === r.count && x.colour === r.colour);
-                if(existingTrans) {
-                    existingTrans.orderWt = parseFloat(r.weight) || 0;
-                    existingTrans.issuedWt = parseFloat(r.issuedWt) || 0;
-                } else {
-                    weftTransactions.push({
-                        id: Date.now() + 1000 + idx,
-                        designNo: designNo,
-                        count: r.count,
-                        colour: r.colour,
-                        orderWt: parseFloat(r.weight) || 0,
-                        issuedWt: parseFloat(r.issuedWt) || 0,
-                        returnWt: '',
-                        diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                        status: 'running'
-                    });
-                }
+                weftTransactions.push({
+                    id: Date.now() + 1000 + idx,
+                    designNo: designNo,
+                    count: r.count,
+                    colour: r.colour,
+                    orderWt: parseFloat(r.weight) || 0,
+                    issuedWt: parseFloat(r.issuedWt) || 0,
+                    returnWt: '',
+                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                    status: 'running'
+                });
             });
 
             localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
@@ -869,10 +855,6 @@
             const designNo = document.getElementById('botDesignNo').value;
             if(!designNo) {
                 alert("Please select a Design Number!");
-                return;
-            }
-
-            if(!confirm("Indha bottom entry-ai save pannanuma?")) {
                 return;
             }
 
@@ -1020,17 +1002,15 @@
             
             let html = `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
             
-            // Header
             let headers = table.querySelectorAll('thead th');
             html += `<tr style="background:#f2f2f2;">`;
             headers.forEach((th, idx) => {
-                if(idx < headers.length - 1) { // Skip Action column in preview
+                if(idx < headers.length - 1) { 
                     html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
                 }
             });
             html += `</tr>`;
             
-            // Body
             let rows = table.querySelectorAll('tbody tr');
             if(rows.length === 0) {
                 html += `<tr><td colspan="${headers.length - 1}" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
@@ -1039,7 +1019,7 @@
                     let cells = tr.querySelectorAll('td');
                     html += `<tr>`;
                     cells.forEach((td, idx) => {
-                        if(idx < cells.length - 1) { // Skip Action column
+                        if(idx < cells.length - 1) { 
                             html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
                         }
                     });
@@ -1052,6 +1032,17 @@
             document.getElementById('previewModal').style.display = 'flex';
         }
         window.firebaseLoad = async function(key) {
+            try {
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                if (docSnap.exists()) {
+                    return JSON.parse(docSnap.data().content);
+                }
+            } catch (e) {
+                console.error("Firebase Load Error: ", e);
+            }
+            return null;
+        };
+  window.firebaseLoad = async function(key) {
             try {
                 const docSnap = await getDoc(doc(db, "texfriend_erp", key));
                 if (docSnap.exists()) {

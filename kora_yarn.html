@@ -138,6 +138,7 @@
         border: 1px solid rgba(82, 110, 81, 0.2);
         margin-top: 5px;
         margin-bottom: 15px;
+        white-space: nowrap; /* Tabbles avoid shrinking too much */
     }
 
     table {
@@ -226,6 +227,13 @@
                 <input type="text" id="dyeingName" placeholder="Dyeing name">
             </div>
         </div>
+        <!-- UPDATED: Mill Name added to issue form -->
+        <div class="form-row full">
+            <div class="form-group">
+                <label>Mill Name (From where yarn is taken)</label>
+                <input type="text" id="issueMillName" placeholder="Enter Mill Name">
+            </div>
+        </div>
         <div class="form-row full">
             <div class="form-group">
                 <label>Design Number</label>
@@ -293,6 +301,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Mill</th> <!-- UPDATED: Added Mill Column -->
                         <th>Unit</th>
                         <th>Design</th>
                         <th>Count</th>
@@ -375,12 +384,14 @@ function saveInward() {
 function saveIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
+    let issueMillName = document.getElementById('issueMillName').value.trim(); // UPDATED: Get mill name
     let dNo = document.getElementById('designNo').value;
     let count = document.getElementById('issueCount').value.trim();
     let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
 
-    if(!dyeingName || !dNo || !count || issueWt <= 0) {
-        alert("Please fill all details to issue yarn!");
+    // Validation
+    if(!dyeingName || !dNo || !count || issueWt <= 0 || !issueMillName) {
+        alert("Please fill all details to issue yarn (including Mill Name)!");
         return;
     }
 
@@ -390,7 +401,6 @@ function saveIssue() {
     let totalIn = inwards.filter(i => i.count === count).reduce((sum, i) => sum + parseFloat(i.weight), 0);
     let totalOut = issues.filter(i => i.count === count).reduce((sum, i) => sum + parseFloat(i.issueWt), 0);
     
-    // If editing, exclude the old weight of this specific record from totalOut
     if (editingIssueId) {
         let oldRec = issues.find(i => i.id == editingIssueId);
         if(oldRec && oldRec.count === count) {
@@ -410,6 +420,7 @@ function saveIssue() {
         if(idx !== -1) {
             issues[idx].date = dateVal;
             issues[idx].dyeingName = dyeingName;
+            issues[idx].millName = issueMillName; // UPDATED: Update mill name
             issues[idx].designNo = dNo;
             issues[idx].count = count;
             issues[idx].issueWt = issueWt.toFixed(3);
@@ -422,6 +433,7 @@ function saveIssue() {
             id: Date.now() + Math.random(),
             date: dateVal,
             dyeingName: dyeingName,
+            millName: issueMillName, // UPDATED: Save mill name
             designNo: dNo,
             count: count,
             issueWt: issueWt.toFixed(3)
@@ -432,6 +444,7 @@ function saveIssue() {
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
     
     document.getElementById('dyeingName').value = '';
+    document.getElementById('issueMillName').value = ''; // UPDATED: Reset mill name
     document.getElementById('designNo').value = '';
     document.getElementById('issueCount').value = '';
     document.getElementById('issueWt').value = '';
@@ -502,7 +515,7 @@ function refreshAllTables() {
     let outBody = document.getElementById('issueHistoryBody');
     outBody.innerHTML = '';
     if(issues.length === 0) {
-        outBody.innerHTML = `<tr><td colspan="6" style="padding:10px;">No issue records.</td></tr>`;
+        outBody.innerHTML = `<tr><td colspan="7" style="padding:10px;">No issue records.</td></tr>`;
     } else {
         [...issues].reverse().forEach(item => {
             let dObj = new Date(item.date);
@@ -510,6 +523,7 @@ function refreshAllTables() {
             outBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
+                    <td>${item.millName || '-'}</td> <!-- UPDATED: Show Mill Name -->
                     <td>${item.dyeingName}</td>
                     <td>${item.designNo}</td>
                     <td>${item.count}</td>
@@ -554,6 +568,7 @@ function editIssue(id) {
         editingIssueId = id;
         document.getElementById('issueDate').value = rec.date;
         document.getElementById('dyeingName').value = rec.dyeingName;
+        document.getElementById('issueMillName').value = rec.millName || ''; // UPDATED: Fill mill name
         document.getElementById('designNo').value = rec.designNo;
         document.getElementById('issueCount').value = rec.count;
         document.getElementById('issueWt').value = rec.issueWt;

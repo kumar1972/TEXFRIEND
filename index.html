@@ -221,6 +221,11 @@
             loadCompanyLogo();
         }
 
+        // Helper function for safe # matching
+        function cleanDesignName(str) {
+            return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+        }
+
         function loadCompanyLogo() {
             let logoData = localStorage.getItem('company_logo') || localStorage.getItem('logo') || localStorage.getItem('master_logo') || '';
             let logoContainer = document.getElementById('companyLogoContainer');
@@ -292,10 +297,15 @@
             let pick = document.getElementById('pick').value.trim();
             let weave = document.getElementById('weave').value.trim();
 
+            let cleanDNo = cleanDesignName(designNo);
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            let existingBitmap = designSpecs[designNo] ? designSpecs[designNo].bitmap : "";
             
-            designSpecs[designNo] = { 
+            // Find existing exact key to overwrite safely
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
+            
+            let existingBitmap = designSpecs[specKey] ? designSpecs[specKey].bitmap : "";
+            
+            designSpecs[specKey] = { 
                 warp, warp2, weft, width, reed, pick, weave, 
                 bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
             };
@@ -310,8 +320,13 @@
                 designList = designList.filter(x => x != designNo);
                 localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
                 
+                let cleanDNo = cleanDesignName(designNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                delete designSpecs[designNo];
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
+                
+                if(specKey) {
+                    delete designSpecs[specKey];
+                }
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
                 localStorage.removeItem('selected_design_number');
@@ -340,17 +355,24 @@
             }
         }
 
+        // 📌 UPDATE: This function now smartly matches keys and handles old data
         function selectDesign(val){
             localStorage.setItem('selected_design_number', val);
             if(val) {
+                let cleanVal = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let specs = designSpecs[val] || {};
-                document.getElementById('warpCount').value = specs.warp || '';
-                document.getElementById('warpCount2').value = specs.warp2 || '';
+                
+                // Ignoring case, spaces, and # symbol
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
+                let specs = designSpecs[specKey] || {};
+
+                // Fetching proper values avoiding undefined
+                document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
+                document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || '';
                 document.getElementById('weftCount').value = specs.weft || '';
-                document.getElementById('width').value = specs.width || '';
-                document.getElementById('reed').value = specs.reed || '';
-                document.getElementById('pick').value = specs.pick || '';
+                document.getElementById('width').value = specs.width || specs.baseWidth || '';
+                document.getElementById('reed').value = specs.reed || specs.baseReed || '';
+                document.getElementById('pick').value = specs.pick || specs.basePick || '';
                 document.getElementById('weave').value = specs.weave || '';
                 
                 if(specs.bitmap) {

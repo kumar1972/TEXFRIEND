@@ -103,6 +103,18 @@
         border: 1px solid rgba(82, 110, 81, 0.15);
     }
 
+    .section-title-sub {
+        font-size: 11px;
+        color: #3F5A3E;
+        font-weight: 700;
+        background: rgba(82, 110, 81, 0.15);
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        border-left: 3px solid #526E51;
+    }
+
     .issue-grid-header {
         display: grid;
         grid-template-columns: 1fr 1.5fr 1fr 1fr 32px;
@@ -234,8 +246,9 @@
         <input type="text" id="dyeingName" placeholder="Enter Dyeing Unit Name">
     </div>
 
-    <!-- Container for dynamic matched rows -->
+    <!-- 📌 1. WARP YARN SECTION -->
     <div style="margin-top: 10px;">
+        <div class="section-title-sub">🧵 WARP YARN ISSUE</div>
         <div class="issue-grid-header">
             <div>Count</div>
             <div>Colour</div>
@@ -243,7 +256,20 @@
             <div>Issued Wt</div>
             <div></div>
         </div>
-        <div id="issueLinesContainer"></div>
+        <div id="warpIssueLinesContainer"></div>
+    </div>
+
+    <!-- 📌 2. WEFT YARN SECTION -->
+    <div style="margin-top: 10px;">
+        <div class="section-title-sub">🧶 WEFT YARN ISSUE</div>
+        <div class="issue-grid-header">
+            <div>Count</div>
+            <div>Colour</div>
+            <div>Order Wt</div>
+            <div>Issued Wt</div>
+            <div></div>
+        </div>
+        <div id="weftIssueLinesContainer"></div>
     </div>
 
     <button class="save-main-btn" onclick="saveDyeingIssue()">Save Dyeing Order Issue</button>
@@ -256,6 +282,7 @@
                     <th>Date</th>
                     <th>Dyeing Unit</th>
                     <th>Design No</th>
+                    <th>Type</th>
                     <th>Count</th>
                     <th>Colour</th>
                     <th>Order Wt</th>
@@ -273,6 +300,10 @@
 <script>
 let editingIssueId = null;
 
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('issueDate').valueAsDate = new Date();
     loadDesignDropdown();
@@ -289,7 +320,20 @@ function loadDesignDropdown() {
     select.innerHTML = html;
 }
 
-// Pattern calculation logic
+function getResultantCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
+}
+
 function resolvePattern(lines, ranges, type, defaultCount) {
     if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
     let covered = new Array(lines.length).fill(false);
@@ -312,17 +356,21 @@ function resolvePattern(lines, ranges, type, defaultCount) {
     let exactSequence = [];
     orderedPattern.forEach(item => {
         let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
-        let c = parseFloat(item.count) || defaultCount;
-        let clr = item.color || '-';
-        for(let k=0; k<val; k++) exactSequence.push({ count: c, color: clr });
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+        let clr = item.color ? String(item.color).trim() : '-';
+        let bm = item.beam || 'Ground'; 
+        
+        for(let k=0; k<val; k++) {
+            exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+        }
     });
 
     let summaryMap = new Map();
     let order = [];
     exactSequence.forEach(item => {
-        let key = item.count + "||" + item.color.trim();
+        let key = item.count + "||" + item.color.trim() + "||" + item.beam;
         if(!summaryMap.has(key)) {
-            summaryMap.set(key, { count: item.count, color: item.color.trim(), patternVal: 0, totalVal: 0 });
+            summaryMap.set(key, { count: item.count, color: item.color.trim(), beam: item.beam, patternVal: 0, totalVal: 0 });
             order.push(key);
         }
         summaryMap.get(key).patternVal++;
@@ -332,20 +380,25 @@ function resolvePattern(lines, ranges, type, defaultCount) {
 }
 
 function loadYarnRequirements() {
-    // Reset Edit State if user selects a new design while editing
     editingIssueId = null;
     document.querySelector('.save-main-btn').innerText = "Save Dyeing Order Issue";
 
     let dName = document.getElementById('designNumber').value;
+    let warpContainer = document.getElementById('warpIssueLinesContainer');
+    let weftContainer = document.getElementById('weftIssueLinesContainer');
+
     if(!dName) {
-        document.getElementById('issueLinesContainer').innerHTML = '';
+        warpContainer.innerHTML = '';
+        weftContainer.innerHTML = '';
         document.getElementById('dyeingName').value = '';
         return;
     }
 
+    let cleanDNo = cleanDesignName(dName);
+
     // Auto-fill Dyeing Unit Name if previously saved for this design
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
-    let existingRecord = issueRecords.slice().reverse().find(r => r.designNo === dName);
+    let existingRecord = issueRecords.slice().reverse().find(r => cleanDesignName(r.designNo) === cleanDNo);
     if(existingRecord) {
         document.getElementById('dyeingName').value = existingRecord.unit;
     } else {
@@ -353,78 +406,125 @@ function loadYarnRequirements() {
     }
 
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let baseSetups = JSON.parse(localStorage.getItem('base_design_setups')) || [];
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    
-    let foundMaster = designMastersList.find(d => d.name === dName) || {};
-    let foundBase = baseSetups.find(d => d.name === dName) || {};
-    let sp = specs[dName] || {};
+    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
 
-    let uiReed = parseFloat(foundMaster.reed || foundBase.reed || sp.reed) || 52;
-    let uiPick = parseFloat(foundMaster.pick || foundBase.pick || sp.pick) || 56;
-    let baseWidth = parseFloat(foundMaster.widthOnloom || sp.width || foundBase.widthOnloom || foundBase.width) || 66.92;
+    let uiReed = parseFloat(foundMaster.reed || sp.reed || sp.baseReed) || 52;
+    let uiPick = parseFloat(foundMaster.pick || sp.pick || sp.basePick) || 56;
+    let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
     let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
     
-    let defaultWarpCount = parseFloat(foundMaster.warpCount || 20);
-    let defaultWeftCount = parseFloat(foundMaster.weftCount || 20);
-    let lengthM = 100;
+    // Load Orders Length & Crimp Percentage from yarn_calc logic
+    let warpOrderMtrs = parseFloat(foundMaster.orderMtr) || 100;
+    let topBeamMtrs = warpOrderMtrs;
 
-    let mergedMap = new Map();
+    if (foundMaster.topBeam) {
+        let rawTop = String(foundMaster.topBeam);
+        if (rawTop.includes('%')) {
+            let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
+            topBeamMtrs = warpOrderMtrs + (warpOrderMtrs * pct / 100);
+        } else {
+            topBeamMtrs = parseFloat(rawTop) || warpOrderMtrs;
+        }
+    }
 
-    // 1. Calculate WARP
+    // Default 6% crimp for Weft Mtrs calculation
+    let crimpPct = 6; 
+    let weftOrderMtrs = warpOrderMtrs - (warpOrderMtrs * (crimpPct / 100));
+
+    let defaultCountText = foundMaster.count1 || sp.warp || '20';
+    let defaultCountNum = getResultantCount(defaultCountText) || 20;
+
+    // 📌 1. WARP YARN CALCULATION (Auto-fill from Yarn Calc Specs)
     let totalWarpEnds = Math.round(uiReed * baseWidth);
-    let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultWarpCount);
+    let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
+    
+    let warpMap = new Map();
     if (warpData.totalPatternVal > 0) {
         let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
         let rem = totalWarpEnds % warpData.totalPatternVal;
+        
         warpData.summary.forEach(obj => obj.totalVal = obj.patternVal * repeats);
         for(let i=0; i<rem; i++) {
             let item = warpData.sequence[i];
-            let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color);
+            let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color && o.beam === item.beam);
             if(obj) obj.totalVal++;
         }
+
         warpData.summary.forEach(obj => {
-            let wgt = (obj.totalVal * lengthM) / (1693.33 * obj.count);
+            let calcCount = getResultantCount(obj.count);
+            if (calcCount <= 0) calcCount = defaultCountNum;
+            let currentLen = (obj.beam === 'Top Beam') ? topBeamMtrs : warpOrderMtrs;
+            let wgt = (obj.totalVal * currentLen) / (1693.33 * calcCount);
+            
             let key = obj.count + '_' + obj.color.toLowerCase();
-            if(!mergedMap.has(key)) mergedMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
-            mergedMap.get(key).weight += wgt;
+            if(!warpMap.has(key)) warpMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
+            warpMap.get(key).weight += wgt;
         });
     }
 
-    // 2. Calculate WEFT
+    // 📌 2. WEFT YARN CALCULATION (Auto-fill from Yarn Calc Specs with Weft Mtrs)
     let totalFabricPick = weftWidth * uiPick;
-    let weftData = resolvePattern(foundMaster.weftLines || [], foundMaster.weftRanges || [], 'weft', defaultWeftCount);
+    let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
+    let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
+    
+    let weftData = resolvePattern(foundMaster.weftLines || [], foundMaster.weftRanges || [], 'weft', weftCountFallbackText);
+    let weftMap = new Map();
+
     if (weftData.totalPatternVal > 0) {
         weftData.summary.forEach(obj => {
+            let calcCount = getResultantCount(obj.count);
+            if (calcCount <= 0) calcCount = weftCountNumFallback;
             let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
-            let wgt = (tPick * lengthM) / (1693.33 * obj.count);
+            let wgt = (tPick * weftOrderMtrs) / (1693.33 * calcCount);
+
             let key = obj.count + '_' + obj.color.toLowerCase();
-            if(!mergedMap.has(key)) mergedMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
-            mergedMap.get(key).weight += wgt;
+            if(!weftMap.has(key)) weftMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
+            weftMap.get(key).weight += wgt;
         });
     }
 
-    let container = document.getElementById('issueLinesContainer');
-    container.innerHTML = '';
-    
-    let mergedArray = Array.from(mergedMap.values());
-    if(mergedArray.length === 0) {
-        container.innerHTML = '<div style="font-size:11px; text-align:center; padding:10px; color:#D97706;">No Yarn Data found for this Design!</div>';
-        return;
+    // Render Warp UI Lines
+    warpContainer.innerHTML = '';
+    let warpArray = Array.from(warpMap.values());
+    if(warpArray.length === 0) {
+        warpContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Warp Yarn Data</div>';
+    } else {
+        warpArray.forEach(item => {
+            let row = document.createElement('div');
+            row.className = 'line-row warp-row';
+            row.innerHTML = `
+                <input type="text" class="inp-count" value="${item.count}" readonly>
+                <input type="text" class="inp-color" value="${item.color}" readonly>
+                <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
+                <input type="number" class="inp-issue" placeholder="Wt">
+                <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            warpContainer.appendChild(row);
+        });
     }
 
-    mergedArray.forEach((item, index) => {
-        let row = document.createElement('div');
-        row.className = 'line-row';
-        row.innerHTML = `
-            <input type="text" class="inp-count" value="${item.count}" readonly>
-            <input type="text" class="inp-color" value="${item.color}" readonly>
-            <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
-            <input type="number" class="inp-issue" placeholder="Wt">
-            <button class="del-btn" onclick="this.parentElement.remove()">×</button>
-        `;
-        container.appendChild(row);
-    });
+    // Render Weft UI Lines
+    weftContainer.innerHTML = '';
+    let weftArray = Array.from(weftMap.values());
+    if(weftArray.length === 0) {
+        weftContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Weft Yarn Data</div>';
+    } else {
+        weftArray.forEach(item => {
+            let row = document.createElement('div');
+            row.className = 'line-row weft-row';
+            row.innerHTML = `
+                <input type="text" class="inp-count" value="${item.count}" readonly>
+                <input type="text" class="inp-color" value="${item.color}" readonly>
+                <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
+                <input type="number" class="inp-issue" placeholder="Wt">
+                <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            weftContainer.appendChild(row);
+        });
+    }
 }
 
 function saveDyeingIssue() {
@@ -437,8 +537,10 @@ function saveDyeingIssue() {
         return;
     }
 
-    let rows = document.querySelectorAll('#issueLinesContainer .line-row');
-    if(rows.length === 0) {
+    let warpRows = document.querySelectorAll('#warpIssueLinesContainer .line-row');
+    let weftRows = document.querySelectorAll('#weftIssueLinesContainer .line-row');
+
+    if(warpRows.length === 0 && weftRows.length === 0) {
         alert("No yarn lines to save!");
         return;
     }
@@ -446,21 +548,22 @@ function saveDyeingIssue() {
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
 
     if (editingIssueId) {
-        // Edit Mode (Update single record)
         let idx = issueRecords.findIndex(r => r.id == editingIssueId);
         if(idx !== -1) {
-            let row = rows[0];
-            issueRecords[idx].date = dateVal;
-            issueRecords[idx].unit = dName;
-            issueRecords[idx].designNo = dNumber;
-            issueRecords[idx].issueWt = parseFloat(row.querySelector('.inp-issue').value).toFixed(3);
+            let row = document.querySelector('.line-row');
+            if(row) {
+                issueRecords[idx].date = dateVal;
+                issueRecords[idx].unit = dName;
+                issueRecords[idx].designNo = dNumber;
+                issueRecords[idx].issueWt = parseFloat(row.querySelector('.inp-issue').value || 0).toFixed(3);
+            }
         }
         editingIssueId = null;
         document.querySelector('.save-main-btn').innerText = "Save Dyeing Order Issue";
         alert("Dyeing Order Updated Successfully! ✅");
     } else {
-        // Normal Mode (Save multiple rows)
-        rows.forEach(row => {
+        // Process Warp Entries
+        warpRows.forEach(row => {
             let count = row.querySelector('.inp-count').value;
             let color = row.querySelector('.inp-color').value;
             let orderWt = row.querySelector('.inp-order').value;
@@ -472,6 +575,7 @@ function saveDyeingIssue() {
                     date: dateVal,
                     unit: dName,
                     designNo: dNumber,
+                    yarnType: "Warp",
                     count: count,
                     color: color,
                     orderWt: parseFloat(orderWt).toFixed(3),
@@ -480,18 +584,41 @@ function saveDyeingIssue() {
                 });
             }
         });
+
+        // Process Weft Entries
+        weftRows.forEach(row => {
+            let count = row.querySelector('.inp-count').value;
+            let color = row.querySelector('.inp-color').value;
+            let orderWt = row.querySelector('.inp-order').value;
+            let issueWt = row.querySelector('.inp-issue').value.trim();
+
+            if(issueWt) {
+                issueRecords.push({
+                    id: Date.now() + Math.random(),
+                    date: dateVal,
+                    unit: dName,
+                    designNo: dNumber,
+                    yarnType: "Weft",
+                    count: count,
+                    color: color,
+                    orderWt: parseFloat(orderWt).toFixed(3),
+                    issueWt: parseFloat(issueWt).toFixed(3),
+                    status: "Pending"
+                });
+            }
+        });
+
         alert("Dyeing Order Issued Successfully! ✅");
     }
 
     localStorage.setItem('dyeing_issue_records', JSON.stringify(issueRecords));
     
-    // Clear dynamic inputs
     document.getElementById('designNumber').value = '';
-    document.getElementById('issueLinesContainer').innerHTML = '';
+    document.getElementById('warpIssueLinesContainer').innerHTML = '';
+    document.getElementById('weftIssueLinesContainer').innerHTML = '';
     renderIssuedList();
 }
 
-// EDIT FUNCTION
 function editIssueRecord(id) {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let rec = records.find(r => r.id == id);
@@ -501,7 +628,10 @@ function editIssueRecord(id) {
         document.getElementById('designNumber').value = rec.designNo;
         document.getElementById('dyeingName').value = rec.unit;
         
-        let container = document.getElementById('issueLinesContainer');
+        let container = rec.yarnType === 'Weft' ? document.getElementById('weftIssueLinesContainer') : document.getElementById('warpIssueLinesContainer');
+        document.getElementById('warpIssueLinesContainer').innerHTML = '';
+        document.getElementById('weftIssueLinesContainer').innerHTML = '';
+
         container.innerHTML = `
             <div class="line-row">
                 <input type="text" class="inp-count" value="${rec.count}" readonly>
@@ -517,7 +647,6 @@ function editIssueRecord(id) {
     }
 }
 
-// DELETE FUNCTION
 function deleteIssueRecord(id) {
     if(!confirm("Are you sure you want to delete this issue record?")) return;
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -532,17 +661,17 @@ function renderIssuedList() {
     tbody.innerHTML = '';
 
     if(issueRecords.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="padding:15px;">No Dyeing Orders Issued yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="padding:15px;">No Dyeing Orders Issued yet.</td></tr>`;
         return;
     }
 
-    // Reverse to show latest first
-    issueRecords.reverse().forEach(record => {
+    issueRecords.slice().reverse().forEach(record => {
         let dObj = new Date(record.date);
         let dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
         
         let orderWtFormatted = parseFloat(record.orderWt || 0).toFixed(3);
         let issueWtFormatted = parseFloat(record.issueWt || 0).toFixed(3);
+        let yType = record.yarnType || "Warp";
 
         let actionHtml = '';
         if(record.status === 'Received') {
@@ -561,6 +690,7 @@ function renderIssuedList() {
                 <td>${dateStr}</td>
                 <td>${record.unit}</td>
                 <td>${record.designNo}</td>
+                <td><b>${yType}</b></td>
                 <td>${record.count}</td>
                 <td>${record.color}</td>
                 <td>${orderWtFormatted}</td>
@@ -570,17 +700,18 @@ function renderIssuedList() {
         `;
     });
 }
+
 window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+    try {
+        const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+        if (docSnap.exists()) {
+            return JSON.parse(docSnap.data().content);
+        }
+    } catch (e) {
+        console.error("Firebase Load Error: ", e);
+    }
+    return null;
+};
+</script>
 </body>
 </html>

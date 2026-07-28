@@ -97,12 +97,10 @@
         background: #FFFFFF;
     }
 
-    /* Design Number Full Row */
     .design-row-single {
         margin-bottom: 4px;
     }
 
-    /* Order Mtr, Top Beam Mtrs & Type Grid (3 columns) */
     .design-top-grid {
         display: grid;
         grid-template-columns: 1fr 1.2fr 1fr;
@@ -233,7 +231,6 @@
 
     <h3>📐 Warp Pattern Entry</h3>
 
-    <!-- Design Number Full Row -->
     <div class="design-row-single">
         <div class="form-group">
             <label>Design Number</label>
@@ -243,7 +240,6 @@
         </div>
     </div>
 
-    <!-- Order Mtr, Top Beam Mtrs & Type Grid (3 columns) -->
     <div class="design-top-grid">
         <div class="form-group">
             <label>Order Mtr</label>
@@ -264,22 +260,21 @@
         </div>
     </div>
 
-    <!-- Compact 5-Column Top Row -->
     <div class="compact-top-grid">
         <div class="form-group">
             <label>Count 1</label>
-            <input type="text" id="infoCount1" placeholder="2/60">
+            <input type="text" id="infoCount1" placeholder="count">
         </div>
         <div class="form-group">
             <label>Count 2</label>
-            <input type="text" id="infoCount2" placeholder="2/40">
+            <input type="text" id="infoCount2" placeholder="count">
         </div>
         <div class="form-group">
-            <label>O.Reed</label>
+            <label>Onloom.Reed</label>
             <input type="text" id="infoReed" placeholder="Reed" oninput="calculateOnloomWidth()">
         </div>
         <div class="form-group">
-            <label>O.Pick</label>
+            <label>onloom.Pick</label>
             <input type="text" id="infoPick" placeholder="Pick">
         </div>
         <div class="form-group">
@@ -290,7 +285,6 @@
 
     <div class="divider"></div>
 
-    <!-- 1. WARP LINES ENTRY -->
     <div class="section-title">
         <span>1. Warp Thread Pattern</span>
         <span style="font-size: 9px; color: #10B981; font-weight: 600;">(Press Enter in Ends to add new line)</span>
@@ -308,7 +302,6 @@
 
     <div class="divider"></div>
 
-    <!-- 2. REPEATS (GROUPS) ENTRY -->
     <div class="section-title">
         <span>2. Pattern Repeats (Groups)</span>
         <button class="btn-add" onclick="addWarpRange()">+ Add</button>
@@ -322,7 +315,6 @@
     </div>
     <div id="warpRangesContainer"></div>
 
-    <!-- Action Buttons -->
     <div class="action-btns-row">
         <button class="preview-btn" onclick="previewPattern()">👁️ Preview</button>
         <button class="save-btn" onclick="saveWarpDesign()" id="saveBtnTxt">💾 Save</button>
@@ -330,7 +322,6 @@
     </div>
 </div>
 
-<!-- Preview Modal (Printable) -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -341,12 +332,10 @@
             </div>
         </div>
         <div class="modal-body" id="previewContent" style="padding: 15px;">
-            <!-- Preview Content injects here -->
         </div>
     </div>
 </div>
 
-<!-- Saved Patterns Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -364,7 +353,6 @@
                         </tr>
                     </thead>
                     <tbody id="savedPatternsBody">
-                        <!-- Data here -->
                     </tbody>
                 </table>
             </div>
@@ -375,28 +363,72 @@
 <script>
 let currentBaseSpecs = {};
 
+// 📌 EXTENDED COLOR MAPPING FUNCTION
 function translateColorToTamil(colorName) {
     if (!colorName) return '-';
     var c = colorName.trim().toLowerCase();
+    
     var map = {
         'white': 'வெள்ளை',
         'black': 'கருப்பு',
         'blue': 'ப்ளூ',
+        'sky blue': 'ஸ்கை ப்ளூ',
+        'royal blue': 'ராயல் ப்ளூ',
+        'navy': 'நேவி',
+        'navy blue': 'நேவி ப்ளூ',
+        'turq': 'டர்க்',
+        'turquoise': 'டர்க்காய்ஸ்',
         'yellow': 'மஞ்சள்',
+        'lemon yellow': 'லெமன் மஞ்சள்',
         'red': 'சிகப்பு',
         'green': 'பச்சை',
+        'dark green': 'டார்க் பச்சை',
+        'light green': 'லைட் பச்சை',
+        'olive': 'ஆலிவ்',
+        'mint': 'மிண்ட்',
         'brown': 'பிரவுன்',
         'khaki': 'காக்கி',
         'rose': 'ரோஸ்',
         'orange': 'ஆரஞ்சு',
         'violet': 'வயோலெட்',
+        'purple': 'பர்புள்',
         'grey': 'சாம்பல்',
+        'gray': 'சாம்பல்',
         'gold': 'தங்கம்',
         'pink': 'பிங்க்',
-        'navy': 'நேவி',
-        'maroon': 'மெரூன்'
+        'maroon': 'மெரூன்',
+        'cream': 'க்ரீம்',
+        'beige': 'பீஜ்',
+        'peach': 'பீச்',
+        'lavender': 'லேவெண்டர்',
+        'silver': 'சில்வர்',
+        'sandal': 'சந்தனம்'
     };
-    return map[c] || colorName; 
+
+    if (map[c]) {
+        return map[c];
+    }
+
+    // 📌 Transliteration Fallback for any unmapped English color text
+    return c
+        .replace(/blue/g, 'ப்ளூ')
+        .replace(/green/g, 'பச்சை')
+        .replace(/yellow/g, 'மஞ்சள்')
+        .replace(/red/g, 'சிகப்பு')
+        .replace(/white/g, 'வெள்ளை')
+        .replace(/black/g, 'கருப்பு')
+        .replace(/pink/g, 'பிங்க்')
+        .replace(/purple/g, 'பர்புள்')
+        .replace(/orange/g, 'ஆரஞ்சு')
+        .replace(/rose/g, 'ரோஸ்')
+        .replace(/grey|gray/g, 'சாம்பல்')
+        .replace(/brown/g, 'பிரவுன்')
+        .replace(/light/g, 'லைட்')
+        .replace(/dark/g, 'டார்க்');
+}
+
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -410,6 +442,19 @@ function loadDesignDropdown() {
     let html = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
     select.innerHTML = html;
+}
+
+function calculateOnloomWidth() {
+    let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
+    let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
+    let onloomReed = parseFloat(document.getElementById('infoReed').value) || 0;
+
+    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) {
+        let calcWidth = (baseReed * baseWidth) / onloomReed;
+        document.getElementById('infoWidth').value = calcWidth.toFixed(2);
+    } else if (baseWidth > 0) {
+        document.getElementById('infoWidth').value = baseWidth.toFixed(2);
+    }
 }
 
 function loadDesignData() {
@@ -436,40 +481,36 @@ function loadDesignData() {
         return;
     }
 
+    let cleanDNo = cleanDesignName(dNo);
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    currentBaseSpecs = specs[dNo] || {};
+    
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    currentBaseSpecs = specKey ? specs[specKey] : {};
 
-    let baseReed = parseFloat(currentBaseSpecs.reed) || 0;
-    let basePick = parseFloat(currentBaseSpecs.pick) || 0;
-    let baseWidth = parseFloat(currentBaseSpecs.width) || 0;
+    let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
+    let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
+    let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
 
-    let autoReed = baseReed > 0 ? baseReed - 8 : 0;
-    let autoPick = basePick > 0 ? basePick - 4 : 0;
-    let autoWidth = 0;
-    if (baseWidth > 0 && baseReed > 0 && autoReed > 0) {
-        autoWidth = (baseReed * baseWidth) / autoReed;
-    } else {
-        autoWidth = baseWidth;
-    }
+    let autoReed = baseReed > 0 ? (baseReed - 8) : '';
+    let autoPick = basePick > 0 ? (basePick - 4) : '';
 
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let designOrders = orders.filter(o => o.designNo === dNo);
-    let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters) || 0), 0);
+    let designOrders = orders.filter(o => cleanDesignName(o.designNo) === cleanDNo);
+    let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = masters.find(m => m.name === dNo);
+    let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
 
     if (found) {
         saveBtn.innerText = "✏️ Update"; 
-        document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || '';
-        document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || '';
+        document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
+        document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         document.getElementById('infoOrderMtr').value = found.orderMtr || (totalOrderMtr > 0 ? totalOrderMtr : '');
         document.getElementById('infoTopBeam').value = found.topBeam || '';
         document.getElementById('infoType').value = found.type || 'Plain';
         
-        document.getElementById('infoReed').value = found.reed || (autoReed > 0 ? autoReed : '');
-        document.getElementById('infoPick').value = found.pick || (autoPick > 0 ? autoPick : '');
-        document.getElementById('infoWidth').value = found.width || (autoWidth > 0 ? autoWidth.toFixed(2) : '');
+        document.getElementById('infoReed').value = found.reed || autoReed;
+        document.getElementById('infoPick').value = found.pick || autoPick;
 
         if(found.warpLines && found.warpLines.length > 0) {
             found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends));
@@ -482,26 +523,17 @@ function loadDesignData() {
         }
     } else {
         saveBtn.innerText = "💾 Save";
-        document.getElementById('infoCount1').value = currentBaseSpecs.warp || '';
-        document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || '';
+        document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
+        document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         document.getElementById('infoOrderMtr').value = totalOrderMtr > 0 ? totalOrderMtr : '';
-        document.getElementById('infoReed').value = autoReed > 0 ? autoReed : '';
-        document.getElementById('infoPick').value = autoPick > 0 ? autoPick : '';
-        document.getElementById('infoWidth').value = autoWidth > 0 ? autoWidth.toFixed(2) : '';
+        
+        document.getElementById('infoReed').value = autoReed;
+        document.getElementById('infoPick').value = autoPick;
         addWarpLine();
     }
+    
+    calculateOnloomWidth();
     updateLineNumbers();
-}
-
-function calculateOnloomWidth() {
-    let baseReed = parseFloat(currentBaseSpecs.reed) || 0;
-    let baseWidth = parseFloat(currentBaseSpecs.width) || 0;
-    let onloomReed = parseFloat(document.getElementById('infoReed').value) || 0;
-
-    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) {
-        let calcWidth = (baseReed * baseWidth) / onloomReed;
-        document.getElementById('infoWidth').value = calcWidth.toFixed(2);
-    }
 }
 
 function calculateTopBeam() {
@@ -570,6 +602,7 @@ function saveWarpDesign() {
     }
 
     calculateTopBeam();
+    calculateOnloomWidth();
 
     let count1 = document.getElementById('infoCount1').value.trim();
     let count2 = document.getElementById('infoCount2').value.trim();
@@ -601,8 +634,9 @@ function saveWarpDesign() {
         }
     });
 
+    let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let idx = masters.findIndex(m => m.name === dNo);
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
     
     let patternData = { 
         name: dNo, 
@@ -670,15 +704,16 @@ function editDesignPattern(dNo) {
 function deleteDesignPattern(dNo) {
     if(!confirm("Are you sure you want to delete Warp Pattern for " + dNo + "?")) return;
     
+    let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let idx = masters.findIndex(m => m.name === dNo);
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
     if(idx !== -1) {
         masters[idx].warpLines = [];
         masters[idx].warpRanges = [];
         localStorage.setItem('design_masters_data', JSON.stringify(masters));
     }
     
-    if(document.getElementById('designNo').value === dNo) {
+    if(cleanDesignName(document.getElementById('designNo').value) === cleanDNo) {
         document.getElementById('designNo').value = '';
         document.getElementById('infoCount1').value = '';
         document.getElementById('infoCount2').value = '';
@@ -698,6 +733,7 @@ function deleteDesignPattern(dNo) {
 
 function previewPattern() {
     calculateTopBeam();
+    calculateOnloomWidth();
     let dNo = document.getElementById('designNo').value;
     
     let lines = [];
@@ -724,10 +760,12 @@ function previewPattern() {
         return;
     }
 
+    let cleanDNo = cleanDesignName(dNo);
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let sp = specs[dNo] || {};
-    let baseReed = parseFloat(sp.reed) || 0;
-    let baseWidth = parseFloat(sp.width) || 0;
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
+    let baseReed = parseFloat(sp.reed || sp.baseReed) || 0;
+    let baseWidth = parseFloat(sp.width || sp.baseWidth) || 0;
     let baseTotalEnds = Math.round(baseReed * baseWidth);
 
     let c1 = document.getElementById('infoCount1').value || '-';
