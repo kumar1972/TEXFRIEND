@@ -391,7 +391,6 @@ function updateBottomDropdown() {
 }
 
 function onDesignSelect() {
-    // Reset Edit State if user selects new design
     editingTopIssueId = null;
     document.getElementById('saveTopBtn').innerText = "Save Top Order";
 
@@ -484,7 +483,6 @@ function resolveWarpPattern(foundMaster, sp, defaultCountText, mts) {
     return Array.from(finalMap.values());
 }
 
-// 📌 NEW: Fetch Received Wt from Dyeing Records for Issued Wt
 function getDyeingReceivedWt(dNo, color) {
     let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -507,7 +505,7 @@ function getDyeingReceivedWt(dNo, color) {
 }
 
 function loadTopWarpData() {
-    if(editingTopIssueId) return; // Prevent overwriting if user is in edit mode
+    if(editingTopIssueId) return; 
     
     let dNo = document.getElementById('topDesignNo').value;
     let container = document.getElementById('topLinesContainer');
@@ -540,7 +538,6 @@ function loadTopWarpData() {
     if(calcData.length > 0) {
         calcData.forEach(item => {
             let orderWgt = item.weight.toFixed(3);
-            // 📌 Auto Fill Issued Wt from Dyeing
             let dyeingRcvWt = getDyeingReceivedWt(dNo, item.color);
             let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : orderWgt;
             
@@ -588,7 +585,6 @@ function saveTopOrder() {
 
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
 
-    // 📌 Handling Edit Mode for Top Order
     if (editingTopIssueId) {
         let idx = issues.findIndex(r => r.id == editingTopIssueId);
         if (idx !== -1) {
@@ -758,7 +754,6 @@ function saveBottomEntry() {
     }
 }
 
-// 📌 EDIT PENDING RECORD (TOP ORDER)
 function editPendingRecord(id) {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let issue = issues.find(r => r.id == id);
@@ -899,10 +894,20 @@ function renderTable() {
 
         let rcvWt = matchingRec ? matchingRec.receivedWt : "-";
         
-        let excessWt = matchingRec ? matchingRec.excessWt : "0.000";
-        let excessDisplay = (parseFloat(excessWt) > 0) ? `<span style="color:#D32F2F; font-weight:700;">${excessWt}</span>` : excessWt;
+        // 📌 MODIFIED: Calculate Initial Excess (Issued Wt - Order Wt) for the table display
+        let ordWtNum = parseFloat(issue.orderWt) || 0;
+        let issWtNum = parseFloat(issue.issueWt) || 0;
+        let initialExcess = (issWtNum - ordWtNum).toFixed(3);
+
+        let excessWt = matchingRec ? matchingRec.excessWt : initialExcess;
         
-        // 📌 PENDING AND RECEIVED ACTION BUTTONS
+        let excessDisplay = excessWt;
+        if (parseFloat(excessWt) > 0) {
+            excessDisplay = `<span style="color:#D32F2F; font-weight:700;">+${excessWt}</span>`;
+        } else if (parseFloat(excessWt) < 0) {
+            excessDisplay = `<span style="color:#10B981; font-weight:700;">${excessWt}</span>`;
+        }
+        
         let actionBtns = matchingRec 
             ? `<div class="action-btns">
                 <button class="edit-action-btn" onclick="editReceivedRecord(${matchingRec.id})" title="Edit Received Entry">✏️</button>
