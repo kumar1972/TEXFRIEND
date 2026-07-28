@@ -221,7 +221,6 @@
         <input type="date" id="receiveDate">
     </div>
 
-    <!-- Filtered Pending Designs -->
     <div class="form-group">
         <label>Select Design Number</label>
         <select id="designNumber" onchange="loadPendingItems()">
@@ -229,13 +228,11 @@
         </select>
     </div>
 
-    <!-- Auto-filled Dyeing Name -->
     <div class="form-group">
         <label>Dyeing Name</label>
         <input type="text" id="dyeingName" placeholder="Dyeing Unit Name" readonly>
     </div>
 
-    <!-- Container for dynamic receive rows -->
     <div style="margin-top: 10px;">
         <div class="receive-grid-header">
             <div>Count</div>
@@ -249,7 +246,7 @@
         <div id="receiveLinesContainer"></div>
     </div>
 
-    <button class="save-main-btn" onclick="saveReceiveEntry()">Save Received Entry</button>
+    <button class="save-main-btn" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">Save Received Entry</button>
 
     <div class="list-header">📊 Received & Loss Records</div>
     <div class="table-container">
@@ -282,12 +279,10 @@ document.addEventListener('DOMContentLoaded', function() {
     renderReceivedList();
 });
 
-// Load only designs that have "Pending" status in Issue Records
 function loadPendingDesigns() {
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let pendingRecords = issueRecords.filter(r => r.status === 'Pending');
     
-    // Get unique design numbers from pending records
     let uniqueDesigns = [...new Set(pendingRecords.map(r => r.designNo))];
 
     let select = document.getElementById('designNumber');
@@ -299,7 +294,6 @@ function loadPendingDesigns() {
     select.innerHTML = html;
 }
 
-// Auto-fill details when Design is selected
 function loadPendingItems() {
     let dNo = document.getElementById('designNumber').value;
     let container = document.getElementById('receiveLinesContainer');
@@ -312,7 +306,6 @@ function loadPendingItems() {
     let pendingItems = issueRecords.filter(r => r.status === 'Pending' && r.designNo === dNo);
 
     if(pendingItems.length > 0) {
-        // Auto-fill the Dyeing Unit Name from the first record
         document.getElementById('dyeingName').value = pendingItems[0].unit;
 
         pendingItems.forEach(item => {
@@ -336,7 +329,6 @@ function loadPendingItems() {
     }
 }
 
-// Calculate Loss dynamically (with 5% Allowance logic)
 function calculateLoss(inp) {
     let row = inp.parentElement;
     let issuedWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
@@ -353,13 +345,12 @@ function calculateLoss(inp) {
         lossWtInp.value = lossWt.toFixed(3);
         lossPercInp.value = lossPerc.toFixed(2) + '%';
         
-        // 5% Excess Loss Calculation
         if(lossPerc > 5) {
-            let allowedLossWt = issuedWt * 0.05; // 5% Allowed
+            let allowedLossWt = issuedWt * 0.05; 
             let excessWt = lossWt - allowedLossWt;
             
             excessWtInp.value = excessWt.toFixed(3);
-            excessWtInp.style.color = "#D32F2F"; // Red colour for excess
+            excessWtInp.style.color = "#D32F2F"; 
             excessWtInp.style.fontWeight = "bold";
         } else {
             excessWtInp.value = "-";
@@ -378,8 +369,8 @@ function calculateLoss(inp) {
     }
 }
 
-// Save Received Data and update Issue status
-function saveReceiveEntry() {
+// 📌 FIREBASE SYNC: saveReceiveEntry
+async function saveReceiveEntry() {
     let dateVal = document.getElementById('receiveDate').value;
     let dNo = document.getElementById('designNumber').value;
     let dName = document.getElementById('dyeingName').value;
@@ -391,6 +382,10 @@ function saveReceiveEntry() {
 
     let rows = document.querySelectorAll('#receiveLinesContainer .line-row');
     if(rows.length === 0) return;
+
+    let btn = document.getElementById('saveReceiveBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
 
     let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -408,7 +403,6 @@ function saveReceiveEntry() {
                 let lossWt = parseFloat(row.querySelector('.inp-loss-wt').value) || 0;
                 let lossPerc = row.querySelector('.inp-loss-perc').value || '0%';
                 
-                // Get excess weight if it exists, otherwise store "-"
                 let excessVal = row.querySelector('.inp-excess-wt').value;
                 let finalExcess = (excessVal && excessVal !== "-") ? parseFloat(excessVal).toFixed(3) : "-";
 
@@ -427,7 +421,6 @@ function saveReceiveEntry() {
                     excessWt: finalExcess
                 });
 
-                // Update original issue status to Received
                 issues[issueIndex].status = "Received";
                 savedCount++;
             }
@@ -438,9 +431,13 @@ function saveReceiveEntry() {
         localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
         localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
         
-        alert("Received Entry Saved Successfully! ✅");
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_issue_records', issues);
+            await window.firebaseSave('dyeing_receive_records', receives);
+        }
+
+        alert("Received Entry Saved to Cloud Successfully! ✅☁️");
         
-        // Reset and reload UI
         document.getElementById('dyeingName').value = '';
         document.getElementById('receiveLinesContainer').innerHTML = '';
         loadPendingDesigns(); 
@@ -448,10 +445,11 @@ function saveReceiveEntry() {
     } else {
         alert("Please enter Received Weight for at least one item.");
     }
+    btn.innerText = origText;
 }
 
-// Edit Record
-function editReceiveRecord(recId) {
+// 📌 FIREBASE SYNC: editReceiveRecord
+async function editReceiveRecord(recId) {
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     
@@ -460,29 +458,27 @@ function editReceiveRecord(recId) {
         let record = receives[index];
         let issueId = record.issueId;
         
-        // Change status back to Pending in original issue record
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) {
             issues[issueIndex].status = "Pending";
         }
         
-        // Remove from received table
         receives.splice(index, 1);
         
         localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
         localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
         
-        // Populate top form for editing
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_receive_records', receives);
+            await window.firebaseSave('dyeing_issue_records', issues);
+        }
+        
         document.getElementById('receiveDate').value = record.date;
         
-        // Reload designs so the "Pending" one shows up
         loadPendingDesigns();
         document.getElementById('designNumber').value = record.designNo;
-        
-        // Auto trigger the item loading
         loadPendingItems();
         
-        // Fill the received weight for this specific row back in
         setTimeout(() => {
             let rows = document.querySelectorAll('#receiveLinesContainer .line-row');
             rows.forEach(row => {
@@ -498,8 +494,8 @@ function editReceiveRecord(recId) {
     }
 }
 
-// Delete Record
-function deleteReceiveRecord(recId) {
+// 📌 FIREBASE SYNC: deleteReceiveRecord
+async function deleteReceiveRecord(recId) {
     if(!confirm("Are you sure you want to delete this record? It will revert to Pending status.")) return;
     
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -509,29 +505,30 @@ function deleteReceiveRecord(recId) {
     if(index !== -1) {
         let issueId = receives[index].issueId;
         
-        // Revert issue status to "Pending"
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) {
             issues[issueIndex].status = "Pending";
         }
         
-        // Remove receive record entirely
         receives.splice(index, 1);
         
         localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
         localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
         
-        loadPendingDesigns(); // Update dropdown
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_receive_records', receives);
+            await window.firebaseSave('dyeing_issue_records', issues);
+        }
+        
+        loadPendingDesigns(); 
         renderReceivedList();
         
-        // Clear top form to avoid confusion
         document.getElementById('receiveLinesContainer').innerHTML = '';
         document.getElementById('dyeingName').value = '';
         document.getElementById('designNumber').value = '';
     }
 }
 
-// Display Saved Received Data
 function renderReceivedList() {
     let receiveRecords = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let tbody = document.getElementById('receivedListBody');
@@ -542,12 +539,10 @@ function renderReceivedList() {
         return;
     }
 
-    // Reverse to show latest entries on top
-    receiveRecords.reverse().forEach(record => {
+    receiveRecords.slice().reverse().forEach(record => {
         let dObj = new Date(record.date);
         let dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
         
-        // Format Excess Wt properly
         let excessDisplay = record.excessWt && record.excessWt !== "-" 
             ? `<span class="excess-text">${record.excessWt}</span>` 
             : "-";
@@ -571,17 +566,64 @@ function renderReceivedList() {
         `;
     });
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
-    </script>
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let btn = document.getElementById('saveReceiveBtnTxt');
+        let origText = btn ? btn.innerText : "Save Received Entry";
+        if(btn) btn.innerText = "Syncing ☁️...";
+
+        let collections = ['dyeing_receive_records', 'dyeing_issue_records', 'pre_design_numbers'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(btn) btn.innerText = origText;
+        
+        loadPendingDesigns();
+        renderReceivedList();
+    });
+</script>
 </body>
 </html>

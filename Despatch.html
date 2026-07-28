@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>despatch_details - TEXFRIEND</title>
+    <title>Despatch Details - TEXFRIEND</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-        /* Sage & Cream Theme (50% Darker) */
         html, body { 
             width: 100%;
             min-height: 100vh;
@@ -57,7 +56,6 @@
             border: 1px solid rgba(82, 110, 81, 0.3);
         }
 
-        /* Bitmap Image Display Styling on Right Corner */
         #bitmapDisplayContainer {
             text-align: right;
         }
@@ -114,7 +112,6 @@
             border: 1px solid rgba(82, 110, 81, 0.25);
         }
 
-        /* 3 Columns Grid Setup for Top Section */
         .form-grid-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -230,7 +227,6 @@
 <div class="container">
     <div class="top-nav">
         <a href="index.html" class="back-btn">← Back to Menu</a>
-        <!-- Top-Right Bitmap Image Display Container -->
         <div id="bitmapDisplayContainer"></div>
     </div>
 
@@ -239,7 +235,6 @@
         
         <div class="section-title">Despatch Order Details</div>
 
-        <!-- Row 1: Date, Invoice Number, PO Number -->
         <div class="form-grid-row">
             <div class="form-group">
                 <label>Date</label>
@@ -257,7 +252,6 @@
             </div>
         </div>
 
-        <!-- Row 2: Party Name, Transport Name, LR Number -->
         <div class="form-grid-row">
             <div class="form-group">
                 <label>Party Name</label>
@@ -304,7 +298,6 @@
         <button class="btn" id="saveBtn" onclick="saveDespatchEntry()">Save Despatch Entry</button>
     </div>
 
-    <!-- Saved Despatch List Table -->
     <div class="card" style="margin-top: 10px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <h3 style="font-size: 11px; color: #3F5A3E; margin-bottom: 0; border:none;">📊 Saved Despatch List</h3>
@@ -331,27 +324,8 @@
 </div>
 
 <script>
-var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+var preDesignList = [];
 let editingIndex = null;
-
-window.onload = function() {
-    loadDesignDropdowns();
-
-    var partyOrdersList = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    var poSelect = document.getElementById('despatch_po');
-    var poHtml = '<option value="">Select PO</option>';
-    partyOrdersList.forEach(function(p) {
-        if(p.poNo) {
-            poHtml += '<option value="' + p.poNo + '">' + p.poNo + '</option>';
-        }
-    });
-    poSelect.innerHTML = poHtml;
-
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById('despatch_date').value = today;
-    updateDespatchTable();
-    loadBitmapImage();
-}
 
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
@@ -380,17 +354,17 @@ function onPoSelect(poNo) {
     
     if(matchedOrder) {
         document.getElementById('despatch_party').value = matchedOrder.partyName || '';
-        if(matchedOrder.designNumber) {
+        if(matchedOrder.designNumber || matchedOrder.designNo) {
             var firstDesignSelect = document.querySelector('.item-design');
             if(firstDesignSelect) {
-                firstDesignSelect.value = matchedOrder.designNumber;
+                firstDesignSelect.value = matchedOrder.designNumber || matchedOrder.designNo;
                 loadBitmapImage();
             }
         }
-        if(matchedOrder.orderMtr) {
+        if(matchedOrder.orderMtr || matchedOrder.meters) {
             var firstOrdMtr = document.querySelector('.item-ord-mtr');
             if(firstOrdMtr) {
-                firstOrdMtr.value = matchedOrder.orderMtr;
+                firstOrdMtr.value = matchedOrder.orderMtr || matchedOrder.meters;
                 calculateBalance(firstOrdMtr);
             }
         }
@@ -460,7 +434,8 @@ function addItemRow(design = '', bale = '', ord = '', des = '', bal = '') {
     }
 }
 
-function saveDespatchEntry() {
+// 📌 FIREBASE SYNC: saveDespatchEntry
+async function saveDespatchEntry() {
     var date = document.getElementById('despatch_date').value;
     var invoiceNo = document.getElementById('invoice_no').value.trim();
     var partyName = document.getElementById('despatch_party').value.trim();
@@ -498,18 +473,26 @@ function saveDespatchEntry() {
         status: editingIndex !== null ? JSON.parse(localStorage.getItem('despatch_data'))[editingIndex].status || 'running' : 'running'
     };
 
+    let saveBtn = document.getElementById('saveBtn');
+    saveBtn.innerText = "Saving ☁️...";
+
     var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
     if(editingIndex !== null) {
         despatchList[editingIndex] = entryData;
         editingIndex = null;
-        document.getElementById('saveBtn').innerText = "Save Despatch Entry";
     } else {
         despatchList.push(entryData);
     }
 
     localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+    
+    // Cloud Sync
+    if (window.firebaseSave) {
+        await window.firebaseSave('despatch_data', despatchList);
+    }
+
     updateDespatchTable();
-    alert('Despatch Entry Saved Successfully! ✅');
+    alert('Despatch Entry Saved to Cloud Successfully! ✅☁️');
     
     document.getElementById('invoice_no').value = '';
     document.getElementById('despatch_party').value = '';
@@ -544,6 +527,7 @@ function saveDespatchEntry() {
     loadDesignDropdowns();
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('despatch_date').value = today;
+    saveBtn.innerText = "Save Despatch Entry";
 }
 
 function updateDespatchTable() {
@@ -551,7 +535,8 @@ function updateDespatchTable() {
     var tbody = document.querySelector('#despatchTable tbody');
     tbody.innerHTML = '';
 
-    despatchList.forEach(function(entry, index) {
+    despatchList.reverse().forEach(function(entry, originalIndexRev) {
+        let index = despatchList.length - 1 - originalIndexRev;
         if(!entry.status) entry.status = "running";
         let statusColor = entry.status == 'running' ? '#D97706' : '#526E51';
         let statusBtn = entry.status == 'running' 
@@ -582,14 +567,20 @@ function updateDespatchTable() {
     });
 }
 
-function toggleStatus(index, newStatus) {
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(index, newStatus) {
     let msg = newStatus === 'completed' ? "Indha despatch entry-ai Completed-aga maatranuma?" : "Indha despatch entry-ai Running-ku maatranuma?";
     if(confirm(msg)) {
         var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
         despatchList[index].status = newStatus;
         localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+        
+        if(window.firebaseSave) {
+            await window.firebaseSave('despatch_data', despatchList);
+        }
+
         updateDespatchTable();
-        alert("Status successfully updated! ✅");
+        alert("Status successfully updated to Cloud! ✅☁️");
     }
 }
 
@@ -650,13 +641,19 @@ function editDespatch(index) {
     }
 }
 
-function deleteDespatch(index) {
+// 📌 FIREBASE SYNC: deleteDespatch
+async function deleteDespatch(index) {
     if(confirm("Indha despatch entry-ai delete pannanuma?")) {
         var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
         despatchList.splice(index, 1);
         localStorage.setItem('despatch_data', JSON.stringify(despatchList));
+        
+        if(window.firebaseSave) {
+            await window.firebaseSave('despatch_data', despatchList);
+        }
+
         updateDespatchTable();
-        alert("Deleted successfully! ✅");
+        alert("Deleted successfully from Cloud! ✅☁️");
     }
 }
 
@@ -696,18 +693,80 @@ function exportToExcel() {
     link.click();
     document.body.removeChild(link);
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+</script>
 
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
+            }
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let btn = document.getElementById('saveBtn');
+        let origText = btn ? btn.innerText : "Save Despatch Entry";
+        if(btn) btn.innerText = "Syncing ☁️...";
+
+        let collections = ['despatch_data', 'party_orders_data', 'pre_design_numbers', 'design_specs'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        window.preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        
+        loadDesignDropdowns();
+
+        var partyOrdersList = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        var poSelect = document.getElementById('despatch_po');
+        var poHtml = '<option value="">Select PO</option>';
+        partyOrdersList.forEach(function(p) {
+            if(p.poNo) {
+                poHtml += '<option value="' + p.poNo + '">' + p.poNo + '</option>';
+            }
+        });
+        poSelect.innerHTML = poHtml;
+
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('despatch_date').value = today;
+        updateDespatchTable();
+        loadBitmapImage();
+
+        if(btn) btn.innerText = origText;
+    });
+</script>
 </body>
 </html>

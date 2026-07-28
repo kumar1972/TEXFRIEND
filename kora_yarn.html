@@ -138,7 +138,7 @@
         border: 1px solid rgba(82, 110, 81, 0.2);
         margin-top: 5px;
         margin-bottom: 15px;
-        white-space: nowrap; /* Tabbles avoid shrinking too much */
+        white-space: nowrap; 
     }
 
     table {
@@ -227,7 +227,6 @@
                 <input type="text" id="dyeingName" placeholder="Dyeing name">
             </div>
         </div>
-        <!-- UPDATED: Mill Name added to issue form -->
         <div class="form-row full">
             <div class="form-group">
                 <label>Mill Name (From where yarn is taken)</label>
@@ -301,7 +300,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Mill</th> <!-- UPDATED: Added Mill Column -->
+                        <th>Mill</th>
                         <th>Unit</th>
                         <th>Design</th>
                         <th>Count</th>
@@ -336,7 +335,7 @@ function loadDesignDropdown() {
 }
 
 // 1. SAVE INWARD STOCK
-function saveInward() {
+async function saveInward() {
     let dateVal = document.getElementById('inwardDate').value;
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
@@ -346,6 +345,10 @@ function saveInward() {
         alert("Please enter Supplier Name, Count, and valid Weight!");
         return;
     }
+
+    let btn = document.getElementById('saveInwardBtn');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
 
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
 
@@ -358,8 +361,7 @@ function saveInward() {
             records[idx].weight = weight.toFixed(3);
         }
         editingInwardId = null;
-        document.getElementById('saveInwardBtn').innerText = "Save Kora Stock";
-        alert("Kora Stock Updated Successfully! ✅");
+        alert("Kora Stock Updated to Cloud Successfully! ✅☁️");
     } else {
         records.push({
             id: Date.now() + Math.random(),
@@ -368,28 +370,32 @@ function saveInward() {
             count: count,
             weight: weight.toFixed(3)
         });
-        alert("Kora Stock Added Successfully! ✅");
+        alert("Kora Stock Added to Cloud Successfully! ✅☁️");
     }
 
     localStorage.setItem('kora_stock_records', JSON.stringify(records));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('kora_stock_records', records);
+    }
     
     document.getElementById('supplierName').value = '';
     document.getElementById('inwardCount').value = '';
     document.getElementById('inwardWt').value = '';
     
     refreshAllTables();
+    btn.innerText = "Save Kora Stock";
 }
 
 // 2. SAVE OUTWARD ISSUE
-function saveIssue() {
+async function saveIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
-    let issueMillName = document.getElementById('issueMillName').value.trim(); // UPDATED: Get mill name
+    let issueMillName = document.getElementById('issueMillName').value.trim(); 
     let dNo = document.getElementById('designNo').value;
     let count = document.getElementById('issueCount').value.trim();
     let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
 
-    // Validation
     if(!dyeingName || !dNo || !count || issueWt <= 0 || !issueMillName) {
         alert("Please fill all details to issue yarn (including Mill Name)!");
         return;
@@ -415,41 +421,49 @@ function saveIssue() {
         return;
     }
 
+    let btn = document.getElementById('saveIssueBtn');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
+
     if (editingIssueId) {
         let idx = issues.findIndex(r => r.id == editingIssueId);
         if(idx !== -1) {
             issues[idx].date = dateVal;
             issues[idx].dyeingName = dyeingName;
-            issues[idx].millName = issueMillName; // UPDATED: Update mill name
+            issues[idx].millName = issueMillName; 
             issues[idx].designNo = dNo;
             issues[idx].count = count;
             issues[idx].issueWt = issueWt.toFixed(3);
         }
         editingIssueId = null;
-        document.getElementById('saveIssueBtn').innerText = "+ Add Issue";
-        alert("Kora Issue Updated Successfully! ✅");
+        alert("Kora Issue Updated to Cloud Successfully! ✅☁️");
     } else {
         issues.push({
             id: Date.now() + Math.random(),
             date: dateVal,
             dyeingName: dyeingName,
-            millName: issueMillName, // UPDATED: Save mill name
+            millName: issueMillName, 
             designNo: dNo,
             count: count,
             issueWt: issueWt.toFixed(3)
         });
-        alert("Kora Yarn Issued Successfully! ✅");
+        alert("Kora Yarn Issued to Cloud Successfully! ✅☁️");
     }
 
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
     
+    if (window.firebaseSave) {
+        await window.firebaseSave('kora_issue_records', issues);
+    }
+
     document.getElementById('dyeingName').value = '';
-    document.getElementById('issueMillName').value = ''; // UPDATED: Reset mill name
+    document.getElementById('issueMillName').value = ''; 
     document.getElementById('designNo').value = '';
     document.getElementById('issueCount').value = '';
     document.getElementById('issueWt').value = '';
     
     refreshAllTables();
+    btn.innerText = "+ Add Issue";
 }
 
 // 3. REFRESH ALL TABLES
@@ -457,7 +471,6 @@ function refreshAllTables() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
 
-    // --- A. LIVE STOCK BALANCE ---
     let stockMap = new Map();
     inwards.forEach(item => {
         if(!stockMap.has(item.count)) stockMap.set(item.count, { inWt: 0, outWt: 0 });
@@ -487,7 +500,6 @@ function refreshAllTables() {
         });
     }
 
-    // --- B. INWARD HISTORY ---
     let inBody = document.getElementById('inwardHistoryBody');
     inBody.innerHTML = '';
     if(inwards.length === 0) {
@@ -511,7 +523,6 @@ function refreshAllTables() {
         });
     }
 
-    // --- C. ISSUE HISTORY ---
     let outBody = document.getElementById('issueHistoryBody');
     outBody.innerHTML = '';
     if(issues.length === 0) {
@@ -523,7 +534,7 @@ function refreshAllTables() {
             outBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
-                    <td>${item.millName || '-'}</td> <!-- UPDATED: Show Mill Name -->
+                    <td>${item.millName || '-'}</td>
                     <td>${item.dyeingName}</td>
                     <td>${item.designNo}</td>
                     <td>${item.count}</td>
@@ -553,11 +564,16 @@ function editInward(id) {
     }
 }
 
-function deleteInward(id) {
+async function deleteInward(id) {
     if(!confirm("Are you sure you want to delete this Inward record? It may affect your stock balance!")) return;
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     records = records.filter(r => r.id != id);
     localStorage.setItem('kora_stock_records', JSON.stringify(records));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('kora_stock_records', records);
+    }
+    
     refreshAllTables();
 }
 
@@ -568,7 +584,7 @@ function editIssue(id) {
         editingIssueId = id;
         document.getElementById('issueDate').value = rec.date;
         document.getElementById('dyeingName').value = rec.dyeingName;
-        document.getElementById('issueMillName').value = rec.millName || ''; // UPDATED: Fill mill name
+        document.getElementById('issueMillName').value = rec.millName || ''; 
         document.getElementById('designNo').value = rec.designNo;
         document.getElementById('issueCount').value = rec.count;
         document.getElementById('issueWt').value = rec.issueWt;
@@ -577,24 +593,76 @@ function editIssue(id) {
     }
 }
 
-function deleteIssue(id) {
+async function deleteIssue(id) {
     if(!confirm("Are you sure you want to delete this Issue record?")) return;
     let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     records = records.filter(r => r.id != id);
     localStorage.setItem('kora_issue_records', JSON.stringify(records));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('kora_issue_records', records);
+    }
+
     refreshAllTables();
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
-    </script>
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let btn = document.getElementById('saveInwardBtn');
+        let origText = btn ? btn.innerText : "Save Kora Stock";
+        if(btn) btn.innerText = "Syncing ☁️...";
+
+        let collections = ['kora_stock_records', 'kora_issue_records', 'pre_design_numbers'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(btn) btn.innerText = origText;
+        
+        loadDesignDropdown();
+        refreshAllTables();
+    });
+</script>
 </body>
 </html>

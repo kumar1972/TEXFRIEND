@@ -372,11 +372,6 @@ function translateColorToTamil(colorName) {
     return map[c] || colorName; 
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadDesignDropdown();
-    addWeftLine(); 
-});
-
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let select = document.getElementById('designNo');
@@ -433,7 +428,6 @@ function loadWeftDesignData() {
         document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
         document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
 
-        // Safely check and render weft lines
         if(found.weftLines && found.weftLines.length > 0) {
             found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
         } else {
@@ -539,12 +533,17 @@ function calculateWeftValues() {
     document.getElementById('displayTotalPicks').innerText = totalPatternPicks;
 }
 
-function saveWeftDesign() {
+// 📌 FIREBASE SYNC: saveWeftDesign
+async function saveWeftDesign() {
     let dNo = document.getElementById('designNo').value;
     if(!dNo) {
         alert("Please select a Design Number!");
         return;
     }
+
+    let saveBtn = document.getElementById('saveBtnTxt');
+    let originalText = saveBtn.innerText;
+    saveBtn.innerText = "Saving ☁️...";
 
     let wWidth = document.getElementById('infoWeftWidth').value.trim();
     let wCount = document.getElementById('infoWeftCount').value.trim();
@@ -575,27 +574,30 @@ function saveWeftDesign() {
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
     
+    let patternData = {
+        name: dNo, 
+        weftWidth: wWidth, 
+        weftCount: wCount, 
+        weftPick: pick, 
+        weaveType: weave, 
+        weftLines: lines, 
+        weftRanges: ranges 
+    };
+
     if(idx === -1) {
-        masters.push({ 
-            name: dNo, 
-            weftWidth: wWidth, 
-            weftCount: wCount, 
-            weftPick: pick, 
-            weaveType: weave, 
-            weftLines: lines, 
-            weftRanges: ranges 
-        });
+        masters.push(patternData);
     } else {
-        masters[idx].weftWidth = wWidth;
-        masters[idx].weftCount = wCount;
-        masters[idx].weftPick = pick;
-        masters[idx].weaveType = weave;
-        masters[idx].weftLines = lines;
-        masters[idx].weftRanges = ranges;
+        masters[idx] = Object.assign({}, masters[idx], patternData);
     }
 
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
-    alert("Weft Pattern Saved Successfully! ✅");
+
+    if (window.firebaseSave) {
+        await window.firebaseSave('design_masters_data', masters);
+    }
+
+    saveBtn.innerText = originalText;
+    alert("Weft Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
 function openSavedModal() {
@@ -772,17 +774,71 @@ function previewWeftPattern() {
     document.getElementById('previewContent').innerHTML = html;
     document.getElementById('previewModal').style.display = 'flex';
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let saveBtn = document.getElementById('saveBtnTxt');
+        if(saveBtn) saveBtn.innerText = "Syncing ☁️...";
+
+        let masters = await window.firebaseLoad('design_masters_data');
+        if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
+
+        let preDesigns = await window.firebaseLoad('pre_design_numbers');
+        if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
+
+        let specs = await window.firebaseLoad('design_specs');
+        if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
+
+        let orders = await window.firebaseLoad('party_orders_data');
+        if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
+
+        if(saveBtn) saveBtn.innerText = "💾 Save";
+        
+        loadDesignDropdown();
+        // Since loadWeftDesignData is triggered when dropdown loads properly, we ensure a clean state
+        if(!document.getElementById('designNo').value) {
+            addWeftLine(); 
+        }
+    });
 </script>
 </body>
 </html>

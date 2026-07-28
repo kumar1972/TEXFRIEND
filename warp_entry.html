@@ -369,72 +369,31 @@ function translateColorToTamil(colorName) {
     var c = colorName.trim().toLowerCase();
     
     var map = {
-        'white': 'வெள்ளை',
-        'black': 'கருப்பு',
-        'blue': 'ப்ளூ',
-        'sky blue': 'ஸ்கை ப்ளூ',
-        'royal blue': 'ராயல் ப்ளூ',
-        'navy': 'நேவி',
-        'navy blue': 'நேவி ப்ளூ',
-        'turq': 'டர்க்',
-        'turquoise': 'டர்க்காய்ஸ்',
-        'yellow': 'மஞ்சள்',
-        'lemon yellow': 'லெமன் மஞ்சள்',
-        'red': 'சிகப்பு',
-        'green': 'பச்சை',
-        'dark green': 'டார்க் பச்சை',
-        'light green': 'லைட் பச்சை',
-        'olive': 'ஆலிவ்',
-        'mint': 'மிண்ட்',
-        'brown': 'பிரவுன்',
-        'khaki': 'காக்கி',
-        'rose': 'ரோஸ்',
-        'orange': 'ஆரஞ்சு',
-        'violet': 'வயோலெட்',
-        'purple': 'பர்புள்',
-        'grey': 'சாம்பல்',
-        'gray': 'சாம்பல்',
-        'gold': 'தங்கம்',
-        'pink': 'பிங்க்',
-        'maroon': 'மெரூன்',
-        'cream': 'க்ரீம்',
-        'beige': 'பீஜ்',
-        'peach': 'பீச்',
-        'lavender': 'லேவெண்டர்',
-        'silver': 'சில்வர்',
-        'sandal': 'சந்தனம்'
+        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'sky blue': 'ஸ்கை ப்ளூ',
+        'royal blue': 'ராயல் ப்ளூ', 'navy': 'நேவி', 'navy blue': 'நேவி ப்ளூ',
+        'turq': 'டர்க்', 'turquoise': 'டர்க்காய்ஸ்', 'yellow': 'மஞ்சள்',
+        'lemon yellow': 'லெமன் மஞ்சள்', 'red': 'சிகப்பு', 'green': 'பச்சை',
+        'dark green': 'டார்க் பச்சை', 'light green': 'லைட் பச்சை', 'olive': 'ஆலிவ்',
+        'mint': 'மிண்ட்', 'brown': 'பிரவுன்', 'khaki': 'காக்கி', 'rose': 'ரோஸ்',
+        'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'purple': 'பர்புள்', 'grey': 'சாம்பல்',
+        'gray': 'சாம்பல்', 'gold': 'தங்கம்', 'pink': 'பிங்க்', 'maroon': 'மெரூன்',
+        'cream': 'க்ரீம்', 'beige': 'பீஜ்', 'peach': 'பீச்', 'lavender': 'லேவெண்டர்',
+        'silver': 'சில்வர்', 'sandal': 'சந்தனம்'
     };
 
-    if (map[c]) {
-        return map[c];
-    }
+    if (map[c]) return map[c];
 
-    // 📌 Transliteration Fallback for any unmapped English color text
     return c
-        .replace(/blue/g, 'ப்ளூ')
-        .replace(/green/g, 'பச்சை')
-        .replace(/yellow/g, 'மஞ்சள்')
-        .replace(/red/g, 'சிகப்பு')
-        .replace(/white/g, 'வெள்ளை')
-        .replace(/black/g, 'கருப்பு')
-        .replace(/pink/g, 'பிங்க்')
-        .replace(/purple/g, 'பர்புள்')
-        .replace(/orange/g, 'ஆரஞ்சு')
-        .replace(/rose/g, 'ரோஸ்')
-        .replace(/grey|gray/g, 'சாம்பல்')
-        .replace(/brown/g, 'பிரவுன்')
-        .replace(/light/g, 'லைட்')
-        .replace(/dark/g, 'டார்க்');
+        .replace(/blue/g, 'ப்ளூ').replace(/green/g, 'பச்சை').replace(/yellow/g, 'மஞ்சள்')
+        .replace(/red/g, 'சிகப்பு').replace(/white/g, 'வெள்ளை').replace(/black/g, 'கருப்பு')
+        .replace(/pink/g, 'பிங்க்').replace(/purple/g, 'பர்புள்').replace(/orange/g, 'ஆரஞ்சு')
+        .replace(/rose/g, 'ரோஸ்').replace(/grey|gray/g, 'சாம்பல்').replace(/brown/g, 'பிரவுன்')
+        .replace(/light/g, 'லைட்').replace(/dark/g, 'டார்க்');
 }
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadDesignDropdown();
-    addWarpLine(); 
-});
 
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -594,7 +553,8 @@ function updateLineNumbers() {
     });
 }
 
-function saveWarpDesign() {
+// 📌 FIREBASE SYNC: saveWarpDesign
+window.saveWarpDesign = async function() {
     let dNo = document.getElementById('designNo').value;
     if(!dNo) {
         alert("Please select a Design Number!");
@@ -634,6 +594,10 @@ function saveWarpDesign() {
         }
     });
 
+    let saveBtn = document.getElementById('saveBtnTxt');
+    let originalText = saveBtn.innerText;
+    saveBtn.innerText = "Saving ☁️...";
+
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
@@ -655,11 +619,18 @@ function saveWarpDesign() {
     if(idx === -1) {
         masters.push(patternData);
     } else {
-        masters[idx] = patternData;
+        masters[idx] = Object.assign({}, masters[idx], patternData);
     }
 
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
-    alert("Warp Pattern Saved Successfully! ✅");
+
+    // Firebase Cloud Sync
+    if(window.firebaseSave) {
+        await window.firebaseSave('design_masters_data', masters);
+    }
+
+    saveBtn.innerText = originalText;
+    alert("Warp Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
 function openSavedModal() {
@@ -694,23 +665,35 @@ function renderSavedList() {
     }
 }
 
-function editDesignPattern(dNo) {
+window.editDesignPattern = function(dNo) {
     document.getElementById('savedListModal').style.display = 'none'; 
     document.getElementById('designNo').value = dNo;
     loadDesignData();
     window.scrollTo(0, 0);
 }
 
-function deleteDesignPattern(dNo) {
+// 📌 FIREBASE SYNC: deleteDesignPattern
+window.deleteDesignPattern = async function(dNo) {
     if(!confirm("Are you sure you want to delete Warp Pattern for " + dNo + "?")) return;
     
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+    
     if(idx !== -1) {
         masters[idx].warpLines = [];
         masters[idx].warpRanges = [];
         localStorage.setItem('design_masters_data', JSON.stringify(masters));
+
+        let saveBtn = document.getElementById('saveBtnTxt');
+        let originalText = saveBtn.innerText;
+        saveBtn.innerText = "Deleting ☁️...";
+        
+        // Firebase Cloud Sync
+        if(window.firebaseSave) {
+            await window.firebaseSave('design_masters_data', masters);
+        }
+        saveBtn.innerText = originalText;
     }
     
     if(cleanDesignName(document.getElementById('designNo').value) === cleanDNo) {
@@ -729,9 +712,10 @@ function deleteDesignPattern(dNo) {
         addWarpLine();
     }
     renderSavedList();
+    alert("Deleted successfully from Cloud! 🗑️☁️");
 }
 
-function previewPattern() {
+window.previewPattern = function() {
     calculateTopBeam();
     calculateOnloomWidth();
     let dNo = document.getElementById('designNo').value;
@@ -956,17 +940,68 @@ function previewPattern() {
     document.getElementById('previewContent').innerHTML = html;
     document.getElementById('previewModal').style.display = 'flex';
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let saveBtn = document.getElementById('saveBtnTxt');
+        if(saveBtn) saveBtn.innerText = "Syncing ☁️...";
+
+        let masters = await window.firebaseLoad('design_masters_data');
+        if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
+
+        let preDesigns = await window.firebaseLoad('pre_design_numbers');
+        if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
+
+        let specs = await window.firebaseLoad('design_specs');
+        if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
+
+        let orders = await window.firebaseLoad('party_orders_data');
+        if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
+
+        if(saveBtn) saveBtn.innerText = "💾 Save";
+        
+        loadDesignDropdown();
+        addWarpLine(); 
+    });
 </script>
 </body>
 </html>

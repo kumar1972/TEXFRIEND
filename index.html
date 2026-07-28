@@ -107,7 +107,7 @@
             <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
             <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
             
-            <h1 id="appHeading">TEXFRIEND ERP</h1>
+            <h1 id="appHeading">Connecting... ☁️</h1>
             <a href="settings.html" class="settings-icon">⚙️</a>
         </div>
         <p class="subtitle">SELECT A MODULE</p>
@@ -116,11 +116,11 @@
             <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
             <div class="form-row">
                 <select id="designSelect" onchange="selectDesign(this.value)"></select>
-                <button class="btn-del" onclick="deleteDesign()">Delete</button>
+                <button class="btn-del" id="delBtn" onclick="deleteDesign()">Delete</button>
             </div>
             <div class="form-row">
                 <input type="text" id="newDesign" placeholder="New Design">
-                <button class="btn-add" onclick="addDesign()">+ Add</button>
+                <button class="btn-add" id="addBtn" onclick="addDesign()">+ Add</button>
             </div>
             
             <div class="form-row">
@@ -142,7 +142,7 @@
             <div id="bitmapPreviewBox" style="text-align:center; display:none;">
                 <img id="bitmapImgTag" src="" style="max-height:60px; border-radius:4px; border:1px solid #fff;" alt="Bitmap">
             </div>
-            <button class="btn-edit" onclick="updateDesign()">✏️ Update / Edit Design</button>
+            <button class="btn-edit" id="editBtn" onclick="updateDesign()">✏️ Update / Edit Design</button>
         </div>
 
         <div class="menu-grid">
@@ -210,15 +210,76 @@
         </div>
     </div>
 
-    <script>
-        let designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    <!-- Firebase App SDK (CDN) & Core Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+            authDomain: "texfriend.firebaseapp.com",
+            projectId: "texfriend",
+            storageBucket: "texfriend.appspot.com",
+            messagingSenderId: "331673079578",
+            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+            measurementId: "G-2NP13ZTKCN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Core Cloud Functions
+        async function firebaseSave(key, data) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+            } catch (e) {
+                console.error("Firebase Save Error: ", e);
+            }
+        }
+
+        async function firebaseLoad(key) {
+            try {
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                if (docSnap.exists()) {
+                    return JSON.parse(docSnap.data().content);
+                }
+            } catch (e) {
+                console.error("Firebase Load Error: ", e);
+            }
+            return null;
+        }
+
+        // Global State Variables
+        let designList = [];
         let tempBitmapData = "";
 
-        window.onload = function(){
-            let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+        // App Initialization (Firebase to LocalStorage Sync)
+        window.onload = async function() {
+            // 1. Sync Heading
+            let heading = await firebaseLoad('app_heading_name') || localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
             document.getElementById('appHeading').innerText = heading;
+            localStorage.setItem('app_heading_name', heading);
+
+            // 2. Sync Logo
+            let logoData = await firebaseLoad('company_logo') || localStorage.getItem('company_logo') || '';
+            let logoContainer = document.getElementById('companyLogoContainer');
+            if (logoData) {
+                logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
+                localStorage.setItem('company_logo', logoData);
+            } else {
+                logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
+            }
+
+            // 3. Sync Design Master Data
+            designList = await firebaseLoad('pre_design_numbers') || JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            let designSpecs = await firebaseLoad('design_specs') || JSON.parse(localStorage.getItem('design_specs')) || {};
+            
+            // Backup to LocalStorage so other non-updated pages continue to work perfectly
+            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
             loadDesignDropdown();
-            loadCompanyLogo();
         }
 
         // Helper function for safe # matching
@@ -226,28 +287,22 @@
             return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
         }
 
-        function loadCompanyLogo() {
-            let logoData = localStorage.getItem('company_logo') || localStorage.getItem('logo') || localStorage.getItem('master_logo') || '';
-            let logoContainer = document.getElementById('companyLogoContainer');
-            if (logoData) {
-                logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
-            } else {
-                logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
-            }
-        }
-
-        function uploadQuickLogo(input) {
+        window.uploadQuickLogo = async function(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.setItem('company_logo', e.target.result);
-                    loadCompanyLogo();
+                reader.onload = async function(e) {
+                    let b64 = e.target.result;
+                    localStorage.setItem('company_logo', b64);
+                    document.getElementById('companyLogoContainer').innerHTML = `<img src="${b64}" alt="Logo">`;
+                    
+                    // Cloud Save
+                    await firebaseSave('company_logo', b64);
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function previewBitmap(input) {
+        window.previewBitmap = function(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
@@ -260,7 +315,7 @@
             }
         }
 
-        function addDesign(){
+        window.addDesign = async function() {
             let designNo = document.getElementById('newDesign').value.trim();
             let warp = document.getElementById('warpCount').value.trim();
             let warp2 = document.getElementById('warpCount2').value.trim();
@@ -273,22 +328,33 @@
             if(!designNo) { alert("Design Number type pannu"); return; }
             if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
 
-            designList.push(designNo);
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('selected_design_number', designNo);
+            let addBtn = document.getElementById('addBtn');
+            addBtn.innerText = "Saving ☁️...";
 
+            designList.push(designNo);
+            
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData };
+            
+            // Sync to Local
+            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+            localStorage.setItem('selected_design_number', designNo);
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
+            // Sync to Cloud
+            await firebaseSave('pre_design_numbers', designList);
+            await firebaseSave('design_specs', designSpecs);
+
+            addBtn.innerText = "+ Add";
             loadDesignDropdown();
             document.getElementById('newDesign').value = '';
-            alert("Design " + designNo + " Saved ✅");
+            alert("Design " + designNo + " Saved & Synced to Cloud! ✅☁️");
         }
 
-        function updateDesign() {
+        window.updateDesign = async function() {
             let designNo = document.getElementById('designSelect').value;
             if(!designNo) { alert("Select Design!"); return; }
+            
             let warp = document.getElementById('warpCount').value.trim();
             let warp2 = document.getElementById('warpCount2').value.trim();
             let weft = document.getElementById('weftCount').value.trim();
@@ -297,10 +363,11 @@
             let pick = document.getElementById('pick').value.trim();
             let weave = document.getElementById('weave').value.trim();
 
+            let editBtn = document.getElementById('editBtn');
+            editBtn.innerText = "Updating ☁️...";
+
             let cleanDNo = cleanDesignName(designNo);
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            
-            // Find existing exact key to overwrite safely
             let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
             
             let existingBitmap = designSpecs[specKey] ? designSpecs[specKey].bitmap : "";
@@ -309,16 +376,24 @@
                 warp, warp2, weft, width, reed, pick, weave, 
                 bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
             };
+            
+            // Sync to Local & Cloud
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            alert("Updated successfully! ✅");
+            await firebaseSave('design_specs', designSpecs);
+
+            editBtn.innerText = "✏️ Update / Edit Design";
+            alert("Updated successfully on Cloud! ✅☁️");
         }
 
-        function deleteDesign(){
+        window.deleteDesign = async function() {
             let designNo = document.getElementById('designSelect').value;
             if(!designNo) { alert("Select Design!"); return; }
+            
             if(confirm(designNo + " delete pannalama?")){
+                let delBtn = document.getElementById('delBtn');
+                delBtn.innerText = "Del ☁️...";
+
                 designList = designList.filter(x => x != designNo);
-                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
                 
                 let cleanDNo = cleanDesignName(designNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -327,16 +402,23 @@
                 if(specKey) {
                     delete designSpecs[specKey];
                 }
+                
+                // Sync to Local & Cloud
+                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
                 localStorage.removeItem('selected_design_number');
+
+                await firebaseSave('pre_design_numbers', designList);
+                await firebaseSave('design_specs', designSpecs);
+
+                delBtn.innerText = "Delete";
                 loadDesignDropdown();
                 clearForm();
-                alert("Deleted successfully! 🗑️");
+                alert("Deleted successfully from Cloud! 🗑️☁️");
             }
         }
 
-        function loadDesignDropdown(){
+        function loadDesignDropdown() {
             designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             let select = document.getElementById('designSelect');
             let html = '<option value="">Select Design</option>';
@@ -346,27 +428,24 @@
             let active = localStorage.getItem('selected_design_number');
             if(active && designList.includes(active)) { 
                 select.value = active; 
-                selectDesign(active); 
+                window.selectDesign(active); 
             } else if(designList.length > 0) {
                 select.value = designList[0];
-                selectDesign(designList[0]);
+                window.selectDesign(designList[0]);
             } else {
                 clearForm();
             }
         }
 
-        // 📌 UPDATE: This function now smartly matches keys and handles old data
-        function selectDesign(val){
+        window.selectDesign = function(val){
             localStorage.setItem('selected_design_number', val);
             if(val) {
                 let cleanVal = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 
-                // Ignoring case, spaces, and # symbol
                 let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
                 let specs = designSpecs[specKey] || {};
 
-                // Fetching proper values avoiding undefined
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
                 document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || '';
                 document.getElementById('weftCount').value = specs.weft || '';
@@ -400,49 +479,9 @@
             document.getElementById('bitmapPreviewBox').style.display = 'none';
         }
 
-        function goToStatus(type, status){
+        window.goToStatus = function(type, status){
             window.location.href = `design_list.html?type=${type}&status=${status}`;
         }
-    </script>
-
-    <!-- Firebase App SDK (CDN) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-            authDomain: "texfriend.firebaseapp.com",
-            projectId: "texfriend",
-            storageBucket: "texfriend.appspot.com",
-            messagingSenderId: "331673079578",
-            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-            measurementId: "G-2NP13ZTKCN"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.db = db;
-        window.firebaseSave = async function(key, data) {
-            try {
-                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-            } catch (e) {
-                console.error("Firebase Save Error: ", e);
-            }
-        };
-
-        window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
     </script>
 </body>
 </html>

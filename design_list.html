@@ -129,7 +129,7 @@
         <a href="index.html" class="back-btn">← Back to Menu</a>
     </div>
     
-    <h3 id="pageTitle">LOADING DATA...</h3>
+    <h3 id="pageTitle">SYNCING CLOUD DATA ☁️...</h3>
     
     <div id="listContainer">
         <!-- Dynamic Table will populate here -->
@@ -142,8 +142,7 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Read URL Parameters sent from index.html
+window.renderDesignList = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const type = urlParams.get('type') || 'all';
     const status = urlParams.get('status') || 'all';
@@ -152,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.getElementById('listContainer');
     const summaryBox = document.getElementById('summaryBox');
 
-    // Set Page Title
     if (type === 'all') {
         pageTitle.innerText = "TOTAL SAVED DESIGNS LIST";
     } else {
@@ -164,8 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let theadHtml = '';
     let tbodyHtml = '';
 
-    // Logic to Fetch & Build Table
-    
     // --- 1. TOTAL DESIGNS (ALL) ---
     if (type === 'all') {
         theadHtml = `<tr><th>S.No</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th></tr>`;
@@ -182,9 +178,9 @@ document.addEventListener('DOMContentLoaded', function() {
             tbodyHtml += `<tr>
                 <td>${index + 1}</td>
                 <td><b>${dNo}</b></td>
-                <td>${s.warp || 20}</td>
-                <td>${s.reed || '-'}</td>
-                <td>${s.pick || '-'}</td>
+                <td>${s.warp || s.count1 || 20}</td>
+                <td>${s.reed || s.baseReed || '-'}</td>
+                <td>${s.pick || s.basePick || '-'}</td>
                 <td>${mtrSum.toFixed(2)}</td>
             </tr>`;
             
@@ -218,14 +214,14 @@ document.addEventListener('DOMContentLoaded', function() {
     else {
         let storageKey = type + '_issue_records';
         if(type === 'despatch') storageKey = 'despatch_records';
+        if(type === 'weaving') storageKey = 'weaving_master_data'; // Routing correctly for weaving
         
         let records = JSON.parse(localStorage.getItem(storageKey)) || [];
         
-        // Filter Status
         if (status === 'running') {
-            records = records.filter(r => r.status === 'Pending' || !r.status);
+            records = records.filter(r => r.status === 'Pending' || r.status === 'running' || !r.status);
         } else if (status === 'completed') {
-            records = records.filter(r => r.status === 'Received' || r.status === 'Completed');
+            records = records.filter(r => r.status === 'Received' || r.status === 'completed' || r.status === 'Completed');
         }
 
         let valUnit = (type === 'dyeing' || type === 'warping') ? 'KG' : 'Mtr';
@@ -233,15 +229,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         records.forEach((r, index) => {
             let unitName = r.unit || r.dyeingName || r.weaverName || r.partyName || '-';
-            let value = parseFloat(r.issueWt || r.mtr || r.meters || r.weight) || 0;
+            let value = parseFloat(r.issueWt || r.mtr || r.meters || r.weight || r.weavingMts) || 0;
+            let displayStatus = r.status || 'Pending';
             
+            let statusColor = (displayStatus.toLowerCase() === 'pending' || displayStatus.toLowerCase() === 'running') ? '#B45309' : '#15803D';
+
             tbodyHtml += `<tr>
                 <td>${index + 1}</td>
                 <td>${r.date || r.botDate || '-'}</td>
                 <td><b>${unitName}</b></td>
                 <td>${r.designNo || '-'}</td>
                 <td>${value.toFixed(3)}</td>
-                <td style="color: ${r.status === 'Pending' ? '#B45309' : '#15803D'}; font-weight: 700;">${r.status || 'Pending'}</td>
+                <td style="color: ${statusColor}; font-weight: 700; text-transform: capitalize;">${displayStatus}</td>
             </tr>`;
             
             totalRecordsCount++;
@@ -249,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Render output
     if(tbodyHtml === '') {
         listContainer.innerHTML = `<div class="empty-msg">No ${status} records found for ${type.toUpperCase()} module!</div>`;
         summaryBox.style.display = 'none';
@@ -266,18 +264,66 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('totValue').innerText = totalValueSum.toFixed(2);
         summaryBox.style.display = 'flex';
     }
-});
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+};
+</script>
+
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
-    </script>
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    window.addEventListener('load', async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type') || 'all';
+
+        let collectionsToFetch = [];
+        
+        if (type === 'all') {
+            collectionsToFetch = ['pre_design_numbers', 'design_specs', 'party_orders_data'];
+        } else if (type === 'order') {
+            collectionsToFetch = ['party_orders_data'];
+        } else if (type === 'despatch') {
+            collectionsToFetch = ['despatch_records'];
+        } else if (type === 'weaving') {
+            collectionsToFetch = ['weaving_master_data'];
+        } else {
+            collectionsToFetch = [`${type}_issue_records`];
+        }
+
+        for(let col of collectionsToFetch) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(window.renderDesignList) {
+            window.renderDesignList();
+        }
+    });
+</script>
 </body>
 </html>

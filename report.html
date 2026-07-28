@@ -92,7 +92,6 @@
         outline: none;
     }
 
-    /* 📌 ADVANCED TAB GRID - Matches Production Flow */
     .report-tabs {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -200,7 +199,6 @@
         font-style: italic;
     }
 
-    /* Modal for Print Preview */
     #previewModal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: #FFFFFF; color: #000000; z-index: 99999; overflow-y: auto; padding: 20px;
@@ -221,7 +219,7 @@
         <a href="index.html" class="back-btn">← Back to Menu</a>
     </div>
 
-    <h2>Reports & Analytics</h2>
+    <h2 id="pageMainHeader">Reports & Analytics</h2>
 
     <div class="filter-box">
         <label>🔍 Design Filter:</label>
@@ -230,7 +228,6 @@
         </select>
     </div>
 
-    <!-- 📌 FILTERED ADVANCED TABS (Follows Workflow) -->
     <div class="report-tabs">
         <button class="tab-btn active" id="tab-PartyOrders" onclick="switchTab('PartyOrders')">📦 Orders</button>
         <button class="tab-btn" id="tab-KoraStock" onclick="switchTab('KoraStock')">🧵 Yarn Stock</button>
@@ -258,7 +255,6 @@
     </div>
 </div>
 
-<!-- Print Preview Modal -->
 <div id="previewModal">
     <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: flex-end; gap: 10px;">
         <button onclick="exportToExcel()" style="background:#D97706; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Excel 📥</button>
@@ -275,20 +271,14 @@ function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadDesignFilter();
-    switchTab('PartyOrders');
-});
-
 function loadDesignFilter() {
-    // Collect unique design names from all possible storages to ensure comprehensive filter
     let allDesigns = new Set();
     
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     preDesigns.forEach(d => allDesigns.add(d));
 
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    orders.forEach(o => { if(o.designNo) allDesigns.add(o.designNo); });
+    orders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
 
     let select = document.getElementById('designFilter');
     let html = '<option value="All">All Designs (மொத்தம்)</option>';
@@ -307,7 +297,6 @@ function switchTab(tabName) {
     if(activeBtn) activeBtn.classList.add('active');
 
     let filterVal = document.getElementById('designFilter').value;
-    let cleanFilterVal = cleanDesignName(filterVal);
     
     let titleElem = document.getElementById('reportTitle');
     let head = document.getElementById('tableHead');
@@ -318,15 +307,15 @@ function switchTab(tabName) {
 
     if (tabName === 'PartyOrders') {
         titleElem.innerText = "📦 PARTY ORDERS Report";
-        head.innerHTML = `<tr><th>Date</th><th>Party Name</th><th>Design No</th><th>Meters</th><th>Poles</th></tr>`;
+        head.innerHTML = `<tr><th>Date</th><th>Party Name</th><th>Design No</th><th>Meters</th><th>PO No</th></tr>`;
         
         let rawData = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let mappedData = rawData.map(item => ({
             date: item.date || '-',
             partyName: item.partyName || '-',
-            designNo: item.designNo || '-',
-            meters: item.meters || '-',
-            poles: item.poles || '-'
+            designNo: item.designNumber || item.designNo || '-',
+            meters: item.orderMtr || item.meters || '-',
+            poles: item.poNo || '-'
         }));
         
         renderGenericTable(mappedData, filterVal, ['date', 'partyName', 'designNo', 'meters', 'poles']);
@@ -343,7 +332,6 @@ function switchTab(tabName) {
             weight: item.weight || '-'
         }));
         
-        // Yarn stock is rarely tied to a specific design, so we skip design filtering usually.
         renderGenericTable(mappedData, 'All', ['date', 'supplier', 'count', 'weight']);
     } 
     else if (tabName === 'Dyeing') {
@@ -433,16 +421,16 @@ function switchTab(tabName) {
     }
     else if (tabName === 'Invoice') {
         titleElem.innerText = "📄 INVOICE / BILLING Report";
-        head.innerHTML = `<tr><th>Inv No</th><th>Date</th><th>Party Name</th><th>Design No</th><th>Meters</th><th>Amount (₹)</th></tr>`;
+        head.innerHTML = `<tr><th>Inv No</th><th>Date</th><th>Party Name</th><th>Design No</th><th>Total Qty</th><th>Grand Total (₹)</th></tr>`;
         
-        let rawData = JSON.parse(localStorage.getItem('invoice_records')) || [];
+        let rawData = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
         let mappedData = rawData.map(item => ({
-            invNo: item.invNo || item.invoiceNo || '-',
-            date: item.date || item.invoiceDate || '-',
-            partyName: item.partyName || item.party || '-',
-            designNo: item.designNo || item.design || '-',
-            meters: item.meters || item.mtr || '-',
-            amount: item.amount || item.total || '-'
+            invNo: item.invNo || '-',
+            date: item.invDate || '-',
+            partyName: item.partyAddress ? item.partyAddress.split('\n')[0] : '-',
+            designNo: item.design || '-',
+            meters: item.totalQty ? item.totalQty.toFixed(2) : '0.00',
+            amount: item.grandTotal ? item.grandTotal.toFixed(2) : '0.00'
         }));
 
         renderGenericTable(mappedData, filterVal, ['invNo', 'date', 'partyName', 'designNo', 'meters', 'amount']);
@@ -469,12 +457,10 @@ function renderGenericTable(dataList, filterVal, keys) {
         return;
     }
 
-    // Sort to show latest first based on simple array reverse
-    filtered.reverse().forEach(item => {
+    filtered.slice().reverse().forEach(item => {
         let rowHtml = '<tr>';
         keys.forEach(k => {
             let val = item[k] !== undefined && item[k] !== '' ? item[k] : '-';
-            // Styling pending status
             if (val === 'Pending') val = `<span style="color:#D97706; font-weight:bold; font-size:9px;">Pending</span>`;
             rowHtml += `<td>${val}</td>`;
         });
@@ -497,7 +483,6 @@ function previewReport() {
     
     document.getElementById('previewContent').innerHTML = html;
     
-    // Apply styling specific to the cloned table inside the modal
     let previewTable = document.getElementById('previewContent').querySelector('table');
     if(previewTable) {
         previewTable.style.width = '100%';
@@ -544,17 +529,60 @@ function exportToExcel() {
     link.download = currentTab + '_Report.xls';
     link.click();
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let mainHeader = document.getElementById('pageMainHeader');
+        let origText = mainHeader.innerText;
+        mainHeader.innerText = "Syncing Cloud Data ☁️...";
+
+        let collections = [
+            'party_orders_data', 'kora_stock_records', 'dyeing_issue_records', 'dyeing_receive_records',
+            'warping_issue_records', 'warping_receive_records', 'weaving_master_data', 
+            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers'
+        ];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        mainHeader.innerText = origText;
+        
+        loadDesignFilter();
+        switchTab('PartyOrders');
+    });
 </script>
 </body>
 </html>

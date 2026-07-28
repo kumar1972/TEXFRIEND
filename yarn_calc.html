@@ -12,7 +12,7 @@
     html, body { 
         width: 100%;
         min-height: 100vh;
-        background: #081E12; /* Dark Green Theme */
+        background: #081E12; 
         color: #E8ECE7; 
     }
 
@@ -196,7 +196,7 @@
     </div>
 
     <div class="header-bar">
-        <h3>🧵 Yarn Calculation</h3>
+        <h3 id="pageHeaderTitle">🧵 Yarn Calculation</h3>
         <div class="header-btns">
             <button class="preview-btn" onclick="previewReport()">👁️ Preview</button>
             <button class="print-btn" onclick="printReport()">🖨️ Print</button>
@@ -254,7 +254,7 @@
         </table>
     </div>
 
-    <!-- TOP BEAM SECTION (Will hide if no data) -->
+    <!-- TOP BEAM SECTION -->
     <div id="topBeamWrapper" style="display: none;">
         <h3 class="section-title" style="margin-top: 15px;">🧵 WARP YARN - TOP BEAM</h3>
         <div class="table-container">
@@ -344,6 +344,10 @@ window.calculatedYarnData = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    initDropdown();
+});
+
+function initDropdown() {
     var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     var select = document.getElementById('designNumber');
     var html = '<option value="">Select</option>';
@@ -358,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         select.value = activeDesign;
         loadInitialData();
     }
-});
+}
 
 function calculateWeftMtrs() {
     let warpOrder = parseFloat(document.getElementById('lengthMeters').value) || 0;
@@ -407,7 +411,6 @@ function loadInitialData() {
         defaultMtr = parseFloat(foundMaster.orderMtr) || 100;
     }
 
-    // 📌 TOP BEAM CHECK: Top Beam இருந்தால் மட்டும் Mtrs கணக்கிடும், இல்லை எனில் Blank ஆகும்
     let hasTopBeamLines = foundMaster.warpLines && foundMaster.warpLines.some(l => l.beam === 'Top Beam');
     if (hasTopBeamLines) {
         if (foundMaster.topBeam) {
@@ -422,7 +425,7 @@ function loadInitialData() {
             document.getElementById('topLengthMeters').value = defaultMtr;
         }
     } else {
-        document.getElementById('topLengthMeters').value = ''; // 📌 Keep empty if no Top Beam entry
+        document.getElementById('topLengthMeters').value = ''; 
     }
 
     calculateWeftMtrs();
@@ -562,7 +565,6 @@ function loadYarnData() {
         }
     });
 
-    // Render Ground Beam UI
     let gHtml = '';
     let gd = window.calculatedYarnData.ground;
     let gt = window.calculatedYarnData.groundTotals;
@@ -576,7 +578,6 @@ function loadYarnData() {
     }
     document.getElementById('warpGroundTableBody').innerHTML = gHtml;
 
-    // Render Top Beam UI
     let tHtml = '';
     let td = window.calculatedYarnData.top;
     let tt = window.calculatedYarnData.topTotals;
@@ -731,17 +732,54 @@ function printReport() {
         window.print();
     }, 300);
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+</script>
+
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
             }
-            return null;
-        };
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let headerTxt = document.getElementById('pageHeaderTitle');
+        let origText = headerTxt.innerHTML;
+        headerTxt.innerHTML = "Syncing ☁️...";
+
+        let collections = ['pre_design_numbers', 'design_masters_data', 'design_specs'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        headerTxt.innerHTML = origText;
+        initDropdown(); 
+    });
 </script>
 </body>
 </html>

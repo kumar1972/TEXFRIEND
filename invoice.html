@@ -52,7 +52,6 @@
             border: 1px solid rgba(82, 110, 81, 0.3); 
         }
 
-        /* Bitmap Image Display Styling on Right Corner */
         #bitmapDisplayContainer {
             text-align: right;
         }
@@ -108,7 +107,6 @@
         .excel-table th, .excel-table td { border: 1px solid rgba(82, 110, 81, 0.3); padding: 6px; }
         .excel-table th { background-color: #D8DFD6; color: #3F5A3E; font-weight: bold; }
 
-        /* Professional Business Invoice Layout - Row lines removed, only outer border & totals have grid lines */
         #printPreviewContainer { display: none; background: #FFFFFF; color: #000000; padding: 25px; border-radius: 12px; margin-top: 10px; border: 1px solid #ccc; width: 100%; max-width: 100%; }
         .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-size: 12px; align-items: flex-start; }
         
@@ -133,7 +131,6 @@
 <div class="container" id="mainContainer">
     <div class="top-nav">
         <a href="index.html" class="back-btn">← Back to Menu</a>
-        <!-- Top-Right Bitmap Image Display Container -->
         <div id="bitmapDisplayContainer"></div>
     </div>
 
@@ -253,21 +250,11 @@
     </div>
 </div>
 
-<!-- Professional Print Preview Container -->
 <div id="printPreviewContainer"></div>
 
 <script>
 let editingInvoiceId = null;
 let savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
-
-window.onload = function() {
-    document.getElementById('inv_date').valueAsDate = new Date();
-    let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
-    document.getElementById('comp_address').value = defaultComp;
-    loadDesignDropdowns();
-    loadBitmapImage();
-    updateInvoicesTable();
-}
 
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
@@ -353,12 +340,17 @@ function calcTotal(element) {
     totalField.value = (qty * rate).toFixed(2);
 }
 
-function saveInvoice() {
+// 📌 FIREBASE SYNC: saveInvoice
+async function saveInvoice() {
     let invNo = document.getElementById('inv_no').value.trim();
     if(!invNo) {
         alert("Invoice Number-ஐ உள்ளிடவும்!");
         return;
     }
+
+    let btn = document.getElementById('saveInvBtn');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
 
     let compAddress = document.getElementById('comp_address').value;
     let partyAddress = document.getElementById('party_address').value;
@@ -404,16 +396,20 @@ function saveInvoice() {
     if(editingInvoiceId !== null) {
         savedInvoices = savedInvoices.map(inv => inv.id === editingInvoiceId ? invoiceObj : inv);
         editingInvoiceId = null;
-        document.getElementById('saveInvBtn').innerText = "Save Invoice";
     } else {
         savedInvoices.push(invoiceObj);
     }
 
     localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
-    updateInvoicesTable();
-    alert("Invoice Successfully Saved! ✅");
     
-    // Reset Form
+    // Cloud Sync
+    if (window.firebaseSave) {
+        await window.firebaseSave('saved_invoices_data', savedInvoices);
+    }
+
+    updateInvoicesTable();
+    alert("Invoice Successfully Saved to Cloud! ✅☁️");
+    
     document.getElementById('inv_no').value = '';
     document.getElementById('inv_transport').value = '';
     document.getElementById('inv_lr').value = '';
@@ -429,13 +425,15 @@ function saveInvoice() {
         </div>
     `;
     document.getElementById('inv_date').valueAsDate = new Date();
+    btn.innerText = "Save Invoice";
 }
 
 function updateInvoicesTable() {
+    savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let tbody = document.querySelector('#invoicesTable tbody');
     tbody.innerHTML = '';
 
-    savedInvoices.forEach(inv => {
+    savedInvoices.slice().reverse().forEach(inv => {
         let row = tbody.insertRow();
         row.innerHTML = `
             <td>${inv.invNo}</td>
@@ -485,12 +483,18 @@ function editInvoice(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function deleteInvoice(id) {
+// 📌 FIREBASE SYNC: deleteInvoice
+async function deleteInvoice(id) {
     if(confirm("Indha invoice-ai delete pannanuma?")) {
         savedInvoices = savedInvoices.filter(x => x.id !== id);
         localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
+        
+        if (window.firebaseSave) {
+            await window.firebaseSave('saved_invoices_data', savedInvoices);
+        }
+
         updateInvoicesTable();
-        alert("Deleted successfully! ✅");
+        alert("Deleted successfully from Cloud! 🗑️☁️");
     }
 }
 
@@ -626,18 +630,68 @@ function goBackToForm() {
     document.getElementById('mainContainer').style.display = 'block';
     window.scrollTo(0, 0);
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+</script>
 
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
+            }
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let btn = document.getElementById('saveInvBtn');
+        let origText = btn ? btn.innerText : "Save Invoice";
+        if(btn) btn.innerText = "Syncing ☁️...";
+
+        let collections = ['saved_invoices_data', 'pre_design_numbers', 'design_specs', 'party_orders_data'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(btn) btn.innerText = origText;
+        
+        document.getElementById('inv_date').valueAsDate = new Date();
+        let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
+        document.getElementById('comp_address').value = defaultComp;
+        loadDesignDropdowns();
+        loadBitmapImage();
+        updateInvoicesTable();
+    });
+</script>
 </body>
 </html>

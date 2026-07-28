@@ -121,14 +121,23 @@
         color: #3F5A3E;
     }
 
+    /* 📌 UPDATED: Added 6 columns to show Excess in Top Order Grid */
     .grid-header {
         display: grid;
-        grid-template-columns: 1fr 1.5fr 1.2fr 1.2fr 32px;
+        grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1.2fr 32px;
         gap: 6px;
         padding: 0 4px;
         margin-bottom: 6px;
     }
     
+    .line-row {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1.2fr 32px;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
     .grid-header-bot {
         display: grid;
         grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr;
@@ -137,27 +146,19 @@
         margin-bottom: 6px;
     }
 
-    .grid-header div, .grid-header-bot div {
-        font-size: 9px;
-        font-weight: 700;
-        color: #3F5A3E;
-        text-align: center;
-    }
-
-    .line-row {
-        display: grid;
-        grid-template-columns: 1fr 1.5fr 1.2fr 1.2fr 32px;
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 6px;
-    }
-    
     .line-row-bot {
         display: grid;
         grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr;
         gap: 6px;
         align-items: center;
         margin-bottom: 6px;
+    }
+
+    .grid-header div, .grid-header-bot div {
+        font-size: 9px;
+        font-weight: 700;
+        color: #3F5A3E;
+        text-align: center;
     }
 
     .line-row input, .line-row-bot input {
@@ -262,11 +263,13 @@
         </div>
 
         <div>
+            <!-- 📌 UPDATED: Added Excess Wt Column -->
             <div class="grid-header">
                 <div>Count</div>
                 <div>Colour</div>
                 <div>Order Wt</div>
                 <div>Issued Wt</div>
+                <div>Excess Wt</div>
                 <div></div>
             </div>
             <div id="topLinesContainer"></div>
@@ -300,7 +303,7 @@
                 <div>Colour</div>
                 <div>Issued Wt</div>
                 <div>Rcvd Wt</div>
-                <div>Excess(>5%)</div>
+                <div>Loss(>5%)</div>
             </div>
             <div id="botLinesContainer"></div>
         </div>
@@ -330,7 +333,7 @@
                         <th>Order Wt</th>
                         <th>Issued Wt</th>
                         <th>Rcvd Wt</th>
-                        <th>Excess</th>
+                        <th>Excess Wt</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -362,13 +365,6 @@ function getResultantCount(countStr) {
     }
     return parseFloat(str) || 0;
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('topDate').valueAsDate = new Date();
-    document.getElementById('botDate').valueAsDate = new Date();
-    loadDesignDropdowns();
-    renderTable();
-});
 
 function loadDesignDropdowns() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -548,6 +544,29 @@ function loadTopWarpData() {
     }
 }
 
+// 📌 NEW: Live Calculation of Excess Wt when User types
+function calcTopExcess(el) {
+    let row = el.parentElement;
+    let ordWt = parseFloat(row.querySelector('.t-order').value) || 0;
+    let issWt = parseFloat(row.querySelector('.t-issue').value) || 0;
+    let diff = issWt - ordWt;
+    let excessInp = row.querySelector('.t-excess');
+    
+    if(diff > 0) {
+        excessInp.value = "+" + diff.toFixed(3);
+        excessInp.style.color = "#D32F2F";
+        excessInp.style.fontWeight = "bold";
+    } else if(diff < 0) {
+        excessInp.value = diff.toFixed(3);
+        excessInp.style.color = "#10B981";
+        excessInp.style.fontWeight = "bold";
+    } else {
+        excessInp.value = "0.000";
+        excessInp.style.color = "#3F5A3E";
+        excessInp.style.fontWeight = "500";
+    }
+}
+
 function addTopRow(count, color, ordWt, issWt) {
     let container = document.getElementById('topLinesContainer');
     let row = document.createElement('div');
@@ -555,11 +574,13 @@ function addTopRow(count, color, ordWt, issWt) {
     row.innerHTML = `
         <input type="text" class="t-count" value="${count}">
         <input type="text" class="t-color" value="${color}">
-        <input type="number" class="t-order" value="${ordWt}" step="0.001">
-        <input type="number" class="t-issue" value="${issWt}" step="0.001">
+        <input type="number" class="t-order" value="${ordWt}" step="0.001" oninput="calcTopExcess(this)">
+        <input type="number" class="t-issue" value="${issWt}" step="0.001" oninput="calcTopExcess(this)">
+        <input type="text" class="t-excess" value="" readonly style="background:#E8ECE7;">
         <button class="add-btn" onclick="addNewTopRow(this)" title="Add Row">+</button>
     `;
     container.appendChild(row);
+    calcTopExcess(row.querySelector('.t-order')); // Trigger calculation immediately
 }
 
 function addNewTopRow(btn) {
@@ -569,14 +590,16 @@ function addNewTopRow(btn) {
     row.innerHTML = `
         <input type="text" class="t-count" value="">
         <input type="text" class="t-color" value="">
-        <input type="number" class="t-order" value="" step="0.001">
-        <input type="number" class="t-issue" value="" step="0.001">
+        <input type="number" class="t-order" value="" step="0.001" oninput="calcTopExcess(this)">
+        <input type="number" class="t-issue" value="" step="0.001" oninput="calcTopExcess(this)">
+        <input type="text" class="t-excess" value="" readonly style="background:#E8ECE7;">
         <button class="del-btn" onclick="this.parentElement.remove()" title="Remove Row">×</button>
     `;
     container.insertBefore(row, btn.parentElement.nextSibling);
 }
 
-function saveTopOrder() {
+// 📌 FIREBASE SYNC: saveTopOrder
+async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value;
     let dNo = document.getElementById('topDesignNo').value;
@@ -584,6 +607,8 @@ function saveTopOrder() {
     if(!dNo) { alert("Please select a Design Number!"); return; }
 
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let saveBtn = document.getElementById('saveTopBtn');
+    let originalText = saveBtn.innerText;
 
     if (editingTopIssueId) {
         let idx = issues.findIndex(r => r.id == editingTopIssueId);
@@ -600,12 +625,19 @@ function saveTopOrder() {
             }
         }
         editingTopIssueId = null;
-        document.getElementById('saveTopBtn').innerText = "Save Top Order";
-        alert("Top Order Updated Successfully! ✅");
+        saveBtn.innerText = "Saving ☁️...";
+        
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        if(window.firebaseSave) await window.firebaseSave('warping_issue_records', issues);
+        
+        saveBtn.innerText = "Save Top Order";
+        alert("Top Order Updated to Cloud Successfully! ✅");
     } 
     else {
         let rows = document.querySelectorAll('#topLinesContainer .line-row');
         if(rows.length === 0) return;
+
+        saveBtn.innerText = "Saving ☁️...";
 
         rows.forEach(row => {
             let count = row.querySelector('.t-count').value.trim();
@@ -627,10 +659,13 @@ function saveTopOrder() {
                 });
             }
         });
-        alert("Top Order Saved Successfully! ✅");
-    }
 
-    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        if(window.firebaseSave) await window.firebaseSave('warping_issue_records', issues);
+        
+        saveBtn.innerText = originalText;
+        alert("Top Order Saved to Cloud Successfully! ✅");
+    }
     
     document.getElementById('topLinesContainer').innerHTML = '';
     document.getElementById('topDesignNo').value = '';
@@ -702,7 +737,8 @@ function calculateWarpingLoss(inp) {
     }
 }
 
-function saveBottomEntry() {
+// 📌 FIREBASE SYNC: saveBottomEntry
+async function saveBottomEntry() {
     let dateVal = document.getElementById('botDate').value;
     let dNo = document.getElementById('botDesignNo').value;
 
@@ -743,7 +779,13 @@ function saveBottomEntry() {
     if(savedCount > 0) {
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
-        alert("Bottom Entry Saved Successfully! ✅");
+        
+        if(window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('warping_receive_records', receives);
+        }
+
+        alert("Bottom Entry Saved to Cloud Successfully! ✅");
         
         document.getElementById('botDesignNo').value = '';
         document.getElementById('botGridWrapper').style.display = 'none';
@@ -772,22 +814,28 @@ function editPendingRecord(id) {
         row.innerHTML = `
             <input type="text" class="t-count" value="${issue.count}">
             <input type="text" class="t-color" value="${issue.color}">
-            <input type="number" class="t-order" value="${issue.orderWt}" step="0.001">
-            <input type="number" class="t-issue" value="${issue.issueWt}" step="0.001">
+            <input type="number" class="t-order" value="${issue.orderWt}" step="0.001" oninput="calcTopExcess(this)">
+            <input type="number" class="t-issue" value="${issue.issueWt}" step="0.001" oninput="calcTopExcess(this)">
+            <input type="text" class="t-excess" value="" readonly style="background:#E8ECE7;">
             <button class="del-btn" onclick="this.parentElement.remove()" title="Remove Row">×</button>
         `;
         container.appendChild(row);
+        calcTopExcess(row.querySelector('.t-order'));
         
         document.getElementById('saveTopBtn').innerText = "Update Top Order";
         window.scrollTo(0, 0);
     }
 }
 
-function deletePendingRecord(id) {
+// 📌 FIREBASE SYNC: deletePendingRecord
+async function deletePendingRecord(id) {
     if(!confirm("Are you sure you want to delete this Pending Warping Order?")) return;
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     issues = issues.filter(r => r.id != id);
     localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    
+    if(window.firebaseSave) await window.firebaseSave('warping_issue_records', issues);
+    
     renderTable();
     updateBottomDropdown();
 }
@@ -809,6 +857,12 @@ function editReceivedRecord(recId) {
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
         
+        // Background sync
+        if(window.firebaseSave) {
+            window.firebaseSave('warping_receive_records', receives);
+            window.firebaseSave('warping_issue_records', issues);
+        }
+        
         document.getElementById('botDate').value = record.botDate || document.getElementById('botDate').value;
         updateBottomDropdown();
         document.getElementById('botDesignNo').value = record.designNo;
@@ -829,7 +883,8 @@ function editReceivedRecord(recId) {
     }
 }
 
-function deleteReceivedRecord(recId) {
+// 📌 FIREBASE SYNC: deleteReceivedRecord
+async function deleteReceivedRecord(recId) {
     if(!confirm("Are you sure you want to delete this received record? It will revert to Pending status.")) return;
     
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
@@ -846,6 +901,11 @@ function deleteReceivedRecord(recId) {
         
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        if(window.firebaseSave) {
+            await window.firebaseSave('warping_receive_records', receives);
+            await window.firebaseSave('warping_issue_records', issues);
+        }
         
         updateBottomDropdown();
         renderTable();
@@ -894,20 +954,22 @@ function renderTable() {
 
         let rcvWt = matchingRec ? matchingRec.receivedWt : "-";
         
-        // 📌 MODIFIED: Calculate Initial Excess (Issued Wt - Order Wt) for the table display
+        // 📌 MODIFIED: Auto display difference (Issued Wt - Order Wt)
         let ordWtNum = parseFloat(issue.orderWt) || 0;
         let issWtNum = parseFloat(issue.issueWt) || 0;
-        let initialExcess = (issWtNum - ordWtNum).toFixed(3);
-
-        let excessWt = matchingRec ? matchingRec.excessWt : initialExcess;
+        let diff = (issWtNum - ordWtNum).toFixed(3);
         
-        let excessDisplay = excessWt;
-        if (parseFloat(excessWt) > 0) {
-            excessDisplay = `<span style="color:#D32F2F; font-weight:700;">+${excessWt}</span>`;
-        } else if (parseFloat(excessWt) < 0) {
-            excessDisplay = `<span style="color:#10B981; font-weight:700;">${excessWt}</span>`;
+        let excessDisplay = "0.000";
+        if (parseFloat(diff) > 0) {
+            excessDisplay = `<span style="color:#D32F2F; font-weight:700;">+${diff}</span>`;
+        } else if (parseFloat(diff) < 0) {
+            excessDisplay = `<span style="color:#10B981; font-weight:700;">${diff}</span>`;
         }
         
+        if (matchingRec && parseFloat(matchingRec.excessWt) > 0) {
+            excessDisplay += `<br><span style="color:#D97706; font-size:9px;">Loss: +${matchingRec.excessWt}</span>`;
+        }
+
         let actionBtns = matchingRec 
             ? `<div class="action-btns">
                 <button class="edit-action-btn" onclick="editReceivedRecord(${matchingRec.id})" title="Edit Received Entry">✏️</button>
@@ -933,18 +995,63 @@ function renderTable() {
         `;
     });
 }
+</script>
 
-window.firebaseLoad = async function(key) {
-    try {
-        const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-        if (docSnap.exists()) {
-            return JSON.parse(docSnap.data().content);
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
         }
-    } catch (e) {
-        console.error("Firebase Load Error: ", e);
     }
-    return null;
-};
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
+            }
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let saveBtn = document.getElementById('saveTopBtn');
+        if(saveBtn) saveBtn.innerText = "Syncing ☁️...";
+
+        let collections = ['warping_issue_records', 'warping_receive_records', 'design_masters_data', 'pre_design_numbers', 'dyeing_issue_records', 'dyeing_receive_records'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(saveBtn) saveBtn.innerText = "Save Top Order";
+        
+        loadDesignDropdowns();
+        renderTable();
+    });
 </script>
 </body>
 </html>

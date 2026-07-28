@@ -256,7 +256,7 @@
                 </table>
             </div>
 
-            <button type="submit" class="btn-weave">Save Top Order</button>
+            <button type="submit" class="btn-weave" id="saveTopBtnTxt">Save Top Order</button>
         </form>
 
         <hr style="border: 0; border-top: 1px dashed rgba(118, 150, 129, 0.3); margin: 15px 0;">
@@ -282,7 +282,7 @@
                 <table id="botWeftTable" class="line-table"></table>
             </div>
 
-            <button type="submit" class="btn-weave">Save Bottom Entry</button>
+            <button type="submit" class="btn-weave" id="saveBotBtnTxt">Save Bottom Entry</button>
         </form>
 
         <h3 style="font-size: 11px; color: #2F4F38; margin-top: 15px; font-weight: 700;">📊 Saved Warp Data</h3>
@@ -361,12 +361,6 @@
 
         document.getElementById('topDate').valueAsDate = new Date();
         document.getElementById('botDate').valueAsDate = new Date();
-
-        window.onload = function() {
-            loadActiveDesignNumber();
-            updateTables();
-            loadBitmapImage();
-        };
 
         function cleanDesignName(str) {
             return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -705,7 +699,8 @@
             `;
         }
 
-        function saveTopData(e) {
+        // 📌 FIREBASE SYNC: saveTopData
+        async function saveTopData(e) {
             e.preventDefault();
             const designNo = document.getElementById('topDesignNo').value.trim();
             const weaverName = document.getElementById('topWeaverName').value.trim();
@@ -716,6 +711,10 @@
                 alert("Please fill Weaver Name and Design Number!");
                 return;
             }
+
+            let btn = document.getElementById('saveTopBtnTxt');
+            let origText = btn.innerText;
+            btn.innerText = "Saving ☁️...";
 
             let warpRows = [];
             document.querySelectorAll('#warpRowsTable tbody tr').forEach(tr => {
@@ -741,6 +740,7 @@
 
             if(warpRows.length === 0 && weftRows.length === 0) {
                 alert("Please add at least one Warp or Weft row detail!");
+                btn.innerText = origText;
                 return;
             }
 
@@ -761,7 +761,6 @@
                 weavingMasterData.push(data);
             }
 
-            // Remove old pending items for this design before inserting updated ones
             warpTransactions = warpTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
             weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
 
@@ -797,14 +796,22 @@
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
             localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
 
+            if(window.firebaseSave) {
+                await window.firebaseSave('weaving_master_data', weavingMasterData);
+                await window.firebaseSave('weaving_warp_trans', warpTransactions);
+                await window.firebaseSave('weaving_weft_trans', weftTransactions);
+            }
+
             updateTables();
-            alert("Top Weaving Order saved successfully! ✅");
+            alert("Top Weaving Order saved to Cloud successfully! ✅☁️");
+            
             document.getElementById('topDesignNo').value = '';
             document.getElementById('topWeaverName').value = '';
             document.getElementById('warpCount').value = '';
             document.getElementById('warpCount2').value = '';
             document.getElementById('weftCount').value = '';
             loadBitmapImage();
+            btn.innerText = origText;
         }
 
         function loadBottomRows() {
@@ -850,13 +857,18 @@
             }
         }
 
-        function saveBottomData(e) {
+        // 📌 FIREBASE SYNC: saveBottomData
+        async function saveBottomData(e) {
             e.preventDefault();
             const designNo = document.getElementById('botDesignNo').value;
             if(!designNo) {
                 alert("Please select a Design Number!");
                 return;
             }
+
+            let btn = document.getElementById('saveBotBtnTxt');
+            let origText = btn.innerText;
+            btn.innerText = "Saving ☁️...";
 
             const warpRows = document.querySelectorAll('#botWarpTable tr:not(:first-child)');
             warpRows.forEach((tr) => {
@@ -889,12 +901,18 @@
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
             localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
 
+            if(window.firebaseSave) {
+                await window.firebaseSave('weaving_warp_trans', warpTransactions);
+                await window.firebaseSave('weaving_weft_trans', weftTransactions);
+            }
+
             updateTables();
-            alert("Bottom Weaving Entry updated successfully! ✅");
+            alert("Bottom Weaving Entry updated to Cloud successfully! ✅☁️");
             document.getElementById('botDesignNo').value = '';
             document.getElementById('botWarpTable').innerHTML = '';
             document.getElementById('botWeftTable').innerHTML = '';
             loadBitmapImage();
+            btn.innerText = origText;
         }
 
         function updateTables() {
@@ -953,41 +971,42 @@
             });
         }
 
-        function toggleWarpStatus(id, newStatus) {
+        // 📌 FIREBASE SYNC: Toggle and Delete Functions
+        async function toggleWarpStatus(id, newStatus) {
             let msg = newStatus === 'completed' ? "Indha warp entry-ai Completed-aga maatranuma?" : "Indha warp entry-ai Running-ku maatranuma?";
             if(confirm(msg)) {
                 warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
                 updateTables();
-                alert("Status successfully updated! ✅");
             }
         }
 
-        function toggleWeftStatus(id, newStatus) {
+        async function toggleWeftStatus(id, newStatus) {
             let msg = newStatus === 'completed' ? "Indha weft entry-ai Completed-aga maatranuma?" : "Indha weft entry-ai Running-ku maatranuma?";
             if(confirm(msg)) {
                 weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 updateTables();
-                alert("Status successfully updated! ✅");
             }
         }
 
-        function deleteWarp(id) {
+        async function deleteWarp(id) {
             if(confirm("Indha warp entry-ai delete pannanuma?")) {
                 warpTransactions = warpTransactions.filter(item => item.id !== id);
                 localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
                 updateTables();
-                alert("Deleted successfully! ✅");
             }
         }
 
-        function deleteWeft(id) {
+        async function deleteWeft(id) {
             if(confirm("Indha weft entry-ai delete pannanuma?")) {
                 weftTransactions = weftTransactions.filter(item => item.id !== id);
                 localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 updateTables();
-                alert("Deleted successfully! ✅");
             }
         }
 
@@ -1031,6 +1050,34 @@
             document.getElementById('previewContent').innerHTML = html;
             document.getElementById('previewModal').style.display = 'flex';
         }
+    </script>
+
+    <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+            authDomain: "texfriend.firebaseapp.com",
+            projectId: "texfriend",
+            storageBucket: "texfriend.appspot.com",
+            messagingSenderId: "331673079578",
+            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+            measurementId: "G-2NP13ZTKCN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseSave = async function(key, data) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+            } catch (e) {
+                console.error("Firebase Save Error: ", e);
+            }
+        }
+
         window.firebaseLoad = async function(key) {
             try {
                 const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -1041,18 +1088,36 @@
                 console.error("Firebase Load Error: ", e);
             }
             return null;
-        };
-  window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
+        }
+
+        // Sync Data on Load
+        window.addEventListener('load', async function() {
+            let btn = document.getElementById('saveTopBtnTxt');
+            let originalText = btn ? btn.innerText : "Save Top Order";
+            if(btn) btn.innerText = "Syncing ☁️...";
+
+            let collections = [
+                'weaving_master_data', 'weaving_warp_trans', 'weaving_weft_trans', 
+                'design_masters_data', 'design_specs', 'pre_design_numbers',
+                'dyeing_issue_records', 'dyeing_receive_records'
+            ];
+            
+            for(let col of collections) {
+                let data = await window.firebaseLoad(col);
+                if (data) localStorage.setItem(col, JSON.stringify(data));
             }
-            return null;
-        };
+
+            // Refresh global arrays after Cloud Sync
+            window.weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+            window.warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
+            window.weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];
+
+            if(btn) btn.innerText = originalText;
+            
+            loadActiveDesignNumber();
+            updateTables();
+            loadBitmapImage();
+        });
     </script>
 </body>
 </html>

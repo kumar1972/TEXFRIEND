@@ -70,7 +70,6 @@
         font-weight: 700;
     }
 
-    /* 📌 NEW: Report Button Group Style */
     .report-btn-group { display: flex; gap: 6px; }
     .report-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
     .print-main-btn { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
@@ -224,7 +223,7 @@
     .shrink-text { color: #D32F2F; font-weight: 700; }
     .status-pending { color: #D97706; font-weight: 700; font-size: 9px; }
 
-    /* 📌 NEW: Modal & Print Styles */
+    /* Modals */
     .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
     .modal-content { background: #fff; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
     .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
@@ -252,7 +251,6 @@
 
     <div class="page-header-row">
         <div class="page-title">Washing Production Entry</div>
-        <!-- 📌 CHANGED: Replaced Excel with Preview & Print -->
         <div class="report-btn-group">
             <button type="button" class="report-btn" onclick="openPreview()">👁️ Preview</button>
             <button type="button" class="print-main-btn" onclick="printReport()">🖨️ Print</button>
@@ -299,7 +297,7 @@
             </div>
         </div>
 
-        <button class="save-btn" onclick="saveTopOrder()">Save Top Order</button>
+        <button class="save-btn" id="saveTopBtnTxt" onclick="saveTopOrder()">Save Top Order</button>
     </div>
 
     <div class="section-divider"></div>
@@ -321,7 +319,6 @@
             </div>
         </div>
 
-        <!-- RECEIVED GRID -->
         <div id="botGridWrapper" style="display: none; margin-top: 5px;">
             <div class="grid-header-bot">
                 <div>Slip</div>
@@ -333,7 +330,7 @@
             <div id="botLinesContainer"></div>
         </div>
 
-        <button class="save-btn" onclick="saveBottomEntry()">Save Bottom Entry</button>
+        <button class="save-btn" id="saveBotBtnTxt" onclick="saveBottomEntry()">Save Bottom Entry</button>
     </div>
 
     <div class="section-divider"></div>
@@ -364,7 +361,6 @@
     </div>
 </div>
 
-<!-- 📌 NEW: Preview & Print Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -408,7 +404,6 @@ function updateBottomDropdown() {
     botSelect.innerHTML = botHtml;
 }
 
-// TOP SECTION LOGIC
 function addNewTopRow(btn) {
     let container = document.getElementById('topLinesContainer');
     let row = document.createElement('div');
@@ -423,15 +418,23 @@ function addNewTopRow(btn) {
     container.insertBefore(row, btn.parentElement.nextSibling);
 }
 
-function saveTopOrder() {
+// 📌 FIREBASE SYNC: saveTopOrder
+async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value;
     let dNo = document.getElementById('topDesignNo').value;
 
     if(!dNo || !unit) { alert("Please fill Date, Washing Name, and Design Number!"); return; }
 
+    let btn = document.getElementById('saveTopBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
+
     let rows = document.querySelectorAll('#topLinesContainer .line-row');
-    if(rows.length === 0) return;
+    if(rows.length === 0) {
+        btn.innerText = origText;
+        return;
+    }
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let savedCount = 0;
@@ -460,9 +463,12 @@ function saveTopOrder() {
 
     if(savedCount > 0) {
         localStorage.setItem('washing_issue_records', JSON.stringify(issues));
-        alert("Top Order Saved Successfully! ✅");
+        if (window.firebaseSave) {
+            await window.firebaseSave('washing_issue_records', issues);
+        }
         
-        // Reset fields
+        alert("Top Order Saved to Cloud Successfully! ✅☁️");
+        
         document.getElementById('topLinesContainer').innerHTML = `
             <div class="line-row">
                 <input type="text" class="t-slip" placeholder="Slip">
@@ -480,9 +486,9 @@ function saveTopOrder() {
     } else {
         alert("Please fill Slip, Piece, and Mtr correctly.");
     }
+    btn.innerText = origText;
 }
 
-// BOTTOM SECTION LOGIC
 function loadBottomData() {
     let dNo = document.getElementById('botDesignNo').value;
     let wrapper = document.getElementById('botGridWrapper');
@@ -515,14 +521,22 @@ function loadBottomData() {
     });
 }
 
-function saveBottomEntry() {
+// 📌 FIREBASE SYNC: saveBottomEntry
+async function saveBottomEntry() {
     let dateVal = document.getElementById('botDate').value;
     let dNo = document.getElementById('botDesignNo').value;
 
     if(!dNo) { alert("Please select a Design Number!"); return; }
 
+    let btn = document.getElementById('saveBotBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "Saving ☁️...";
+
     let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
-    if(rows.length === 0) return;
+    if(rows.length === 0) {
+        btn.innerText = origText;
+        return;
+    }
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
@@ -538,7 +552,6 @@ function saveBottomEntry() {
                 issues[issueIndex].status = "Received";
                 let issMtr = parseFloat(issues[issueIndex].mtr);
                 
-                // Calculate Shrinkage % = ((Mtr - Rcvd Mtr) / Mtr) * 100
                 let shrinkPerc = 0;
                 if(issMtr > 0 && rcvMtr <= issMtr) {
                     shrinkPerc = ((issMtr - rcvMtr) / issMtr) * 100;
@@ -560,7 +573,13 @@ function saveBottomEntry() {
     if(savedCount > 0) {
         localStorage.setItem('washing_issue_records', JSON.stringify(issues));
         localStorage.setItem('washing_receive_records', JSON.stringify(receives));
-        alert("Bottom Entry Saved Successfully! ✅");
+        
+        if (window.firebaseSave) {
+            await window.firebaseSave('washing_issue_records', issues);
+            await window.firebaseSave('washing_receive_records', receives);
+        }
+
+        alert("Bottom Entry Saved to Cloud Successfully! ✅☁️");
         
         document.getElementById('botDesignNo').value = '';
         document.getElementById('botGridWrapper').style.display = 'none';
@@ -569,20 +588,19 @@ function saveBottomEntry() {
     } else {
         alert("Please enter Received Mtr for at least one item.");
     }
+    btn.innerText = origText;
 }
 
-// ACTION BUTTONS (EDIT & DELETE)
-function editWashingRecord(issueId, isReceived) {
+// 📌 FIREBASE SYNC: editWashingRecord
+async function editWashingRecord(issueId, isReceived) {
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
     
     if (isReceived) {
-        // Edit Received Data (Load into Bottom Form)
         let recIndex = receives.findIndex(r => r.issueId == issueId);
         if(recIndex !== -1) {
             let recRecord = receives[recIndex];
             
-            // Revert status
             let issueIndex = issues.findIndex(iss => iss.id == issueId);
             if(issueIndex !== -1) issues[issueIndex].status = "Pending";
             
@@ -590,12 +608,16 @@ function editWashingRecord(issueId, isReceived) {
             localStorage.setItem('washing_receive_records', JSON.stringify(receives));
             localStorage.setItem('washing_issue_records', JSON.stringify(issues));
             
+            if (window.firebaseSave) {
+                window.firebaseSave('washing_receive_records', receives);
+                window.firebaseSave('washing_issue_records', issues);
+            }
+            
             document.getElementById('botDate').value = recRecord.botDate;
             updateBottomDropdown();
             document.getElementById('botDesignNo').value = recRecord.designNo;
             loadBottomData();
             
-            // Auto fill received mtr
             setTimeout(() => {
                 let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
                 rows.forEach(row => {
@@ -607,12 +629,15 @@ function editWashingRecord(issueId, isReceived) {
             renderTable();
         }
     } else {
-        // Edit Pending Data (Load into Top Form)
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) {
             let issRecord = issues[issueIndex];
             issues.splice(issueIndex, 1);
             localStorage.setItem('washing_issue_records', JSON.stringify(issues));
+            
+            if (window.firebaseSave) {
+                window.firebaseSave('washing_issue_records', issues);
+            }
             
             document.getElementById('topDate').value = issRecord.date;
             document.getElementById('topUnit').value = issRecord.unit;
@@ -630,18 +655,19 @@ function editWashingRecord(issueId, isReceived) {
             `;
             updateBottomDropdown();
             renderTable();
+            window.scrollTo(0, 0);
         }
     }
 }
 
-function deleteWashingRecord(issueId, isReceived) {
+// 📌 FIREBASE SYNC: deleteWashingRecord
+async function deleteWashingRecord(issueId, isReceived) {
     if(!confirm("Are you sure you want to delete this record?")) return;
     
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
     
     if (isReceived) {
-        // Delete Receive Record -> Revert Issue to Pending
         let recIndex = receives.findIndex(r => r.issueId == issueId);
         if(recIndex !== -1) receives.splice(recIndex, 1);
         
@@ -649,13 +675,17 @@ function deleteWashingRecord(issueId, isReceived) {
         if(issueIndex !== -1) issues[issueIndex].status = "Pending";
         
     } else {
-        // Delete Issue Record entirely
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) issues.splice(issueIndex, 1);
     }
     
     localStorage.setItem('washing_receive_records', JSON.stringify(receives));
     localStorage.setItem('washing_issue_records', JSON.stringify(issues));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('washing_receive_records', receives);
+        await window.firebaseSave('washing_issue_records', issues);
+    }
     
     updateBottomDropdown();
     renderTable();
@@ -664,7 +694,6 @@ function deleteWashingRecord(issueId, isReceived) {
     document.getElementById('botGridWrapper').style.display = 'none';
 }
 
-// RENDER MERGED DATA TABLE
 function renderTable() {
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
@@ -698,7 +727,6 @@ function renderTable() {
             </div>
         `;
 
-        // If Pending, show status instead of empty Date/Mtr
         if(!isReceived) {
             rcvMtr = `<span class="status-pending">Pending</span>`;
         }
@@ -719,10 +747,9 @@ function renderTable() {
     });
 }
 
-// 📌 NEW: PREVIEW & PRINT FUNCTIONS
 function openPreview() {
     let tableBody = document.getElementById('dataTableBody'); 
-    let thead = document.querySelector('.table-container table onthead');
+    let thead = document.querySelector('.table-container table thead');
     
     if(!tableBody) return;
     
@@ -732,17 +759,15 @@ function openPreview() {
                 <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
     
-    // Header உருவாக்குதல்
     html += `<tr style="background:#f2f2f2;">`;
     let headers = document.querySelectorAll('.table-container table thead th');
     headers.forEach((th, idx) => {
-        if(idx < headers.length - 1) { // Action காலத்தை தவிர்க்க
+        if(idx < headers.length - 1) { 
             html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
         }
     });
     html += `</tr>`;
 
-    // Body உருவாக்குதல்
     let rows = tableBody.querySelectorAll('tr');
     if(rows.length === 0 || rows[0].innerText.includes("No Records Found")) {
         html += `<tr><td colspan="8" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
@@ -751,7 +776,7 @@ function openPreview() {
             let cells = tr.querySelectorAll('td');
             html += `<tr>`;
             cells.forEach((td, idx) => {
-                if(idx < cells.length - 1) { // Action காலத்தை தவிர்க்க
+                if(idx < cells.length - 1) { 
                     html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
                 }
             });
@@ -772,18 +797,64 @@ function printReport() {
         window.print();
     }, 300);
 }
+</script>
 
-window.firebaseLoad = async function(key) {
-    try {
-        const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-        if (docSnap.exists()) {
-            return JSON.parse(docSnap.data().content);
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseSave = async function(key, data) {
+        try {
+            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Error: ", e);
         }
-    } catch (e) {
-        console.error("Firebase Load Error: ", e);
     }
-    return null;
-};
+
+    window.firebaseLoad = async function(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) {
+                return JSON.parse(docSnap.data().content);
+            }
+        } catch (e) {
+            console.error("Firebase Load Error: ", e);
+        }
+        return null;
+    }
+
+    // Sync Data on Load
+    window.addEventListener('load', async function() {
+        let btn = document.getElementById('saveTopBtnTxt');
+        let origText = btn ? btn.innerText : "Save Top Order";
+        if(btn) btn.innerText = "Syncing ☁️...";
+
+        let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers'];
+        
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(btn) btn.innerText = origText;
+        
+        loadDesignDropdowns();
+        renderTable();
+    });
 </script>
 </body>
 </html>

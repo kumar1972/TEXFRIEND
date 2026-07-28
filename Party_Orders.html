@@ -139,7 +139,6 @@
             font-weight: 700;
         }
 
-        /* Action Buttons Container for Single Row Alignment */
         .action-cell {
             display: flex;
             flex-direction: row;
@@ -195,7 +194,6 @@
         <h2 class="card-header">Add New Party Order</h2>
 
         <form id="partyOrderForm" onsubmit="savePartyOrder(event)">
-            <!-- 1st Row: Order Date, Delivery Date, Party Name, PO Number -->
             <div class="form-row">
                 <div class="form-group">
                     <label>Date</label>
@@ -215,7 +213,6 @@
                 </div>
             </div>
 
-            <!-- 2nd Row: Design Number, Warp Count, Weft Count, Reed, Pick, Width -->
             <div class="form-row">
                 <div class="form-group">
                     <label>Design No</label>
@@ -245,7 +242,6 @@
                 </div>
             </div>
 
-            <!-- 3rd Row: Weave Type, Order Mtr, Rate/Mtr -->
             <div class="form-row">
                 <div class="form-group">
                     <label>Weave Type</label>
@@ -261,7 +257,6 @@
                 </div>
             </div>
 
-            <!-- Save Order Button -->
             <button type="submit" id="saveBtn" class="btn-main">Save Order</button>
         </form>
 
@@ -289,28 +284,6 @@
         let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let editingId = null;
         
-        window.onload = function() {
-            document.getElementById('orderDate').valueAsDate = new Date();
-            document.getElementById('deliveryDate').valueAsDate = new Date();
-            
-            var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            var designSelect = document.getElementById('designNumber');
-            var html = '<option value="">Select</option>';
-            preDesignList.forEach(function(d) {
-                html += '<option value="' + d + '">' + d + '</option>';
-            });
-            designSelect.innerHTML = html;
-
-            var activeDesign = localStorage.getItem('selected_design_number');
-            if(activeDesign) {
-                designSelect.value = activeDesign;
-                onDesignSelect(activeDesign);
-            }
-
-            updatePartyTable();
-            loadBitmapImage();
-        };
-
         function loadBitmapImage() {
             let activeDesign = localStorage.getItem('selected_design_number');
             let designSelect = document.getElementById('designNumber');
@@ -333,10 +306,10 @@
             if(val) {
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 let specs = designSpecs[val] || { warp: '', weft: '', reed: '', pick: '' };
-                document.getElementById('warpCount').value = specs.warp;
-                document.getElementById('weftCount').value = specs.weft;
-                document.getElementById('reed').value = specs.reed;
-                document.getElementById('pick').value = specs.pick;
+                document.getElementById('warpCount').value = specs.warp || '';
+                document.getElementById('weftCount').value = specs.weft || '';
+                document.getElementById('reed').value = specs.reed || '';
+                document.getElementById('pick').value = specs.pick || '';
             } else {
                 document.getElementById('warpCount').value = '';
                 document.getElementById('weftCount').value = '';
@@ -345,7 +318,8 @@
             }
         }
 
-        function savePartyOrder(e) {
+        // 📌 FIREBASE SYNC: savePartyOrder
+        async function savePartyOrder(e) {
             e.preventDefault();
             const orderData = {
                 id: editingId !== null ? editingId : Date.now(),
@@ -365,20 +339,28 @@
                 status: editingId !== null ? (partyOrders.find(x => x.id === editingId)?.status || 'running') : 'running'
             };
 
+            let btn = document.getElementById('saveBtn');
+            let origText = btn.innerText;
+            btn.innerText = "Saving ☁️...";
+
             if(editingId !== null) {
                 let index = partyOrders.findIndex(x => x.id === editingId);
                 if(index > -1) {
                     partyOrders[index] = orderData;
                 }
                 editingId = null;
-                document.getElementById('saveBtn').innerText = "Save Order";
-                alert("Party Order updated successfully! ✅");
+                alert("Party Order updated to Cloud successfully! ✅☁️");
             } else {
                 partyOrders.push(orderData);
-                alert("Party Order saved successfully! ✅");
+                alert("Party Order saved to Cloud successfully! ✅☁️");
             }
 
             localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+            
+            if (window.firebaseSave) {
+                await window.firebaseSave('party_orders_data', partyOrders);
+            }
+
             updatePartyTable();
             
             document.getElementById('partyOrderForm').reset();
@@ -391,6 +373,7 @@
                 onDesignSelect(activeDesign);
             }
             loadBitmapImage();
+            btn.innerText = "Save Order";
         }
 
         function editOrder(id) {
@@ -418,6 +401,7 @@
         }
 
         function updatePartyTable() {
+            partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
             const tbody = document.querySelector('#partyOrderTable tbody');
             tbody.innerHTML = '';
             partyOrders.forEach(item => {
@@ -446,23 +430,64 @@
             });
         }
 
-        function toggleStatus(id, newStatus) {
+        // 📌 FIREBASE SYNC: toggleStatus
+        async function toggleStatus(id, newStatus) {
             let msg = newStatus === 'completed' ? "Indha order-ai Completed-aga maatranuma?" : "Indha order-ai Running-ku maatranuma?";
             if(confirm(msg)) {
                 partyOrders = partyOrders.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                
+                if (window.firebaseSave) {
+                    await window.firebaseSave('party_orders_data', partyOrders);
+                }
+
                 updatePartyTable();
-                alert("Status successfully updated! ✅");
+                alert("Status successfully updated to Cloud! ✅☁️");
             }
         }
 
-        function deleteOrder(id) {
+        // 📌 FIREBASE SYNC: deleteOrder
+        async function deleteOrder(id) {
             if(confirm("Indha order-ai delete pannanuma?")){
                 partyOrders = partyOrders.filter(x => x.id !== id);
                 localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                
+                if (window.firebaseSave) {
+                    await window.firebaseSave('party_orders_data', partyOrders);
+                }
+
                 updatePartyTable();
+                alert("Deleted successfully from Cloud! 🗑️☁️");
             }
         }
+    </script>
+
+    <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+            authDomain: "texfriend.firebaseapp.com",
+            projectId: "texfriend",
+            storageBucket: "texfriend.appspot.com",
+            messagingSenderId: "331673079578",
+            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+            measurementId: "G-2NP13ZTKCN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseSave = async function(key, data) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+            } catch (e) {
+                console.error("Firebase Save Error: ", e);
+            }
+        }
+
         window.firebaseLoad = async function(key) {
             try {
                 const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -473,7 +498,44 @@
                 console.error("Firebase Load Error: ", e);
             }
             return null;
-        };
+        }
+
+        // Sync Data on Load
+        window.addEventListener('load', async function() {
+            let btn = document.getElementById('saveBtn');
+            let origText = btn ? btn.innerText : "Save Order";
+            if(btn) btn.innerText = "Syncing ☁️...";
+
+            let collections = ['party_orders_data', 'pre_design_numbers', 'design_specs'];
+            
+            for(let col of collections) {
+                let data = await window.firebaseLoad(col);
+                if (data) localStorage.setItem(col, JSON.stringify(data));
+            }
+
+            if(btn) btn.innerText = origText;
+            
+            document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+            
+            var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            var designSelect = document.getElementById('designNumber');
+            var html = '<option value="">Select</option>';
+            preDesignList.forEach(function(d) {
+                html += '<option value="' + d + '">' + d + '</option>';
+            });
+            designSelect.innerHTML = html;
+
+            var activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign) {
+                designSelect.value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+
+            partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+            updatePartyTable();
+            loadBitmapImage();
+        });
     </script>
 </body>
 </html>
