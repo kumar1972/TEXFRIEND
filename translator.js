@@ -16,9 +16,9 @@ function translateColorToTamil(colorName) {
         'white': 'வெள்ளை',
         't. white': 'T. வெள்ளை',
         'black': 'கருப்பு',
-        'blue': 'புளூ',
+        'blue': 'ப்ளூ',
         'yellow': 'மஞ்சள்',
-        'red': 'ரெட்',
+        'red': 'சிகப்பு',
         'green': 'பச்சை',
         'brown': 'பிரவுன்',
         'khaki': 'காக்கி',
@@ -26,12 +26,13 @@ function translateColorToTamil(colorName) {
         'd. khaki': 'D. காக்கி',
         'rose': 'ரோஸ்',
         'orange': 'ஆரஞ்சு',
+        'violet': 'வைலட்',
         'pink': 'பிங்க்',
         'navy': 'நேவி',
         'maroon': 'மெரூன்',
-        'olive': 'ஆலிவ்'
-        'turq': 'டர்க்',
-        'violet': 'வைலட்',
+        'olive': 'ஆலிவ்',
+        'l. blue': 'L. ப்ளூ',
+        'turq': 'டர்க்'
     };
 
     if (map[c]) {
@@ -63,15 +64,3 @@ function translateColorToTamil(colorName) {
 
     return translated;
 }
-
-
-
-
-
-
-
-
-
-
-
-
