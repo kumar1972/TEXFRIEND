@@ -40,7 +40,7 @@
 
 <div class="container">
     <div class="top-nav">
-        <a href="index.html" class="back-btn">← Back to Menu</a>
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
         <span style="font-size: 11px; font-weight: 600;">⚙️ Settings</span>
     </div>
 
@@ -112,8 +112,53 @@
 
     <button class="btn-submit" onclick="saveSettings()">Save Settings & Exit</button>
     <button class="btn-backup" onclick="backupAllData()">📥 Backup All Data</button>
-    <button class="btn-reset" onclick="resetAllData()">🗑️ Reset All Data</button>
+    <button class="btn-reset" onclick="resetLocalStorageOnly()" style="background: #D97706;">🗑️ Reset Local Storage Only</button>
+    <button class="btn-reset" onclick="resetCloudDataOnly()" style="background: #991B1B;">☁️ Reset Cloud Data Only</button>
 </div>
+
+<!-- Firebase SDK & Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 1. Local Storage மட்டும் அழிக்க
+    window.resetLocalStorageOnly = function() {
+        if(confirm("⚠️ எச்சரிக்கை: உங்கள் போனில் (Local Storage) சேமிக்கப்பட்ட டேட்டா மட்டும் அழிக்கப்படும். கிளவுட் டேட்டா பாதுகாப்பாக இருக்கும். தொடரவா?")) {
+            localStorage.clear();
+            alert("Local storage cleared successfully! ✅");
+            location.reload();
+        }
+    }
+
+    // 2. Cloud (Firebase) டேட்டா மட்டும் அழிக்க
+    window.resetCloudDataOnly = async function() {
+        if(confirm("⚠️ எச்சரிக்கை: கிளவுடில் (Cloud/Firebase) உள்ள அனைத்து டிசைன் மற்றும் மெயின் டேட்டாக்களும் முழுமையாக அழிக்கப்படும்! தொடரவா?")) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify([]) });
+                await setDoc(doc(db, "texfriend_erp", "design_specs"), { content: JSON.stringify({}) });
+                await setDoc(doc(db, "texfriend_erp", "party_master_db"), { content: JSON.stringify({}) });
+                
+                alert("Cloud data reset successfully! ☁️🗑️");
+                location.reload();
+            } catch(e) {
+                alert("Cloud Reset Error: " + e.message);
+            }
+        }
+    }
+</script>
 
 <script>
 let tempLogoData = "";
@@ -281,16 +326,7 @@ function saveSettings() {
     }
 
     alert("Settings Saved Successfully! ✅");
-    window.location.href = 'index.html';
-}
-
-function resetAllData() {
-    let confirmReset = confirm("⚠️ எச்சரிக்கை: அனைத்து டேட்டாக்களையும் (All Data) முழுமையாக அழிக்க விரும்புகிறீர்களா?\n\n(Yes - அழிக்கவும் / No - ரத்து செய்)");
-    if (confirmReset) {
-        localStorage.clear();
-        alert("அனைத்து தரவுகளும் அழிக்கப்பட்டன (All Data Erased Successfully)! ✅");
-        location.reload();
-    }
+    window.location.href = 'dashboard.html';
 }
 
 function backupAllData() {
@@ -344,18 +380,7 @@ function saveStorageDataFromEditor() {
         alert("Invalid JSON format! Please check your code. ❌\nError: " + err.message);
     }
 }
-window.firebaseLoad = async function(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        };
-    </script>
+</script>
 
 </body>
 </html>

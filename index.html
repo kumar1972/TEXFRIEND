@@ -1,487 +1,89 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Index - Kora ERP Pro</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        
-        html, body { width: 100%; min-height: 100vh; background: #8B7FC6; color: #FFFFFF; }
-        body { padding: 12px; display: flex; flex-direction: column; }
-        
-        .container { width: 100%; max-width: 100%; margin: 0; background: #9E92D8; padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border: 1px solid rgba(255, 255, 255, 0.4); flex: 1; display: flex; flex-direction: column; gap: 14px; position: relative; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: -4px; }
-        
-        #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
-        #companyLogoContainer img {
-            height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8);
-            object-fit: cover; background: rgba(0,0,0,0.2); box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .logo-placeholder { font-size: 9px; background: rgba(0,0,0,0.25); padding: 4px 6px; border-radius: 4px; border: 1px dashed rgba(255,255,255,0.5); color: #E9D5FF; text-align: center; }
-
-        h1 { text-align: center; color: #FFFFFF; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.15); flex: 1; }
-        .settings-icon { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; text-decoration: none; transition: background 0.2s; }
-        .settings-icon:hover { background: rgba(0,0,0,0.4); }
-
-        .subtitle { text-align: center; color: #F3E8FF; font-size: 10px; font-weight: 500; letter-spacing: 1px; margin-top: -6px; }
-        
-        .base-setup { background: #4D3F8C; padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: inset 0 2px 6px rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 10px; }
-        .base-setup-title { color: #FFFFFF; font-weight: 600; font-size: 11px; }
-        
-        .form-row { display: flex; gap: 10px; }
-        .form-group { flex: 1; display: flex; flex-direction: column; gap: 3px; }
-        .form-group label { font-size: 9px; color: #E9D5FF; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        input, select, textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.3); background: #3B2E75; color: #FFFFFF; font-size: 11px; font-weight: 500; }
-        input:focus, select:focus, textarea:focus { border-color: #FFFFFF; outline: none; background: #5B4B9E; }
-        
-        .btn-add { background: #7C3AED; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-add:hover { background: #6D28D9; }
-        
-        .btn-del { background: #EF4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-del:hover { background: #DC2626; }
-        
-        .btn-edit { width: 100%; background: #2563EB; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-edit:hover { background: #1D4ED8; }
-        
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        
-        .menu-btn { 
-            color: #FFFFFF; 
-            padding: 14px 6px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            text-align: center; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center;
-            gap: 6px; 
-            font-size: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15); 
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.2s ease;
-        }
-        .menu-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
-        .menu-btn .tab-icon { font-size: 24px; }
-
-        .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1D4ED8); } 
-        .btn-theme-2 { background: linear-gradient(135deg, #14B8A6, #0D9488); } 
-        .btn-theme-3 { background: linear-gradient(135deg, #8B5CF6, #6D28D9); } 
-        .btn-theme-4 { background: linear-gradient(135deg, #EC4899, #BE185D); } 
-
-        .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 10px; padding: 14px; font-size: 11px; }
-        .menu-btn.full-span .tab-icon { font-size: 22px; }
-
-        .btn-m-all { 
-            background: linear-gradient(135deg, #D48B60, #C26A38);
-            grid-column: span 3; 
-            text-align: center; 
-            justify-content: center; 
-            flex-direction: row;
-            gap: 10px;
-            padding: 16px; 
-            font-size: 12px; 
-            border-radius: 14px;
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 20px rgba(194, 106, 56, 0.3);
-        }
-        .btn-m-all .tab-icon { font-size: 22px; }
-
-        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .status-box { background: rgba(0, 0, 0, 0.06); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; flex-direction: column; gap: 8px; }
-        .status-title { font-size: 11px; color: #FFFFFF; font-weight: 600; text-align: center; }
-        .status-options { display: flex; gap: 6px; }
-        .status-btn { flex: 1; color: white; border: none; padding: 7px; border-radius: 6px; font-size: 9px; font-weight: 600; cursor: pointer; text-align: center; }
-        .status-btn.running { background: #D97706; color: white; border: 1px solid rgba(217, 119, 6, 0.4); }
-        .status-btn.completed { background: #7C3AED; color: white; border: 1px solid rgba(255, 255, 255, 0.4); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TEXFRIEND - Login</title>
+<script src="translator.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    body { width: 100%; min-height: 100vh; background: #2D402C; display: flex; justify-content: center; align-items: center; padding: 16px; }
+    .login-card { width: 100%; max-width: 400px; background: #F4F9F4; border-radius: 20px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 1px solid rgba(82, 110, 81, 0.3); display: flex; flex-direction: column; gap: 18px; }
+    .logo-area { text-align: center; }
+    .logo-area h2 { font-size: 18px; color: #3F5A3E; font-weight: 700; margin-top: 6px; }
+    .logo-area p { font-size: 11px; color: #64748b; font-weight: 500; }
+    .role-tabs { display: grid; grid-template-columns: 1fr 1fr; background: #E2E8F0; border-radius: 10px; padding: 4px; gap: 4px; }
+    .role-btn { background: transparent; border: none; padding: 10px; font-size: 12px; font-weight: 600; color: #64748b; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .role-btn.active { background: #3F5A3E; color: #FFFFFF; box-shadow: 0 4px 10px rgba(63, 90, 62, 0.2); }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 700; color: #3F5A3E; }
+    .input-box { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(82, 110, 81, 0.3); background: #FFFFFF; color: #1E2B23; font-size: 13px; font-weight: 600; outline: none; }
+    .login-submit-btn { width: 100%; background: #3F5A3E; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(63, 90, 62, 0.3); margin-top: 6px; }
+    .error-msg { color: #EF4444; font-size: 11px; text-align: center; font-weight: 600; display: none; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-bar">
-            <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
-            <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
-            
-            <h1 id="appHeading">Connecting... ☁️</h1>
-            <a href="settings.html" class="settings-icon">⚙️</a>
-        </div>
-        <p class="subtitle">SELECT A MODULE</p>
-
-        <div class="base-setup">
-            <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
-            <div class="form-row">
-                <select id="designSelect" onchange="selectDesign(this.value)"></select>
-                <button class="btn-del" id="delBtn" onclick="deleteDesign()">Delete</button>
-            </div>
-            <div class="form-row">
-                <input type="text" id="newDesign" placeholder="New Design">
-                <button class="btn-add" id="addBtn" onclick="addDesign()">+ Add</button>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group"><label>Warp 1 (Grnd)</label><input type="text" id="warpCount" placeholder="2/60"></div>
-                <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
-                <div class="form-group"><label>Weft Count</label><input type="text" id="weftCount" placeholder="40s"></div>
-                <div class="form-group"><label>Width (Inch)</label><input type="number" id="width" placeholder="66" step="0.01"></div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group"><label>Reed</label><input type="text" id="reed"></div>
-                <div class="form-group"><label>Pick</label><input type="text" id="pick"></div>
-                <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
-            </div>
-            <div class="form-group">
-                <label>Design Bitmap / Photo Upload</label>
-                <input type="file" id="designBitmap" accept="image/*" onchange="previewBitmap(this)">
-            </div>
-            <div id="bitmapPreviewBox" style="text-align:center; display:none;">
-                <img id="bitmapImgTag" src="" style="max-height:60px; border-radius:4px; border:1px solid #fff;" alt="Bitmap">
-            </div>
-            <button class="btn-edit" id="editBtn" onclick="updateDesign()">✏️ Update / Edit Design</button>
-        </div>
-
-        <div class="menu-grid">
-            <a href="Party_Orders.html" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</a>
-            <a href="warp_entry.html" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</a>
-            <a href="weft_entry.html" class="menu-btn btn-theme-3"><span class="tab-icon">🧶</span> 2.1 Weft Entry</a>
-            <a href="kora_yarn.html" class="menu-btn btn-theme-4"><span class="tab-icon">🧵</span> 3. Kora</a>
-            <a href="dyeing_issue.html" class="menu-btn btn-theme-2"><span class="tab-icon">🧶</span> 4. Dyeing Issue</a>
-            <a href="dyeing_receive.html" class="menu-btn btn-theme-1"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</a>
-            <a href="warping.html" class="menu-btn btn-theme-3"><span class="tab-icon">📏</span> 5. Warping</a>
-            <a href="weaving.html" class="menu-btn btn-theme-4"><span class="tab-icon">🏭</span> 6. Weaving</a>
-            <a href="washing.html" class="menu-btn btn-theme-1"><span class="tab-icon">🌊</span> 7. Washing</a>
-            <a href="Despatch.html" class="menu-btn btn-theme-2"><span class="tab-icon">📦</span> 8. Despatch</a>
-            <a href="report.html" class="menu-btn btn-theme-3"><span class="tab-icon">📊</span> 9. Report</a>
-            <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
-            
-            <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
-            
-            <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
-        </div>
-
-        <div class="status-grid">
-            <div class="status-box">
-                <div class="status-title">Order Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('order', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('order', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-title">Weaving Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('weaving', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('weaving', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-title">Dyeing Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('dyeing', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('dyeing', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-title">Warping Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('warping', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('warping', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-title">Despatch Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('despatch', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('despatch', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-title">Washing Design</div>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('washing', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('washing', 'completed')">Completed</button>
-                </div>
-            </div>
-        </div>
+<div class="login-card">
+    <div class="logo-area">
+        <span style="font-size: 32px;">🔐🔑</span>
+        <h2>TEXFRIEND</h2>
+        <p id="subtitleText">Admin Login & User Login</p>
     </div>
-
-    <!-- Firebase App SDK (CDN) & Core Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-            authDomain: "texfriend.firebaseapp.com",
-            projectId: "texfriend",
-            storageBucket: "texfriend.appspot.com",
-            messagingSenderId: "331673079578",
-            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-            measurementId: "G-2NP13ZTKCN"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Core Cloud Functions
-        async function firebaseSave(key, data) {
-            try {
-                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-            } catch (e) {
-                console.error("Firebase Save Error: ", e);
-            }
-        }
-
-        async function firebaseLoad(key) {
-            try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
-            return null;
-        }
-
-        // Global State Variables
-        let designList = [];
-        let tempBitmapData = "";
-
-        // App Initialization (Firebase to LocalStorage Sync)
-        window.onload = async function() {
-            // 1. Sync Heading
-            let heading = await firebaseLoad('app_heading_name') || localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
-            document.getElementById('appHeading').innerText = heading;
-            localStorage.setItem('app_heading_name', heading);
-
-            // 2. Sync Logo
-            let logoData = await firebaseLoad('company_logo') || localStorage.getItem('company_logo') || '';
-            let logoContainer = document.getElementById('companyLogoContainer');
-            if (logoData) {
-                logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
-                localStorage.setItem('company_logo', logoData);
-            } else {
-                logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
-            }
-
-            // 3. Sync Design Master Data
-            designList = await firebaseLoad('pre_design_numbers') || JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let designSpecs = await firebaseLoad('design_specs') || JSON.parse(localStorage.getItem('design_specs')) || {};
-            
-            // Backup to LocalStorage so other non-updated pages continue to work perfectly
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            loadDesignDropdown();
-        }
-
-        // Helper function for safe # matching
-        function cleanDesignName(str) {
-            return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-        }
-
-        window.uploadQuickLogo = async function(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = async function(e) {
-                    let b64 = e.target.result;
-                    localStorage.setItem('company_logo', b64);
-                    document.getElementById('companyLogoContainer').innerHTML = `<img src="${b64}" alt="Logo">`;
-                    
-                    // Cloud Save
-                    await firebaseSave('company_logo', b64);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.previewBitmap = function(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    tempBitmapData = e.target.result;
-                    let imgTag = document.getElementById('bitmapImgTag');
-                    imgTag.src = tempBitmapData;
-                    document.getElementById('bitmapPreviewBox').style.display = 'block';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.addDesign = async function() {
-            let designNo = document.getElementById('newDesign').value.trim();
-            let warp = document.getElementById('warpCount').value.trim();
-            let warp2 = document.getElementById('warpCount2').value.trim();
-            let weft = document.getElementById('weftCount').value.trim();
-            let width = document.getElementById('width').value.trim();
-            let reed = document.getElementById('reed').value.trim();
-            let pick = document.getElementById('pick').value.trim();
-            let weave = document.getElementById('weave').value.trim();
-
-            if(!designNo) { alert("Design Number type pannu"); return; }
-            if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
-
-            let addBtn = document.getElementById('addBtn');
-            addBtn.innerText = "Saving ☁️...";
-
-            designList.push(designNo);
-            
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData };
-            
-            // Sync to Local
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('selected_design_number', designNo);
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            // Sync to Cloud
-            await firebaseSave('pre_design_numbers', designList);
-            await firebaseSave('design_specs', designSpecs);
-
-            addBtn.innerText = "+ Add";
-            loadDesignDropdown();
-            document.getElementById('newDesign').value = '';
-            alert("Design " + designNo + " Saved & Synced to Cloud! ✅☁️");
-        }
-
-        window.updateDesign = async function() {
-            let designNo = document.getElementById('designSelect').value;
-            if(!designNo) { alert("Select Design!"); return; }
-            
-            let warp = document.getElementById('warpCount').value.trim();
-            let warp2 = document.getElementById('warpCount2').value.trim();
-            let weft = document.getElementById('weftCount').value.trim();
-            let width = document.getElementById('width').value.trim();
-            let reed = document.getElementById('reed').value.trim();
-            let pick = document.getElementById('pick').value.trim();
-            let weave = document.getElementById('weave').value.trim();
-
-            let editBtn = document.getElementById('editBtn');
-            editBtn.innerText = "Updating ☁️...";
-
-            let cleanDNo = cleanDesignName(designNo);
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
-            
-            let existingBitmap = designSpecs[specKey] ? designSpecs[specKey].bitmap : "";
-            
-            designSpecs[specKey] = { 
-                warp, warp2, weft, width, reed, pick, weave, 
-                bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
-            };
-            
-            // Sync to Local & Cloud
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            await firebaseSave('design_specs', designSpecs);
-
-            editBtn.innerText = "✏️ Update / Edit Design";
-            alert("Updated successfully on Cloud! ✅☁️");
-        }
-
-        window.deleteDesign = async function() {
-            let designNo = document.getElementById('designSelect').value;
-            if(!designNo) { alert("Select Design!"); return; }
-            
-            if(confirm(designNo + " delete pannalama?")){
-                let delBtn = document.getElementById('delBtn');
-                delBtn.innerText = "Del ☁️...";
-
-                designList = designList.filter(x => x != designNo);
-                
-                let cleanDNo = cleanDesignName(designNo);
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
-                
-                if(specKey) {
-                    delete designSpecs[specKey];
-                }
-                
-                // Sync to Local & Cloud
-                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-                localStorage.removeItem('selected_design_number');
-
-                await firebaseSave('pre_design_numbers', designList);
-                await firebaseSave('design_specs', designSpecs);
-
-                delBtn.innerText = "Delete";
-                loadDesignDropdown();
-                clearForm();
-                alert("Deleted successfully from Cloud! 🗑️☁️");
-            }
-        }
-
-        function loadDesignDropdown() {
-            designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let select = document.getElementById('designSelect');
-            let html = '<option value="">Select Design</option>';
-            designList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
-            select.innerHTML = html;
-            
-            let active = localStorage.getItem('selected_design_number');
-            if(active && designList.includes(active)) { 
-                select.value = active; 
-                window.selectDesign(active); 
-            } else if(designList.length > 0) {
-                select.value = designList[0];
-                window.selectDesign(designList[0]);
-            } else {
-                clearForm();
-            }
-        }
-
-        window.selectDesign = function(val){
-            localStorage.setItem('selected_design_number', val);
-            if(val) {
-                let cleanVal = cleanDesignName(val);
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
-                let specs = designSpecs[specKey] || {};
-
-                document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
-                document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || '';
-                document.getElementById('weftCount').value = specs.weft || '';
-                document.getElementById('width').value = specs.width || specs.baseWidth || '';
-                document.getElementById('reed').value = specs.reed || specs.baseReed || '';
-                document.getElementById('pick').value = specs.pick || specs.basePick || '';
-                document.getElementById('weave').value = specs.weave || '';
-                
-                if(specs.bitmap) {
-                    tempBitmapData = specs.bitmap;
-                    document.getElementById('bitmapImgTag').src = specs.bitmap;
-                    document.getElementById('bitmapPreviewBox').style.display = 'block';
-                } else { 
-                    tempBitmapData = "";
-                    document.getElementById('bitmapPreviewBox').style.display = 'none'; 
-                }
-            } else {
-                clearForm();
-            }
-        }
-
-        function clearForm() {
-            document.getElementById('warpCount').value = '';
-            document.getElementById('warpCount2').value = '';
-            document.getElementById('weftCount').value = '';
-            document.getElementById('width').value = '';
-            document.getElementById('reed').value = '';
-            document.getElementById('pick').value = '';
-            document.getElementById('weave').value = '';
-            tempBitmapData = "";
-            document.getElementById('bitmapPreviewBox').style.display = 'none';
-        }
-
-        window.goToStatus = function(type, status){
-            window.location.href = `design_list.html?type=${type}&status=${status}`;
-        }
-    </script>
+    <div class="role-tabs">
+        <button type="button" class="role-btn active" id="adminTab" onclick="switchRole('admin')">👑 Admin Login</button>
+        <button type="button" class="role-btn" id="userTab" onclick="switchRole('user')">👤 User Login</button>
+    </div>
+    <div class="form-group">
+        <label id="usernameLabel">Admin User Name</label>
+        <input type="text" id="loginUser" class="input-box" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+        <label>Password / கடவுச்சொல்</label>
+        <input type="password" id="loginPass" class="input-box" placeholder="Enter password">
+    </div>
+    <div class="error-msg" id="errorMsg">⚠️ தவறான Username அல்லது Password!</div>
+    <button type="button" class="login-submit-btn" onclick="validateLogin()">Login / உள்நுழை</button>
+</div>
+<script>
+let currentRole = 'admin';
+function switchRole(role) {
+    currentRole = role;
+    let adminBtn = document.getElementById('adminTab');
+    let userBtn = document.getElementById('userTab');
+    let userLabel = document.getElementById('usernameLabel');
+    let subText = document.getElementById('subtitleText');
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    if(role === 'admin') {
+        adminBtn.classList.add('active'); userBtn.classList.remove('active');
+        userLabel.innerText = "Admin User Name"; subText.innerText = "Administrator Control Panel";
+    } else {
+        userBtn.classList.add('active'); adminBtn.classList.remove('active');
+        userLabel.innerText = "Staff / User Name"; subText.innerText = "Standard User Portal";
+    }
+}
+function validateLogin() {
+    let u = document.getElementById('loginUser').value.trim();
+    let p = document.getElementById('loginPass').value.trim();
+    let err = document.getElementById('errorMsg');
+    if(!u || !p) { err.innerText = "⚠️ அனைத்து விவரங்களையும் நிரப்பவும்!"; err.style.display = 'block'; return; }
+    
+    if(currentRole === 'admin') {
+        if(u === 'admin' && p === '1234') {
+            localStorage.setItem('erp_logged_role', 'Admin');
+            localStorage.setItem('erp_logged_user', u);
+            window.location.href = "dashboard.html"; // 👈 திருத்தப்பட்டுள்ளது
+        } else { err.innerText = "⚠️ தவறான அட்மின் விவரங்கள்!"; err.style.display = 'block'; }
+    } else {
+        if(u !== '' && p !== '') { 
+            localStorage.setItem('erp_logged_role', 'User');
+            localStorage.setItem('erp_logged_user', u);
+            window.location.href = "dashboard.html"; // 👈 திருத்தப்பட்டுள்ளது
+        } else { err.innerText = "⚠️ தவறான யூசர் விவரங்கள்!"; err.style.display = 'block'; }
+    }
+}
+</script>
 </body>
 </html>
