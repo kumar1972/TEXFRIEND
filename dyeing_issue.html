@@ -113,6 +113,9 @@
         margin-top: 10px;
         margin-bottom: 6px;
         border-left: 3px solid #526E51;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .issue-grid-header {
@@ -246,9 +249,15 @@
         <input type="text" id="dyeingName" placeholder="Enter Dyeing Unit Name">
     </div>
 
-    <!-- 📌 1. WARP YARN SECTION -->
-    <div style="margin-top: 10px;">
-        <div class="section-title-sub">🧵 WARP YARN ISSUE</div>
+    <!-- 📌 TOGGLE OPTION: Combine Same Count & Colour -->
+    <div style="background: rgba(82, 110, 81, 0.1); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+        <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #3F5A3E; cursor: pointer;">🔗 Combine Warp + Weft (Same Count & Colour)</label>
+        <input type="checkbox" id="combineToggle" checked onchange="loadYarnRequirements()" style="width: 18px; height: 18px; accent-color: #526E51; cursor: pointer;">
+    </div>
+
+    <!-- 📌 COMBINED / WARP YARN SECTION -->
+    <div style="margin-top: 5px;">
+        <div class="section-title-sub" id="sectionTitleLabel">🧵 YARN ISSUE DETAILS</div>
         <div class="issue-grid-header">
             <div>Count</div>
             <div>Colour</div>
@@ -259,8 +268,8 @@
         <div id="warpIssueLinesContainer"></div>
     </div>
 
-    <!-- 📌 2. WEFT YARN SECTION -->
-    <div style="margin-top: 10px;">
+    <!-- 📌 WEFT SECTION (Will hide automatically if Combine is checked and merged) -->
+    <div id="weftSectionWrapper" style="margin-top: 10px;">
         <div class="section-title-sub">🧶 WEFT YARN ISSUE</div>
         <div class="issue-grid-header">
             <div>Count</div>
@@ -272,7 +281,7 @@
         <div id="weftIssueLinesContainer"></div>
     </div>
 
-    <button class="save-main-btn" onclick="saveDyeingIssue()">Save Dyeing Order Issue</button>
+    <button class="save-main-btn" id="saveBtnTxt" onclick="saveDyeingIssue()">Save Dyeing Order Issue</button>
 
     <div class="list-header">📊 Issued Orders List</div>
     <div class="table-container">
@@ -386,6 +395,7 @@ function loadYarnRequirements() {
     let dName = document.getElementById('designNumber').value;
     let warpContainer = document.getElementById('warpIssueLinesContainer');
     let weftContainer = document.getElementById('weftIssueLinesContainer');
+    let isCombineChecked = document.getElementById('combineToggle').checked;
 
     if(!dName) {
         warpContainer.innerHTML = '';
@@ -396,7 +406,6 @@ function loadYarnRequirements() {
 
     let cleanDNo = cleanDesignName(dName);
 
-    // Auto-fill Dyeing Unit Name if previously saved for this design
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let existingRecord = issueRecords.slice().reverse().find(r => cleanDesignName(r.designNo) === cleanDNo);
     if(existingRecord) {
@@ -416,7 +425,6 @@ function loadYarnRequirements() {
     let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
     let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
     
-    // Load Orders Length & Crimp Percentage from yarn_calc logic
     let warpOrderMtrs = parseFloat(foundMaster.orderMtr) || 100;
     let topBeamMtrs = warpOrderMtrs;
 
@@ -430,14 +438,13 @@ function loadYarnRequirements() {
         }
     }
 
-    // Default 6% crimp for Weft Mtrs calculation
     let crimpPct = 6; 
     let weftOrderMtrs = warpOrderMtrs - (warpOrderMtrs * (crimpPct / 100));
 
     let defaultCountText = foundMaster.count1 || sp.warp || '20';
     let defaultCountNum = getResultantCount(defaultCountText) || 20;
 
-    // 📌 1. WARP YARN CALCULATION (Auto-fill from Yarn Calc Specs)
+    // --- WARP ---
     let totalWarpEnds = Math.round(uiReed * baseWidth);
     let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
     
@@ -459,13 +466,13 @@ function loadYarnRequirements() {
             let currentLen = (obj.beam === 'Top Beam') ? topBeamMtrs : warpOrderMtrs;
             let wgt = (obj.totalVal * currentLen) / (1693.33 * calcCount);
             
-            let key = obj.count + '_' + obj.color.toLowerCase();
-            if(!warpMap.has(key)) warpMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
+            let key = obj.count.toLowerCase().trim() + '_' + obj.color.toLowerCase().trim();
+            if(!warpMap.has(key)) warpMap.set(key, { count: obj.count, color: obj.color, weight: 0, type: 'Warp' });
             warpMap.get(key).weight += wgt;
         });
     }
 
-    // 📌 2. WEFT YARN CALCULATION (Auto-fill from Yarn Calc Specs with Weft Mtrs)
+    // --- WEFT ---
     let totalFabricPick = weftWidth * uiPick;
     let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
     let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
@@ -480,21 +487,50 @@ function loadYarnRequirements() {
             let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
             let wgt = (tPick * weftOrderMtrs) / (1693.33 * calcCount);
 
-            let key = obj.count + '_' + obj.color.toLowerCase();
-            if(!weftMap.has(key)) weftMap.set(key, { count: obj.count, color: obj.color, weight: 0 });
+            let key = obj.count.toLowerCase().trim() + '_' + obj.color.toLowerCase().trim();
+            if(!weftMap.has(key)) weftMap.set(key, { count: obj.count, color: obj.color, weight: 0, type: 'Weft' });
             weftMap.get(key).weight += wgt;
         });
     }
 
-    // Render Warp UI Lines
-    warpContainer.innerHTML = '';
-    let warpArray = Array.from(warpMap.values());
-    if(warpArray.length === 0) {
-        warpContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Warp Yarn Data</div>';
+    let finalWarpList = [];
+    let finalWeftList = [];
+
+    if (isCombineChecked) {
+        document.getElementById('sectionTitleLabel').innerText = "🧵 COMBINED YARN ISSUE (Warp + Weft)";
+        document.getElementById('weftSectionWrapper').style.display = 'none';
+
+        let combinedMap = new Map();
+        
+        warpMap.forEach((val, key) => {
+            combinedMap.set(key, { count: val.count, color: val.color, weight: val.weight, type: 'Combined' });
+        });
+
+        weftMap.forEach((val, key) => {
+            if (combinedMap.has(key)) {
+                combinedMap.get(key).weight += val.weight;
+            } else {
+                combinedMap.set(key, { count: val.count, color: val.color, weight: val.weight, type: 'Combined' });
+            }
+        });
+
+        finalWarpList = Array.from(combinedMap.values());
     } else {
-        warpArray.forEach(item => {
+        document.getElementById('sectionTitleLabel').innerText = "🧵 WARP YARN ISSUE";
+        document.getElementById('weftSectionWrapper').style.display = 'block';
+        finalWarpList = Array.from(warpMap.values());
+        finalWeftList = Array.from(weftMap.values());
+    }
+
+    // Render Main / Warp Section
+    warpContainer.innerHTML = '';
+    if(finalWarpList.length === 0) {
+        warpContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Yarn Data</div>';
+    } else {
+        finalWarpList.forEach(item => {
             let row = document.createElement('div');
-            row.className = 'line-row warp-row';
+            row.className = 'line-row';
+            row.setAttribute('data-type', item.type);
             row.innerHTML = `
                 <input type="text" class="inp-count" value="${item.count}" readonly>
                 <input type="text" class="inp-color" value="${item.color}" readonly>
@@ -506,24 +542,26 @@ function loadYarnRequirements() {
         });
     }
 
-    // Render Weft UI Lines
+    // Render Weft Section (If not combined)
     weftContainer.innerHTML = '';
-    let weftArray = Array.from(weftMap.values());
-    if(weftArray.length === 0) {
-        weftContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Weft Yarn Data</div>';
-    } else {
-        weftArray.forEach(item => {
-            let row = document.createElement('div');
-            row.className = 'line-row weft-row';
-            row.innerHTML = `
-                <input type="text" class="inp-count" value="${item.count}" readonly>
-                <input type="text" class="inp-color" value="${item.color}" readonly>
-                <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
-                <input type="number" class="inp-issue" placeholder="Wt">
-                <button class="del-btn" onclick="this.parentElement.remove()">×</button>
-            `;
-            weftContainer.appendChild(row);
-        });
+    if(!isCombineChecked) {
+        if(finalWeftList.length === 0) {
+            weftContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Weft Yarn Data</div>';
+        } else {
+            finalWeftList.forEach(item => {
+                let row = document.createElement('div');
+                row.className = 'line-row';
+                row.setAttribute('data-type', 'Weft');
+                row.innerHTML = `
+                    <input type="text" class="inp-count" value="${item.count}" readonly>
+                    <input type="text" class="inp-color" value="${item.color}" readonly>
+                    <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
+                    <input type="number" class="inp-issue" placeholder="Wt">
+                    <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+                `;
+                weftContainer.appendChild(row);
+            });
+        }
     }
 }
 
@@ -532,6 +570,7 @@ async function saveDyeingIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dName = document.getElementById('dyeingName').value.trim();
     let dNumber = document.getElementById('designNumber').value;
+    let isCombineChecked = document.getElementById('combineToggle').checked;
 
     if(!dateVal || !dName || !dNumber) {
         alert("Please fill Date, Dyeing Name, and Design Number!");
@@ -546,7 +585,7 @@ async function saveDyeingIssue() {
         return;
     }
 
-    let btn = document.querySelector('.save-main-btn');
+    let btn = document.getElementById('saveBtnTxt');
     let origText = btn.innerText;
     btn.innerText = "Saving ☁️...";
 
@@ -566,12 +605,13 @@ async function saveDyeingIssue() {
         editingIssueId = null;
         alert("Dyeing Order Updated to Cloud Successfully! ✅☁️");
     } else {
-        // Process Warp Entries
+        // Process Main / Warp Container rows
         warpRows.forEach(row => {
             let count = row.querySelector('.inp-count').value;
             let color = row.querySelector('.inp-color').value;
             let orderWt = row.querySelector('.inp-order').value;
             let issueWt = row.querySelector('.inp-issue').value.trim();
+            let rowType = row.getAttribute('data-type') || 'Warp';
 
             if(issueWt) {
                 issueRecords.push({
@@ -579,7 +619,7 @@ async function saveDyeingIssue() {
                     date: dateVal,
                     unit: dName,
                     designNo: dNumber,
-                    yarnType: "Warp",
+                    yarnType: rowType, // Will store "Combined" or "Warp"
                     count: count,
                     color: color,
                     orderWt: parseFloat(orderWt).toFixed(3),
@@ -589,35 +629,36 @@ async function saveDyeingIssue() {
             }
         });
 
-        // Process Weft Entries
-        weftRows.forEach(row => {
-            let count = row.querySelector('.inp-count').value;
-            let color = row.querySelector('.inp-color').value;
-            let orderWt = row.querySelector('.inp-order').value;
-            let issueWt = row.querySelector('.inp-issue').value.trim();
+        // Process Weft Rows (if separate)
+        if (!isCombineChecked) {
+            weftRows.forEach(row => {
+                let count = row.querySelector('.inp-count').value;
+                let color = row.querySelector('.inp-color').value;
+                let orderWt = row.querySelector('.inp-order').value;
+                let issueWt = row.querySelector('.inp-issue').value.trim();
 
-            if(issueWt) {
-                issueRecords.push({
-                    id: Date.now() + Math.random(),
-                    date: dateVal,
-                    unit: dName,
-                    designNo: dNumber,
-                    yarnType: "Weft",
-                    count: count,
-                    color: color,
-                    orderWt: parseFloat(orderWt).toFixed(3),
-                    issueWt: parseFloat(issueWt).toFixed(3),
-                    status: "Pending"
-                });
-            }
-        });
+                if(issueWt) {
+                    issueRecords.push({
+                        id: Date.now() + Math.random(),
+                        date: dateVal,
+                        unit: dName,
+                        designNo: dNumber,
+                        yarnType: "Weft",
+                        count: count,
+                        color: color,
+                        orderWt: parseFloat(orderWt).toFixed(3),
+                        issueWt: parseFloat(issueWt).toFixed(3),
+                        status: "Pending"
+                    });
+                }
+            });
+        }
 
         alert("Dyeing Order Issued to Cloud Successfully! ✅☁️");
     }
 
     localStorage.setItem('dyeing_issue_records', JSON.stringify(issueRecords));
     
-    // Cloud Sync
     if (window.firebaseSave) {
         await window.firebaseSave('dyeing_issue_records', issueRecords);
     }
@@ -638,12 +679,12 @@ function editIssueRecord(id) {
         document.getElementById('designNumber').value = rec.designNo;
         document.getElementById('dyeingName').value = rec.unit;
         
-        let container = rec.yarnType === 'Weft' ? document.getElementById('weftIssueLinesContainer') : document.getElementById('warpIssueLinesContainer');
+        let container = (rec.yarnType === 'Weft') ? document.getElementById('weftIssueLinesContainer') : document.getElementById('warpIssueLinesContainer');
         document.getElementById('warpIssueLinesContainer').innerHTML = '';
         document.getElementById('weftIssueLinesContainer').innerHTML = '';
 
         container.innerHTML = `
-            <div class="line-row">
+            <div class="line-row" data-type="${rec.yarnType}">
                 <input type="text" class="inp-count" value="${rec.count}" readonly>
                 <input type="text" class="inp-color" value="${rec.color}" readonly>
                 <input type="text" class="inp-order" value="${rec.orderWt}" readonly>
@@ -657,14 +698,12 @@ function editIssueRecord(id) {
     }
 }
 
-// 📌 FIREBASE SYNC: deleteIssueRecord
 async function deleteIssueRecord(id) {
     if(!confirm("Are you sure you want to delete this issue record?")) return;
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     records = records.filter(r => r.id != id);
     localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
     
-    // Cloud Sync
     if (window.firebaseSave) {
         await window.firebaseSave('dyeing_issue_records', records);
     }
@@ -758,9 +797,8 @@ function renderIssuedList() {
         return null;
     }
 
-    // Sync Data on Load
     window.addEventListener('load', async function() {
-        let btn = document.querySelector('.save-main-btn');
+        let btn = document.getElementById('saveBtnTxt');
         let origText = btn ? btn.innerText : "Save Dyeing Order Issue";
         if(btn) btn.innerText = "Syncing ☁️...";
 

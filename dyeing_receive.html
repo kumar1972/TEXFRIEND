@@ -233,6 +233,12 @@
         <input type="text" id="dyeingName" placeholder="Dyeing Unit Name" readonly>
     </div>
 
+    <!-- 📌 TOGGLE OPTION: Combine Same Count & Colour -->
+    <div style="background: rgba(130, 59, 78, 0.1); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+        <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #823B4E; cursor: pointer;">🔗 Combine Same Count & Colour</label>
+        <input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width: 18px; height: 18px; accent-color: #823B4E; cursor: pointer;">
+    </div>
+
     <div style="margin-top: 10px;">
         <div class="receive-grid-header">
             <div>Count</div>
@@ -304,19 +310,49 @@ function loadPendingItems() {
 
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let pendingItems = issueRecords.filter(r => r.status === 'Pending' && r.designNo === dNo);
+    let isCombineChecked = document.getElementById('combineToggle').checked;
 
     if(pendingItems.length > 0) {
         document.getElementById('dyeingName').value = pendingItems[0].unit;
 
-        pendingItems.forEach(item => {
+        let displayList = [];
+
+        if (isCombineChecked) {
+            let map = new Map();
+            pendingItems.forEach(item => {
+                let key = item.count.toLowerCase().trim() + '_' + item.color.toLowerCase().trim();
+                if (!map.has(key)) {
+                    map.set(key, {
+                        count: item.count,
+                        color: item.color,
+                        issueWt: 0,
+                        ids: []
+                    });
+                }
+                let obj = map.get(key);
+                obj.issueWt += parseFloat(item.issueWt) || 0;
+                obj.ids.push(item.id);
+            });
+            displayList = Array.from(map.values());
+        } else {
+            displayList = pendingItems.map(item => ({
+                count: item.count,
+                color: item.color,
+                issueWt: parseFloat(item.issueWt) || 0,
+                ids: [item.id]
+            }));
+        }
+
+        displayList.forEach(item => {
             let row = document.createElement('div');
             row.className = 'line-row';
-            row.setAttribute('data-id', item.id);
+            // Store IDs as comma-separated string for multi-id matching during save/edit
+            row.setAttribute('data-ids', item.ids.join(','));
             
             row.innerHTML = `
                 <input type="text" class="inp-count" value="${item.count}" readonly>
                 <input type="text" class="inp-color" value="${item.color}" readonly>
-                <input type="text" class="inp-issued" value="${parseFloat(item.issueWt).toFixed(3)}" readonly>
+                <input type="text" class="inp-issued" value="${item.issueWt.toFixed(3)}" readonly>
                 <input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)">
                 <input type="text" class="inp-loss-wt" placeholder="0.000" readonly>
                 <input type="text" class="inp-loss-perc" placeholder="0%" readonly>
@@ -395,35 +431,40 @@ async function saveReceiveEntry() {
         let rcvWt = parseFloat(row.querySelector('.inp-received').value);
         
         if(rcvWt > 0) {
-            let recId = row.getAttribute('data-id');
-            let issueIndex = issues.findIndex(r => r.id == recId);
+            let recIdsStr = row.getAttribute('data-ids');
+            let recIds = recIdsStr ? recIdsStr.split(',') : [];
+            
+            let issuedTotalWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
+            let lossWt = parseFloat(row.querySelector('.inp-loss-wt').value) || 0;
+            let lossPerc = row.querySelector('.inp-loss-perc').value || '0%';
+            let excessVal = row.querySelector('.inp-excess-wt').value;
+            let finalExcess = (excessVal && excessVal !== "-") ? parseFloat(excessVal).toFixed(3) : "-";
 
-            if(issueIndex !== -1) {
-                let issueItem = issues[issueIndex];
-                let lossWt = parseFloat(row.querySelector('.inp-loss-wt').value) || 0;
-                let lossPerc = row.querySelector('.inp-loss-perc').value || '0%';
-                
-                let excessVal = row.querySelector('.inp-excess-wt').value;
-                let finalExcess = (excessVal && excessVal !== "-") ? parseFloat(excessVal).toFixed(3) : "-";
+            // Save each linked issue ID as part of the received entry group
+            receives.push({
+                id: Date.now() + Math.random(),
+                issueIds: recIds,
+                issueId: recIds[0], // backward compatibility
+                date: dateVal,
+                unit: dName,
+                designNo: dNo,
+                count: row.querySelector('.inp-count').value,
+                color: row.querySelector('.inp-color').value,
+                issuedWt: issuedTotalWt.toFixed(3),
+                receivedWt: rcvWt.toFixed(3),
+                lossWt: lossWt.toFixed(3),
+                lossPerc: lossPerc,
+                excessWt: finalExcess
+            });
 
-                receives.push({
-                    id: Date.now() + Math.random(),
-                    issueId: recId,
-                    date: dateVal,
-                    unit: dName,
-                    designNo: dNo,
-                    count: issueItem.count,
-                    color: issueItem.color,
-                    issuedWt: parseFloat(issueItem.issueWt).toFixed(3),
-                    receivedWt: rcvWt.toFixed(3),
-                    lossWt: lossWt.toFixed(3),
-                    lossPerc: lossPerc,
-                    excessWt: finalExcess
-                });
-
-                issues[issueIndex].status = "Received";
-                savedCount++;
-            }
+            // Mark all associated issues as Received
+            recIds.forEach(id => {
+                let issueIndex = issues.findIndex(r => String(r.id) === String(id));
+                if(issueIndex !== -1) {
+                    issues[issueIndex].status = "Received";
+                }
+            });
+            savedCount++;
         }
     });
 
@@ -456,12 +497,15 @@ async function editReceiveRecord(recId) {
     let index = receives.findIndex(r => r.id == recId);
     if(index !== -1) {
         let record = receives[index];
-        let issueId = record.issueId;
+        let targetIds = record.issueIds || [record.issueId];
         
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
-        if(issueIndex !== -1) {
-            issues[issueIndex].status = "Pending";
-        }
+        // Revert status of all linked issues back to Pending
+        targetIds.forEach(id => {
+            let issueIndex = issues.findIndex(iss => String(iss.id) === String(id));
+            if(issueIndex !== -1) {
+                issues[issueIndex].status = "Pending";
+            }
+        });
         
         receives.splice(index, 1);
         
@@ -482,7 +526,10 @@ async function editReceiveRecord(recId) {
         setTimeout(() => {
             let rows = document.querySelectorAll('#receiveLinesContainer .line-row');
             rows.forEach(row => {
-                if(row.getAttribute('data-id') == issueId) {
+                let rowIds = row.getAttribute('data-ids') ? row.getAttribute('data-ids').split(',') : [];
+                // Check if any ID overlaps
+                let hasMatch = rowIds.some(id => targetIds.includes(id));
+                if(hasMatch) {
                     let rcvInp = row.querySelector('.inp-received');
                     rcvInp.value = record.receivedWt;
                     calculateLoss(rcvInp);
@@ -503,12 +550,15 @@ async function deleteReceiveRecord(recId) {
     
     let index = receives.findIndex(r => r.id == recId);
     if(index !== -1) {
-        let issueId = receives[index].issueId;
+        let record = receives[index];
+        let targetIds = record.issueIds || [record.issueId];
         
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
-        if(issueIndex !== -1) {
-            issues[issueIndex].status = "Pending";
-        }
+        targetIds.forEach(id => {
+            let issueIndex = issues.findIndex(iss => String(iss.id) === String(id));
+            if(issueIndex !== -1) {
+                issues[issueIndex].status = "Pending";
+            }
+        });
         
         receives.splice(index, 1);
         
@@ -606,7 +656,6 @@ function renderReceivedList() {
         return null;
     }
 
-    // Sync Data on Load
     window.addEventListener('load', async function() {
         let btn = document.getElementById('saveReceiveBtnTxt');
         let origText = btn ? btn.innerText : "Save Received Entry";
