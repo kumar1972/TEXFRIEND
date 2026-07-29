@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Warp Entry - TEXFRIEND ERP</title>
+<script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -362,34 +363,6 @@
 
 <script>
 let currentBaseSpecs = {};
-
-// 📌 EXTENDED COLOR MAPPING FUNCTION
-function translateColorToTamil(colorName) {
-    if (!colorName) return '-';
-    var c = colorName.trim().toLowerCase();
-    
-    var map = {
-        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'sky blue': 'ஸ்கை ப்ளூ',
-        'royal blue': 'ராயல் ப்ளூ', 'navy': 'நேவி', 'navy blue': 'நேவி ப்ளூ',
-        'turq': 'டர்க்', 'turquoise': 'டர்க்காய்ஸ்', 'yellow': 'மஞ்சள்',
-        'lemon yellow': 'லெமன் மஞ்சள்', 'red': 'சிகப்பு', 'green': 'பச்சை',
-        'dark green': 'டார்க் பச்சை', 'light green': 'லைட் பச்சை', 'olive': 'ஆலிவ்',
-        'mint': 'மிண்ட்', 'brown': 'பிரவுன்', 'khaki': 'காக்கி', 'rose': 'ரோஸ்',
-        'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'purple': 'பர்புள்', 'grey': 'சாம்பல்',
-        'gray': 'சாம்பல்', 'gold': 'தங்கம்', 'pink': 'பிங்க்', 'maroon': 'மெரூன்',
-        'cream': 'க்ரீம்', 'beige': 'பீஜ்', 'peach': 'பீச்', 'lavender': 'லேவெண்டர்',
-        'silver': 'சில்வர்', 'sandal': 'சந்தனம்'
-    };
-
-    if (map[c]) return map[c];
-
-    return c
-        .replace(/blue/g, 'ப்ளூ').replace(/green/g, 'பச்சை').replace(/yellow/g, 'மஞ்சள்')
-        .replace(/red/g, 'சிகப்பு').replace(/white/g, 'வெள்ளை').replace(/black/g, 'கருப்பு')
-        .replace(/pink/g, 'பிங்க்').replace(/purple/g, 'பர்புள்').replace(/orange/g, 'ஆரஞ்சு')
-        .replace(/rose/g, 'ரோஸ்').replace(/grey|gray/g, 'சாம்பல்').replace(/brown/g, 'பிரவுன்')
-        .replace(/light/g, 'லைட்').replace(/dark/g, 'டார்க்');
-}
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';

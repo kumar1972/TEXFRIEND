@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Weft Entry - TEXFRIEND ERP</title>
+<script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -358,18 +359,6 @@
 // 📌 Helper function for safe # matching
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
-
-function translateColorToTamil(colorName) {
-    if (!colorName) return '-';
-    var c = colorName.trim().toLowerCase();
-    var map = {
-        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
-        'red': 'சிகப்பு', 'green': 'பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
-        'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'grey': 'சாம்பல்',
-        'gold': 'தங்கம்', 'pink': 'பிங்க்', 'navy': 'நேவி', 'maroon': 'மெரூன்'
-    };
-    return map[c] || colorName; 
 }
 
 function loadDesignDropdown() {
