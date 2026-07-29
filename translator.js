@@ -30,7 +30,7 @@ function translateColorToTamil(colorName) {
         'navy': 'நேவி',
         'maroon': 'மெரூன்',
         'olive': 'ஆலிவ்'
-        'Turq': 'டர்க்',
+        'turq': 'டர்க்',
         'violet': 'வைலட்',
     };
 
