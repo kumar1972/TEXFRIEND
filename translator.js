@@ -26,11 +26,12 @@ function translateColorToTamil(colorName) {
         'd. khaki': 'D. காக்கி',
         'rose': 'ரோஸ்',
         'orange': 'ஆரஞ்சு',
-        'violet': 'வயோலெட்',
         'pink': 'பிங்க்',
         'navy': 'நேவி',
         'maroon': 'மெரூன்',
         'olive': 'ஆலிவ்'
+        'Turq': 'டர்க் ',
+        'violet': 'வைலட்',
     };
 
     if (map[c]) {
