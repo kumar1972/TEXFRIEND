@@ -190,14 +190,26 @@
     <!-- 1. KORA STOCK INWARD -->
     <div>
         <h3>📥 Add Kora Stock (Inward)</h3>
+        
+        <!-- Stock Type Tab Added -->
+        <div class="form-row" style="margin-bottom: 8px;">
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Stock Type</label>
+                <select id="stockType" onchange="toggleStockType()">
+                    <option value="Mill">Mill Inward</option>
+                    <option value="Office Stock">Office Stock</option>
+                </select>
+            </div>
+        </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label>Date</label>
                 <input type="date" id="inwardDate">
             </div>
             <div class="form-group">
-                <label>Supplier / Mill Name</label>
-                <input type="text" id="supplierName" placeholder="mill name">
+                <label id="supplierLabel">Mill Name</label>
+                <input type="text" id="supplierName" placeholder="Enter Mill Name">
             </div>
         </div>
         <div class="form-row">
@@ -285,7 +297,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Supplier</th>
+                        <th>Type / Supplier</th>
                         <th>Count</th>
                         <th>Weight</th>
                         <th>Action</th>
@@ -335,15 +347,30 @@ function loadDesignDropdown() {
     select.innerHTML = html;
 }
 
+function toggleStockType() {
+    let type = document.getElementById('stockType').value;
+    let label = document.getElementById('supplierLabel');
+    let input = document.getElementById('supplierName');
+    
+    if(type === 'Office Stock') {
+        label.innerText = "Source / Office Note";
+        input.placeholder = "e.g. Office Reserve / Branch";
+    } else {
+        label.innerText = "Mill Name";
+        input.placeholder = "Enter Mill Name";
+    }
+}
+
 // 1. SAVE INWARD STOCK
 async function saveInward() {
+    let stockType = document.getElementById('stockType').value;
     let dateVal = document.getElementById('inwardDate').value;
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
     let weight = parseFloat(document.getElementById('inwardWt').value) || 0;
 
     if(!supplier || !count || weight <= 0) {
-        alert("Please enter Supplier Name, Count, and valid Weight!");
+        alert("Please enter Name, Count, and valid Weight!");
         return;
     }
 
@@ -356,6 +383,7 @@ async function saveInward() {
     if (editingInwardId) {
         let idx = records.findIndex(r => r.id == editingInwardId);
         if(idx !== -1) {
+            records[idx].stockType = stockType;
             records[idx].date = dateVal;
             records[idx].supplier = supplier;
             records[idx].count = count;
@@ -366,6 +394,7 @@ async function saveInward() {
     } else {
         records.push({
             id: Date.now() + Math.random(),
+            stockType: stockType,
             date: dateVal,
             supplier: supplier,
             count: count,
@@ -388,7 +417,7 @@ async function saveInward() {
     btn.innerText = "Save Kora Stock";
 }
 
-// 2. SAVE OUTWARD ISSUE (Supports Multiple Deliveries per Design)
+// 2. SAVE OUTWARD ISSUE (Supports Multiple Deliveries)
 async function saveIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
@@ -439,7 +468,6 @@ async function saveIssue() {
         editingIssueId = null;
         alert("Kora Issue Updated to Cloud Successfully! ✅☁️");
     } else {
-        // Pushes a new independent entry allowing multiple deliveries for the same design
         issues.push({
             id: Date.now() + Math.random(),
             date: dateVal,
@@ -510,10 +538,11 @@ function refreshAllTables() {
         [...inwards].reverse().forEach(item => {
             let dObj = new Date(item.date);
             let dStr = ("0"+dObj.getDate()).slice(-2)+"/"+("0"+(dObj.getMonth()+1)).slice(-2)+"/"+dObj.getFullYear();
+            let badgeType = item.stockType === 'Office Stock' ? '[Office] ' : '[Mill] ';
             inBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
-                    <td>${item.supplier}</td>
+                    <td>${badgeType}${item.supplier}</td>
                     <td>${item.count}</td>
                     <td>${item.weight}</td>
                     <td class="action-btns">
@@ -557,6 +586,8 @@ function editInward(id) {
     let rec = records.find(r => r.id == id);
     if(rec) {
         editingInwardId = id;
+        document.getElementById('stockType').value = rec.stockType || 'Mill';
+        toggleStockType();
         document.getElementById('inwardDate').value = rec.date;
         document.getElementById('supplierName').value = rec.supplier;
         document.getElementById('inwardCount').value = rec.count;
