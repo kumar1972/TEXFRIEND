@@ -234,6 +234,27 @@
     .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
 
+    /* Selection Modal for Bottom Form */
+    #designModal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;
+    }
+    .design-modal-content {
+        background: #F0F4F0; width: 90%; max-width: 400px; border-radius: 12px;
+        border: 1px solid rgba(82, 110, 81, 0.4); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .design-modal-header {
+        background: #D8DFD6; color: #3F5A3E; padding: 10px 12px; font-weight: bold;
+        font-size: 11px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.3);
+    }
+    .design-modal-body { padding: 8px 12px; max-height: 350px; overflow-y: auto; }
+    .design-option {
+        display: flex; justify-content: space-between; align-items: center; padding: 10px 6px;
+        border-bottom: 1px solid rgba(82, 110, 81, 0.2); cursor: pointer; font-size: 12px; color: #1E2B23;
+    }
+    .design-option:hover { background: #D8DFD6; }
+
     @media print {
         body * { visibility: hidden; }
         #previewModal, #previewModal * { visibility: visible; }
@@ -313,10 +334,10 @@
                 <input type="date" id="botDate">
             </div>
             <div class="form-group">
-                <label>Design Number (Select)</label>
-                <select id="botDesignNo" onchange="loadBottomData()">
-                    <option value="">Select Pending Design</option>
-                </select>
+                <label>Design & Washing Unit (Select Pending Order)</label>
+                <input type="text" id="botDesignDisplay" placeholder="Select Pending Order" readonly onclick="openDesignModal()" style="cursor: pointer; background:#FFFFFF; font-weight:bold;">
+                <input type="hidden" id="botDesignNo">
+                <input type="hidden" id="botUnitName">
             </div>
         </div>
 
@@ -344,6 +365,7 @@
                 <thead>
                     <tr>
                         <th>Design</th>
+                        <th>Washing Unit</th>
                         <th>Slip</th>
                         <th>Piece</th>
                         <th>Mtr</th>
@@ -359,6 +381,17 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Selection Modal for Bottom Form -->
+<div id="designModal">
+    <div class="design-modal-content">
+        <div class="design-modal-header">
+            <span>Select Pending Washing Order</span>
+            <span style="cursor: pointer; font-size: 16px;" onclick="closeDesignModal()">✕</span>
+        </div>
+        <div class="design-modal-body" id="modalDesignList"></div>
     </div>
 </div>
 
@@ -391,18 +424,6 @@ function loadDesignDropdowns() {
     let topHtml = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { topHtml += `<option value="${d}">${d}</option>`; });
     topSelect.innerHTML = topHtml;
-
-    updateBottomDropdown();
-}
-
-function updateBottomDropdown() {
-    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let pendingDesigns = [...new Set(issues.filter(r => r.status === 'Pending').map(r => r.designNo))];
-    
-    let botSelect = document.getElementById('botDesignNo');
-    let botHtml = '<option value="">Select Pending Design</option>';
-    pendingDesigns.forEach(d => { botHtml += `<option value="${d}">${d}</option>`; });
-    botSelect.innerHTML = botHtml;
 }
 
 function addNewTopRow(btn) {
@@ -422,7 +443,7 @@ function addNewTopRow(btn) {
 // 📌 FIREBASE SYNC: saveTopOrder
 async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
-    let unit = document.getElementById('topUnit').value;
+    let unit = document.getElementById('topUnit').value.trim();
     let dNo = document.getElementById('topDesignNo').value;
 
     if(!dNo || !unit) { alert("Please fill Date, Washing Name, and Design Number!"); return; }
@@ -482,7 +503,6 @@ async function saveTopOrder() {
         document.getElementById('topDesignNo').value = '';
         document.getElementById('topUnit').value = '';
         
-        updateBottomDropdown();
         renderTable();
     } else {
         alert("Please fill Slip, Piece, and Mtr correctly.");
@@ -490,13 +510,54 @@ async function saveTopOrder() {
     btn.innerText = origText;
 }
 
+function openDesignModal() {
+    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+    let pendingItems = issues.filter(r => r.status === 'Pending');
+    
+    let modalList = document.getElementById('modalDesignList');
+    modalList.innerHTML = '';
+
+    if(pendingItems.length === 0) {
+        modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #888;">No pending washing orders found</div>';
+    } else {
+        let uniqueMap = new Map();
+        pendingItems.forEach(item => {
+            let key = `${item.designNo}_${item.unit}`;
+            if(!uniqueMap.has(key)) {
+                uniqueMap.set(key, { designNo: item.designNo, unit: item.unit });
+            }
+        });
+
+        uniqueMap.forEach((val) => {
+            let div = document.createElement('div');
+            div.className = 'design-option';
+            div.innerHTML = `<span><b>${val.designNo}</b> <span style="color:#D97706;">(${val.unit})</span></span>`;
+            div.onclick = function() {
+                document.getElementById('botDesignDisplay').value = `${val.designNo} - ${val.unit}`;
+                document.getElementById('botDesignNo').value = val.designNo;
+                document.getElementById('botUnitName').value = val.unit;
+                closeDesignModal();
+                loadBottomData();
+            };
+            modalList.appendChild(div);
+        });
+    }
+
+    document.getElementById('designModal').style.display = 'flex';
+}
+
+function closeDesignModal() {
+    document.getElementById('designModal').style.display = 'none';
+}
+
 function loadBottomData() {
     let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
     let wrapper = document.getElementById('botGridWrapper');
     let container = document.getElementById('botLinesContainer');
     container.innerHTML = '';
     
-    if(!dNo) {
+    if(!dNo || !uName) {
         wrapper.style.display = 'none';
         return;
     }
@@ -504,7 +565,7 @@ function loadBottomData() {
     wrapper.style.display = 'block';
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let pendingItems = issues.filter(r => r.status === 'Pending' && r.designNo === dNo);
+    let pendingItems = issues.filter(r => r.status === 'Pending' && r.designNo === dNo && r.unit === uName);
 
     pendingItems.forEach(item => {
         let row = document.createElement('div');
@@ -526,8 +587,9 @@ function loadBottomData() {
 async function saveBottomEntry() {
     let dateVal = document.getElementById('botDate').value;
     let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
 
-    if(!dNo) { alert("Please select a Design Number!"); return; }
+    if(!dNo || !uName) { alert("Please select a Pending Washing Order!"); return; }
 
     let btn = document.getElementById('saveBotBtnTxt');
     let origText = btn.innerText;
@@ -563,6 +625,7 @@ async function saveBottomEntry() {
                     issueId: recId,
                     botDate: dateVal,
                     designNo: dNo,
+                    unit: uName,
                     receivedMtr: rcvMtr.toFixed(2),
                     shrinkagePerc: shrinkPerc.toFixed(2) + "%"
                 });
@@ -582,9 +645,10 @@ async function saveBottomEntry() {
 
         alert("Bottom Entry Saved to Cloud Successfully! ✅☁️");
         
+        document.getElementById('botDesignDisplay').value = '';
         document.getElementById('botDesignNo').value = '';
+        document.getElementById('botUnitName').value = '';
         document.getElementById('botGridWrapper').style.display = 'none';
-        updateBottomDropdown();
         renderTable();
     } else {
         alert("Please enter Received Mtr for at least one item.");
@@ -615,8 +679,9 @@ async function editWashingRecord(issueId, isReceived) {
             }
             
             document.getElementById('botDate').value = recRecord.botDate;
-            updateBottomDropdown();
+            document.getElementById('botDesignDisplay').value = `${recRecord.designNo} - ${recRecord.unit}`;
             document.getElementById('botDesignNo').value = recRecord.designNo;
+            document.getElementById('botUnitName').value = recRecord.unit;
             loadBottomData();
             
             setTimeout(() => {
@@ -654,7 +719,6 @@ async function editWashingRecord(issueId, isReceived) {
                     <button class="add-btn" onclick="addNewTopRow(this)">+</button>
                 </div>
             `;
-            updateBottomDropdown();
             renderTable();
             window.scrollTo(0, 0);
         }
@@ -688,11 +752,11 @@ async function deleteWashingRecord(issueId, isReceived) {
         await window.firebaseSave('washing_issue_records', issues);
     }
     
-    updateBottomDropdown();
     renderTable();
     
     document.getElementById('botLinesContainer').innerHTML = '';
     document.getElementById('botGridWrapper').style.display = 'none';
+    document.getElementById('botDesignDisplay').value = '';
 }
 
 function renderTable() {
@@ -703,11 +767,11 @@ function renderTable() {
     tbody.innerHTML = '';
 
     if(issues.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="padding:15px;">No Records Found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="padding:15px;">No Records Found.</td></tr>`;
         return;
     }
 
-    issues.reverse().forEach(issue => {
+    issues.slice().reverse().forEach(issue => {
         let matchingRec = receives.find(r => r.issueId == issue.id);
         let isReceived = !!matchingRec;
         
@@ -734,7 +798,8 @@ function renderTable() {
 
         tbody.innerHTML += `
             <tr>
-                <td>${issue.designNo}</td>
+                <td><b>${issue.designNo}</b></td>
+                <td style="color:#D97706; font-weight:bold;">${issue.unit}</td>
                 <td>${issue.slip}</td>
                 <td>${issue.piece}</td>
                 <td>${issue.mtr}</td>
@@ -750,9 +815,6 @@ function renderTable() {
 
 function openPreview() {
     let tableBody = document.getElementById('dataTableBody'); 
-    let thead = document.querySelector('.table-container table thead');
-    
-    if(!tableBody) return;
     
     let html = `<div style="text-align: center; margin-bottom: 15px;">
                     <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Washing Production Report</h2>
@@ -771,7 +833,7 @@ function openPreview() {
 
     let rows = tableBody.querySelectorAll('tr');
     if(rows.length === 0 || rows[0].innerText.includes("No Records Found")) {
-        html += `<tr><td colspan="8" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
+        html += `<tr><td colspan="9" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
     } else {
         rows.forEach(tr => {
             let cells = tr.querySelectorAll('td');

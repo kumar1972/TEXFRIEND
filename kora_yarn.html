@@ -217,7 +217,7 @@
 
     <!-- 2. KORA ISSUE -->
     <div>
-        <h3>📤 Issue Kora Yarn (Outward)</h3>
+        <h3>📤 Issue Kora Yarn (Outward - Multiple Deliveries Allowed)</h3>
         <div class="form-row">
             <div class="form-group">
                 <label>Date</label>
@@ -295,7 +295,7 @@
             </table>
         </div>
 
-        <h3>📋 Issue History (செலவு)</h3>
+        <h3>📋 Issue History (செலவு - Multiple Deliveries Supported)</h3>
         <div class="table-container" style="margin-bottom: 0;">
             <table>
                 <thead>
@@ -388,7 +388,7 @@ async function saveInward() {
     btn.innerText = "Save Kora Stock";
 }
 
-// 2. SAVE OUTWARD ISSUE
+// 2. SAVE OUTWARD ISSUE (Supports Multiple Deliveries per Design)
 async function saveIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
@@ -439,6 +439,7 @@ async function saveIssue() {
         editingIssueId = null;
         alert("Kora Issue Updated to Cloud Successfully! ✅☁️");
     } else {
+        // Pushes a new independent entry allowing multiple deliveries for the same design
         issues.push({
             id: Date.now() + Math.random(),
             date: dateVal,
@@ -537,7 +538,7 @@ function refreshAllTables() {
                     <td>${dStr}</td>
                     <td>${item.millName || '-'}</td>
                     <td>${item.dyeingName}</td>
-                    <td>${item.designNo}</td>
+                    <td><b>${item.designNo}</b></td>
                     <td>${item.count}</td>
                     <td>${item.issueWt}</td>
                     <td class="action-btns">

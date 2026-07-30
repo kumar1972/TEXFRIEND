@@ -132,7 +132,7 @@
 
         /* Modals */
         .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
-        .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+        .modal-content { background: #fff; width: 100%; max-width: 600px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
         .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
         .modal-header h3 { border: none; padding: 0; margin: 0; color: #3F5A3E; font-size: 14px; }
         .modal-actions { display: flex; gap: 8px; }
@@ -142,10 +142,10 @@
 
         #designModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;
         }
         .design-modal-content {
-            background: #F4F9F5; width: 90%; max-width: 350px; border-radius: 12px;
+            background: #F4F9F5; width: 90%; max-width: 400px; border-radius: 12px;
             border: 1px solid rgba(118, 150, 129, 0.4); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         .design-modal-header {
@@ -153,10 +153,10 @@
             font-size: 11px; display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(118, 150, 129, 0.3);
         }
-        .design-modal-body { padding: 8px 12px; max-height: 250px; overflow-y: auto; }
+        .design-modal-body { padding: 8px 12px; max-height: 350px; overflow-y: auto; }
         .design-option {
-            display: flex; justify-content: space-between; align-items: center; padding: 8px 4px;
-            border-bottom: 1px solid rgba(118, 150, 129, 0.2); cursor: pointer; font-size: 11px; color: #23382B;
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 6px;
+            border-bottom: 1px solid rgba(118, 150, 129, 0.2); cursor: pointer; font-size: 12px; color: #23382B;
         }
         .design-option:hover { background: #E2ECE5; }
 
@@ -172,7 +172,7 @@
 <body>
     <div class="container">
         <div class="top-nav">
-            <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+            <a href="dashboard.html" class="back-link">← Back to Menu</a>
             <div id="bitmapDisplayContainer"></div>
         </div>
 
@@ -264,13 +264,18 @@
 
         <form id="bottomForm" onsubmit="saveBottomData(event)">
             <h2>2. Weaving Production & Return (Bottom)</h2>
-            <div class="form-group">
-                <label>Date</label>
-                <input type="date" id="botDate" required>
-            </div>
-            <div class="form-group">
-                <label>Design Number (Select)</label>
-                <input type="text" id="botDesignNo" placeholder="Select Design No" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+            <div class="form-grid-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="botDate" required>
+                </div>
+                <!-- Combined Weaver and Design input for bottom form -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Design Number & Weaver (Select Active Order)</label>
+                    <input type="text" id="botDesignDisplay" placeholder="Select Order" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+                    <input type="hidden" id="botDesignNo">
+                    <input type="hidden" id="botWeaverName">
+                </div>
             </div>
 
             <div class="section-sub-title">Warp Details (Manual Entry)</div>
@@ -292,6 +297,7 @@
                 <thead>
                     <tr>
                         <th>Design No</th>
+                        <th>Weaver</th>
                         <th>Count</th>
                         <th>Colour</th>
                         <th>Order Wt</th>
@@ -312,6 +318,7 @@
                 <thead>
                     <tr>
                         <th>Design No</th>
+                        <th>Weaver</th>
                         <th>Count</th>
                         <th>Colour</th>
                         <th>Order Wt</th>
@@ -331,8 +338,8 @@
     <div id="designModal">
         <div class="design-modal-content">
             <div class="design-modal-header">
-                <span>Select Design</span>
-                <span style="cursor: pointer; font-size: 14px;" onclick="closeDesignModal()">✕</span>
+                <span id="modalTitle">Select Design</span>
+                <span style="cursor: pointer; font-size: 16px;" onclick="closeDesignModal()">✕</span>
             </div>
             <div class="design-modal-body" id="modalDesignList"></div>
         </div>
@@ -403,17 +410,8 @@
             return null;
         }
 
-        function loadBitmapImage() {
-            let activeDesign = localStorage.getItem('selected_design_number');
-            let topDesignInput = document.getElementById('topDesignNo');
-            let botDesignInput = document.getElementById('botDesignNo');
-            
-            if(botDesignInput && botDesignInput.value) {
-                activeDesign = botDesignInput.value;
-            } else if(topDesignInput && topDesignInput.value) {
-                activeDesign = topDesignInput.value;
-            }
-            
+        function loadBitmapImage(designNumOverride) {
+            let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value;
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
             
@@ -432,7 +430,7 @@
         }
 
         function loadActiveDesignNumber() {
-            let activeDesign = localStorage.getItem('selected_design_number') || localStorage.getItem('active_design_number') || '';
+            let activeDesign = localStorage.getItem('selected_design_number') || '';
             let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             
             if(!activeDesign && preDesigns.length > 0) {
@@ -442,10 +440,8 @@
             if(activeDesign) {
                 document.getElementById('topDesignNo').value = activeDesign;
                 onDesignSelect(activeDesign);
-                document.getElementById('botDesignNo').value = activeDesign;
-                loadBottomRows();
             }
-            loadBitmapImage();
+            loadBitmapImage(activeDesign);
         }
 
         let baseWarpWeights = {};
@@ -493,7 +489,7 @@
         }
 
         function onDesignSelect(val) {
-            loadBitmapImage();
+            loadBitmapImage(val);
             if(val) {
                 localStorage.setItem('selected_design_number', val);
                 let cleanDNo = cleanDesignName(val);
@@ -508,7 +504,6 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                // 📌 Auto fill Order Mtrs from Warping (Base Order - 5%)
                 let baseOrderMtr = parseFloat(found.orderMtr) || 100;
                 let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
                 document.getElementById('weavingMts').value = warpingMts.toFixed(2);
@@ -519,7 +514,6 @@
                 baseWarpWeights[val] = [];
                 baseWeftWeights[val] = [];
 
-                // 📌 WARP CALCULATION (Same as yarn_cal)
                 let uiReed = parseFloat(found.reed || specs.reed || specs.baseReed) || 52;
                 let baseWidth = parseFloat(found.width || specs.width || specs.baseWidth) || 66.92;
                 let totalWarpEnds = Math.round(uiReed * baseWidth);
@@ -542,7 +536,6 @@
                     });
                 }
 
-                // 📌 WEFT CALCULATION (Same as yarn_cal)
                 let uiPick = parseFloat(found.pick || specs.pick || specs.basePick) || 56;
                 let weftWidth = parseFloat(found.weftWidth || specs.weftWidth) || (baseWidth + 3);
                 let totalFabricPick = weftWidth * uiPick;
@@ -552,7 +545,6 @@
                     weftData.summary.forEach(obj => {
                         let calcCount = parseYarnCount(obj.count) || parseYarnCount(defaultWeftCount) || 40;
                         let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
-                        
                         baseWeftWeights[val].push({ count: obj.count, colour: obj.color, tPick: tPick, calcCount: calcCount });
                     });
                 }
@@ -582,10 +574,7 @@
         }
 
         function renderWeightsByMeters(val) {
-            let currentWeavingMts = parseFloat(document.getElementById('weavingMts').value) || 100; // This represents Warping Mts
-            
-            // As per yarn_calc: weft length is base order - crimp(6%). Warping mts = base order - 5%.
-            // So Weft length = currentWeavingMts * (0.94 / 0.95).
+            let currentWeavingMts = parseFloat(document.getElementById('weavingMts').value) || 100;
             let weftMtrs = currentWeavingMts * (0.94 / 0.95);
 
             if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
@@ -594,11 +583,8 @@
                 baseWarpWeights[val].forEach(r => {
                     let weightKg = (r.ends * currentWeavingMts) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
-                    
-                    // 📌 Auto Fill Issued Wt from Dyeing
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Warp');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
-                    
                     addWarpRow(r.count, r.colour, calculatedWt, issWgt);
                 });
             }
@@ -609,11 +595,8 @@
                 baseWeftWeights[val].forEach(r => {
                     let weightKg = (r.tPick * weftMtrs) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
-                    
-                    // 📌 Auto Fill Issued Wt from Dyeing
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Weft');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
-                    
                     addWeftRow(r.count, r.colour, calculatedWt, issWgt);
                 });
             }
@@ -626,50 +609,79 @@
             }
         }
 
+        // 📌 Modal logic to differentiate Top (New Order) and Bottom (Active Order)
         function openDesignModal(target) {
             activeTargetInput = target;
             const modalList = document.getElementById('modalDesignList');
             modalList.innerHTML = '';
+            
+            if (target === 'top') {
+                document.getElementById('modalTitle').innerText = "Select Design for New Order";
+                let allDesignSet = new Set();
+                let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+                preDesignList.forEach(d => allDesignSet.add(d));
 
-            let allDesignSet = new Set();
-            let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            preDesignList.forEach(d => allDesignSet.add(d));
+                let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+                designMasters.forEach(d => allDesignSet.add(d.name));
 
-            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-            designMasters.forEach(d => allDesignSet.add(d.name));
+                let currentVal = document.getElementById('topDesignNo').value;
 
-            weavingMasterData.forEach(item => allDesignSet.add(item.designNo));
+                if(allDesignSet.size === 0) {
+                    modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No designs found in Master</div>';
+                } else {
+                    allDesignSet.forEach(designNo => {
+                        if(designNo) {
+                            let isChecked = (designNo === currentVal) ? 'checked' : '';
+                            let div = document.createElement('div');
+                            div.className = 'design-option';
+                            div.innerHTML = `<span><b>${designNo}</b></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
+                            div.onclick = function() { selectDesign('top', designNo, ''); };
+                            modalList.appendChild(div);
+                        }
+                    });
+                }
+            } else if (target === 'bot') {
+                document.getElementById('modalTitle').innerText = "Select Active Weaving Order";
+                // Only show active orders that are running
+                let allOrders = weavingMasterData; 
+                let currentDesign = document.getElementById('botDesignNo').value;
+                let currentWeaver = document.getElementById('botWeaverName').value;
 
-            let currentVal = document.getElementById(target + 'DesignNo').value;
-
-            if(allDesignSet.size === 0) {
-                modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No designs found</div>';
-            } else {
-                allDesignSet.forEach(designNo => {
-                    if(designNo) {
-                        let isChecked = (designNo === currentVal) ? 'checked' : '';
-                        let div = document.createElement('div');
-                        div.className = 'design-option';
-                        div.innerHTML = `<span>${designNo}</span> <input type="radio" name="modalDesignRadio" value="${designNo}" ${isChecked} onclick="selectDesign('${designNo}')">`;
-                        div.onclick = function() { selectDesign(designNo); };
-                        modalList.appendChild(div);
-                    }
-                });
+                if(allOrders.length === 0) {
+                    modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No active weaving orders found</div>';
+                } else {
+                    let added = new Set();
+                    // Display newest first
+                    allOrders.slice().reverse().forEach(order => {
+                        let key = `${order.designNo}_${order.weaverName}`;
+                        if(!added.has(key)) {
+                            added.add(key);
+                            let isChecked = (order.designNo === currentDesign && order.weaverName === currentWeaver) ? 'checked' : '';
+                            let div = document.createElement('div');
+                            div.className = 'design-option';
+                            div.innerHTML = `<span><b>${order.designNo}</b> <span style="color:#D97706;">(${order.weaverName || 'Unknown'})</span></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
+                            div.onclick = function() { selectDesign('bot', order.designNo, order.weaverName); };
+                            modalList.appendChild(div);
+                        }
+                    });
+                }
             }
 
             document.getElementById('designModal').style.display = 'flex';
         }
 
-        function selectDesign(designNo) {
-            if(activeTargetInput === 'top') {
+        function selectDesign(target, designNo, weaverName) {
+            if(target === 'top') {
                 document.getElementById('topDesignNo').value = designNo;
                 onDesignSelect(designNo);
-            } else if(activeTargetInput === 'bot') {
+            } else if(target === 'bot') {
+                document.getElementById('botDesignDisplay').value = `${designNo} - ${weaverName || 'Unknown'}`;
                 document.getElementById('botDesignNo').value = designNo;
+                document.getElementById('botWeaverName').value = weaverName || '';
                 loadBottomRows();
             }
             closeDesignModal();
-            loadBitmapImage();
+            loadBitmapImage(designNo);
         }
 
         function closeDesignModal() {
@@ -755,20 +767,23 @@
                 weftRows: weftRows
             };
 
-            let existingIndex = weavingMasterData.findIndex(x => x.designNo === designNo);
+            // Find specific order using Design + Weaver
+            let existingIndex = weavingMasterData.findIndex(x => x.designNo === designNo && x.weaverName === weaverName);
             if(existingIndex > -1) {
                 weavingMasterData[existingIndex] = data;
             } else {
                 weavingMasterData.push(data);
             }
 
-            warpTransactions = warpTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
-            weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.status === 'running'));
+            // Remove existing RUNNING transactions for this specific design and weaver
+            warpTransactions = warpTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
+            weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
 
             warpRows.forEach((r, idx) => {
                 warpTransactions.push({
                     id: Date.now() + idx,
                     designNo: designNo,
+                    weaverName: weaverName,
                     count: r.count,
                     colour: r.colour,
                     orderWt: parseFloat(r.weight) || 0,
@@ -783,6 +798,7 @@
                 weftTransactions.push({
                     id: Date.now() + 1000 + idx,
                     designNo: designNo,
+                    weaverName: weaverName,
                     count: r.count,
                     colour: r.colour,
                     orderWt: parseFloat(r.weight) || 0,
@@ -816,14 +832,15 @@
         }
 
         function loadBottomRows() {
-            loadBitmapImage();
             const selectedDesign = document.getElementById('botDesignNo').value;
+            const selectedWeaver = document.getElementById('botWeaverName').value;
             const warpTable = document.getElementById('botWarpTable');
             const weftTable = document.getElementById('botWeftTable');
             warpTable.innerHTML = '';
             weftTable.innerHTML = '';
 
-            const matchedWarpTrans = warpTransactions.filter(x => x.designNo === selectedDesign);
+            // Filter specific to the selected Design + Weaver combination
+            const matchedWarpTrans = warpTransactions.filter(x => x.designNo === selectedDesign && (x.weaverName || '') === selectedWeaver);
             if(matchedWarpTrans.length > 0) {
                 let h1 = warpTable.insertRow();
                 h1.innerHTML = `<th>Count</th><th>Colour</th><th>Order Wt</th><th>Issued Wt</th><th>Return Wt</th>`;
@@ -840,7 +857,7 @@
                 });
             }
 
-            const matchedWeftTrans = weftTransactions.filter(x => x.designNo === selectedDesign);
+            const matchedWeftTrans = weftTransactions.filter(x => x.designNo === selectedDesign && (x.weaverName || '') === selectedWeaver);
             if(matchedWeftTrans.length > 0) {
                 let h2 = weftTable.insertRow();
                 h2.innerHTML = `<th>Count</th><th>Colour</th><th>Order Wt</th><th>Issued Wt</th><th>Return Wt</th>`;
@@ -862,8 +879,10 @@
         async function saveBottomData(e) {
             e.preventDefault();
             const designNo = document.getElementById('botDesignNo').value;
-            if(!designNo) {
-                alert("Please select a Design Number!");
+            const weaverName = document.getElementById('botWeaverName').value;
+            
+            if(!designNo || !weaverName) {
+                alert("Please select a Design and Weaver Order!");
                 return;
             }
 
@@ -879,7 +898,7 @@
                 
                 let returnWt = returnWtStr !== '' ? parseFloat(returnWtStr) || 0 : '';
 
-                let existing = warpTransactions.find(x => x.designNo === designNo && x.count === c && x.colour === col);
+                let existing = warpTransactions.find(x => x.designNo === designNo && (x.weaverName || '') === weaverName && x.count === c && x.colour === col);
                 if(existing) {
                     existing.returnWt = returnWt;
                 }
@@ -893,7 +912,7 @@
 
                 let returnWt = returnWtStr !== '' ? parseFloat(returnWtStr) || 0 : '';
 
-                let existing = weftTransactions.find(x => x.designNo === designNo && x.count === c && x.colour === col);
+                let existing = weftTransactions.find(x => x.designNo === designNo && (x.weaverName || '') === weaverName && x.count === c && x.colour === col);
                 if(existing) {
                     existing.returnWt = returnWt;
                 }
@@ -909,7 +928,9 @@
 
             updateTables();
             alert("Bottom Weaving Entry updated to Cloud successfully! ✅☁️");
+            document.getElementById('botDesignDisplay').value = '';
             document.getElementById('botDesignNo').value = '';
+            document.getElementById('botWeaverName').value = '';
             document.getElementById('botWarpTable').innerHTML = '';
             document.getElementById('botWeftTable').innerHTML = '';
             loadBitmapImage();
@@ -919,7 +940,7 @@
         function updateTables() {
             const warpTbody = document.querySelector('#warpTable tbody');
             warpTbody.innerHTML = '';
-            warpTransactions.forEach((item) => {
+            warpTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
                 let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
@@ -929,7 +950,8 @@
 
                 let row = warpTbody.insertRow();
                 row.innerHTML = `
-                    <td>${item.designNo}</td>
+                    <td><b>${item.designNo}</b></td>
+                    <td style="color:#D97706; font-weight:bold;">${item.weaverName || '-'}</td>
                     <td>${item.count}</td>
                     <td>${item.colour}</td>
                     <td>${Number(item.orderWt).toFixed(3)}</td>
@@ -946,7 +968,7 @@
 
             const weftTbody = document.querySelector('#weftTable tbody');
             weftTbody.innerHTML = '';
-            weftTransactions.forEach((item) => {
+            weftTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
                 let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
@@ -956,7 +978,8 @@
 
                 let row = weftTbody.insertRow();
                 row.innerHTML = `
-                    <td>${item.designNo}</td>
+                    <td><b>${item.designNo}</b></td>
+                    <td style="color:#D97706; font-weight:bold;">${item.weaverName || '-'}</td>
                     <td>${item.count}</td>
                     <td>${item.colour}</td>
                     <td>${Number(item.orderWt).toFixed(3)}</td>
@@ -1108,7 +1131,6 @@
                 if (data) localStorage.setItem(col, JSON.stringify(data));
             }
 
-            // Refresh global arrays after Cloud Sync
             window.weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
             window.warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
             window.weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];

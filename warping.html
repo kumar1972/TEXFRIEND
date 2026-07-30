@@ -122,7 +122,6 @@
         color: #3F5A3E;
     }
 
-    /* 📌 UPDATED: Added 6 columns to show Excess in Top Order Grid */
     .grid-header {
         display: grid;
         grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1.2fr 32px;
@@ -232,7 +231,7 @@
 
     <!-- 1. TOP SECTION (ORDER DETAILS) -->
     <div id="sectionTop">
-        <h3>1. Warping Order Details (Top)</h3>
+        <h3>1. Warping Order Details (Top - Multiple Deliveries Allowed)</h3>
         
         <div class="form-row-multi">
             <div class="form-group">
@@ -264,7 +263,6 @@
         </div>
 
         <div>
-            <!-- 📌 UPDATED: Added Excess Wt Column -->
             <div class="grid-header">
                 <div>Count</div>
                 <div>Colour</div>
@@ -291,7 +289,7 @@
                 <input type="date" id="botDate">
             </div>
             <div class="form-group">
-                <label>Design Number (Select)</label>
+                <label>Design Number (Select Pending)</label>
                 <select id="botDesignNo" onchange="loadBottomData()">
                     <option value="">Select Pending Design</option>
                 </select>
@@ -545,7 +543,6 @@ function loadTopWarpData() {
     }
 }
 
-// 📌 NEW: Live Calculation of Excess Wt when User types
 function calcTopExcess(el) {
     let row = el.parentElement;
     let ordWt = parseFloat(row.querySelector('.t-order').value) || 0;
@@ -581,7 +578,7 @@ function addTopRow(count, color, ordWt, issWt) {
         <button class="add-btn" onclick="addNewTopRow(this)" title="Add Row">+</button>
     `;
     container.appendChild(row);
-    calcTopExcess(row.querySelector('.t-order')); // Trigger calculation immediately
+    calcTopExcess(row.querySelector('.t-order'));
 }
 
 function addNewTopRow(btn) {
@@ -599,7 +596,7 @@ function addNewTopRow(btn) {
     container.insertBefore(row, btn.parentElement.nextSibling);
 }
 
-// 📌 FIREBASE SYNC: saveTopOrder
+// 📌 FIREBASE SYNC: saveTopOrder (Supports Multiple Entries)
 async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value;
@@ -640,6 +637,7 @@ async function saveTopOrder() {
 
         saveBtn.innerText = "Saving ☁️...";
 
+        // Pushes independent records allowing multiple issues for the same design
         rows.forEach(row => {
             let count = row.querySelector('.t-count').value.trim();
             let color = row.querySelector('.t-color').value.trim();
@@ -858,7 +856,6 @@ function editReceivedRecord(recId) {
         localStorage.setItem('warping_receive_records', JSON.stringify(receives));
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
         
-        // Background sync
         if(window.firebaseSave) {
             window.firebaseSave('warping_receive_records', receives);
             window.firebaseSave('warping_issue_records', issues);
@@ -955,7 +952,6 @@ function renderTable() {
 
         let rcvWt = matchingRec ? matchingRec.receivedWt : "-";
         
-        // 📌 MODIFIED: Auto display difference (Issued Wt - Order Wt)
         let ordWtNum = parseFloat(issue.orderWt) || 0;
         let issWtNum = parseFloat(issue.issueWt) || 0;
         let diff = (issWtNum - ordWtNum).toFixed(3);
@@ -984,7 +980,7 @@ function renderTable() {
         tbody.innerHTML += `
             <tr>
                 <td>${dateStr}</td>
-                <td>${issue.designNo}</td>
+                <td><b>${issue.designNo}</b></td>
                 <td>${issue.count}</td>
                 <td>${issue.color}</td>
                 <td>${issue.orderWt}</td>
