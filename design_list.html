@@ -173,8 +173,8 @@ window.renderDesignList = function() {
 
         designs.forEach((dNo, index) => {
             let s = specs[dNo] || {};
-            let orderItems = orders.filter(o => o.designNo === dNo);
-            let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters) || 0), 0);
+            let orderItems = orders.filter(o => o.designNo === dNo || o.designNumber === dNo);
+            let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
             
             tbodyHtml += `<tr>
                 <td>${index + 1}</td>
@@ -190,19 +190,19 @@ window.renderDesignList = function() {
         });
     } 
     
-    // --- 2. ORDER DESIGNS ---
-    else if (type === 'order') {
+    // --- 2. ORDER DESIGNS (Handles both 'order' and 'party_orders') ---
+    else if (type === 'order' || type === 'party_orders') {
         theadHtml = `<tr><th>S.No</th><th>Date</th><th>Party Name</th><th>Design</th><th>Meters</th></tr>`;
         
         let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         
         orders.forEach((o, index) => {
-            let mtr = parseFloat(o.meters) || 0;
+            let mtr = parseFloat(o.meters || o.orderMtr) || 0;
             tbodyHtml += `<tr>
                 <td>${index + 1}</td>
                 <td>${o.date || '-'}</td>
                 <td><b>${o.partyName || o.party || '-'}</b></td>
-                <td>${o.designNo}</td>
+                <td>${o.designNo || o.designNumber || '-'}</td>
                 <td>${mtr.toFixed(2)}</td>
             </tr>`;
             
@@ -211,11 +211,11 @@ window.renderDesignList = function() {
         });
     } 
     
-    // --- 3. OTHER MODULES ---
+    // --- 3. OTHER MODULES (Weaving, Dyeing, Warping, Washing, Despatch) ---
     else {
         let storageKey = type + '_issue_records';
         if(type === 'despatch') storageKey = 'despatch_records';
-        if(type === 'weaving') storageKey = 'weaving_master_data'; // Routing correctly for weaving
+        if(type === 'weaving') storageKey = 'weaving_master_data'; 
         
         let records = JSON.parse(localStorage.getItem(storageKey)) || [];
         
@@ -239,7 +239,7 @@ window.renderDesignList = function() {
                 <td>${index + 1}</td>
                 <td>${r.date || r.botDate || '-'}</td>
                 <td><b>${unitName}</b></td>
-                <td>${r.designNo || '-'}</td>
+                <td>${r.designNo || r.designNumber || '-'}</td>
                 <td>${value.toFixed(3)}</td>
                 <td style="color: ${statusColor}; font-weight: 700; text-transform: capitalize;">${displayStatus}</td>
             </tr>`;
@@ -306,7 +306,7 @@ window.renderDesignList = function() {
         
         if (type === 'all') {
             collectionsToFetch = ['pre_design_numbers', 'design_specs', 'party_orders_data'];
-        } else if (type === 'order') {
+        } else if (type === 'order' || type === 'party_orders') {
             collectionsToFetch = ['party_orders_data'];
         } else if (type === 'despatch') {
             collectionsToFetch = ['despatch_records'];

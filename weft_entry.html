@@ -1,231 +1,252 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Weft Entry - TEXFRIEND ERP</title>
-<script src="translator.js"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weft Entry - TEXFRIEND ERP</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    html, body { 
-        width: 100%;
-        min-height: 100vh;
-        background: #E8F0E8; 
-        color: #1E2B23; 
-    }
+        /* 📌 Smart Background - STRICTLY NO BLACK */
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #EAF0EA; 
+            color: #1E2B23; /* Deep Dark Green */
+        }
 
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-    }
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .main-card {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        background: #F4F9F4;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-    }
+        /* 📌 Main Container */
+        .main-card {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 2px; 
-    }
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
 
-    .back-btn {
-        display: inline-block;
-        color: #3F5A3E;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: rgba(82, 110, 81, 0.15);
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.3);
-    }
+        /* 📌 Smart Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-    h3 {
-        font-size: 15px;
-        color: #3F5A3E;
-        font-weight: 700;
-        margin-bottom: 4px;
-        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
-        padding-bottom: 8px;
-    }
+        .page-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .page-title::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+        .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+        .section-badge.amber { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25); }
 
-    .form-group label {
-        font-size: 9px;
-        font-weight: 700;
-        color: #3F5A3E;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-    select, input {
-        width: 100%;
-        padding: 7px 4px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.3);
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 11px;
-        font-weight: 600;
-        text-align: center;
-        outline: none;
-    }
+        /* 📌 Smart 3D Inputs */
+        input, select {
+            width: 100%; padding: 10px 12px; border-radius: 8px;
+            border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
+            font-size: 11px; font-weight: 600; transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        }
+        input:focus, select:focus {
+            border-color: #4A7C59; outline: none; background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-    select:focus, input:focus {
-        border-color: #526E51;
-        background: #FFFFFF;
-    }
+        .compact-top-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            background: #FFFFFF;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px dashed #D1DED1;
+            margin-top: 5px;
+        }
 
-    .design-row-single {
-        margin-bottom: 4px;
-    }
+        /* 📌 Pattern Grids */
+        .header-grid {
+            display: grid;
+            grid-template-columns: 30px 1fr 1.2fr 1fr 35px;
+            gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
+            color: #2F4F38; text-align: center; text-transform: uppercase;
+        }
+        .row-grid {
+            display: grid;
+            grid-template-columns: 30px 1fr 1.2fr 1fr 35px;
+            gap: 6px; margin-bottom: 8px; align-items: center;
+        }
 
-    .compact-top-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-        background: #E2E8F0;
-        padding: 8px;
-        border-radius: 8px;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-    }
+        .header-grid-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 35px;
+            gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
+            color: #2F4F38; text-align: center; text-transform: uppercase;
+        }
+        .row-grid-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 35px;
+            gap: 6px; margin-bottom: 8px; align-items: center;
+        }
 
-    .section-title {
-        font-size: 12px;
-        color: #526E51;
-        font-weight: 700;
-        margin-top: 2px;
-        margin-bottom: 4px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 4px; font-size: 11px; }
 
-    .header-grid {
-        display: grid;
-        grid-template-columns: 30px 1fr 1.2fr 1fr 30px;
-        gap: 4px;
-        padding: 5px 0;
-        font-size: 9px;
-        font-weight: 700;
-        color: #3F5A3E;
-        text-align: center;
-    }
+        .line-no {
+            font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center;
+            background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1;
+        }
 
-    .row-grid {
-        display: grid;
-        grid-template-columns: 30px 1fr 1.2fr 1fr 30px;
-        gap: 4px;
-        margin-bottom: 6px;
-        align-items: center;
-    }
+        .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
+        .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s ease; }
+        .btn-del-small:hover { background: #FECACA; transform: scale(1.05); }
 
-    .row-grid .line-no {
-        font-size: 10px;
-        font-weight: bold;
-        color: #526E51;
-        text-align: center;
-        background: #D8DFD6;
-        padding: 8px 0;
-        border-radius: 4px;
-    }
+        .calc-box {
+            background: #F4F7F4; padding: 12px 15px; border-radius: 10px;
+            font-size: 11px; font-weight: 700; color: #2F4F38; margin-top: 10px;
+            border: 1px solid #D1DED1; display: flex; justify-content: space-between; align-items: center;
+        }
 
-    .header-grid-range {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 30px;
-        gap: 6px;
-        padding: 5px 0;
-        font-size: 10px;
-        font-weight: 700;
-        color: #3F5A3E;
-        text-align: center;
-    }
+        /* 📌 Smart Action Buttons */
+        .action-btns-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        
+        .btn-main {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            color: white; font-weight: 700; font-size: 12px; cursor: pointer;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-main:hover { transform: translateY(-2px); }
+        .btn-main:active { transform: translateY(1px); }
 
-    .row-grid-range {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 30px;
-        gap: 6px;
-        margin-bottom: 8px;
-        align-items: center;
-    }
+        .btn-preview { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
+        .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
+        .btn-list { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25); }
 
-    .row-grid input, .row-grid select, .row-grid-range input {
-        text-align: center;
-        padding: 8px 2px;
-        font-size: 10px;
-    }
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; max-width: 700px; margin: auto; height: 90vh; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
 
-    .btn-add { background: #3B82F6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
-    .btn-del { background: #EF4444; color: white; border: none; width: 100%; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-    
-    .action-btns-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
-    
-    .preview-btn { background: #3B82F6; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
-    .save-btn { background: #3F5A3E; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(63, 90, 62, 0.2); }
-    .save-btn:hover { background: #2D402C; }
-    .list-btn { background: #D97706; color: white; padding: 10px 6px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; border:none; padding:0; }
+        
+        .modal-actions { display: flex; gap: 8px; }
+        
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .divider { border-bottom: 1px dashed rgba(82, 110, 81, 0.4); margin: 10px 0; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-    .calc-box {
-        background: #D8DFD6; padding: 10px; border-radius: 6px;
-        font-size: 11px; font-weight: 700; color: #1E2B23; margin-top: 8px;
-        border: 1px solid rgba(82, 110, 81, 0.3); display: flex; justify-content: space-between;
-    }
+        /* 📌 Advanced Table Design with Horizontal Scroll */
+        .table-container {
+            width: 100%; border-radius: 10px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    /* Modals */
-    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
-    .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
-    .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
-    .modal-header h3 { border: none; padding: 0; margin: 0; }
-    
-    .modal-actions { display: flex; gap: 8px; }
-    .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
-    
-    .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid rgba(82, 110, 81, 0.2); }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; background: #FFFFFF; }
-    
-    th { background: #D8DFD6; color: #3F5A3E; padding: 10px 6px; border-bottom: 2px solid #ccc; font-weight: 700; border-right: 1px solid #c8d1c6; }
-    td { padding: 8px 6px; border-bottom: 1px solid #eee; color: #1E2B23; font-weight: 500; border-right: 1px solid #e2e8f0; }
-    th:last-child, td:last-child { border-right: none; }
-    
-    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 4px; }
-    .del-action-btn { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
+        
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .edit-action-btn:hover { background: #475569; }
 
-    @media print {
-        body * { visibility: hidden; }
-        #previewModal, #previewModal * { visibility: visible; }
-        #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
-        .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
-        .no-print { display: none !important; }
-        td, th { border: 1px solid #ddd !important; }
-    }
-</style>
+        @media print {
+            body * { visibility: hidden; }
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body>
 
@@ -234,107 +255,114 @@
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
     </div>
 
-    <h3>🧶 Weft Pattern Entry</h3>
+    <h2 class="page-title">🧶 Weft Pattern Entry</h2>
 
-    <!-- Design Number Full Row -->
-    <div class="design-row-single">
-        <div class="form-group">
+    <!-- 📌 Section 1: Weft Specs -->
+    <div class="form-section" style="margin-top: 5px;">
+        <div class="section-badge">Weft Specs</div>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
             <label>Select Design Number</label>
-            <select id="designNo" onchange="loadWeftDesignData()" style="padding: 8px; font-weight: 700;">
+            <select id="designNo" onchange="loadWeftDesignData()">
                 <option value="">Select Design No</option>
             </select>
         </div>
-    </div>
 
-    <!-- Compact 4-Column Top Row for Weft -->
-    <div class="compact-top-grid">
-        <div class="form-group">
-            <label>Weft Width</label>
-            <input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()">
+        <div class="compact-top-grid">
+            <div class="form-group">
+                <label>Weft Width</label>
+                <input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()">
+            </div>
+            <div class="form-group">
+                <label>Weft Count</label>
+                <input type="text" id="infoWeftCount" placeholder="Count">
+            </div>
+            <div class="form-group">
+                <label>Pick</label>
+                <input type="text" id="infoPick" placeholder="Pick" oninput="calculateWeftValues()">
+            </div>
+            <div class="form-group">
+                <label>Weave</label>
+                <input type="text" id="infoWeave" placeholder="Weave">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Weft Count</label>
-            <input type="text" id="infoWeftCount" placeholder="Count">
+    </div>
+
+    <!-- 📌 Section 2: Weft Thread Pattern -->
+    <div class="form-section">
+        <div class="section-badge blue">Weft Thread Pattern</div>
+        <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Picks to add new line)</div>
+        
+        <div style="overflow-x: auto;">
+            <div style="min-width: 400px;">
+                <div class="header-grid">
+                    <div>#</div>
+                    <div>Count</div>
+                    <div>Colour</div>
+                    <div>Picks</div>
+                    <div></div>
+                </div>
+                <div id="weftLinesContainer"></div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Pick</label>
-            <input type="text" id="infoPick" placeholder="Pick" oninput="calculateWeftValues()">
+    </div>
+
+    <!-- 📌 Section 3: Pattern Repeats -->
+    <div class="form-section">
+        <div class="section-badge amber">Pattern Repeats (Set)</div>
+        <div style="text-align: right; margin-bottom: 5px;">
+            <button class="btn-add-small" onclick="addWeftRange()">➕ Add Set</button>
         </div>
-        <div class="form-group">
-            <label>Weave</label>
-            <input type="text" id="infoWeave" placeholder="Weave">
+        
+        <div style="overflow-x: auto;">
+            <div style="min-width: 350px;">
+                <div class="header-grid-range">
+                    <div>Start Line</div>
+                    <div>End Line</div>
+                    <div>Set (Times)</div>
+                    <div></div>
+                </div>
+                <div id="weftRangesContainer"></div>
+            </div>
         </div>
     </div>
-
-    <div class="divider"></div>
-
-    <!-- 1. WEFT LINES ENTRY -->
-    <div class="section-title">
-        <span>1. Weft Thread Pattern</span>
-        <span style="font-size: 9px; color: #10B981; font-weight: 600;">(Press Enter in Picks to add new line)</span>
-    </div>
-    
-    <div class="header-grid">
-        <div>#</div>
-        <div>Count</div>
-        <div>Colour</div>
-        <div>Picks</div>
-        <div></div>
-    </div>
-    <div id="weftLinesContainer"></div>
-
-    <div class="divider"></div>
-
-    <!-- 2. REPEATS (GROUPS) ENTRY -->
-    <div class="section-title">
-        <span>2. Pattern Repeats (Set)</span>
-        <button class="btn-add" onclick="addWeftRange()">+ Add</button>
-    </div>
-    
-    <div class="header-grid-range">
-        <div>Start Line</div>
-        <div>End Line</div>
-        <div>Set (Times)</div>
-        <div></div>
-    </div>
-    <div id="weftRangesContainer"></div>
 
     <!-- Calculations Display -->
     <div class="calc-box">
-        <span>Total Pattern Picks: <span id="displayTotalPicks" style="color:#D97706;">0</span></span>
-        <span id="displayTotalCalc" style="color:#10B981;">Total Pick: 0</span>
+        <span>Total Pattern Picks: <span id="displayTotalPicks" style="color:#D97706; font-weight:800;">0</span></span>
+        <span id="displayTotalCalc" style="color:#10B981; font-weight:800;">Total Pick: 0</span>
     </div>
 
     <!-- Action Buttons -->
     <div class="action-btns-row">
-        <button class="preview-btn" onclick="previewWeftPattern()">👁️ Preview</button>
-        <button class="save-btn" onclick="saveWeftDesign()" id="saveBtnTxt">💾 Save</button>
-        <button class="list-btn" onclick="openSavedModal()">📂 Saved List</button>
+        <button class="btn-main btn-preview" onclick="previewWeftPattern()">👁️ Preview</button>
+        <button class="btn-main btn-save" onclick="saveWeftDesign()" id="saveBtnTxt">💾 Save</button>
+        <button class="btn-main btn-list" onclick="openSavedModal()">📂 Saved List</button>
     </div>
 </div>
 
-<!-- Preview Modal (Printable) -->
+<!-- 📌 Preview Modal with Horizontal Scroll -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
             <h3>👁️ Weft Pattern Preview</h3>
             <div class="modal-actions">
                 <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-                <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+                <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent" style="padding: 15px;">
+        <div class="modal-body" id="previewContent" style="padding: 20px;">
             <!-- Preview Content injects here -->
         </div>
     </div>
 </div>
 
-<!-- Saved Patterns Modal -->
+<!-- 📌 Saved Patterns Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>📋 Saved Weft Patterns</h3>
-            <button class="close-btn" onclick="document.getElementById('savedListModal').style.display='none'">Close ❌</button>
+            <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
         </div>
         <div class="modal-body">
             <div class="table-container">
@@ -356,7 +384,18 @@
 </div>
 
 <script>
-// 📌 Helper function for safe # matching
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
@@ -450,7 +489,7 @@ function addWeftLine(count = '', color = '', picks = '') {
         <input type="number" class="inp-picks" placeholder="Picks" value="${picks}" 
                oninput="calculateWeftValues()"
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
-        <button class="btn-del" onclick="this.parentElement.remove(); updateLineNumbers(); calculateWeftValues();">×</button>
+        <button class="btn-del-small" onclick="this.parentElement.remove(); updateLineNumbers(); calculateWeftValues();">×</button>
     `;
     container.appendChild(row);
     updateLineNumbers();
@@ -465,7 +504,7 @@ function addWeftRange(start = '', end = '', set = '') {
         <input type="number" class="inp-end" placeholder="End" value="${end}" oninput="calculateWeftValues()">
         <input type="number" class="inp-set" placeholder="Set" value="${set}" oninput="calculateWeftValues()"
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftRange(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-start'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
-        <button class="btn-del" onclick="this.parentElement.remove(); calculateWeftValues();">×</button>
+        <button class="btn-del-small" onclick="this.parentElement.remove(); calculateWeftValues();">×</button>
     `;
     container.appendChild(row);
     calculateWeftValues();
@@ -532,7 +571,7 @@ async function saveWeftDesign() {
 
     let saveBtn = document.getElementById('saveBtnTxt');
     let originalText = saveBtn.innerText;
-    saveBtn.innerText = "Saving ☁️...";
+    saveBtn.innerText = "⏳ Saving to Cloud...";
 
     let wWidth = document.getElementById('infoWeftWidth').value.trim();
     let wCount = document.getElementById('infoWeftCount').value.trim();
@@ -591,7 +630,7 @@ async function saveWeftDesign() {
 
 function openSavedModal() {
     renderSavedList();
-    document.getElementById('savedListModal').style.display = 'flex';
+    openModal('savedListModal');
 }
 
 function renderSavedList() {
@@ -621,10 +660,10 @@ function renderSavedList() {
 }
 
 function editDesignPattern(dNo) {
-    document.getElementById('savedListModal').style.display = 'none'; 
+    closeModal('savedListModal');
     document.getElementById('designNo').value = dNo;
     loadWeftDesignData();
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function previewWeftPattern() {
@@ -660,8 +699,8 @@ function previewWeftPattern() {
     let weave = document.getElementById('infoWeave').value || '-';
 
     let headerHtml = `
-        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F0FDF4; border:1px solid #10B981; padding:10px; border-radius:8px; margin-bottom:15px; font-size:11px; font-weight:bold; color:#065F46;">
-            <span style="margin-right:8px;">Design: ${dNo || '-'}</span>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F4F7F4; border:1px solid #4A7C59; padding:12px; border-radius:10px; margin-bottom:15px; font-size:12px; font-weight:700; color:#1E2B23;">
+            <span style="margin-right:8px;">Design: <span style="color:#4A7C59;">${dNo || '-'}</span></span>
             <span style="margin-right:8px;">Weft Count: ${wCount}</span>
             <span style="margin-right:8px;">Weft Width: ${wWidth}"</span>
             <span style="margin-right:8px;">Pick: ${pick}</span>
@@ -673,8 +712,8 @@ function previewWeftPattern() {
     let totalPicksPattern = 0;
     let i = 0;
     
-    let tdStyle = "padding:8px; border-bottom:1px dashed #cbd5e1; border-right:1px dotted #94a3b8; text-align:center;";
-    let tdStyleLast = "padding:8px; border-bottom:1px dashed #cbd5e1; vertical-align:middle; color:#0F172A; text-align:left;";
+    let tdStyle = "padding:10px; border-bottom:1px dashed #D1DED1; border-right:1px dotted #A0AFA0; text-align:center; color:#1E2B23;";
+    let tdStyleLast = "padding:10px; border-bottom:1px dashed #D1DED1; vertical-align:middle; color:#1E2B23; text-align:left;";
 
     while (i < lines.length) {
         let currentLineNum = i + 1;
@@ -700,7 +739,7 @@ function previewWeftPattern() {
                 let colorTamil = translateColorToTamil(item.color); 
                 
                 tbodyHtml += `<tr>
-                    <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                    <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                     <td style="${tdStyle}">${item.count || '-'}</td>
                     <td style="${tdStyle}">${colorTamil}</td>
                     <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>`;
@@ -721,29 +760,29 @@ function previewWeftPattern() {
             let colorTamil = translateColorToTamil(item.color);
             
             tbodyHtml += `<tr>
-                <td style="${tdStyle} font-weight:600; color:#64748b;">${item.lineNo}</td>
+                <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                 <td style="${tdStyle}">${item.count || '-'}</td>
                 <td style="${tdStyle}">${colorTamil}</td>
                 <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>
-                <td style="padding:8px; border-bottom:1px dashed #cbd5e1;"></td>
+                <td style="padding:10px; border-bottom:1px dashed #D1DED1;"></td>
             </tr>`;
             i++;
         }
     }
 
     let html = headerHtml;
-    html += '<div class="table-container"><table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #d1d5db;">';
-    html += `<tr style="background:#f2f2f2; border-bottom:2px solid #ccc;">
-                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">#</th>
-                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Count</th>
-                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Colour</th>
-                <th style="padding:10px; text-align:center; border-right:1px dotted #94a3b8;">Picks</th>
-                <th style="padding:10px; text-align:center;">Set</th>
+    html += '<div class="table-container" style="border:1px solid #D1DED1;"><table style="width:100%; border-collapse:collapse; font-size:12px; background:#FFF;">';
+    html += `<tr style="background:#EAF0EA; border-bottom:2px solid #A0AFA0;">
+                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">#</th>
+                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Count</th>
+                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Colour</th>
+                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Picks</th>
+                <th style="padding:12px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:11px;">Set</th>
              </tr>`;
     html += tbodyHtml;
     
-    html += `<tr style="font-weight:bold; font-size:13px; background:#e8f0e8; border-top:1px solid #94a3b8;">
-        <td colspan="3" style="padding:12px; text-align:right; border-right:1px dotted #94a3b8;">Total Pattern Picks:</td>
+    html += `<tr style="font-weight:bold; font-size:13px; background:#F8FAF8; border-top:2px solid #A0AFA0;">
+        <td colspan="3" style="padding:12px; text-align:right; border-right:1px dotted #A0AFA0; color:#2F4F38;">Total Pattern Picks:</td>
         <td colspan="2" style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; color:#10B981;">${totalPicksPattern}</td>
     </tr>`;
 
@@ -751,9 +790,9 @@ function previewWeftPattern() {
     let wWidthNum = parseFloat(wWidth) || 0;
     if (pickNum > 0 && wWidthNum > 0) {
         let overallCalc = wWidthNum * pickNum;
-        html += `<tr style="font-weight:700; font-size:14px; background:#fff; color:#3F5A3E; border-top:1px solid #94a3b8;">
-            <td colspan="5" style="padding:12px; text-align:center;">
-                Weft Width ${wWidthNum} X Pick ${pickNum} = <span style="font-size:15px; color:#1E2B23;">${overallCalc.toFixed(2)} Total Pick</span>
+        html += `<tr style="font-weight:700; font-size:14px; background:#FFFFFF; color:#2F4F38; border-top:1px solid #A0AFA0;">
+            <td colspan="5" style="padding:15px; text-align:center;">
+                Weft Width ${wWidthNum} X Pick ${pickNum} = <span style="font-size:16px; color:#1E2B23;">${overallCalc.toFixed(2)} Total Pick</span>
             </td>
         </tr>`;
     }
@@ -761,7 +800,7 @@ function previewWeftPattern() {
     html += '</table></div>';
 
     document.getElementById('previewContent').innerHTML = html;
-    document.getElementById('previewModal').style.display = 'flex';
+    openModal('previewModal');
 }
 </script>
 
@@ -806,7 +845,7 @@ function previewWeftPattern() {
     // Sync Data on Load
     window.addEventListener('load', async function() {
         let saveBtn = document.getElementById('saveBtnTxt');
-        if(saveBtn) saveBtn.innerText = "Syncing ☁️...";
+        if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
 
         let masters = await window.firebaseLoad('design_masters_data');
         if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
@@ -823,7 +862,6 @@ function previewWeftPattern() {
         if(saveBtn) saveBtn.innerText = "💾 Save";
         
         loadDesignDropdown();
-        // Since loadWeftDesignData is triggered when dropdown loads properly, we ensure a clean state
         if(!document.getElementById('designNo').value) {
             addWeftLine(); 
         }

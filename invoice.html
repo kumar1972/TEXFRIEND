@@ -8,11 +8,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        /* Sage & Cream Theme (50% Darker) */
         html, body { 
             width: 100%;
             min-height: 100vh;
-            background: #D5DDD3;
+            background: #EAF0EA; /* Softer smart background */
             color: #1E2B23; 
         }
 
@@ -20,92 +19,234 @@
             padding: 12px; 
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
-        .container { 
-            width: 100%; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            background: #E8ECE7; 
-            padding: 18px; 
-            border-radius: 16px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
-            border: 1px solid rgba(82, 110, 81, 0.3); 
-        }
-        
-        .top-nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 2px; 
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .back-btn { 
-            display: inline-block; 
-            color: #3F5A3E; 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 10px; 
-            background: rgba(82, 110, 81, 0.15); 
-            padding: 4px 8px; 
-            border-radius: 5px; 
-            border: 1px solid rgba(82, 110, 81, 0.3); 
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
-        #bitmapDisplayContainer {
-            text-align: right;
+        /* 📌 Smart Black Button Layout for Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        #bitmapDisplayContainer { text-align: right; }
         #bitmapDisplayContainer img {
-            max-height: 40px;
-            border-radius: 4px;
-            border: 1px solid rgba(82, 110, 81, 0.4);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-height: 45px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        .card-header {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .card-header::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
+
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 5px;
+            position: relative;
         }
         
-        h2 { 
-            text-align: center; 
-            color: #3F5A3E; 
-            font-size: 13px; 
-            font-weight: 700; 
-            margin-bottom: 12px; 
-            border-bottom: 2px solid rgba(82, 110, 81, 0.3); 
-            padding-bottom: 4px; 
+        .section-badge {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(74, 124, 89, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .form-group { margin-bottom: 0; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4A554A;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D1DED1;
+            border-radius: 8px;
+            font-size: 11px;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        textarea { resize: vertical; height: 60px; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #4A7C59;
+            outline: none;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
         
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
-        .form-group { margin-bottom: 6px; }
-        
-        label { display: block; font-size: 9px; color: #3F5A3E; font-weight: 600; margin-bottom: 3px; }
-        input, select, textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4); background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 500; }
-        textarea { resize: vertical; height: 55px; }
-        input:focus, select:focus, textarea:focus { border-color: #526E51; outline: none; background: #F4F6F4; }
-        
-        .section-title { font-size: 10px; font-weight: 700; color: #3F5A3E; margin: 10px 0 6px 0; background: #D8DFD6; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.25); }
-        
-        .design-global-box { background: #D8DFD6; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(82, 110, 81, 0.25); }
-        .design-global-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr; gap: 6px; }
+        input::placeholder, textarea::placeholder { color: #A0AFA0; font-weight: 400; }
 
-        .item-table-wrapper { overflow-x: auto; margin-bottom: 8px; }
-        .item-row { display: grid; grid-template-columns: 35px 110px 80px 90px 100px 35px; gap: 6px; align-items: center; margin-bottom: 6px; background: #D8DFD6; padding: 6px; border-radius: 6px; min-width: 520px; border: 1px solid rgba(82, 110, 81, 0.25); }
-        .item-row input { padding: 6px 4px; font-size: 11px; text-align: center; background: #FFFFFF; }
+        /* 📌 Row-wise Item Entry Grid Updated */
+        .item-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #FFFFFF;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #D1DED1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+            position: relative;
+        }
+        .item-col-group { display: flex; flex-direction: column; }
+        .item-col-group.full-width { grid-column: span 2; }
+
+        .add-row-btn, .del-row-btn {
+            grid-column: span 2;
+            color: white; border: none; height: 38px; border-radius: 8px;
+            font-weight: bold; cursor: pointer; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 5px; transition: all 0.2s ease;
+        }
+        .add-row-btn { background: #4A7C59; box-shadow: 0 4px 10px rgba(74, 124, 89, 0.2); }
+        .add-row-btn:hover { background: #33593D; transform: translateY(-1px); }
+        .del-row-btn { background: #EF4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        .del-row-btn:hover { background: #DC2626; transform: translateY(-1px); }
         
-        .add-row-btn { background: #526E51; color: white; border: none; height: 28px; width: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .del-row-btn { background: #D97706; color: white; border: none; height: 28px; width: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        .del-row-btn:hover { background: #B45309; }
+        /* 📌 Smart Buttons */
+        .btn-main {
+            width: 100%; padding: 14px; margin: 5px 0; border: none; border-radius: 10px;
+            color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+            background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-main:active { transform: translateY(1px); }
+
+        .print-btn { background: linear-gradient(135deg, #1A2421, #000000); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .print-btn:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white; border: none; padding: 14px; border-radius: 10px;
+            font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+        }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
         
-        .btn-submit { width: 100%; background: #526E51; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .btn-submit:hover { background: #3F5A3E; }
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
 
-        .print-btn { background: #3F5A3E; margin-top: 6px; }
-        .print-btn:hover { background: #2E432D; }
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-        .action-edit { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
-        .action-del { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-        .action-del:hover { background: #B45309; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-        .excel-table { width: 100%; border-collapse: collapse; text-align: center; background: #E8ECE7; font-size: 10px; margin-top: 10px; margin-bottom: 15px; color: #1E2B23; }
-        .excel-table th, .excel-table td { border: 1px solid rgba(82, 110, 81, 0.3); padding: 6px; }
-        .excel-table th { background-color: #D8DFD6; color: #3F5A3E; font-weight: bold; }
+        /* 📌 Advanced Table Design */
+        .excel-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            font-size: 11px; background: #FFFFFF; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2;
+        }
+        .excel-table th, .excel-table td { padding: 10px; text-align: left; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        .excel-table th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+        .excel-table tr:last-child td { border-bottom: none; }
+        .excel-table tbody tr:hover { background: #F8FAF8; }
+
+        .action-cell { display: flex; flex-direction: row; gap: 5px; align-items: center; }
+        .action-btn {
+            border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease;
+        }
+        .action-del { background: #EF4444; } .action-del:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+        .action-edit { background: #64748B; } .action-edit:hover { background: #475569; box-shadow: 0 2px 5px rgba(71, 85, 105, 0.3); }
 
         #printPreviewContainer { display: none; background: #FFFFFF; color: #000000; padding: 25px; border-radius: 12px; margin-top: 10px; border: 1px solid #ccc; width: 100%; max-width: 100%; }
         .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-size: 12px; align-items: flex-start; }
@@ -115,7 +256,6 @@
         .invoice-table th { background: #f8fafc; font-weight: 700; color: #1e293b; border-bottom: 1px solid #000; }
         .invoice-table td { height: 28px; }
         .invoice-table th:last-child, .invoice-table td:last-child { border-right: none; }
-
         .invoice-table tfoot tr { border-top: 1px solid #000; font-weight: bold; }
         .invoice-table tfoot td { border-top: 1px solid #000; padding: 6px 8px; }
 
@@ -134,119 +274,150 @@
         <div id="bitmapDisplayContainer"></div>
     </div>
 
-    <h2>Invoice / Bill Entry</h2>
+    <h2 class="card-header">Invoice / Bill Entry</h2>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label>Invoice Date</label>
-            <input type="date" id="inv_date">
-        </div>
-        <div class="form-group">
-            <label>Invoice Number</label>
-            <input type="text" id="inv_no" placeholder="Inv No">
+    <div class="form-section" style="margin-top: 10px;">
+        <div class="section-badge">Invoice Info</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Invoice Date</label>
+                <input type="date" id="inv_date">
+            </div>
+            <div class="form-group">
+                <label>Invoice Number</label>
+                <input type="text" id="inv_no" placeholder="Enter Inv No">
+            </div>
+            <div class="form-group">
+                <label>Transport Name</label>
+                <input type="text" id="inv_transport" placeholder="Transport Name">
+            </div>
+            <div class="form-group">
+                <label>LR Number</label>
+                <input type="text" id="inv_lr" placeholder="LR Number">
+            </div>
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label>Top-Left: Company Full Address</label>
-            <textarea id="comp_address" placeholder="Enter Company Full Address..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>Top-Right: Party Full Address</label>
-            <textarea id="party_address" placeholder="Enter Party Full Address..."></textarea>
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label>Transport Name</label>
-            <input type="text" id="inv_transport" placeholder="Transport Name">
-        </div>
-        <div class="form-group">
-            <label>LR Number</label>
-            <input type="text" id="inv_lr" placeholder="LR Number">
+    <div class="form-section">
+        <div class="section-badge">Address Details</div>
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="form-group">
+                <label>Company Address (From)</label>
+                <textarea id="comp_address" placeholder="Enter Company Full Address..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Party Address (To)</label>
+                <textarea id="party_address" placeholder="Enter Party Full Address..."></textarea>
+            </div>
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label>GST Type / Rate</label>
-            <select id="gst_type">
-                <option value="none">No GST</option>
-                <option value="gst_5">CGST 2.5% + SGST 2.5% (5%)</option>
-                <option value="gst_12">CGST 6% + SGST 6% (12%)</option>
-                <option value="igst_5">IGST 5%</option>
-                <option value="igst_12">IGST 12%</option>
-            </select>
+    <div class="form-section">
+        <div class="section-badge">Commercials</div>
+        <div class="form-grid">
+            <div class="form-group" style="grid-column: span 2;">
+                <label>GST Type / Rate</label>
+                <select id="gst_type">
+                    <option value="none">No GST</option>
+                    <option value="gst_5">CGST 2.5% + SGST 2.5% (5%)</option>
+                    <option value="gst_12">CGST 6% + SGST 6% (12%)</option>
+                    <option value="igst_5">IGST 5%</option>
+                    <option value="igst_12">IGST 12%</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div class="section-title">Particular Details & Design Specification</div>
-
-    <div class="design-global-box">
-        <div class="design-global-grid">
-            <div class="form-group" style="margin:0;">
-                <label>Design No</label>
+    <div class="form-section">
+        <div class="section-badge">Design Specs</div>
+        <div class="form-grid">
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Design Number</label>
                 <select id="global_design" onchange="applyGlobalDesign(this.value)">
                     <option value="">Select Design</option>
                 </select>
             </div>
-            <div class="form-group" style="margin:0;">
+            <div class="form-group">
                 <label>Count</label>
                 <input type="text" id="global_count" placeholder="Count">
             </div>
-            <div class="form-group" style="margin:0;">
+            <div class="form-group">
                 <label>Reed</label>
                 <input type="text" id="global_reed" placeholder="Reed">
             </div>
-            <div class="form-group" style="margin:0;">
+            <div class="form-group">
                 <label>Pick</label>
                 <input type="text" id="global_pick" placeholder="Pick">
             </div>
-            <div class="form-group" style="margin:0;">
-                <label>Weave</label>
+            <div class="form-group">
+                <label>Weave Type</label>
                 <input type="text" id="global_weave" placeholder="Weave">
             </div>
         </div>
     </div>
 
-    <div class="item-table-wrapper">
-        <div style="display: grid; grid-template-columns: 35px 110px 80px 90px 100px 35px; gap: 6px; font-size: 9px; font-weight: bold; text-align: center; color: #3F5A3E; margin-bottom: 4px; min-width: 520px;">
-            <div>S.No</div><div>Date</div><div>Pcs</div><div>Qty (Mtr)</div><div>Rate</div><div>Amount</div><div>Act</div>
-        </div>
-        <div id="invoiceItemsContainer">
+    <div class="form-section" style="background: transparent; border: none; padding: 0;">
+        <div class="section-badge" style="top: -15px; left: 0;">Item Entries</div>
+        <div id="invoiceItemsContainer" style="margin-top: 15px;">
+            <!-- Row-wise Item Grid -->
             <div class="item-row">
-                <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">1</div>
-                <div><input type="date" class="i-date"></div>
-                <div><input type="number" class="i-pcs" placeholder="Pcs"></div>
-                <div><input type="number" class="i-qty" placeholder="Qty" oninput="calcTotal(this)"></div>
-                <div><input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)"></div>
-                <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;"></div>
-                <div><button class="add-row-btn" onclick="addInvoiceRow()">+</button></div>
+                <div class="item-col-group">
+                    <label>Date</label>
+                    <input type="date" class="i-date">
+                </div>
+                <div class="item-col-group">
+                    <label>Pcs</label>
+                    <input type="number" class="i-pcs" placeholder="No. of Pcs">
+                </div>
+                <div class="item-col-group">
+                    <label>Qty (Meters)</label>
+                    <input type="number" class="i-qty" placeholder="Total Qty" oninput="calcTotal(this)">
+                </div>
+                <div class="item-col-group">
+                    <label>Rate / Meter (₹)</label>
+                    <input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)">
+                </div>
+                <div class="item-col-group full-width">
+                    <label>Total Amount (₹)</label>
+                    <input type="number" class="i-total" placeholder="0.00" readonly style="background:#F0FDF4; color:#059669; font-weight:800; border-color:#86EFAC;">
+                </div>
+                <button type="button" class="add-row-btn" onclick="addInvoiceRow()">➕ Add More Items</button>
             </div>
         </div>
     </div>
 
-    <button class="btn-submit" id="saveInvBtn" onclick="saveInvoice()">Save Invoice</button>
-    <button class="btn-submit print-btn" onclick="showFullPreview()">Print / PDF Bill Preview</button>
+    <button class="btn-main" id="saveInvBtn" onclick="saveInvoice()">✅ Save Invoice Details</button>
+    <button class="btn-main print-btn" onclick="showFullPreview()">🖨️ Print / PDF Bill Preview</button>
 
-    <h3 style="font-size: 11px; color: #3F5A3E; margin-top: 15px; font-weight: 700; border-bottom: 2px solid rgba(82, 110, 81, 0.3); padding-bottom: 4px;">📊 Saved Invoices List</h3>
-    <div style="overflow-x: auto;">
-        <table id="invoicesTable" class="excel-table">
-            <thead>
-                <tr>
-                    <th>Inv No</th>
-                    <th>Date</th>
-                    <th>Party Name</th>
-                    <th>Design No</th>
-                    <th>Total Qty</th>
-                    <th>Grand Total</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <!-- 📌 Popup Trigger Button -->
+    <button type="button" class="popup-trigger-btn" onclick="openModal('invoiceListModal')">📊 View Saved Invoices</button>
+</div>
+
+<!-- 📌 Full-Screen Pop-up Modal for Saved Invoices -->
+<div id="invoiceListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 Saved Invoices Registry</h3>
+            <button class="close-btn" onclick="closeModal('invoiceListModal')">Close ✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="overflow-x: auto;">
+                <table id="invoicesTable" class="excel-table">
+                    <thead>
+                        <tr>
+                            <th>Inv No</th>
+                            <th>Date</th>
+                            <th>Party Name</th>
+                            <th>Design No</th>
+                            <th>Total Qty</th>
+                            <th>Grand Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -255,6 +426,18 @@
 <script>
 let editingInvoiceId = null;
 let savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
 
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
@@ -317,17 +500,31 @@ function applyGlobalDesign(designNo) {
 
 function addInvoiceRow(date = '', pcs = '', qty = '', rate = '') {
     let container = document.getElementById('invoiceItemsContainer');
-    let count = container.children.length + 1;
     let div = document.createElement('div');
     div.className = 'item-row';
+    let amt = (qty && rate) ? (parseFloat(qty) * parseFloat(rate)).toFixed(2) : '';
     div.innerHTML = `
-        <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">${count}</div>
-        <div><input type="date" class="i-date" value="${date}"></div>
-        <div><input type="number" class="i-pcs" placeholder="Pcs" value="${pcs}"></div>
-        <div><input type="number" class="i-qty" placeholder="Qty" value="${qty}" oninput="calcTotal(this)"></div>
-        <div><input type="number" class="i-rate" placeholder="Rate" value="${rate}" oninput="calcTotal(this)"></div>
-        <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;" value="${(qty && rate) ? (qty * rate).toFixed(2) : ''}"></div>
-        <div><button class="del-row-btn" onclick="this.parentElement.remove()">✕</button></div>
+        <div class="item-col-group">
+            <label>Date</label>
+            <input type="date" class="i-date" value="${date}">
+        </div>
+        <div class="item-col-group">
+            <label>Pcs</label>
+            <input type="number" class="i-pcs" placeholder="No. of Pcs" value="${pcs}">
+        </div>
+        <div class="item-col-group">
+            <label>Qty (Meters)</label>
+            <input type="number" class="i-qty" placeholder="Total Qty" value="${qty}" oninput="calcTotal(this)">
+        </div>
+        <div class="item-col-group">
+            <label>Rate / Meter (₹)</label>
+            <input type="number" class="i-rate" placeholder="Rate" value="${rate}" oninput="calcTotal(this)">
+        </div>
+        <div class="item-col-group full-width">
+            <label>Total Amount (₹)</label>
+            <input type="number" class="i-total" placeholder="0.00" readonly style="background:#F0FDF4; color:#059669; font-weight:800; border-color:#86EFAC;" value="${amt}">
+        </div>
+        <button type="button" class="del-row-btn" onclick="this.parentElement.remove()">✕ Remove Item</button>
     `;
     container.appendChild(div);
 }
@@ -350,7 +547,7 @@ async function saveInvoice() {
 
     let btn = document.getElementById('saveInvBtn');
     let origText = btn.innerText;
-    btn.innerText = "Saving ☁️...";
+    btn.innerText = "⏳ Saving to Cloud...";
 
     let compAddress = document.getElementById('comp_address').value;
     let partyAddress = document.getElementById('party_address').value;
@@ -415,17 +612,31 @@ async function saveInvoice() {
     document.getElementById('inv_lr').value = '';
     document.getElementById('invoiceItemsContainer').innerHTML = `
         <div class="item-row">
-            <div style="text-align:center; font-size:10px; font-weight:bold; color:#1E2B23;">1</div>
-            <div><input type="date" class="i-date"></div>
-            <div><input type="number" class="i-pcs" placeholder="Pcs"></div>
-            <div><input type="number" class="i-qty" placeholder="Qty" oninput="calcTotal(this)"></div>
-            <div><input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)"></div>
-            <div><input type="number" class="i-total" placeholder="Amt" readonly style="background:#FFFFFF;"></div>
-            <div><button class="add-row-btn" onclick="addInvoiceRow()">+</button></div>
+            <div class="item-col-group">
+                <label>Date</label>
+                <input type="date" class="i-date">
+            </div>
+            <div class="item-col-group">
+                <label>Pcs</label>
+                <input type="number" class="i-pcs" placeholder="No. of Pcs">
+            </div>
+            <div class="item-col-group">
+                <label>Qty (Meters)</label>
+                <input type="number" class="i-qty" placeholder="Total Qty" oninput="calcTotal(this)">
+            </div>
+            <div class="item-col-group">
+                <label>Rate / Meter (₹)</label>
+                <input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)">
+            </div>
+            <div class="item-col-group full-width">
+                <label>Total Amount (₹)</label>
+                <input type="number" class="i-total" placeholder="0.00" readonly style="background:#F0FDF4; color:#059669; font-weight:800; border-color:#86EFAC;">
+            </div>
+            <button type="button" class="add-row-btn" onclick="addInvoiceRow()">➕ Add More Items</button>
         </div>
     `;
     document.getElementById('inv_date').valueAsDate = new Date();
-    btn.innerText = "Save Invoice";
+    btn.innerText = "✅ Save Invoice Details";
 }
 
 function updateInvoicesTable() {
@@ -436,21 +647,24 @@ function updateInvoicesTable() {
     savedInvoices.slice().reverse().forEach(inv => {
         let row = tbody.insertRow();
         row.innerHTML = `
-            <td>${inv.invNo}</td>
+            <td><b>${inv.invNo}</b></td>
             <td>${inv.invDate}</td>
             <td>${inv.partyAddress ? inv.partyAddress.split('\n')[0] : '-'}</td>
             <td>${inv.design || '-'}</td>
             <td>${inv.totalQty.toFixed(2)}</td>
-            <td>${inv.grandTotal.toFixed(2)}</td>
-            <td style="white-space:nowrap;">
-                <button class="action-edit" onclick="editInvoice(${inv.id})">Edit</button>
-                <button class="action-del" onclick="deleteInvoice(${inv.id})">Del</button>
+            <td style="font-weight:bold; color:#10B981;">₹${inv.grandTotal.toFixed(2)}</td>
+            <td>
+                <div class="action-cell">
+                    <button class="action-btn action-edit" onclick="editInvoice(${inv.id})">Edit</button>
+                    <button class="action-btn action-del" onclick="deleteInvoice(${inv.id})">Del</button>
+                </div>
             </td>
         `;
     });
 }
 
 function editInvoice(id) {
+    closeModal('invoiceListModal'); // Close modal on edit
     let inv = savedInvoices.find(x => x.id === id);
     if(!inv) return;
 
@@ -472,14 +686,66 @@ function editInvoice(id) {
     let container = document.getElementById('invoiceItemsContainer');
     container.innerHTML = '';
     if(inv.items && inv.items.length > 0) {
-        inv.items.forEach(item => {
-            addInvoiceRow(item.date, item.pcs, item.qty, item.rate);
+        inv.items.forEach((item, idx) => {
+            if(idx === 0) {
+                container.innerHTML = `
+                    <div class="item-row">
+                        <div class="item-col-group">
+                            <label>Date</label>
+                            <input type="date" class="i-date" value="${item.date || ''}">
+                        </div>
+                        <div class="item-col-group">
+                            <label>Pcs</label>
+                            <input type="number" class="i-pcs" placeholder="No. of Pcs" value="${item.pcs || ''}">
+                        </div>
+                        <div class="item-col-group">
+                            <label>Qty (Meters)</label>
+                            <input type="number" class="i-qty" placeholder="Total Qty" value="${item.qty || ''}" oninput="calcTotal(this)">
+                        </div>
+                        <div class="item-col-group">
+                            <label>Rate / Meter (₹)</label>
+                            <input type="number" class="i-rate" placeholder="Rate" value="${item.rate || ''}" oninput="calcTotal(this)">
+                        </div>
+                        <div class="item-col-group full-width">
+                            <label>Total Amount (₹)</label>
+                            <input type="number" class="i-total" placeholder="0.00" readonly style="background:#F0FDF4; color:#059669; font-weight:800; border-color:#86EFAC;" value="${item.amount || ''}">
+                        </div>
+                        <button type="button" class="add-row-btn" onclick="addInvoiceRow()">➕ Add More Items</button>
+                    </div>
+                `;
+            } else {
+                addInvoiceRow(item.date, item.pcs, item.qty, item.rate);
+            }
         });
     } else {
-        addInvoiceRow();
+        container.innerHTML = `
+            <div class="item-row">
+                <div class="item-col-group">
+                    <label>Date</label>
+                    <input type="date" class="i-date">
+                </div>
+                <div class="item-col-group">
+                    <label>Pcs</label>
+                    <input type="number" class="i-pcs" placeholder="No. of Pcs">
+                </div>
+                <div class="item-col-group">
+                    <label>Qty (Meters)</label>
+                    <input type="number" class="i-qty" placeholder="Total Qty" oninput="calcTotal(this)">
+                </div>
+                <div class="item-col-group">
+                    <label>Rate / Meter (₹)</label>
+                    <input type="number" class="i-rate" placeholder="Rate" oninput="calcTotal(this)">
+                </div>
+                <div class="item-col-group full-width">
+                    <label>Total Amount (₹)</label>
+                    <input type="number" class="i-total" placeholder="0.00" readonly style="background:#F0FDF4; color:#059669; font-weight:800; border-color:#86EFAC;">
+                </div>
+                <button type="button" class="add-row-btn" onclick="addInvoiceRow()">➕ Add More Items</button>
+            </div>
+        `;
     }
 
-    document.getElementById('saveInvBtn').innerText = "Update Invoice";
+    document.getElementById('saveInvBtn').innerText = "🔄 Update Invoice Details";
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -494,7 +760,6 @@ async function deleteInvoice(id) {
         }
 
         updateInvoicesTable();
-        alert("Deleted successfully from Cloud! 🗑️☁️");
     }
 }
 
@@ -618,8 +883,8 @@ function showFullPreview() {
             '<div>For TEXFRIEND ERP<br><br><br>Authorized Signatory</div>' +
         '</div>' +
         '<div style="text-align:center; margin-top:25px; display:flex; gap:10px; justify-content:center;" class="no-print">' +
-            '<button onclick="window.print()" style="background:#526E51; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print / Save as PDF</button>' +
-            '<button onclick="goBackToForm()" style="background:#3F5A3E; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">✏️ Edit Invoice</button>' +
+            '<button onclick="window.print()" style="background:#1A2421; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print / Save as PDF</button>' +
+            '<button onclick="goBackToForm()" style="background:#64748B; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">✏️ Edit Invoice</button>' +
         '</div>';
 
     window.scrollTo(0, 0);
@@ -627,7 +892,7 @@ function showFullPreview() {
 
 function goBackToForm() {
     document.getElementById('printPreviewContainer').style.display = 'none';
-    document.getElementById('mainContainer').style.display = 'block';
+    document.getElementById('mainContainer').style.display = 'flex';
     window.scrollTo(0, 0);
 }
 </script>
@@ -673,8 +938,8 @@ function goBackToForm() {
     // Sync Data on Load
     window.addEventListener('load', async function() {
         let btn = document.getElementById('saveInvBtn');
-        let origText = btn ? btn.innerText : "Save Invoice";
-        if(btn) btn.innerText = "Syncing ☁️...";
+        let origText = btn ? btn.innerText : "✅ Save Invoice Details";
+        if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
         let collections = ['saved_invoices_data', 'pre_design_numbers', 'design_specs', 'party_orders_data'];
         
@@ -686,6 +951,7 @@ function goBackToForm() {
         if(btn) btn.innerText = origText;
         
         document.getElementById('inv_date').valueAsDate = new Date();
+        document.querySelector('.i-date').valueAsDate = new Date();
         let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
         document.getElementById('comp_address').value = defaultComp;
         loadDesignDropdowns();
@@ -695,3 +961,4 @@ function goBackToForm() {
 </script>
 </body>
 </html>
+

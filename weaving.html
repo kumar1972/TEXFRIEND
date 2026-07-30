@@ -10,161 +10,256 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
+        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
-            width: 100%;
-            min-height: 100vh;
-            background: #EAF4EE;
-            color: #23382B; 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #EAF0EA; 
+            color: #1E2B23; /* Deep Dark Green */
         }
 
         body { 
             padding: 12px; 
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
+        /* 📌 Main Container */
         .container {
             width: 100%;
-            max-width: 100%;
+            max-width: 900px;
             margin: 0;
-            background: #F4F9F5;
-            padding: 18px;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-            border: 1px solid rgba(118, 150, 129, 0.25);
-            flex: 1;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
             display: flex;
             flex-direction: column;
+            gap: 15px;
         }
 
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
 
+        /* 📌 Smart Back Button */
         .back-link {
-            color: #2F4F38; 
-            text-decoration: none; 
-            font-size: 10px; 
-            font-weight: 600; 
-            display: inline-block; 
-            background: rgba(118, 150, 129, 0.12); 
-            padding: 4px 8px; 
-            border-radius: 5px; 
-            border: 1px solid rgba(118, 150, 129, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
+        .back-link:hover { background: #000000; transform: translateY(-2px); }
 
         #bitmapDisplayContainer { text-align: right; }
         #bitmapDisplayContainer img {
-            max-height: 40px;
-            border-radius: 4px;
-            border: 1px solid rgba(118, 150, 129, 0.4);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            max-height: 45px;
+            border-radius: 6px;
+            border: 2px solid #4A7C59;
+            box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15);
         }
 
         h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 800;
             color: #2F4F38;
-            font-size: 13px;
-            border-bottom: 2px solid rgba(118, 150, 129, 0.25);
-            padding-bottom: 4px;
-            margin-top: 10px;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+            border: none;
+        }
+        h2::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
+
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 22px 15px 15px 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
             font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
         }
+        .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
 
-        .form-group { margin-bottom: 6px; }
+        .form-group { margin-bottom: 10px; }
         .form-group label {
-            display: block; font-size: 9px; color: #3B5F47; font-weight: 600; margin-bottom: 3px;
+            display: block; font-size: 10px; color: #4A554A; font-weight: 600; margin-bottom: 4px;
         }
 
+        /* 📌 Smart 3D Inputs */
         input[type="text"], input[type="date"], input[type="number"], select {
-            width: 100%; padding: 8px 10px; border: 1px solid rgba(118, 150, 129, 0.35);
-            border-radius: 6px; box-sizing: border-box; font-size: 11px; background: #FFFFFF;
-            color: #23382B; font-weight: 500;
+            width: 100%; padding: 10px 12px; border: 1px solid #D1DED1;
+            border-radius: 8px; box-sizing: border-box; font-size: 11px; background: #FFFFFF;
+            color: #1E2B23; font-weight: 600; transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
         }
 
-        input:focus, select:focus { border-color: #4A7C59; outline: none; background: #FAFCFA; }
+        input:focus, select:focus {
+            border-color: #4A7C59; outline: none; background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
 
         .form-grid-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px; margin-bottom: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; margin-bottom: 12px;
         }
         
         .form-grid-row-4 {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px; margin-bottom: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px; margin-bottom: 12px;
         }
 
         .line-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
-        .line-table th { font-size: 9px; color: #2F4F38; text-align: left; padding-bottom: 4px; font-weight: bold; }
-        .line-table td { padding: 3px 4px 5px 0; }
+        .line-table th { font-size: 10px; color: #2F4F38; text-align: center; padding-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+        .line-table td { padding: 4px; text-align: center; }
+        .line-table input { text-align: center; }
 
         .section-sub-title {
-            font-size: 10px; font-weight: 700; color: #2F4F38; margin-top: 8px; margin-bottom: 4px;
-            background: #E2ECE5; padding: 4px 6px; border-radius: 5px; border: 1px solid rgba(118, 150, 129, 0.2);
+            font-size: 11px; font-weight: 700; color: #2F4F38; margin-top: 12px; margin-bottom: 6px;
+            background: #EAF0EA; padding: 6px 10px; border-radius: 8px; border: 1px solid #D1DED1;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         .btn-weave {
-            background-color: #4A7C59; color: white; border: none; padding: 10px; border-radius: 8px;
-            font-weight: 700; cursor: pointer; width: 100%; font-size: 12px; margin-top: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.15s ease;
+            background: linear-gradient(135deg, #4A7C59, #33593D); color: white; border: none; padding: 14px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; width: 100%; font-size: 13px; margin-top: 10px;
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .btn-weave:hover { background-color: #3B5F47; }
+        .btn-weave:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
 
-        .action-btn { background: #4A7C59; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .action-del { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-        .action-del:hover { background: #B45309; }
-        .action-complete { background: #4A7C59; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
-        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; margin-right: 2px; }
+        .action-del { background: #FEE2E2; color: #DC2626; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s; }
+        .action-del:hover { background: #FECACA; transform: scale(1.05); }
+        
+        .action-complete { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
+        .action-complete:hover { background: #059669; }
+        
+        .action-running { background: #F59E0B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
+        .action-running:hover { background: #D97706; }
 
-        .report-btn-group { display: flex; gap: 6px; float: right; margin-bottom: 6px; }
-        .report-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .report-btn-group { display: flex; gap: 8px; }
+        .report-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
+        .report-btn:hover { transform: translateY(-2px); }
 
-        .excel-table {
-            width: 100%; border-collapse: collapse; text-align: center; background: #F4F9F5;
-            font-size: 10px; margin-top: 6px; margin-bottom: 10px; color: #23382B;
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #6366F1, #4338CA);
+            color: white; border: none; padding: 14px; border-radius: 10px;
+            font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .excel-table th, .excel-table td { border: 1px solid rgba(118, 150, 129, 0.25); padding: 6px; }
-        .excel-table th { background-color: #E2ECE5; color: #2F4F38; font-weight: bold; }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
-        /* Modals */
-        .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
-        .modal-content { background: #fff; width: 100%; max-width: 600px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
-        .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
-        .modal-header h3 { border: none; padding: 0; margin: 0; color: #3F5A3E; font-size: 14px; }
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; max-width: 800px; margin: auto; height: 90vh; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; border:none; padding:0; }
         .modal-actions { display: flex; gap: 8px; }
-        .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+        
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+
+        /* 📌 Advanced Table Design */
+        .excel-table {
+            width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center;
+            background: #FFFFFF; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2;
+        }
+        .excel-table th, .excel-table td { padding: 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
+        .excel-table th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+        .excel-table tr:last-child td { border-bottom: none; }
+        .excel-table tbody tr:hover { background: #F8FAF8; }
+
+        /* 📌 Design Selection Modal */
         #designModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
         }
+        #designModal.show { opacity: 1; }
+        
         .design-modal-content {
-            background: #F4F9F5; width: 90%; max-width: 400px; border-radius: 12px;
-            border: 1px solid rgba(118, 150, 129, 0.4); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            background: #FFFFFF; width: 90%; max-width: 400px; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: scale(0.95); transition: transform 0.3s ease;
         }
+        #designModal.show .design-modal-content { transform: scale(1); }
+        
         .design-modal-header {
-            background: #E2ECE5; color: #2F4F38; padding: 10px 12px; font-weight: bold;
-            font-size: 11px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(118, 150, 129, 0.3);
+            background: #F4F7F4; color: #2F4F38; padding: 15px 20px; font-weight: 800;
+            font-size: 13px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #E2E8E2; text-transform: uppercase;
         }
-        .design-modal-body { padding: 8px 12px; max-height: 350px; overflow-y: auto; }
+        .design-modal-body { padding: 10px 15px; max-height: 400px; overflow-y: auto; background: #FAFCFA; }
         .design-option {
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 6px;
-            border-bottom: 1px solid rgba(118, 150, 129, 0.2); cursor: pointer; font-size: 12px; color: #23382B;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+            border-bottom: 1px solid #E2E8E2; cursor: pointer; font-size: 12px; color: #1E2B23;
+            transition: background 0.2s; border-radius: 8px; margin-bottom: 5px; background: #FFFFFF;
         }
-        .design-option:hover { background: #E2ECE5; }
+        .design-option:hover { background: #EAF0EA; border-color: #4A7C59; }
 
         @media print {
             body * { visibility: hidden; }
             #previewModal, #previewModal * { visibility: visible; }
             #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
-            .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -177,19 +272,20 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 6px;">
-            <h2 style="border:none; margin:0; color:#2F4F38;">Weaving Order</h2>
+            <h2 style="border:none; margin:0; color:#2F4F38;">Weaving Management</h2>
             <div class="report-btn-group">
                 <button type="button" class="report-btn" onclick="openPreview('warp')">👁️ Warp Preview</button>
                 <button type="button" class="report-btn" onclick="openPreview('weft')">👁️ Weft Preview</button>
             </div>
         </div>
 
-        <form id="topForm" onsubmit="saveTopData(event)">
-            <h2>1. Weaving Order Details (Top)</h2>
+        <!-- 📌 Section 1: Weaving Order Details (Top) -->
+        <form id="topForm" class="form-section" onsubmit="saveTopData(event)">
+            <div class="section-badge">1. Weaving Order Details (Top)</div>
             
             <div class="form-grid-row">
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>Order Date</label>
                     <input type="date" id="topDate" required>
                 </div>
                 <div class="form-group">
@@ -209,153 +305,182 @@
                 </div>
                 <div class="form-group">
                     <label>Warp 1 (Grnd)</label>
-                    <input type="text" id="warpCount" placeholder="Count 1" readonly style="background:#FFFFFF;">
+                    <input type="text" id="warpCount" placeholder="Count 1" readonly style="background:#F4F7F4;">
                 </div>
                 <div class="form-group">
                     <label>Warp 2 (Top)</label>
-                    <input type="text" id="warpCount2" placeholder="Count 2" readonly style="background:#FFFFFF;">
+                    <input type="text" id="warpCount2" placeholder="Count 2" readonly style="background:#F4F7F4;">
                 </div>
                 <div class="form-group">
                     <label>Weft Count</label>
-                    <input type="text" id="weftCount" placeholder="Weft Count" readonly style="background:#FFFFFF;">
+                    <input type="text" id="weftCount" placeholder="Weft Count" readonly style="background:#F4F7F4;">
                 </div>
             </div>
 
             <div class="section-sub-title">Warp Yarn Header</div>
             <div class="form-group">
-                <table id="warpRowsTable" class="line-table">
-                    <thead>
-                        <tr>
-                            <th>Count</th>
-                            <th>Colour</th>
-                            <th>Order Wt</th>
-                            <th>Issued Wt</th>
-                            <th style="width: 35px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Auto-filled -->
-                    </tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table id="warpRowsTable" class="line-table" style="min-width: 450px;">
+                        <thead>
+                            <tr>
+                                <th>Count</th>
+                                <th>Colour</th>
+                                <th>Order Wt</th>
+                                <th>Issued Wt</th>
+                                <th style="width: 35px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Auto-filled -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="section-sub-title">Weft Yarn Header</div>
             <div class="form-group">
-                <table id="weftRowsTable" class="line-table">
-                    <thead>
-                        <tr>
-                            <th>Count</th>
-                            <th>Colour</th>
-                            <th>Order Wt</th>
-                            <th>Issued Wt</th>
-                            <th style="width: 35px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Auto-filled -->
-                    </tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table id="weftRowsTable" class="line-table" style="min-width: 450px;">
+                        <thead>
+                            <tr>
+                                <th>Count</th>
+                                <th>Colour</th>
+                                <th>Order Wt</th>
+                                <th>Issued Wt</th>
+                                <th style="width: 35px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Auto-filled -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <button type="submit" class="btn-weave" id="saveTopBtnTxt">Save Top Order</button>
+            <button type="submit" class="btn-weave" id="saveTopBtnTxt">✅ Save Top Order</button>
         </form>
 
-        <hr style="border: 0; border-top: 1px dashed rgba(118, 150, 129, 0.3); margin: 15px 0;">
-
-        <form id="bottomForm" onsubmit="saveBottomData(event)">
-            <h2>2. Weaving Production & Return (Bottom)</h2>
+        <!-- 📌 Section 2: Weaving Production & Return (Bottom) -->
+        <form id="bottomForm" class="form-section" onsubmit="saveBottomData(event)">
+            <div class="section-badge blue">2. Weaving Production & Return (Bottom)</div>
+            
             <div class="form-grid-row">
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>Entry Date</label>
                     <input type="date" id="botDate" required>
                 </div>
-                <!-- Combined Weaver and Design input for bottom form -->
                 <div class="form-group" style="grid-column: span 2;">
                     <label>Design Number & Weaver (Select Active Order)</label>
-                    <input type="text" id="botDesignDisplay" placeholder="Select Order" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+                    <input type="text" id="botDesignDisplay" placeholder="Click to Select Order" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
                     <input type="hidden" id="botDesignNo">
                     <input type="hidden" id="botWeaverName">
                 </div>
             </div>
 
             <div class="section-sub-title">Warp Details (Manual Entry)</div>
-            <div class="form-group">
-                <table id="botWarpTable" class="line-table"></table>
+            <div class="form-group" style="overflow-x: auto;">
+                <table id="botWarpTable" class="line-table" style="min-width: 450px;"></table>
             </div>
 
             <div class="section-sub-title">Weft Details (Manual Entry)</div>
-            <div class="form-group">
-                <table id="botWeftTable" class="line-table"></table>
+            <div class="form-group" style="overflow-x: auto;">
+                <table id="botWeftTable" class="line-table" style="min-width: 450px;"></table>
             </div>
 
-            <button type="submit" class="btn-weave" id="saveBotBtnTxt">Save Bottom Entry</button>
+            <button type="submit" class="btn-weave" id="saveBotBtnTxt">📥 Save Bottom Entry</button>
         </form>
 
-        <h3 style="font-size: 11px; color: #2F4F38; margin-top: 15px; font-weight: 700;">📊 Saved Warp Data</h3>
-        <div style="overflow-x: auto;">
-            <table id="warpTable" class="excel-table">
-                <thead>
-                    <tr>
-                        <th>Design No</th>
-                        <th>Weaver</th>
-                        <th>Count</th>
-                        <th>Colour</th>
-                        <th>Order Wt</th>
-                        <th>Issued Wt</th>
-                        <th>Return Wt</th>
-                        <th>Excess / Bal</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <h3 style="font-size: 11px; color: #2F4F38; margin-top: 15px; font-weight: 700;">📊 Saved Weft Data</h3>
-        <div style="overflow-x: auto;">
-            <table id="weftTable" class="excel-table">
-                <thead>
-                    <tr>
-                        <th>Design No</th>
-                        <th>Weaver</th>
-                        <th>Count</th>
-                        <th>Colour</th>
-                        <th>Order Wt</th>
-                        <th>Issued Wt</th>
-                        <th>Return Wt</th>
-                        <th>Excess / Bal</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+        <!-- 📌 Popup Trigger Buttons for Saved Data Lists -->
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button type="button" class="popup-trigger-btn" onclick="openModal('warpModal')">📊 View Saved Warp Data Registry</button>
+            <button type="button" class="popup-trigger-btn" style="background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25);" onclick="openModal('weftModal')">📊 View Saved Weft Data Registry</button>
         </div>
     </div>
 
-    <!-- Design Selection Modal -->
+    <!-- 📌 Full-Screen Pop-up Modal for Saved Warp Data -->
+    <div id="warpModal" class="overlay-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📊 Saved Warp Registry</h3>
+                <button class="close-btn" onclick="closeModal('warpModal')">Close ✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table id="warpTable" class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Design No</th>
+                                <th>Weaver</th>
+                                <th>Count</th>
+                                <th>Colour</th>
+                                <th>Order Wt</th>
+                                <th>Issued Wt</th>
+                                <th>Return Wt</th>
+                                <th>Excess / Bal</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📌 Full-Screen Pop-up Modal for Saved Weft Data -->
+    <div id="weftModal" class="overlay-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📊 Saved Weft Registry</h3>
+                <button class="close-btn" onclick="closeModal('weftModal')">Close ✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table id="weftTable" class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Design No</th>
+                                <th>Weaver</th>
+                                <th>Count</th>
+                                <th>Colour</th>
+                                <th>Order Wt</th>
+                                <th>Issued Wt</th>
+                                <th>Return Wt</th>
+                                <th>Excess / Bal</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📌 Design Selection Modal -->
     <div id="designModal">
         <div class="design-modal-content">
             <div class="design-modal-header">
                 <span id="modalTitle">Select Design</span>
-                <span style="cursor: pointer; font-size: 16px;" onclick="closeDesignModal()">✕</span>
+                <span style="cursor: pointer; font-size: 16px; color:#DC2626;" onclick="closeDesignModal()">✕</span>
             </div>
             <div class="design-modal-body" id="modalDesignList"></div>
         </div>
     </div>
 
-    <!-- Preview & Print Modal -->
+    <!-- 📌 Preview & Print Modal -->
     <div id="previewModal" class="overlay-modal">
         <div class="modal-content">
             <div class="modal-header no-print">
                 <h3 id="previewModalTitle">👁️ Weaving Order Preview</h3>
                 <div class="modal-actions">
                     <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-                    <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+                    <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
                 </div>
             </div>
-            <div class="modal-body" id="previewContent" style="padding: 15px;">
+            <div class="modal-body" id="previewContent" style="padding: 20px;">
                 <!-- Preview content injects here -->
             </div>
         </div>
@@ -369,6 +494,18 @@
 
         document.getElementById('topDate').valueAsDate = new Date();
         document.getElementById('botDate').valueAsDate = new Date();
+
+        function openModal(modalId) {
+            let modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal(modalId) {
+            let modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
 
         function cleanDesignName(str) {
             return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -388,7 +525,6 @@
             return parseFloat(str) || 0;
         }
 
-        // 📌 Fetch Received Wt from Dyeing Records for Issued Wt
         function getDyeingReceivedWt(dNo, color, yarnType) {
             let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
             let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -609,9 +745,9 @@
             }
         }
 
-        // 📌 Modal logic to differentiate Top (New Order) and Bottom (Active Order)
         function openDesignModal(target) {
             activeTargetInput = target;
+            const modal = document.getElementById('designModal');
             const modalList = document.getElementById('modalDesignList');
             modalList.innerHTML = '';
             
@@ -627,7 +763,7 @@
                 let currentVal = document.getElementById('topDesignNo').value;
 
                 if(allDesignSet.size === 0) {
-                    modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No designs found in Master</div>';
+                    modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No designs found in Master</div>';
                 } else {
                     allDesignSet.forEach(designNo => {
                         if(designNo) {
@@ -642,16 +778,14 @@
                 }
             } else if (target === 'bot') {
                 document.getElementById('modalTitle').innerText = "Select Active Weaving Order";
-                // Only show active orders that are running
                 let allOrders = weavingMasterData; 
                 let currentDesign = document.getElementById('botDesignNo').value;
                 let currentWeaver = document.getElementById('botWeaverName').value;
 
                 if(allOrders.length === 0) {
-                    modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #aaa;">No active weaving orders found</div>';
+                    modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No active weaving orders found</div>';
                 } else {
                     let added = new Set();
-                    // Display newest first
                     allOrders.slice().reverse().forEach(order => {
                         let key = `${order.designNo}_${order.weaverName}`;
                         if(!added.has(key)) {
@@ -659,7 +793,7 @@
                             let isChecked = (order.designNo === currentDesign && order.weaverName === currentWeaver) ? 'checked' : '';
                             let div = document.createElement('div');
                             div.className = 'design-option';
-                            div.innerHTML = `<span><b>${order.designNo}</b> <span style="color:#D97706;">(${order.weaverName || 'Unknown'})</span></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
+                            div.innerHTML = `<span><b>${order.designNo}</b> <span style="color:#D97706; font-size:10px; margin-left:8px; background:#FEF3C7; padding:2px 6px; border-radius:6px;">${order.weaverName || 'Unknown'}</span></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
                             div.onclick = function() { selectDesign('bot', order.designNo, order.weaverName); };
                             modalList.appendChild(div);
                         }
@@ -667,7 +801,8 @@
                 }
             }
 
-            document.getElementById('designModal').style.display = 'flex';
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
         }
 
         function selectDesign(target, designNo, weaverName) {
@@ -685,7 +820,9 @@
         }
 
         function closeDesignModal() {
-            document.getElementById('designModal').style.display = 'none';
+            let modal = document.getElementById('designModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
         }
 
         function addWarpRow(c = '', col = '', w = '', iss = '') {
@@ -712,7 +849,6 @@
             `;
         }
 
-        // 📌 FIREBASE SYNC: saveTopData
         async function saveTopData(e) {
             e.preventDefault();
             const designNo = document.getElementById('topDesignNo').value.trim();
@@ -727,7 +863,7 @@
 
             let btn = document.getElementById('saveTopBtnTxt');
             let origText = btn.innerText;
-            btn.innerText = "Saving ☁️...";
+            btn.innerText = "⏳ Saving to Cloud...";
 
             let warpRows = [];
             document.querySelectorAll('#warpRowsTable tbody tr').forEach(tr => {
@@ -767,7 +903,6 @@
                 weftRows: weftRows
             };
 
-            // Find specific order using Design + Weaver
             let existingIndex = weavingMasterData.findIndex(x => x.designNo === designNo && x.weaverName === weaverName);
             if(existingIndex > -1) {
                 weavingMasterData[existingIndex] = data;
@@ -775,7 +910,6 @@
                 weavingMasterData.push(data);
             }
 
-            // Remove existing RUNNING transactions for this specific design and weaver
             warpTransactions = warpTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
             weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
 
@@ -820,7 +954,7 @@
             }
 
             updateTables();
-            alert("Top Weaving Order saved to Cloud successfully! ✅☁️");
+            alert("Top Weaving Order Saved to Cloud Successfully! ✅☁️");
             
             document.getElementById('topDesignNo').value = '';
             document.getElementById('topWeaverName').value = '';
@@ -839,7 +973,6 @@
             warpTable.innerHTML = '';
             weftTable.innerHTML = '';
 
-            // Filter specific to the selected Design + Weaver combination
             const matchedWarpTrans = warpTransactions.filter(x => x.designNo === selectedDesign && (x.weaverName || '') === selectedWeaver);
             if(matchedWarpTrans.length > 0) {
                 let h1 = warpTable.insertRow();
@@ -875,7 +1008,6 @@
             }
         }
 
-        // 📌 FIREBASE SYNC: saveBottomData
         async function saveBottomData(e) {
             e.preventDefault();
             const designNo = document.getElementById('botDesignNo').value;
@@ -888,7 +1020,7 @@
 
             let btn = document.getElementById('saveBotBtnTxt');
             let origText = btn.innerText;
-            btn.innerText = "Saving ☁️...";
+            btn.innerText = "⏳ Saving to Cloud...";
 
             const warpRows = document.querySelectorAll('#botWarpTable tr:not(:first-child)');
             warpRows.forEach((tr) => {
@@ -927,7 +1059,7 @@
             }
 
             updateTables();
-            alert("Bottom Weaving Entry updated to Cloud successfully! ✅☁️");
+            alert("Bottom Weaving Entry Saved to Cloud Successfully! ✅☁️");
             document.getElementById('botDesignDisplay').value = '';
             document.getElementById('botDesignNo').value = '';
             document.getElementById('botWeaverName').value = '';
@@ -943,7 +1075,7 @@
             warpTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
-                let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
+                let statusColor = item.status == 'running' ? '#D97706' : '#10B981';
                 let statusBtn = item.status == 'running' 
                     ? `<button class="action-complete" onclick="toggleWarpStatus(${item.id}, 'completed')">Complete</button>` 
                     : `<button class="action-running" onclick="toggleWarpStatus(${item.id}, 'running')">Running</button>`;
@@ -951,17 +1083,17 @@
                 let row = warpTbody.insertRow();
                 row.innerHTML = `
                     <td><b>${item.designNo}</b></td>
-                    <td style="color:#D97706; font-weight:bold;">${item.weaverName || '-'}</td>
+                    <td style="color:#D97706; font-weight:700;">${item.weaverName || '-'}</td>
                     <td>${item.count}</td>
                     <td>${item.colour}</td>
                     <td>${Number(item.orderWt).toFixed(3)}</td>
                     <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
                     <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
                     <td>-</td>
-                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
+                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
                     <td style="white-space:nowrap;">
                         ${statusBtn}
-                        <button class="action-del" onclick="deleteWarp(${item.id})">Del</button>
+                        <button class="action-del" onclick="deleteWarp(${item.id})">🗑️</button>
                     </td>
                 `;
             });
@@ -971,7 +1103,7 @@
             weftTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
-                let statusColor = item.status == 'running' ? '#D97706' : '#4A7C59';
+                let statusColor = item.status == 'running' ? '#D97706' : '#10B981';
                 let statusBtn = item.status == 'running' 
                     ? `<button class="action-complete" onclick="toggleWeftStatus(${item.id}, 'completed')">Complete</button>` 
                     : `<button class="action-running" onclick="toggleWeftStatus(${item.id}, 'running')">Running</button>`;
@@ -979,23 +1111,22 @@
                 let row = weftTbody.insertRow();
                 row.innerHTML = `
                     <td><b>${item.designNo}</b></td>
-                    <td style="color:#D97706; font-weight:bold;">${item.weaverName || '-'}</td>
+                    <td style="color:#D97706; font-weight:700;">${item.weaverName || '-'}</td>
                     <td>${item.count}</td>
                     <td>${item.colour}</td>
                     <td>${Number(item.orderWt).toFixed(3)}</td>
                     <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
                     <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
                     <td>-</td>
-                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
+                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
                     <td style="white-space:nowrap;">
                         ${statusBtn}
-                        <button class="action-del" onclick="deleteWeft(${item.id})">Del</button>
+                        <button class="action-del" onclick="deleteWeft(${item.id})">🗑️</button>
                     </td>
                 `;
             });
         }
 
-        // 📌 FIREBASE SYNC: Toggle and Delete Functions
         async function toggleWarpStatus(id, newStatus) {
             let msg = newStatus === 'completed' ? "Indha warp entry-ai Completed-aga maatranuma?" : "Indha warp entry-ai Running-ku maatranuma?";
             if(confirm(msg)) {
@@ -1017,6 +1148,7 @@
         }
 
         async function deleteWarp(id) {
+            closeModal('warpModal');
             if(confirm("Indha warp entry-ai delete pannanuma?")) {
                 warpTransactions = warpTransactions.filter(item => item.id !== id);
                 localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
@@ -1026,6 +1158,7 @@
         }
 
         async function deleteWeft(id) {
+            closeModal('weftModal');
             if(confirm("Indha weft entry-ai delete pannanuma?")) {
                 weftTransactions = weftTransactions.filter(item => item.id !== id);
                 localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
@@ -1043,27 +1176,31 @@
             let table = document.getElementById(tableId);
             if(!table) return;
             
-            let html = `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
+            let html = `<div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">
+                            <h2 style="color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${titleText}</h2>
+                        </div>
+                        <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center; background:#FFF; color:#1E2B23; border:1px solid #D1DED1;">`;
             
             let headers = table.querySelectorAll('thead th');
-            html += `<tr style="background:#f2f2f2;">`;
+            html += `<tr style="background:#EAF0EA;">`;
             headers.forEach((th, idx) => {
                 if(idx < headers.length - 1) { 
-                    html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
+                    html += `<th style="border:1px solid #D1DED1; padding:10px; font-weight:bold; color:#2F4F38; text-transform:uppercase;">${th.innerText}</th>`;
                 }
             });
             html += `</tr>`;
             
             let rows = table.querySelectorAll('tbody tr');
             if(rows.length === 0) {
-                html += `<tr><td colspan="${headers.length - 1}" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
+                html += `<tr><td colspan="${headers.length - 1}" style="border:1px solid #D1DED1; padding:20px; text-align:center;">No Data Found</td></tr>`;
             } else {
                 rows.forEach(tr => {
                     let cells = tr.querySelectorAll('td');
-                    html += `<tr>`;
+                    html += `<tr style="border-bottom:1px dashed #E2E8E2;">`;
                     cells.forEach((td, idx) => {
                         if(idx < cells.length - 1) { 
-                            html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
+                            html += `<td style="border:1px solid #D1DED1; padding:10px;">${td.innerText}</td>`;
                         }
                     });
                     html += `</tr>`;
@@ -1072,7 +1209,7 @@
             
             html += `</table></div>`;
             document.getElementById('previewContent').innerHTML = html;
-            document.getElementById('previewModal').style.display = 'flex';
+            openModal('previewModal');
         }
     </script>
 
@@ -1117,8 +1254,8 @@
         // Sync Data on Load
         window.addEventListener('load', async function() {
             let btn = document.getElementById('saveTopBtnTxt');
-            let originalText = btn ? btn.innerText : "Save Top Order";
-            if(btn) btn.innerText = "Syncing ☁️...";
+            let originalText = btn ? btn.innerText : "✅ Save Top Order";
+            if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
             let collections = [
                 'weaving_master_data', 'weaving_warp_trans', 'weaving_weft_trans', 

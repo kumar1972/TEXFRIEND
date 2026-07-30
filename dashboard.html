@@ -5,20 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Index - Kora ERP Pro</title>
     
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        /* 📌 Premium Smart Background */
+        html, body { width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* 📌 Premium Top Header */
+        .top-header-container { 
+            width: 100%; max-width: 900px; display: flex; justify-content: space-between; 
+            align-items: center; padding: 12px 18px; 
+            background: linear-gradient(135deg, #4A7C59, #2F4F38); 
+            color: white; border-radius: 14px; margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(47, 79, 56, 0.2); 
+        }
+        .top-header-container h3 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
+        
+        .dropdown-btn { 
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); 
+            color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; 
+            cursor: pointer; line-height: 1; transition: all 0.3s ease; 
+            box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); 
+        }
+        .dropdown-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+        .dropdown-menu { 
+            position: absolute; right: 0; top: 45px; background: #FFFFFF; color: #1E2B23; 
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(30, 43, 35, 0.15); 
+            width: 220px; z-index: 10000; overflow: hidden; border: 1px solid #D1DED1; 
+        }
+        .dropdown-menu a { 
+            display: block; padding: 12px 15px; text-decoration: none; color: #2F4F38; 
+            font-size: 12px; font-weight: 600; border-bottom: 1px solid #E2E8E2; transition: background 0.2s ease; 
+        }
+        .dropdown-menu a:hover { background: #F4F7F4; color: #4A7C59; }
+        .dropdown-menu a:last-child { border-bottom: none; color: #DC2626; }
+        .dropdown-menu a:last-child:hover { background: #FEF2F2; }
+        .user-info-box { padding: 12px 15px; background: #F4F7F4; border-bottom: 1px solid #D1DED1; font-size: 11px; font-weight: 700; color: #2F4F38; line-height: 1.6; }
+
+        /* 📌 Main Container */
+        .container { 
+            width: 100%; max-width: 900px; margin: 0; background: #FFFFFF; 
+            padding: 20px; border-radius: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06); 
+            border: 1px solid rgba(82, 110, 81, 0.15); flex: 1; display: flex; 
+            flex-direction: column; gap: 16px; position: relative; 
+        }
+        
+        .header-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; padding-bottom: 15px; border-bottom: 2px solid #EAF0EA; }
+        
+        #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
+        #companyLogoContainer img {
+            height: 50px; width: 50px; border-radius: 12px; border: 2px solid #4A7C59;
+            object-fit: cover; box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); transition: transform 0.3s;
+        }
+        #companyLogoContainer img:hover { transform: scale(1.05); }
+        .logo-placeholder { font-size: 10px; background: #F4F7F4; padding: 12px 8px; border-radius: 10px; border: 2px dashed #4A7C59; color: #4A7C59; font-weight: 700; text-align: center; }
+
+        h1 { color: #2F4F38; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin:0; text-shadow: none; }
+        .subtitle { display: none; }
+        
+        /* 📌 Form & Setup */
+        .base-setup { 
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px; 
+            padding: 20px 15px 15px 15px; margin-bottom: 5px; position: relative; 
+            display: flex; flex-direction: column; gap: 12px; box-shadow: none; 
+        }
+        .base-setup-title { 
+            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF; 
+            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px; 
+            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); margin: 0;
+        }
+        
+        .form-row { display: flex; gap: 12px; align-items: flex-end; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 10px; color: #4A554A; font-weight: 600; white-space: nowrap; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1; 
+            background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; 
+            transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02); 
+        }
+        input:focus, select:focus, textarea:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); background: #FFFFFF; }
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
+
+        input[type="file"] { padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; color: #2F4F38; cursor: pointer; box-shadow: none; }
+        input[type="file"]::file-selector-button { background: #4A7C59; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 10px; cursor: pointer; margin-right: 10px; transition: background 0.2s; box-shadow: 0 2px 5px rgba(74, 124, 89, 0.2); }
+        
+        /* 📌 Buttons */
+        .btn-add { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
+        .btn-del { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
+        .btn-edit { background: linear-gradient(135deg, #3B82F6, #1D4ED8); width: 100%; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; margin-top: 5px; }
+        .btn-add:hover, .btn-del:hover, .btn-edit:hover { transform: translateY(-2px); }
+        
+        /* 📌 Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .menu-btn { color: #FFFFFF; padding: 16px 8px; border-radius: 14px; text-decoration: none; font-weight: 700; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 11px; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.1); transition: all 0.3s ease; border: none; }
+        .menu-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(30, 43, 35, 0.15); }
+        .menu-btn .tab-icon { font-size: 26px; }
+
+        .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1E3A8A); } 
+        .btn-theme-2 { background: linear-gradient(135deg, #0D9488, #0F766E); } 
+        .btn-theme-3 { background: linear-gradient(135deg, #6366F1, #4338CA); } 
+        .btn-theme-4 { background: linear-gradient(135deg, #D97706, #B45309); } 
+
+        .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 12px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #4A7C59, #2F4F38); }
+        .menu-btn.full-span .tab-icon { font-size: 24px; }
+        
+        .btn-m-all { background: linear-gradient(135deg, #EAB308, #D97706); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25); border: none; }
+        .btn-m-all .tab-icon { font-size: 24px; }
+
+        /* 📌 Status Grid */
+        .status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+        .status-box { background: #F8FAF8; padding: 15px; border-radius: 12px; border: 1px solid #E2E8E2; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); }
+        .status-title { font-size: 11px; color: #3F5A3E; font-weight: 700; text-align: center; text-transform: uppercase; margin: 0; }
+        .status-options { display: flex; gap: 8px; }
+        .status-btn { flex: 1; color: white; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(30, 43, 35, 0.05); text-transform: uppercase; border: none; }
+        .status-btn:hover { transform: translateY(-1px); }
+        .status-btn.running { background: #F59E0B; color: #FFFFFF; }
+        .status-btn.completed { background: #10B981; color: #FFFFFF; }
+
+        /* 📌 Bitmap Preview Styling */
+        #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; }
+        #bitmapImgTag { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none !important; }
+    </style>
+</head>
+<body>
+
     <!-- Top Header with Live User Menu -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #3F5A3E; color: white; border-radius: 8px; margin-bottom: 15px;">
-        <h3 style="margin:0; font-size:16px;">TEXFRIEND ERP Dashboard</h3>
+    <div class="top-header-container">
+        <h3>TEXFRIEND ERP Dashboard</h3>
         <div style="position: relative;">
-            <button onclick="toggleMenu()" style="background: transparent; border: none; color: white; font-size: 28px; padding: 4px 8px; cursor: pointer; line-height: 1;">👨‍💼</button>
+            <button onclick="toggleMenu()" class="dropdown-btn">👨‍💼</button>
 
             <!-- Dropdown Menu Options with Live User Info -->
-            <div id="dropdownMenu" style="display: none; position: absolute; right: 0; top: 40px; background: white; color: #1E2B23; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); width: 200px; z-index: 1000; overflow: hidden;">
-                <div id="userInfoBox" style="padding: 10px 15px; background: #F4F9F4; border-bottom: 1px solid #ddd; font-size: 11px; font-weight: 700; color: #3F5A3E;">
+            <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
+                <div id="userInfoBox" class="user-info-box">
                     <!-- Live User Name dynamically shows here -->
                 </div>
-                <a href="settings.html" style="display: block; padding: 10px 15px; text-decoration: none; color: #3F5A3E; font-size: 12px; font-weight: 600; border-bottom: 1px solid #eee;">⚙️ Settings</a>
-                <a href="#" onclick="clearCacheData()" style="display: block; padding: 10px 15px; text-decoration: none; color: #D97706; font-size: 12px; font-weight: 600; border-bottom: 1px solid #eee;">🔄 Clear Cache</a>
-                <a href="#" onclick="logoutUser()" style="display: block; padding: 10px 15px; text-decoration: none; color: #EF4444; font-size: 12px; font-weight: 600;">🚪 Log Out</a>
+                <a href="settings.html">⚙️ Settings</a>
+                <a href="#" onclick="clearCacheData()">🔄 Clear Cache</a>
+                <a href="#" onclick="logoutUser()">🚪 Log Out</a>
             </div>
         </div>
     </div>
@@ -66,104 +195,6 @@ window.onclick = function(event) {
 }
 </script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        
-        html, body { width: 100%; min-height: 100vh; background: #8B7FC6; color: #FFFFFF; }
-        body { padding: 12px; display: flex; flex-direction: column; }
-        
-        .container { width: 100%; max-width: 100%; margin: 0; background: #9E92D8; padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border: 1px solid rgba(255, 255, 255, 0.4); flex: 1; display: flex; flex-direction: column; gap: 14px; position: relative; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: -4px; }
-        
-        #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
-        #companyLogoContainer img {
-            height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8);
-            object-fit: cover; background: rgba(0,0,0,0.2); box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .logo-placeholder { font-size: 9px; background: rgba(0,0,0,0.25); padding: 4px 6px; border-radius: 4px; border: 1px dashed rgba(255,255,255,0.5); color: #E9D5FF; text-align: center; }
-
-        h1 { text-align: center; color: #FFFFFF; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.15); flex: 1; }
-        .settings-icon { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; text-decoration: none; transition: background 0.2s; }
-        .settings-icon:hover { background: rgba(0,0,0,0.4); }
-
-        .subtitle { text-align: center; color: #F3E8FF; font-size: 10px; font-weight: 500; letter-spacing: 1px; margin-top: -6px; }
-        
-        .base-setup { background: #4D3F8C; padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: inset 0 2px 6px rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 10px; }
-        .base-setup-title { color: #FFFFFF; font-weight: 600; font-size: 11px; }
-        
-        .form-row { display: flex; gap: 10px; }
-        .form-group { flex: 1; display: flex; flex-direction: column; gap: 3px; }
-        .form-group label { font-size: 9px; color: #E9D5FF; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        input, select, textarea { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.3); background: #3B2E75; color: #FFFFFF; font-size: 11px; font-weight: 500; }
-        input:focus, select:focus, textarea:focus { border-color: #FFFFFF; outline: none; background: #5B4B9E; }
-        
-        .btn-add { background: #7C3AED; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-add:hover { background: #6D28D9; }
-        
-        .btn-del { background: #EF4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-del:hover { background: #DC2626; }
-        
-        .btn-edit { width: 100%; background: #2563EB; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 10px; }
-        .btn-edit:hover { background: #1D4ED8; }
-        
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        
-        .menu-btn { 
-            color: #FFFFFF; 
-            padding: 14px 6px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            text-align: center; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center;
-            gap: 6px; 
-            font-size: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15); 
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.2s ease;
-        }
-        .menu-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
-        .menu-btn .tab-icon { font-size: 24px; }
-
-        .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1D4ED8); } 
-        .btn-theme-2 { background: linear-gradient(135deg, #14B8A6, #0D9488); } 
-        .btn-theme-3 { background: linear-gradient(135deg, #8B5CF6, #6D28D9); } 
-        .btn-theme-4 { background: linear-gradient(135deg, #EC4899, #BE185D); } 
-
-        .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 10px; padding: 14px; font-size: 11px; }
-        .menu-btn.full-span .tab-icon { font-size: 22px; }
-
-        .btn-m-all { 
-            background: linear-gradient(135deg, #D48B60, #C26A38);
-            grid-column: span 3; 
-            text-align: center; 
-            justify-content: center; 
-            flex-direction: row;
-            gap: 10px;
-            padding: 16px; 
-            font-size: 12px; 
-            border-radius: 14px;
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 20px rgba(194, 106, 56, 0.3);
-        }
-        .btn-m-all .tab-icon { font-size: 22px; }
-
-        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .status-box { background: rgba(0, 0, 0, 0.06); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; flex-direction: column; gap: 8px; }
-        .status-title { font-size: 11px; color: #FFFFFF; font-weight: 600; text-align: center; }
-        .status-options { display: flex; gap: 6px; }
-        .status-btn { flex: 1; color: white; border: none; padding: 7px; border-radius: 6px; font-size: 9px; font-weight: 600; cursor: pointer; text-align: center; }
-        .status-btn.running { background: #D97706; color: white; border: 1px solid rgba(217, 119, 6, 0.4); }
-        .status-btn.completed { background: #7C3AED; color: white; border: 1px solid rgba(255, 255, 255, 0.4); }
-    </style>
-</head>
-<body>
     <div class="container">
         <div class="header-bar">
             <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
@@ -177,11 +208,11 @@ window.onclick = function(event) {
         <div class="base-setup">
             <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
             <div class="form-row">
-                <select id="designSelect" onchange="selectDesign(this.value)"></select>
+                <select id="designSelect" onchange="selectDesign(this.value)" style="flex:2;"></select>
                 <button class="btn-del" id="delBtn" onclick="deleteDesign()">Delete</button>
             </div>
             <div class="form-row">
-                <input type="text" id="newDesign" placeholder="New Design">
+                <input type="text" id="newDesign" placeholder="New Design" style="flex:2;">
                 <button class="btn-add" id="addBtn" onclick="addDesign()">+ Add</button>
             </div>
             
@@ -202,7 +233,7 @@ window.onclick = function(event) {
                 <input type="file" id="designBitmap" accept="image/*" onchange="previewBitmap(this)">
             </div>
             <div id="bitmapPreviewBox" style="text-align:center; display:none;">
-                <img id="bitmapImgTag" src="" style="max-height:60px; border-radius:4px; border:1px solid #fff;" alt="Bitmap">
+                <img id="bitmapImgTag" src="" alt="Bitmap">
             </div>
             <button class="btn-edit" id="editBtn" onclick="updateDesign()">✏️ Update / Edit Design</button>
         </div>
@@ -228,42 +259,42 @@ window.onclick = function(event) {
 
         <div class="status-grid">
             <div class="status-box">
-                <div class="status-title">Order Design</div>
+                <p class="status-title">Order Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('order', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('order', 'completed')">Completed</button>
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title">Weaving Design</div>
+                <p class="status-title">Weaving Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('weaving', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('weaving', 'completed')">Completed</button>
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title">Dyeing Design</div>
+                <p class="status-title">Dyeing Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('dyeing', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('dyeing', 'completed')">Completed</button>
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title">Warping Design</div>
+                <p class="status-title">Warping Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('warping', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('warping', 'completed')">Completed</button>
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title">Despatch Design</div>
+                <p class="status-title">Despatch Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('despatch', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('despatch', 'completed')">Completed</button>
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-title">Washing Design</div>
+                <p class="status-title">Washing Design</p>
                 <div class="status-options">
                     <button class="status-btn running" onclick="goToStatus('washing', 'running')">Running</button>
                     <button class="status-btn completed" onclick="goToStatus('washing', 'completed')">Completed</button>

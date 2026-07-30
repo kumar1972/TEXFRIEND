@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Report - TEXFRIEND</title>
+<title>Report - TEXFRIEND ERP</title>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -11,205 +11,273 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
     html, body { 
-        width: 100%;
-        min-height: 100vh;
-        background: #081E12; 
-        color: #E8ECE7; 
+        width: 100%; 
+        min-height: 100vh; 
+        background: #EAF0EA; 
+        color: #1E2B23; 
     }
 
     body { 
         padding: 12px; 
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     .main-card {
         width: 100%;
-        max-width: 100%;
+        max-width: 1000px;
         margin: 0;
-        background: #0C2B1B;
-        border: 1px solid #1A5A3D;
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        background: #FFFFFF;
+        border: 1px solid rgba(82, 110, 81, 0.15);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 15px;
     }
 
     .top-nav { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        margin-bottom: 4px; 
+        margin-bottom: 5px; 
     }
 
     .back-btn {
-        display: inline-block;
-        color: #4CAF50;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFFFFF;
         text-decoration: none;
         font-weight: 600;
         font-size: 11px;
-        background: rgba(76, 175, 80, 0.1);
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(76, 175, 80, 0.3);
-    }
-
-    h2 {
-        font-size: 16px;
-        color: #FFFFFF;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 8px;
-    }
-
-    .filter-box {
-        background: #103626;
-        padding: 10px;
+        background: #1A2421; 
+        padding: 8px 16px;
         border-radius: 8px;
-        border: 1px solid #1A5A3D;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
+
+    .card-header {
+        font-size: 18px;
+        margin-bottom: 5px;
+        font-weight: 800;
+        color: #2F4F38;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #EAF0EA;
+        padding-bottom: 12px;
     }
 
-    .filter-box label {
+    .form-section {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 14px;
+        padding: 20px 15px 15px 15px;
+        position: relative;
+    }
+    
+    .section-badge {
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: #4A7C59;
+        color: #FFF;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-group label {
         font-size: 11px;
         font-weight: 700;
-        color: #4CAF50;
-        white-space: nowrap;
+        color: #4A554A;
     }
 
     select {
         width: 100%;
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid #1A5A3D;
-        background: #081E12;
-        color: #FFFFFF;
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid #D1DED1;
+        background: #FFFFFF;
+        color: #1E2B23;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
         outline: none;
+        cursor: pointer;
+    }
+
+    select:focus {
+        border-color: #4A7C59;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
 
     .report-tabs {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
         gap: 8px;
-        margin-top: 6px;
+        margin-top: 5px;
     }
 
     .tab-btn {
-        background: #103626;
-        color: #A7C9B8;
-        border: 1px solid #1A5A3D;
-        padding: 10px 4px;
-        border-radius: 8px;
+        background: #F4F7F4;
+        color: #4A554A;
+        border: 1px solid #D1DED1;
+        padding: 12px 6px;
+        border-radius: 10px;
         font-size: 10px;
         font-weight: 700;
         cursor: pointer;
         text-align: center;
-        transition: all 0.2s;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
     }
 
+    .tab-btn:hover { background: #E2E8E2; color: #2F4F38; }
+
     .tab-btn.active {
-        background: #10B981;
+        background: linear-gradient(135deg, #4A7C59, #2F4F38);
         color: #FFFFFF;
-        border-color: #10B981;
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        border-color: transparent;
+        box-shadow: 0 6px 12px rgba(74, 124, 89, 0.3);
+        transform: translateY(-2px);
     }
 
     .invoice-tab-btn {
-        grid-column: span 3;
-        background: #2563EB;
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, #3B82F6, #1E3A8A);
         color: #FFFFFF;
         border: none;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 11px;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 12px;
         font-weight: 700;
         cursor: pointer;
         text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+        transition: all 0.3s ease;
     }
+    .invoice-tab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
+    .invoice-tab-btn.active { border: 2px solid #FFFFFF; }
 
     .report-header-bar {
-        background: #103626;
-        padding: 8px 12px;
-        border-radius: 8px 8px 0 0;
-        border: 1px solid #1A5A3D;
+        background: #F8FAF8;
+        padding: 12px 15px;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid #E2E8E2;
+        border-bottom: none;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 10px;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 10px;
     }
 
     .report-header-bar span {
-        font-size: 12px;
-        font-weight: 700;
-        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 800;
+        color: #2F4F38;
+        text-transform: uppercase;
     }
 
     .header-btns {
         display: flex;
-        gap: 6px;
+        gap: 8px;
     }
 
-    .preview-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
-    .print-btn { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
-    .excel-btn { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .action-btn { 
+        color: white; border: none; padding: 8px 14px; border-radius: 8px; 
+        font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(30,43,35,0.1);
+    }
+    .action-btn:hover { transform: translateY(-2px); }
+    
+    .preview-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+    .print-btn { background: linear-gradient(135deg, #10B981, #059669); }
+    .excel-btn { background: linear-gradient(135deg, #F59E0B, #D97706); }
 
     .table-container {
-        background: #081E12;
-        border: 1px solid #1A5A3D;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        overflow-x: auto;
+        width: 100%; border-radius: 0 0 12px 12px; overflow-x: auto;
+        box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10px;
-        text-align: center;
-    }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
+    th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
+    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; border-bottom: 2px solid #D1DED1; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #F8FAF8; }
 
-    th {
-        background: #103626;
-        color: #4CAF50;
-        padding: 10px 6px;
-        border-bottom: 1px solid #1A5A3D;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    td {
-        padding: 10px 6px;
-        border-bottom: 1px solid rgba(26, 90, 61, 0.4);
-        color: #E8ECE7;
-        white-space: nowrap;
+    tfoot td {
+        background: #F4F7F4;
+        color: #2F4F38;
+        font-weight: 800;
+        border-top: 2px solid #D1DED1;
     }
 
     .no-data {
-        padding: 25px;
-        color: #A7C9B8;
-        font-size: 11px;
+        padding: 30px;
+        color: #64748B;
+        font-size: 12px;
         text-align: center;
-        font-style: italic;
+        font-weight: 600;
+        background: #F8FAF8;
     }
 
-    #previewModal {
+    .bal-positive { color: #10B981; font-weight: 800; }
+    .bal-negative { color: #DC2626; font-weight: 800; }
+    .pending-txt { color: #F59E0B; font-weight: 800; font-size: 10px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px;}
+
+    .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #FFFFFF; color: #000000; z-index: 99999; overflow-y: auto; padding: 20px;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
     }
+    .overlay-modal.show { opacity: 1; }
+    
+    .modal-content {
+        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .overlay-modal.show .modal-content { transform: scale(1); }
+
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
+    }
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
     
     @media print {
         body * { visibility: hidden; }
-        #previewModal, #previewModal * { visibility: visible; }
-        #previewModal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+        .overlay-modal, .overlay-modal * { visibility: visible; }
+        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+        .modal-content { box-shadow: none; border: none; border-radius: 0; }
         .no-print { display: none !important; }
+        .modal-body { padding: 0; }
     }
 </style>
 </head>
@@ -217,16 +285,19 @@
 
 <div class="main-card">
     <div class="top-nav">
-        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <a href="index.html" class="back-btn">← Back to Menu</a>
     </div>
 
-    <h2 id="pageMainHeader">Reports & Analytics</h2>
+    <h2 class="card-header" id="pageMainHeader">Reports & Analytics</h2>
 
-    <div class="filter-box">
-        <label>🔍 Design Filter:</label>
-        <select id="designFilter" onchange="switchTab(currentTab)">
-            <option value="All">All Designs (மொத்தம்)</option>
-        </select>
+    <div class="form-section">
+        <div class="section-badge">Filter Records</div>
+        <div class="form-group">
+            <label>🔍 Select Design Number:</label>
+            <select id="designFilter" onchange="switchTab(currentTab)">
+                <option value="All">All Designs (மொத்தம்)</option>
+            </select>
+        </div>
     </div>
 
     <div class="report-tabs">
@@ -242,9 +313,9 @@
     <div class="report-header-bar">
         <span id="reportTitle">📊 Report Data</span>
         <div class="header-btns">
-            <button class="preview-btn" onclick="previewReport()">👁️ Preview</button>
-            <button class="print-btn" onclick="printReport()">🖨️ Print</button>
-            <button class="excel-btn" onclick="exportToExcel()">📥 Excel</button>
+            <button class="action-btn preview-btn" onclick="previewReport()">👁️ Preview</button>
+            <button class="action-btn print-btn" onclick="printReport()">🖨️ Print</button>
+            <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Excel</button>
         </div>
     </div>
 
@@ -252,17 +323,20 @@
         <table id="reportTable">
             <thead id="tableHead"></thead>
             <tbody id="tableBody"></tbody>
+            <tfoot id="tableFoot"></tfoot>
         </table>
     </div>
 </div>
 
-<div id="previewModal">
-    <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: flex-end; gap: 10px;">
-        <button onclick="exportToExcel()" style="background:#D97706; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Excel 📥</button>
-        <button onclick="window.print()" style="background:#10B981; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Print 🖨️</button>
-        <button onclick="document.getElementById('previewModal').style.display='none'" style="background:#EF4444; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Close ❌</button>
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Download Excel</button>
+            <button class="action-btn print-btn" onclick="window.print()">🖨️ Print Report</button>
+            <button class="close-btn" onclick="closePreviewModal()">Close ✕</button>
+        </div>
+        <div class="modal-body" id="previewContent"></div>
     </div>
-    <div id="previewContent" style="color: #000;"></div>
 </div>
 
 <script>
@@ -290,6 +364,24 @@ function loadDesignFilter() {
     select.innerHTML = html;
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+    loadDesignFilter();
+    
+    // Check URL parameters for direct routing (e.g., from Quick Status Tracking)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if(tabParam) {
+        if(tabParam === 'order' || tabParam === 'PartyOrders') currentTab = 'PartyOrders';
+        else if(tabParam === 'Weaving') currentTab = 'Weaving';
+        else if(tabParam === 'Dyeing') currentTab = 'Dyeing';
+        else if(tabParam === 'Warping') currentTab = 'Warping';
+        else if(tabParam === 'Washing') currentTab = 'Washing';
+        else if(tabParam === 'Despatch') currentTab = 'PartyOrders'; // or fallback
+    }
+    
+    switchTab(currentTab);
+});
+
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -302,9 +394,11 @@ function switchTab(tabName) {
     let titleElem = document.getElementById('reportTitle');
     let head = document.getElementById('tableHead');
     let body = document.getElementById('tableBody');
+    let foot = document.getElementById('tableFoot');
 
     head.innerHTML = '';
     body.innerHTML = '';
+    foot.innerHTML = '';
 
     if (tabName === 'PartyOrders') {
         titleElem.innerText = "📦 PARTY ORDERS Report";
@@ -322,40 +416,99 @@ function switchTab(tabName) {
         renderGenericTable(mappedData, filterVal, ['date', 'partyName', 'designNo', 'meters', 'poles']);
     } 
     else if (tabName === 'KoraStock') {
-        titleElem.innerText = "🧵 KORA / YARN STOCK Report";
-        head.innerHTML = `<tr><th>Date</th><th>Supplier</th><th>Count</th><th>Weight (Kg)</th></tr>`;
+        titleElem.innerText = "🧵 KORA YARN STOCK Report";
+        head.innerHTML = `<tr><th>Design No</th><th>Count</th><th>Total Inward (Kg)</th><th>Total Issued (Kg)</th><th>Balance (Kg)</th></tr>`;
         
-        let rawData = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
-        let mappedData = rawData.map(item => ({
-            date: item.date || '-',
-            supplier: item.supplier || '-',
-            count: item.count || '-',
-            weight: item.weight || '-'
-        }));
-        
-        renderGenericTable(mappedData, 'All', ['date', 'supplier', 'count', 'weight']);
+        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+
+        let designStockMap = new Map();
+
+        issues.forEach(item => {
+            let dNo = item.designNo || 'Unknown';
+            let cnt = item.count ? item.count.trim() : 'Unknown';
+            let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase();
+
+            if(!designStockMap.has(key)) {
+                designStockMap.set(key, {
+                    designNo: dNo,
+                    count: cnt,
+                    issuedWt: 0
+                });
+            }
+            designStockMap.get(key).issuedWt += parseFloat(item.issueWt) || 0;
+        });
+
+        let stockList = [];
+        designStockMap.forEach((val) => {
+            let inwardForCount = inwards.filter(i => (i.count || '').trim().toLowerCase() === val.count.toLowerCase()).reduce((s, x) => s + (parseFloat(x.weight) || 0), 0);
+            let bal = inwardForCount - val.issuedWt;
+
+            stockList.push({
+                designNo: val.designNo,
+                count: val.count,
+                inwardWt: inwardForCount,
+                issuedWt: val.issuedWt,
+                balance: bal
+            });
+        });
+
+        renderDesignStockTable(stockList, filterVal);
     } 
     else if (tabName === 'Dyeing') {
         titleElem.innerText = "🎨 DYEING Report";
-        head.innerHTML = `<tr><th>Date</th><th>Dyeing Unit</th><th>Design No</th><th>Type</th><th>Count</th><th>Colour</th><th>Issued Wt</th><th>Rcvd Wt</th></tr>`;
+        head.innerHTML = `<tr><th>Dyeing Unit</th><th>Design No</th><th>Kora Issue (Kg)</th><th>Dyeing Rcvd (Kg)</th><th>Bal / Ex (Kg)</th></tr>`;
         
-        let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
-        let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+        let koraIssues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        let dyeingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
         
-        let merged = issues.map(iss => {
-            let rec = receives.find(r => r.issueId == iss.id) || {};
-            return {
-                date: iss.date || rec.date || '-',
-                unit: iss.unit || '-',
-                designNo: iss.designNo || '-',
-                yarnType: iss.yarnType || 'Warp',
-                count: iss.count || '-',
-                color: iss.color || '-',
-                issuedWt: iss.issueWt || '-',
-                receivedWt: rec.receivedWt || 'Pending'
-            };
+        let unitDesignMap = new Map();
+
+        dyeingIssues.forEach(iss => {
+            let unitName = (iss.unit || iss.dyeingName || 'Unknown').trim();
+            let designNo = iss.designNo || '-';
+            let key = unitName.toLowerCase() + "_" + cleanDesignName(designNo);
+
+            if (!unitDesignMap.has(key)) {
+                unitDesignMap.set(key, {
+                    unit: unitName,
+                    designNo: designNo,
+                    koraWt: 0,
+                    dyeingWt: 0
+                });
+            }
+            unitDesignMap.get(key).dyeingWt += parseFloat(iss.issueWt) || 0;
         });
-        renderGenericTable(merged, filterVal, ['date', 'unit', 'designNo', 'yarnType', 'count', 'color', 'issuedWt', 'receivedWt']);
+
+        koraIssues.forEach(k => {
+            let unitName = (k.dyeingName || k.unit || 'Unknown').trim();
+            let designNo = k.designNo || '-';
+            let key = unitName.toLowerCase() + "_" + cleanDesignName(designNo);
+
+            if (!unitDesignMap.has(key)) {
+                unitDesignMap.set(key, {
+                    unit: unitName,
+                    designNo: designNo,
+                    koraWt: 0,
+                    dyeingWt: 0
+                });
+            }
+            unitDesignMap.get(key).koraWt += parseFloat(k.issueWt) || 0;
+        });
+
+        let mergedList = [];
+        unitDesignMap.forEach((val) => {
+            let diff = val.koraWt - val.dyeingWt;
+            mergedList.push({
+                unit: val.unit,
+                designNo: val.designNo,
+                koraIssueWt: val.koraWt,
+                dyeingIssueWt: val.dyeingWt,
+                diffVal: diff
+            });
+        });
+
+        renderDyeingReportTable(mergedList, filterVal);
     }
     else if (tabName === 'Warping') {
         titleElem.innerText = "📐 WARPING Report";
@@ -438,6 +591,138 @@ function switchTab(tabName) {
     }
 }
 
+function renderDesignStockTable(stockList, filterVal) {
+    let body = document.getElementById('tableBody');
+    let foot = document.getElementById('tableFoot');
+    body.innerHTML = '';
+    foot.innerHTML = '';
+
+    if (!stockList || stockList.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="no-data">No Kora stock issue records found.</td></tr>`;
+        return;
+    }
+
+    let filtered = stockList;
+    if (filterVal !== 'All') {
+        let cleanFilter = cleanDesignName(filterVal);
+        filtered = stockList.filter(item => cleanDesignName(item.designNo) === cleanFilter);
+    }
+
+    if (filtered.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
+        return;
+    }
+
+    let grandInward = 0;
+    let grandIssued = 0;
+
+    filtered.forEach(item => {
+        let inWt = item.inwardWt;
+        let iWt = item.issuedWt;
+        let bal = item.balance;
+
+        grandInward += inWt;
+        grandIssued += iWt;
+
+        let balDisplay = bal >= 0 ? `<span class="bal-positive">${bal.toFixed(3)}</span>` : `<span class="bal-negative">${bal.toFixed(3)}</span>`;
+
+        body.innerHTML += `
+            <tr>
+                <td><b>${item.designNo}</b></td>
+                <td>${item.count}</td>
+                <td>${inWt.toFixed(3)}</td>
+                <td>${iWt.toFixed(3)}</td>
+                <td>${balDisplay}</td>
+            </tr>
+        `;
+    });
+
+    let grandBal = grandInward - grandIssued;
+    let grandBalDisplay = grandBal >= 0 ? `<span class="bal-positive">${grandBal.toFixed(3)}</span>` : `<span class="bal-negative">${grandBal.toFixed(3)}</span>`;
+
+    foot.innerHTML = `
+        <tr>
+            <td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td>
+            <td><b>${grandInward.toFixed(3)}</b></td>
+            <td><b>${grandIssued.toFixed(3)}</b></td>
+            <td><b>${grandBalDisplay}</b></td>
+        </tr>
+    `;
+}
+
+function renderDyeingReportTable(dataList, filterVal) {
+    let body = document.getElementById('tableBody');
+    let foot = document.getElementById('tableFoot');
+    body.innerHTML = '';
+    foot.innerHTML = '';
+
+    if (!dataList || dataList.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="no-data">No dyeing records found.</td></tr>`;
+        return;
+    }
+
+    let filtered = dataList;
+    if (filterVal !== 'All') {
+        let cleanFilter = cleanDesignName(filterVal);
+        filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanFilter);
+    }
+
+    if (filtered.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
+        return;
+    }
+
+    let grandKoraWt = 0;
+    let grandDyeingWt = 0;
+
+    filtered.forEach(item => {
+        let kWt = item.koraIssueWt;
+        let dWt = item.dyeingIssueWt;
+        let diff = kWt - dWt;
+
+        grandKoraWt += kWt;
+        grandDyeingWt += dWt;
+
+        let diffDisplay = "-";
+        if (diff > 0) {
+            diffDisplay = `<span class="bal-positive">Bal: +${diff.toFixed(3)}</span>`;
+        } else if (diff < 0) {
+            diffDisplay = `<span class="bal-negative">Ex: ${diff.toFixed(3)}</span>`;
+        } else {
+            diffDisplay = `<span style="color:#10B981; font-weight:800;">Settled</span>`;
+        }
+
+        body.innerHTML += `
+            <tr>
+                <td><b>${item.unit}</b></td>
+                <td>${item.designNo}</td>
+                <td>${kWt.toFixed(3)}</td>
+                <td>${dWt.toFixed(3)}</td>
+                <td>${diffDisplay}</td>
+            </tr>
+        `;
+    });
+
+    let grandDiff = grandKoraWt - grandDyeingWt;
+    let grandDiffDisplay = "-";
+    if (grandDiff > 0) {
+        grandDiffDisplay = `<span class="bal-positive">Bal: +${grandDiff.toFixed(3)}</span>`;
+    } else if (grandDiff < 0) {
+        grandDiffDisplay = `<span class="bal-negative">Ex: ${grandDiff.toFixed(3)}</span>`;
+    } else {
+        grandDiffDisplay = `<span style="color:#10B981; font-weight:800;">Settled</span>`;
+    }
+
+    foot.innerHTML = `
+        <tr>
+            <td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td>
+            <td><b>${grandKoraWt.toFixed(3)}</b></td>
+            <td><b>${grandDyeingWt.toFixed(3)}</b></td>
+            <td><b>${grandDiffDisplay}</b></td>
+        </tr>
+    `;
+}
+
 function renderGenericTable(dataList, filterVal, keys) {
     let body = document.getElementById('tableBody');
     body.innerHTML = '';
@@ -454,7 +739,7 @@ function renderGenericTable(dataList, filterVal, keys) {
     }
 
     if (filtered.length === 0) {
-        body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for design: ${filterVal}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
         return;
     }
 
@@ -462,7 +747,9 @@ function renderGenericTable(dataList, filterVal, keys) {
         let rowHtml = '<tr>';
         keys.forEach(k => {
             let val = item[k] !== undefined && item[k] !== '' ? item[k] : '-';
-            if (val === 'Pending') val = `<span style="color:#D97706; font-weight:bold; font-size:9px;">Pending</span>`;
+            if (val === 'Pending') val = `<span class="pending-txt">Pending</span>`;
+            if (k === 'designNo') val = `<b>${val}</b>`;
+            if (k === 'amount') val = `<b>₹${val}</b>`;
             rowHtml += `<td>${val}</td>`;
         });
         rowHtml += '</tr>';
@@ -475,12 +762,12 @@ function previewReport() {
     let filterVal = document.getElementById('designFilter').value;
     let tableHtml = document.getElementById('reportTable').outerHTML;
     
-    let html = `<div style="text-align: center; margin-bottom: 20px;">`;
-    html += `<h2 style='color: #000; font-family: sans-serif; margin-bottom: 5px; font-size:18px;'>${title}</h2>`;
-    html += `<p style='font-family: sans-serif; font-size: 13px; margin-top: 0;'><b>Filter:</b> ${filterVal}</p>`;
+    let html = `<div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">`;
+    html += `<h2 style='color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-size:20px; font-weight:800; text-transform:uppercase;'>${title}</h2>`;
+    html += `<p style='font-family: sans-serif; font-size: 13px; margin-top: 0; color:#4A554A;'><b>Filter Applied:</b> ${filterVal}</p>`;
     html += `</div>`;
     
-    html += `<div id="printTableWrapper" style="color: #000;">${tableHtml}</div>`;
+    html += `<div id="printTableWrapper" style="color: #1E2B23;">${tableHtml}</div>`;
     
     document.getElementById('previewContent').innerHTML = html;
     
@@ -488,32 +775,48 @@ function previewReport() {
     if(previewTable) {
         previewTable.style.width = '100%';
         previewTable.style.borderCollapse = 'collapse';
-        previewTable.style.color = '#000';
+        previewTable.style.color = '#1E2B23';
         previewTable.style.fontFamily = 'sans-serif';
         previewTable.style.fontSize = '12px';
         
         let ths = previewTable.querySelectorAll('th');
         ths.forEach(th => {
-            th.style.border = '1px solid #000';
-            th.style.padding = '8px';
-            th.style.background = '#f2f2f2';
-            th.style.color = '#000';
+            th.style.border = '1px solid #D1DED1';
+            th.style.padding = '10px';
+            th.style.background = '#EAF0EA';
+            th.style.color = '#2F4F38';
             th.style.fontWeight = 'bold';
+            th.style.textTransform = 'uppercase';
         });
         
         let tds = previewTable.querySelectorAll('td');
         tds.forEach(td => {
-            td.style.border = '1px solid #000';
-            td.style.padding = '8px';
-            td.style.color = '#000';
+            td.style.border = '1px solid #E2E8E2';
+            td.style.padding = '10px';
+            td.style.color = '#1E2B23';
+        });
+
+        let tfoots = previewTable.querySelectorAll('tfoot td');
+        tfoots.forEach(td => {
+            td.style.background = '#F4F7F4';
+            td.style.fontWeight = 'bold';
+            td.style.borderTop = '2px solid #4A7C59';
         });
     }
 
-    document.getElementById('previewModal').style.display = 'block';
+    let modal = document.getElementById('previewModal');
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closePreviewModal() {
+    let modal = document.getElementById('previewModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
 }
 
 function printReport() {
-    if(document.getElementById('previewModal').style.display !== 'block') {
+    if(document.getElementById('previewModal').style.display !== 'flex') {
         previewReport();
     }
     setTimeout(() => {
@@ -532,7 +835,6 @@ function exportToExcel() {
 }
 </script>
 
-<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -562,14 +864,13 @@ function exportToExcel() {
         return null;
     }
 
-    // Sync Data on Load
     window.addEventListener('load', async function() {
         let mainHeader = document.getElementById('pageMainHeader');
         let origText = mainHeader.innerText;
-        mainHeader.innerText = "Syncing Cloud Data ☁️...";
+        mainHeader.innerText = "⏳ Syncing Cloud Data...";
 
         let collections = [
-            'party_orders_data', 'kora_stock_records', 'dyeing_issue_records', 'dyeing_receive_records',
+            'party_orders_data', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records',
             'warping_issue_records', 'warping_receive_records', 'weaving_master_data', 
             'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers'
         ];
@@ -582,7 +883,6 @@ function exportToExcel() {
         mainHeader.innerText = origText;
         
         loadDesignFilter();
-        switchTab('PartyOrders');
     });
 </script>
 </body>

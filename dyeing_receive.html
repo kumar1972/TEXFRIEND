@@ -10,198 +10,254 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
+    /* 📌 Smart Background - STRICTLY NO BLACK */
     html, body { 
-        width: 100%;
-        min-height: 100vh;
-        background: #DCE0DB; 
-        color: #1E2B23; 
+        width: 100%; 
+        min-height: 100vh; 
+        background: #EAF0EA; 
+        color: #1E2B23; /* Deep Dark Green */
     }
 
     body { 
         padding: 12px; 
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
+    /* 📌 Main Container */
     .main-card {
         width: 100%;
-        max-width: 100%;
+        max-width: 900px;
         margin: 0;
-        background: #E8ECE7;
-        border: 1px solid rgba(130, 59, 78, 0.2);
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        background: #FFFFFF;
+        border: 1px solid rgba(82, 110, 81, 0.15);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 15px;
     }
 
     .top-nav { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        margin-bottom: 4px; 
+        margin-bottom: 5px; 
     }
 
+    /* 📌 Smart Back Button */
     .back-btn {
-        display: inline-block;
-        color: #823B4E;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFFFFF;
         text-decoration: none;
         font-weight: 600;
-        font-size: 10px;
-        background: rgba(130, 59, 78, 0.1);
-        padding: 6px 10px;
-        border-radius: 5px;
-        border: 1px solid rgba(130, 59, 78, 0.3);
+        font-size: 11px;
+        background: #1A2421; 
+        padding: 8px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+    .card-header {
+        font-size: 16px;
+        margin-bottom: 5px;
+        font-weight: 700;
+        color: #2F4F38;
+        text-align: left;
+        position: relative;
+        padding-left: 12px;
+    }
+    .card-header::before {
+        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+        background: #4A7C59; border-radius: 4px;
     }
 
-    h3 {
-        font-size: 14px;
-        color: #823B4E;
+    /* 📌 Smart Sectioning */
+    .form-section {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 14px;
+        padding: 20px 15px 15px 15px;
+        margin-bottom: 5px;
+        position: relative;
+    }
+    
+    .section-badge {
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: #4A7C59;
+        color: #FFF;
+        font-size: 10px;
         font-weight: 700;
-        margin-bottom: 6px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid rgba(130, 59, 78, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
     .form-group label {
         font-size: 10px;
         font-weight: 600;
-        color: #823B4E;
+        color: #4A554A;
+        white-space: nowrap;
     }
 
+    /* 📌 Smart 3D Inputs */
     input, select {
         width: 100%;
-        padding: 10px;
+        padding: 10px 12px;
         border-radius: 8px;
-        border: 1px solid rgba(130, 59, 78, 0.3);
+        border: 1px solid #D1DED1;
         background: #FFFFFF;
         color: #1E2B23;
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
     }
 
     input:focus, select:focus {
-        border-color: #823B4E;
+        border-color: #4A7C59;
         outline: none;
+        background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
 
-    input[readonly] {
-        background: #F0EAEB;
-        color: #823B4E;
-        border: 1px solid rgba(130, 59, 78, 0.2);
+    input[readonly] { background: #F4F7F4; color: #4A7C59; border: 1px solid #D1DED1; }
+
+    /* Custom Checkbox Container */
+    .checkbox-container {
+        background: #FFFFFF; padding: 12px 15px; border-radius: 10px; 
+        margin-bottom: 15px; display: flex; align-items: center; 
+        justify-content: space-between; border: 1px dashed #A0AFA0;
     }
 
-    /* Grid Updated for Dyeing Unit Column */
-    .receive-grid-header {
+    /* 📌 Row-wise Item Entry Grid */
+    .item-row {
         display: grid;
-        grid-template-columns: 0.6fr 1fr 1.5fr 1fr 1fr 1fr 0.8fr 0.9fr;
-        gap: 4px;
-        padding: 0 4px;
-        margin-bottom: 6px;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        background: #FFFFFF;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #D1DED1;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        position: relative;
     }
 
-    .receive-grid-header div {
-        font-size: 9px;
-        font-weight: 700;
-        color: #823B4E;
-        text-align: center;
-    }
+    .item-col-group { display: flex; flex-direction: column; gap: 3px; }
+    .item-col-group.full-width { grid-column: span 2; }
+    .item-col-group label { font-size: 9px; color: #3F5A3E; font-weight: 600; }
+    .item-col-group input { padding: 8px 10px; text-align: left; }
 
-    .line-row {
-        display: grid;
-        grid-template-columns: 0.6fr 1fr 1.5fr 1fr 1fr 1fr 0.8fr 0.9fr;
-        gap: 4px;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    
-    .line-row input {
-        padding: 8px 2px;
-        font-size: 10px;
-        text-align: center;
-    }
-
-    .save-main-btn {
-        background: #823B4E; 
-        color: white; 
-        width: 100%; 
-        padding: 12px; 
-        border: none;
-        border-radius: 8px; 
-        font-size: 13px; 
-        font-weight: bold; 
-        cursor: pointer;
-        margin-top: 10px; 
-        box-shadow: 0 4px 12px rgba(130, 59, 78, 0.2);
-    }
-    .save-main-btn:hover { background: #6A2F3E; }
-
-    .list-header {
-        font-size: 12px;
-        font-weight: 700;
-        color: #823B4E;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 2px solid rgba(130, 59, 78, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-
-    .table-container {
-        margin-top: 10px;
-        overflow-x: auto;
-        border-radius: 8px;
-        border: 1px solid rgba(130, 59, 78, 0.2);
-    }
-
-    table {
+    /* 📌 Smart Buttons */
+    .btn-main {
         width: 100%;
-        border-collapse: collapse;
-        font-size: 10px;
-        text-align: center;
-        background: #EBE5E6;
-    }
-
-    th {
-        background: #DBCBCD;
-        color: #823B4E;
-        padding: 8px 4px;
-        border-bottom: 1px solid rgba(130, 59, 78, 0.3);
+        padding: 14px;
+        margin: 10px 0 0 0;
+        border: none;
+        border-radius: 10px;
+        color: white;
         font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #4A7C59, #33593D);
+        box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+    .btn-main:active { transform: translateY(1px); }
+
+    .popup-trigger-btn {
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        color: white; border: none; padding: 14px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+    }
+    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+
+    /* 📌 Advanced Pop-up Modal Styling */
+    .overlay-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .overlay-modal.show { opacity: 1; }
+    
+    .modal-content {
+        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .overlay-modal.show .modal-content { transform: scale(1); }
+
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+    }
+    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+
+    /* 📌 Advanced Table Design with Horizontal Scroll */
+    .table-container {
+        width: 100%; border-radius: 10px; overflow-x: auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+        -webkit-overflow-scrolling: touch;
     }
 
-    td {
-        padding: 8px 4px;
-        border-bottom: 1px solid rgba(130, 59, 78, 0.15);
-        color: #1E2B23;
-        font-weight: 500;
-    }
-    
-    .excess-text { color: #D32F2F; font-weight: 700; }
-    
-    .action-btns {
-        display: flex;
-        gap: 4px;
-        justify-content: center;
-    }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #F8FAF8; }
 
-    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-    .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    tfoot td {
+        background: #F4F7F4;
+        color: #2F4F38;
+        font-weight: 700;
+        border-top: 2px solid #D1DED1;
+        position: sticky; bottom: 0; z-index: 10;
+    }
+    
+    .action-btns { display: flex; gap: 6px; justify-content: center; }
+    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+    .edit-action-btn:hover { background: #475569; }
+    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+
+    .excess-text { color: #DC2626; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -211,67 +267,79 @@
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
     </div>
 
-    <h3>📥 Dyeing Colour Received & Loss</h3>
+    <h2 class="card-header">Dyeing Colour Received</h2>
 
-    <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="receiveDate">
-    </div>
-
-    <div class="form-group">
-        <label>Select Design Number</label>
-        <select id="designNumber" onchange="loadPendingItems()">
-            <option value="">Select Design No</option>
-        </select>
-    </div>
-
-    <!-- 📌 TOGGLE OPTION: Combine Same Count & Colour -->
-    <div style="background: rgba(130, 59, 78, 0.1); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
-        <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #823B4E; cursor: pointer;">🔗 Combine Same Count, Colour & Unit</label>
-        <input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width: 18px; height: 18px; accent-color: #823B4E; cursor: pointer;">
-    </div>
-
-    <!-- Scrollable container for mobile to fit 8 columns -->
-    <div style="margin-top: 10px; overflow-x: auto; padding-bottom: 10px;">
-        <div style="min-width: 650px;">
-            <div class="receive-grid-header">
-                <div>Count</div>
-                <div>Colour</div>
-                <div>Dyeing Unit</div>
-                <div>Issued Wt</div>
-                <div>Rcvd Wt</div>
-                <div>Loss Wt</div>
-                <div>Loss %</div>
-                <div>Excess(>5%)</div>
+    <!-- 📌 Section: Receive Info -->
+    <div class="form-section" style="margin-top: 10px;">
+        <div class="section-badge">Receive Info</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Received Date</label>
+                <input type="date" id="receiveDate">
             </div>
-            <div id="receiveLinesContainer"></div>
+            <div class="form-group">
+                <label>Select Design Number</label>
+                <select id="designNumber" onchange="loadPendingItems()">
+                    <option value="">Select Design No</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <button class="save-main-btn" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">Save Received Entry</button>
+    <!-- 📌 Section: Yarn Details -->
+    <div class="form-section" style="background: transparent; border: none; padding: 0;">
+        <div class="section-badge" style="top: -15px; left: 0;">Receiving Items</div>
+        
+        <div class="checkbox-container" style="margin-top: 20px;">
+            <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #4A7C59; cursor: pointer; margin:0;">🔗 Combine Same Count, Colour & Unit</label>
+            <input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width: 18px; height: 18px; accent-color: #4A7C59; cursor: pointer;">
+        </div>
 
-    <div class="list-header">📊 Received & Loss Records</div>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Design</th>
-                    <th>Count</th>
-                    <th>Colour</th>
-                    <th>Dyeing Unit</th>
-                    <th>Issued Wt</th>
-                    <th>Rcvd Wt</th>
-                    <th>Loss Wt</th>
-                    <th>Loss %</th>
-                    <th>Excess Wt</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="receivedListBody">
-                <!-- Records go here -->
-            </tbody>
-        </table>
+        <div id="receiveLinesContainer">
+            <!-- Items dynamically added here -->
+        </div>
+    </div>
+
+    <button class="btn-main" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">✅ Save Received Entry</button>
+
+    <!-- 📌 Popup Trigger Button -->
+    <button class="popup-trigger-btn" onclick="openModal('receivedListModal')">📊 View Received Records</button>
+</div>
+
+<!-- Full-Screen Pop-up Modal for Received Records List -->
+<div id="receivedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 Received & Loss Records</h3>
+            <button class="close-btn" onclick="closeModal('receivedListModal')">Close ✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Design</th>
+                            <th>Count</th>
+                            <th>Colour</th>
+                            <th>Dyeing Unit</th>
+                            <th>Issued Wt</th>
+                            <th>Rcvd Wt</th>
+                            <th>Loss Wt</th>
+                            <th>Loss %</th>
+                            <th>Excess Wt</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receivedListBody">
+                        <!-- Records go here -->
+                    </tbody>
+                    <tfoot id="receivedListFoot">
+                        <!-- Grand Total goes here -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -281,6 +349,18 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPendingDesigns();
     renderReceivedList();
 });
+
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
 
 function loadPendingDesigns() {
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -314,7 +394,6 @@ function loadPendingItems() {
         if (isCombineChecked) {
             let map = new Map();
             pendingItems.forEach(item => {
-                // Modified Combine Logic: Now includes dyeing unit name to prevent merging different units
                 let key = item.count.toLowerCase().trim() + '_' + item.color.toLowerCase().trim() + '_' + (item.unit || '').toLowerCase().trim();
                 if (!map.has(key)) {
                     map.set(key, {
@@ -342,29 +421,29 @@ function loadPendingItems() {
 
         displayList.forEach(item => {
             let row = document.createElement('div');
-            row.className = 'line-row';
+            row.className = 'item-row';
             row.setAttribute('data-ids', item.ids.join(','));
             row.setAttribute('data-unit', item.unit);
             
             row.innerHTML = `
-                <input type="text" class="inp-count" value="${item.count}" readonly title="${item.count}">
-                <input type="text" class="inp-color" value="${item.color}" readonly title="${item.color}">
-                <input type="text" class="inp-unit" value="${item.unit}" readonly title="${item.unit}">
-                <input type="text" class="inp-issued" value="${item.issueWt.toFixed(3)}" readonly>
-                <input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)">
-                <input type="text" class="inp-loss-wt" placeholder="0.000" readonly>
-                <input type="text" class="inp-loss-perc" placeholder="0%" readonly>
-                <input type="text" class="inp-excess-wt" placeholder="-" readonly>
+                <div class="item-col-group"><label>Count</label><input type="text" class="inp-count" value="${item.count}" readonly title="${item.count}"></div>
+                <div class="item-col-group"><label>Colour</label><input type="text" class="inp-color" value="${item.color}" readonly title="${item.color}"></div>
+                <div class="item-col-group full-width"><label>Dyeing Unit</label><input type="text" class="inp-unit" value="${item.unit}" readonly title="${item.unit}"></div>
+                <div class="item-col-group"><label>Issued Wt (Kg)</label><input type="text" class="inp-issued" value="${item.issueWt.toFixed(3)}" readonly></div>
+                <div class="item-col-group"><label>Received Wt (Kg)</label><input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)"></div>
+                <div class="item-col-group"><label>Loss Wt</label><input type="text" class="inp-loss-wt" placeholder="0.000" readonly style="color:#D97706; font-weight:bold;"></div>
+                <div class="item-col-group"><label>Loss %</label><input type="text" class="inp-loss-perc" placeholder="0%" readonly></div>
+                <div class="item-col-group full-width"><label>Excess Wt (>5%)</label><input type="text" class="inp-excess-wt" placeholder="-" readonly style="color:#10B981; font-weight:bold;"></div>
             `;
             container.appendChild(row);
         });
     } else {
-        container.innerHTML = '<div style="font-size:11px; text-align:center; padding:10px; color:#823B4E;">No pending issues found for this Design.</div>';
+        container.innerHTML = '<div style="font-size:11px; text-align:center; padding:15px; color:#4A7C59; background:#FFFFFF; border-radius:10px; border:1px solid #D1DED1;">No pending issues found for this Design.</div>';
     }
 }
 
 function calculateLoss(inp) {
-    let row = inp.parentElement;
+    let row = inp.closest('.item-row');
     let issuedWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
     let receivedWt = parseFloat(inp.value) || 0;
 
@@ -384,12 +463,12 @@ function calculateLoss(inp) {
             let excessWt = lossWt - allowedLossWt;
             
             excessWtInp.value = excessWt.toFixed(3);
-            excessWtInp.style.color = "#D32F2F"; 
+            excessWtInp.style.color = "#DC2626"; // Red for excess
             excessWtInp.style.fontWeight = "bold";
         } else {
             excessWtInp.value = "-";
-            excessWtInp.style.color = "#823B4E";
-            excessWtInp.style.fontWeight = "500";
+            excessWtInp.style.color = "#10B981"; // Green for safe
+            excessWtInp.style.fontWeight = "bold";
         }
     } else if (receivedWt > issuedWt) {
         lossWtInp.value = "0.000";
@@ -399,7 +478,7 @@ function calculateLoss(inp) {
         lossWtInp.value = "";
         lossPercInp.value = "";
         excessWtInp.value = "";
-        excessWtInp.style.color = "#823B4E";
+        excessWtInp.style.color = "#10B981";
     }
 }
 
@@ -413,12 +492,12 @@ async function saveReceiveEntry() {
         return;
     }
 
-    let rows = document.querySelectorAll('#receiveLinesContainer .line-row');
+    let rows = document.querySelectorAll('#receiveLinesContainer .item-row');
     if(rows.length === 0) return;
 
     let btn = document.getElementById('saveReceiveBtnTxt');
     let origText = btn.innerText;
-    btn.innerText = "Saving ☁️...";
+    btn.innerText = "⏳ Saving to Cloud...";
 
     let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -438,11 +517,10 @@ async function saveReceiveEntry() {
             let excessVal = row.querySelector('.inp-excess-wt').value;
             let finalExcess = (excessVal && excessVal !== "-") ? parseFloat(excessVal).toFixed(3) : "-";
 
-            // Save each linked issue ID as part of the received entry group
             receives.push({
                 id: Date.now() + Math.random(),
                 issueIds: recIds,
-                issueId: recIds[0], // backward compatibility
+                issueId: recIds[0], 
                 date: dateVal,
                 unit: unitName,
                 designNo: dNo,
@@ -455,7 +533,6 @@ async function saveReceiveEntry() {
                 excessWt: finalExcess
             });
 
-            // Mark all associated issues as Received
             recIds.forEach(id => {
                 let issueIndex = issues.findIndex(r => String(r.id) === String(id));
                 if(issueIndex !== -1) {
@@ -488,6 +565,7 @@ async function saveReceiveEntry() {
 
 // 📌 FIREBASE SYNC: editReceiveRecord
 async function editReceiveRecord(recId) {
+    closeModal('receivedListModal');
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     
@@ -496,7 +574,6 @@ async function editReceiveRecord(recId) {
         let record = receives[index];
         let targetIds = record.issueIds || [record.issueId];
         
-        // Revert status of all linked issues back to Pending
         targetIds.forEach(id => {
             let issueIndex = issues.findIndex(iss => String(iss.id) === String(id));
             if(issueIndex !== -1) {
@@ -521,10 +598,9 @@ async function editReceiveRecord(recId) {
         loadPendingItems();
         
         setTimeout(() => {
-            let rows = document.querySelectorAll('#receiveLinesContainer .line-row');
+            let rows = document.querySelectorAll('#receiveLinesContainer .item-row');
             rows.forEach(row => {
                 let rowIds = row.getAttribute('data-ids') ? row.getAttribute('data-ids').split(',') : [];
-                // Check if any ID overlaps
                 let hasMatch = rowIds.some(id => targetIds.includes(id));
                 if(hasMatch) {
                     let rcvInp = row.querySelector('.inp-received');
@@ -578,17 +654,34 @@ async function deleteReceiveRecord(recId) {
 function renderReceivedList() {
     let receiveRecords = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let tbody = document.getElementById('receivedListBody');
+    let tfoot = document.getElementById('receivedListFoot');
     tbody.innerHTML = '';
+    tfoot.innerHTML = '';
 
     if(receiveRecords.length === 0) {
         tbody.innerHTML = `<tr><td colspan="11" style="padding:15px;">No Dyeing Orders Received yet.</td></tr>`;
         return;
     }
 
+    let gIssued = 0;
+    let gRcvd = 0;
+    let gLoss = 0;
+    let gExcess = 0;
+
     receiveRecords.slice().reverse().forEach(record => {
         let dObj = new Date(record.date);
         let dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
         
+        let iWt = parseFloat(record.issuedWt) || 0;
+        let rWt = parseFloat(record.receivedWt) || 0;
+        let lWt = parseFloat(record.lossWt) || 0;
+        let eWt = (record.excessWt && record.excessWt !== "-") ? parseFloat(record.excessWt) || 0 : 0;
+
+        gIssued += iWt;
+        gRcvd += rWt;
+        gLoss += lWt;
+        gExcess += eWt;
+
         let excessDisplay = record.excessWt && record.excessWt !== "-" 
             ? `<span class="excess-text">${record.excessWt}</span>` 
             : "-";
@@ -596,13 +689,13 @@ function renderReceivedList() {
         tbody.innerHTML += `
             <tr>
                 <td>${dateStr}</td>
-                <td>${record.designNo}</td>
+                <td><b>${record.designNo}</b></td>
                 <td>${record.count}</td>
                 <td>${record.color}</td>
                 <td><b>${record.unit || '-'}</b></td>
-                <td>${record.issuedWt}</td>
-                <td>${record.receivedWt}</td>
-                <td>${record.lossWt}</td>
+                <td>${iWt.toFixed(3)}</td>
+                <td><b style="color:#10B981;">${rWt.toFixed(3)}</b></td>
+                <td>${lWt.toFixed(3)}</td>
                 <td>${record.lossPerc}</td>
                 <td>${excessDisplay}</td>
                 <td class="action-btns">
@@ -612,6 +705,18 @@ function renderReceivedList() {
             </tr>
         `;
     });
+
+    tfoot.innerHTML = `
+        <tr>
+            <td colspan="5" style="text-align: right; padding: 10px;">Grand Total:</td>
+            <td><b>${gIssued.toFixed(3)}</b></td>
+            <td><b style="color:#10B981;">${gRcvd.toFixed(3)}</b></td>
+            <td><b>${gLoss.toFixed(3)}</b></td>
+            <td>-</td>
+            <td><b style="color:#DC2626;">${gExcess > 0 ? gExcess.toFixed(3) : '-'}</b></td>
+            <td></td>
+        </tr>
+    `;
 }
 </script>
 
@@ -655,8 +760,8 @@ function renderReceivedList() {
 
     window.addEventListener('load', async function() {
         let btn = document.getElementById('saveReceiveBtnTxt');
-        let origText = btn ? btn.innerText : "Save Received Entry";
-        if(btn) btn.innerText = "Syncing ☁️...";
+        let origText = btn ? btn.innerText : "✅ Save Received Entry";
+        if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
         let collections = ['dyeing_receive_records', 'dyeing_issue_records', 'pre_design_numbers'];
         

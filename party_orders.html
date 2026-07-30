@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PARTY ORDERS - TEXFRIEND</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        html, body { 
+            width: 100%;
+            min-height: 100vh;
+            background: #EAF0EA; /* Softer smart background */
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0;
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        /* 📌 Smart Black Button Layout for Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        #bitmapDisplayContainer { text-align: right; }
+        #bitmapDisplayContainer img {
+            max-height: 45px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        .card-header {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .card-header::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
+
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4A554A;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D1DED1;
+            border-radius: 8px;
+            font-size: 11px;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        input:focus, select:focus {
+            border-color: #4A7C59;
+            outline: none;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+        
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
+
+        /* 📌 Smart Buttons */
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 0 0;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-main:active { transform: translateY(1px); }
+
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        .popup-trigger-btn:active { transform: translateY(1px); }
+
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); /* Darker smart overlay */
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            flex-direction: column;
+            padding: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF;
+            width: 100%; height: 100%;
+            border-radius: 16px;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: #F4F7F4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+
+        /* 📌 Advanced Table Design */
+        .excel-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            font-size: 11px; background: #FFFFFF; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2;
+        }
+        .excel-table th, .excel-table td { padding: 10px; text-align: left; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        .excel-table th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+        .excel-table tr:last-child td { border-bottom: none; }
+        .excel-table tbody tr:hover { background: #F8FAF8; }
+
+        .action-cell { display: flex; flex-direction: row; gap: 5px; align-items: center; }
+
+        .action-btn {
+            border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease;
+        }
+        .action-del { background: #EF4444; } .action-del:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+        .action-edit { background: #64748B; } .action-edit:hover { background: #475569; box-shadow: 0 2px 5px rgba(71, 85, 105, 0.3); }
+        .action-complete { background: #10B981; } .action-complete:hover { background: #059669; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); }
+        .action-running { background: #F59E0B; } .action-running:hover { background: #D97706; box-shadow: 0 2px 5px rgba(217, 119, 6, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+            <div id="bitmapDisplayContainer"></div>
+        </div>
+        
+        <h2 class="card-header">Create Party Order</h2>
+
+        <form id="partyOrderForm" onsubmit="savePartyOrder(event)">
+            
+            <!-- Section 1: Order Details -->
+            <div class="form-section" style="margin-top: 10px;">
+                <div class="section-badge">Order Info</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Order Date</label>
+                        <input type="date" id="orderDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Date</label>
+                        <input type="date" id="deliveryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Party Name</label>
+                        <input type="text" id="partyName" placeholder="Enter Party Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PO Number</label>
+                        <input type="text" id="poNumber" placeholder="Enter PO No" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Design Specifications -->
+            <div class="form-section">
+                <div class="section-badge">Design Specs</div>
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Design Number</label>
+                        <select id="designNumber" onchange="onDesignSelect(this.value)" required>
+                            <option value="">Select Design</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Warp Count</label>
+                        <input type="text" id="warpCount" placeholder="Warp">
+                    </div>
+                    <div class="form-group">
+                        <label>Weft Count</label>
+                        <input type="text" id="weftCount" placeholder="Weft">
+                    </div>
+                    <div class="form-group">
+                        <label>Reed</label>
+                        <input type="text" id="reed" placeholder="Reed" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Pick</label>
+                        <input type="text" id="pick" placeholder="Pick" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Width</label>
+                        <input type="text" id="width" placeholder="Width" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weave Type</label>
+                        <input type="text" id="weaveType" placeholder="Weave Type" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Commercials -->
+            <div class="form-section">
+                <div class="section-badge">Commercials</div>
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="form-group">
+                        <label>Total Order Meters</label>
+                        <input type="number" step="0.01" id="orderMtr" placeholder="0.00 Mtrs" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rate / Meter (₹)</label>
+                        <input type="number" step="0.01" id="rateMtr" placeholder="₹ 0.00" required>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="saveBtn" class="btn-main">✅ Save Order Details</button>
+        </form>
+
+        <button type="button" class="popup-trigger-btn" onclick="openModal('savedOrdersModal')">📊 View Saved Orders Data</button>
+    </div>
+
+    <!-- 📌 Full-Screen Pop-up Modal for Saved Orders -->
+    <div id="savedOrdersModal" class="overlay-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📊 Saved Orders Registry</h3>
+                <button class="close-btn" onclick="closeModal('savedOrdersModal')">Close ✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="overflow-x: auto;">
+                    <table id="partyOrderTable" class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Party Name</th>
+                                <th>PO No</th>
+                                <th>Design No</th>
+                                <th>Order Mtr</th>
+                                <th>Rate/Mtr</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        let editingId = null;
+        
+        function openModal(modalId) {
+            let modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            // Slight delay to allow display block to apply before adding show class for animation
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal(modalId) {
+            let modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300); // match transition duration
+        }
+
+        function loadBitmapImage() {
+            let activeDesign = localStorage.getItem('selected_design_number');
+            let designSelect = document.getElementById('designNumber');
+            if(designSelect && designSelect.value) {
+                activeDesign = designSelect.value;
+            }
+            
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+            
+            if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+                bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+            } else {
+                bitmapContainer.innerHTML = '';
+            }
+        }
+
+        function onDesignSelect(val) {
+            loadBitmapImage();
+            if(val) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                let specs = designSpecs[val] || { warp: '', weft: '', reed: '', pick: '' };
+                document.getElementById('warpCount').value = specs.warp || '';
+                document.getElementById('weftCount').value = specs.weft || '';
+                document.getElementById('reed').value = specs.reed || '';
+                document.getElementById('pick').value = specs.pick || '';
+            } else {
+                document.getElementById('warpCount').value = '';
+                document.getElementById('weftCount').value = '';
+                document.getElementById('reed').value = '';
+                document.getElementById('pick').value = '';
+            }
+        }
+
+        // 📌 FIREBASE SYNC: savePartyOrder
+        async function savePartyOrder(e) {
+            e.preventDefault();
+            const orderData = {
+                id: editingId !== null ? editingId : Date.now(),
+                date: document.getElementById('orderDate').value,
+                partyName: document.getElementById('partyName').value.trim(),
+                poNo: document.getElementById('poNumber').value.trim(),
+                designNumber: document.getElementById('designNumber').value,
+                warpCount: document.getElementById('warpCount').value.trim(),
+                weftCount: document.getElementById('weftCount').value.trim(),
+                reed: document.getElementById('reed').value.trim(),
+                pick: document.getElementById('pick').value.trim(),
+                width: document.getElementById('width').value.trim(),
+                weaveType: document.getElementById('weaveType').value.trim(),
+                orderMtr: document.getElementById('orderMtr').value.trim(),
+                rateMtr: document.getElementById('rateMtr').value.trim(),
+                deliveryDate: document.getElementById('deliveryDate').value,
+                status: editingId !== null ? (partyOrders.find(x => x.id === editingId)?.status || 'running') : 'running'
+            };
+
+            let btn = document.getElementById('saveBtn');
+            let origText = btn.innerText;
+            btn.innerText = "⏳ Saving to Cloud...";
+
+            if(editingId !== null) {
+                let index = partyOrders.findIndex(x => x.id === editingId);
+                if(index > -1) {
+                    partyOrders[index] = orderData;
+                }
+                editingId = null;
+                alert("Party Order updated to Cloud successfully! ✅☁️");
+            } else {
+                partyOrders.push(orderData);
+                alert("Party Order saved to Cloud successfully! ✅☁️");
+            }
+
+            localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+            
+            if (window.firebaseSave) {
+                await window.firebaseSave('party_orders_data', partyOrders);
+            }
+
+            updatePartyTable();
+            
+            document.getElementById('partyOrderForm').reset();
+            document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+            
+            var activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign) {
+                document.getElementById('designNumber').value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+            loadBitmapImage();
+            btn.innerText = "✅ Save Order Details";
+        }
+
+        function editOrder(id) {
+            closeModal('savedOrdersModal'); // 📌 Close modal when clicking edit
+            let item = partyOrders.find(x => x.id === id);
+            if(!item) return;
+
+            editingId = id;
+            document.getElementById('orderDate').value = item.date || '';
+            document.getElementById('deliveryDate').value = item.deliveryDate || '';
+            document.getElementById('partyName').value = item.partyName || '';
+            document.getElementById('poNumber').value = item.poNo || '';
+            document.getElementById('designNumber').value = item.designNumber || '';
+            document.getElementById('warpCount').value = item.warpCount || '';
+            document.getElementById('weftCount').value = item.weftCount || '';
+            document.getElementById('reed').value = item.reed || '';
+            document.getElementById('pick').value = item.pick || '';
+            document.getElementById('width').value = item.width || '';
+            document.getElementById('weaveType').value = item.weaveType || '';
+            document.getElementById('orderMtr').value = item.orderMtr || '';
+            document.getElementById('rateMtr').value = item.rateMtr || '';
+
+            document.getElementById('saveBtn').innerText = "🔄 Update Order Details";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            loadBitmapImage();
+        }
+
+        function updatePartyTable() {
+            partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+            const tbody = document.querySelector('#partyOrderTable tbody');
+            tbody.innerHTML = '';
+            partyOrders.slice().reverse().forEach(item => {
+                let statusColor = item.status == 'running' ? '#F59E0B' : '#10B981';
+                let statusBtn = item.status == 'running' 
+                    ? `<button class="action-btn action-complete" onclick="toggleStatus(${item.id}, 'completed')">Complete</button>` 
+                    : `<button class="action-btn action-running" onclick="toggleStatus(${item.id}, 'running')">Running</button>`;
+                
+                let row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td><b>${item.partyName}</b></td>
+                    <td>${item.poNo}</td>
+                    <td><b style="color:#2F4F38;">${item.designNumber}</b></td>
+                    <td>${item.orderMtr}</td>
+                    <td>₹${item.rateMtr}</td>
+                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
+                    <td>
+                        <div class="action-cell">
+                            ${statusBtn}
+                            <button class="action-btn action-edit" onclick="editOrder(${item.id})">Edit</button>
+                            <button class="action-btn action-del" onclick="deleteOrder(${item.id})">Del</button>
+                        </div>
+                    </td>
+                `;
+            });
+        }
+
+        // 📌 FIREBASE SYNC: toggleStatus
+        async function toggleStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Indha order-ai Completed-aga maatranuma?" : "Indha order-ai Running-ku maatranuma?";
+            if(confirm(msg)) {
+                partyOrders = partyOrders.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                
+                if (window.firebaseSave) {
+                    await window.firebaseSave('party_orders_data', partyOrders);
+                }
+
+                updatePartyTable();
+            }
+        }
+
+        // 📌 FIREBASE SYNC: deleteOrder
+        async function deleteOrder(id) {
+            if(confirm("Indha order-ai delete pannanuma?")){
+                partyOrders = partyOrders.filter(x => x.id !== id);
+                localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                
+                if (window.firebaseSave) {
+                    await window.firebaseSave('party_orders_data', partyOrders);
+                }
+
+                updatePartyTable();
+            }
+        }
+    </script>
+
+    <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+            authDomain: "texfriend.firebaseapp.com",
+            projectId: "texfriend",
+            storageBucket: "texfriend.appspot.com",
+            messagingSenderId: "331673079578",
+            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+            measurementId: "G-2NP13ZTKCN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseSave = async function(key, data) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
+            } catch (e) {
+                console.error("Firebase Save Error: ", e);
+            }
+        }
+
+        window.firebaseLoad = async function(key) {
+            try {
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                if (docSnap.exists()) {
+                    return JSON.parse(docSnap.data().content);
+                }
+            } catch (e) {
+                console.error("Firebase Load Error: ", e);
+            }
+            return null;
+        }
+
+        // Sync Data on Load
+        window.addEventListener('load', async function() {
+            let btn = document.getElementById('saveBtn');
+            let origText = btn ? btn.innerText : "✅ Save Order Details";
+            if(btn) btn.innerText = "⏳ Syncing Cloud...";
+
+            let collections = ['party_orders_data', 'pre_design_numbers', 'design_specs'];
+            
+            for(let col of collections) {
+                let data = await window.firebaseLoad(col);
+                if (data) localStorage.setItem(col, JSON.stringify(data));
+            }
+
+            if(btn) btn.innerText = origText;
+            
+            document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+            
+            var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            var designSelect = document.getElementById('designNumber');
+            var html = '<option value="">Select Design</option>';
+            preDesignList.forEach(function(d) {
+                html += '<option value="' + d + '">' + d + '</option>';
+            });
+            designSelect.innerHTML = html;
+
+            var activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign) {
+                designSelect.value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+
+            partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+            updatePartyTable();
+            loadBitmapImage();
+        });
+    </script>
+</body>
+</html>

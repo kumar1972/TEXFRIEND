@@ -10,256 +10,286 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
+    /* 📌 Smart Background - STRICTLY NO BLACK */
     html, body { 
-        width: 100%;
-        min-height: 100vh;
-        background: #E4EBE4; 
-        color: #1E2B23; 
+        width: 100%; 
+        min-height: 100vh; 
+        background: #EAF0EA; 
+        color: #1E2B23; /* Deep Dark Green */
     }
 
     body { 
         padding: 12px; 
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
+    /* 📌 Main Container */
     .main-card {
         width: 100%;
-        max-width: 100%;
+        max-width: 900px;
         margin: 0;
-        background: #F0F4F0;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-        border-radius: 16px;
-        padding: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        background: #FFFFFF;
+        border: 1px solid rgba(82, 110, 81, 0.15);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 15px;
     }
 
     .top-nav { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        margin-bottom: 4px; 
+        margin-bottom: 5px; 
     }
 
+    /* 📌 Smart Back Button */
     .back-btn {
-        display: inline-block;
-        color: #3F5A3E;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFFFFF;
         text-decoration: none;
         font-weight: 600;
-        font-size: 10px;
-        background: rgba(82, 110, 81, 0.15);
-        padding: 6px 10px;
-        border-radius: 5px;
-        border: 1px solid rgba(82, 110, 81, 0.3);
+        font-size: 11px;
+        background: #1A2421; 
+        padding: 8px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
     }
+    .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
     .page-header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid rgba(82, 110, 81, 0.2);
-        padding-bottom: 8px;
-        margin-bottom: 8px;
+        border-bottom: 2px solid #EAF0EA;
+        padding-bottom: 12px;
+        margin-bottom: 5px;
     }
 
     .page-title {
         font-size: 16px;
-        color: #3F5A3E;
-        font-weight: 700;
+        font-weight: 800;
+        color: #2F4F38;
+        position: relative;
+        padding-left: 12px;
+    }
+    .page-title::before {
+        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+        background: #4A7C59; border-radius: 4px;
     }
 
-    .report-btn-group { display: flex; gap: 6px; }
-    .report-btn { background: #3B82F6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    .print-main-btn { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .report-btn-group { display: flex; gap: 8px; }
+    
+    .report-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s;}
+    .report-btn:hover { transform: translateY(-2px); }
+    
+    .print-main-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); transition: transform 0.2s;}
+    .print-main-btn:hover { transform: translateY(-2px); }
 
-    h3 {
-        font-size: 13px;
-        color: #3F5A3E;
-        font-weight: 700;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+    /* 📌 Smart Sectioning */
+    .form-section {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 14px;
+        padding: 22px 15px 15px 15px;
+        margin-bottom: 5px;
+        position: relative;
     }
-
-    .form-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .form-group label {
+    
+    .section-badge {
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: #4A7C59;
+        color: #FFF;
         font-size: 10px;
         font-weight: 700;
-        color: #3F5A3E;
+        padding: 4px 12px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+    }
+    .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
     }
 
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
+
+    /* 📌 Smart 3D Inputs */
     input, select {
-        width: 100%;
-        padding: 10px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.3);
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 12px;
-        font-weight: 500;
+        width: 100%; padding: 10px 12px; border-radius: 8px;
+        border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
+        font-size: 11px; font-weight: 600; transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
     }
-
     input:focus, select:focus {
-        border-color: #526E51;
-        outline: none;
+        border-color: #4A7C59; outline: none; background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
+    input::placeholder { color: #A0AFA0; font-weight: 400; }
+    input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
 
-    input[readonly] {
-        background: #E8ECE7;
-        color: #3F5A3E;
-    }
-
+    /* 📌 Advanced Grids */
     .grid-header {
         display: grid;
-        grid-template-columns: 0.8fr 1fr 1fr 1.5fr 32px;
-        gap: 6px;
-        padding: 0 4px;
-        margin-bottom: 6px;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 35px;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
     }
-
     .grid-header-bot {
         display: grid;
-        grid-template-columns: 0.8fr 1fr 1fr 1.5fr 1.2fr;
-        gap: 6px;
-        padding: 0 4px;
-        margin-bottom: 6px;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
     }
 
     .grid-header div, .grid-header-bot div {
-        font-size: 10px;
-        font-weight: 700;
-        color: #3F5A3E;
-        text-align: center;
+        font-size: 10px; font-weight: 700; color: #2F4F38;
+        text-align: center; text-transform: uppercase;
     }
 
     .line-row {
         display: grid;
-        grid-template-columns: 0.8fr 1fr 1fr 1.5fr 32px;
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 6px;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 35px;
+        gap: 6px; align-items: center; margin-bottom: 8px;
     }
-
     .line-row-bot {
         display: grid;
-        grid-template-columns: 0.8fr 1fr 1fr 1.5fr 1.2fr;
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 6px;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr;
+        gap: 6px; align-items: center; margin-bottom: 8px;
     }
 
-    .line-row input, .line-row-bot input {
-        text-align: center;
-        padding: 8px 4px;
-        font-size: 11px;
+    .line-row input, .line-row-bot input { padding: 10px 4px; font-size: 11px; text-align: center; }
+
+    .add-btn, .del-btn {
+        color: white; border: none; width: 35px; height: 35px; border-radius: 8px;
+        cursor: pointer; font-size: 16px; font-weight: bold; display: flex;
+        align-items: center; justify-content: center; transition: all 0.2s ease;
     }
+    .add-btn { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+    .add-btn:hover { transform: scale(1.05); }
+    .del-btn { background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1); }
+    .del-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .add-btn { background: #4C724C; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-    .del-btn { background: #D97706; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-
-    .save-btn {
-        background: #4C724C; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(82, 110, 81, 0.2); margin-top: 10px;
+    /* 📌 Smart Buttons */
+    .btn-main {
+        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
+        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .save-btn:hover { background: #3F5A3E; }
+    .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+    
+    .btn-blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
+    .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
 
-    .section-divider {
-        border-bottom: 1px dashed rgba(82, 110, 81, 0.4);
-        margin: 15px 0;
+    .popup-trigger-btn {
+        background: linear-gradient(135deg, #6366F1, #4338CA);
+        color: white; border: none; padding: 14px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
     }
+    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
-    .table-container {
-        margin-top: 10px;
-        overflow-x: auto;
-        border-radius: 8px;
-        border: 1px solid rgba(82, 110, 81, 0.2);
+    /* 📌 Advanced Pop-up Modal Styling */
+    .overlay-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
     }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10px;
-        text-align: center;
-        background: #F4F9F4;
+    .overlay-modal.show { opacity: 1; }
+    
+    .modal-content {
+        background: #FFFFFF; width: 100%; max-width: 800px; margin: auto; height: 90vh; border-radius: 16px;
+        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
     }
+    .overlay-modal.show .modal-content { transform: scale(1); }
 
-    th {
-        background: #D8DFD6;
-        color: #3F5A3E;
-        padding: 8px 4px;
-        border-bottom: 1px solid rgba(82, 110, 81, 0.3);
-        font-weight: 700;
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
     }
-
-    td {
-        padding: 8px 4px;
-        border-bottom: 1px solid rgba(82, 110, 81, 0.15);
-        color: #1E2B23;
-        font-weight: 500;
-    }
-
-    .action-btns {
-        display: flex;
-        gap: 4px;
-        justify-content: center;
-    }
-
-    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-    .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-    .shrink-text { color: #D32F2F; font-weight: 700; }
-    .status-pending { color: #D97706; font-weight: 700; font-size: 9px; }
-
-    /* Modals */
-    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(232, 240, 232, 0.95); z-index: 99999; flex-direction: column; align-items: center; padding: 20px; }
-    .modal-content { background: #fff; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
-    .modal-header { padding: 15px; background: #D8DFD6; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(82, 110, 81, 0.2); }
-    .modal-header h3 { border: none; padding: 0; margin: 0; }
+    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
     .modal-actions { display: flex; gap: 8px; }
-    .print-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    .close-btn { background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+    
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    /* Selection Modal for Bottom Form */
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+
+    /* 📌 Advanced Table Design with Horizontal Scroll */
+    .table-container {
+        width: 100%; border-radius: 10px; overflow-x: auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #F8FAF8; }
+    
+    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
+    .edit-action-btn:hover { background: #475569; }
+    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+
+    .shrink-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
+    .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
+
+    /* 📌 Design Selection Modal */
     #designModal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; justify-content: center; align-items: center;
+        opacity: 0; transition: opacity 0.3s ease;
     }
+    #designModal.show { opacity: 1; }
+    
     .design-modal-content {
-        background: #F0F4F0; width: 90%; max-width: 400px; border-radius: 12px;
-        border: 1px solid rgba(82, 110, 81, 0.4); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        background: #FFFFFF; width: 90%; max-width: 400px; border-radius: 16px;
+        overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        transform: scale(0.95); transition: transform 0.3s ease;
     }
+    #designModal.show .design-modal-content { transform: scale(1); }
+    
     .design-modal-header {
-        background: #D8DFD6; color: #3F5A3E; padding: 10px 12px; font-weight: bold;
-        font-size: 11px; display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid rgba(82, 110, 81, 0.3);
+        background: #F4F7F4; color: #2F4F38; padding: 15px 20px; font-weight: 800;
+        font-size: 13px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #E2E8E2; text-transform: uppercase;
     }
-    .design-modal-body { padding: 8px 12px; max-height: 350px; overflow-y: auto; }
+    .design-modal-body { padding: 10px 15px; max-height: 400px; overflow-y: auto; background: #FAFCFA; }
     .design-option {
-        display: flex; justify-content: space-between; align-items: center; padding: 10px 6px;
-        border-bottom: 1px solid rgba(82, 110, 81, 0.2); cursor: pointer; font-size: 12px; color: #1E2B23;
+        display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+        border-bottom: 1px solid #E2E8E2; cursor: pointer; font-size: 12px; color: #1E2B23;
+        transition: background 0.2s; border-radius: 8px; margin-bottom: 5px; background: #FFFFFF;
     }
-    .design-option:hover { background: #D8DFD6; }
+    .design-option:hover { background: #EAF0EA; border-color: #4A7C59; }
 
     @media print {
         body * { visibility: hidden; }
         #previewModal, #previewModal * { visibility: visible; }
         #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
-        .modal-content { max-height: none !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
         .no-print { display: none !important; }
     }
 </style>
@@ -272,25 +302,25 @@
     </div>
 
     <div class="page-header-row">
-        <div class="page-title">Washing Production Entry</div>
+        <div class="page-title">🌊 Washing Entry System</div>
         <div class="report-btn-group">
             <button type="button" class="report-btn" onclick="openPreview()">👁️ Preview</button>
             <button type="button" class="print-main-btn" onclick="printReport()">🖨️ Print</button>
         </div>
     </div>
 
-    <!-- 1. TOP SECTION (ORDER DETAILS) -->
-    <div id="sectionTop">
-        <h3>1. Washing Order Details (Top)</h3>
+    <!-- 📌 1. TOP SECTION (ORDER DETAILS) -->
+    <div class="form-section" id="sectionTop">
+        <div class="section-badge">1. Washing Order Info</div>
         
         <div class="form-row">
             <div class="form-group">
-                <label>Date</label>
+                <label>Order Date</label>
                 <input type="date" id="topDate">
             </div>
             <div class="form-group">
-                <label>Washing Name</label>
-                <input type="text" id="topUnit" placeholder="Enter Washing Unit Name">
+                <label>Washing Unit Name</label>
+                <input type="text" id="topUnit" placeholder="Enter Unit Name">
             </div>
             <div class="form-group">
                 <label>Design Number</label>
@@ -300,112 +330,122 @@
             </div>
         </div>
 
-        <div>
-            <div class="grid-header">
-                <div>Slip</div>
-                <div>Piece</div>
-                <div>Mtr</div>
-                <div>Process Type</div>
-                <div></div>
-            </div>
-            <div id="topLinesContainer">
-                <div class="line-row">
-                    <input type="text" class="t-slip" placeholder="Slip">
-                    <input type="number" class="t-piece" placeholder="0">
-                    <input type="number" class="t-mtr" placeholder="0" step="0.01">
-                    <input type="text" class="t-process" placeholder="Type">
-                    <button class="add-btn" onclick="addNewTopRow(this)">+</button>
+        <div style="overflow-x: auto;">
+            <div style="min-width: 450px;">
+                <div class="grid-header">
+                    <div>Slip No</div>
+                    <div>Pieces</div>
+                    <div>Meter</div>
+                    <div>Process Type</div>
+                    <div></div>
+                </div>
+                <div id="topLinesContainer">
+                    <div class="line-row">
+                        <input type="text" class="t-slip" placeholder="Slip">
+                        <input type="number" class="t-piece" placeholder="0">
+                        <input type="number" class="t-mtr" placeholder="0" step="0.01">
+                        <input type="text" class="t-process" placeholder="Type">
+                        <button class="add-btn" onclick="addNewTopRow(this)">+</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <button class="save-btn" id="saveTopBtnTxt" onclick="saveTopOrder()">Save Top Order</button>
+        <button class="btn-main btn-save" id="saveTopBtnTxt" onclick="saveTopOrder()">✅ Save Washing Order</button>
     </div>
 
-    <div class="section-divider"></div>
-
-    <!-- 2. BOTTOM SECTION (RECEIVED DETAILS) -->
-    <div id="sectionBottom">
-        <h3>2. Washing Received & Shrinkage (Bottom)</h3>
+    <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) -->
+    <div class="form-section" id="sectionBottom">
+        <div class="section-badge blue">2. Washing Received & Shrinkage</div>
         
-        <div class="form-row">
+        <div class="form-row" style="grid-template-columns: 1fr 1.5fr;">
             <div class="form-group">
-                <label>Date</label>
+                <label>Received Date</label>
                 <input type="date" id="botDate">
             </div>
             <div class="form-group">
-                <label>Design & Washing Unit (Select Pending Order)</label>
-                <input type="text" id="botDesignDisplay" placeholder="Select Pending Order" readonly onclick="openDesignModal()" style="cursor: pointer; background:#FFFFFF; font-weight:bold;">
+                <label>Design & Washing Unit (Select Pending)</label>
+                <input type="text" id="botDesignDisplay" placeholder="Click to Select Pending Order" readonly onclick="openDesignModal()" style="cursor: pointer; font-weight:700;">
                 <input type="hidden" id="botDesignNo">
                 <input type="hidden" id="botUnitName">
             </div>
         </div>
 
-        <div id="botGridWrapper" style="display: none; margin-top: 5px;">
-            <div class="grid-header-bot">
-                <div>Slip</div>
-                <div>Piece</div>
-                <div>Mtr</div>
-                <div>Process Type</div>
-                <div>Received Mtr</div>
+        <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
+            <div style="min-width: 500px;">
+                <div class="grid-header-bot">
+                    <div>Slip No</div>
+                    <div>Pieces</div>
+                    <div>Sent Mtr</div>
+                    <div>Process</div>
+                    <div>Rcvd Mtr</div>
+                </div>
+                <div id="botLinesContainer"></div>
             </div>
-            <div id="botLinesContainer"></div>
-        </div>
-
-        <button class="save-btn" id="saveBotBtnTxt" onclick="saveBottomEntry()">Save Bottom Entry</button>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <!-- 3. SAVED DATA TABLE -->
-    <div>
-        <h3>📊 Saved Washing Data</h3>
-        <div class="table-container">
-            <table id="washingTable">
-                <thead>
-                    <tr>
-                        <th>Design</th>
-                        <th>Washing Unit</th>
-                        <th>Slip</th>
-                        <th>Piece</th>
-                        <th>Mtr</th>
-                        <th>Process</th>
-                        <th>Bot Date</th>
-                        <th>Received Mtr</th>
-                        <th>Shrinkage %</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="dataTableBody">
-                    <!-- Data populates here -->
-                </tbody>
-            </table>
+            <button class="btn-main btn-blue" id="saveBotBtnTxt" onclick="saveBottomEntry()">📥 Save Received Entry</button>
         </div>
     </div>
+
+    <!-- 📌 3. SAVED DATA POPUP BUTTON -->
+    <button type="button" class="popup-trigger-btn" onclick="openModal('savedListModal')">📊 View Saved Washing Registry</button>
 </div>
 
-<!-- Selection Modal for Bottom Form -->
+<!-- 📌 Selection Modal for Bottom Form -->
 <div id="designModal">
     <div class="design-modal-content">
         <div class="design-modal-header">
             <span>Select Pending Washing Order</span>
-            <span style="cursor: pointer; font-size: 16px;" onclick="closeDesignModal()">✕</span>
+            <span style="cursor: pointer; font-size: 16px; color:#DC2626;" onclick="closeDesignModal()">✕</span>
         </div>
         <div class="design-modal-body" id="modalDesignList"></div>
     </div>
 </div>
 
+<!-- 📌 Print Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
-            <h3 style="color: #3F5A3E; font-size: 14px;">👁️ Washing Order Preview</h3>
+            <h3 style="color: #2F4F38; font-size: 16px; text-transform: uppercase;">👁️ Washing Order Preview</h3>
             <div class="modal-actions">
                 <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-                <button class="close-btn" onclick="document.getElementById('previewModal').style.display='none'">❌</button>
+                <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent">
+        <div class="modal-body" id="previewContent" style="padding: 20px;">
             <!-- Preview content injects here -->
+        </div>
+    </div>
+</div>
+
+<!-- 📌 Saved List Modal -->
+<div id="savedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 Saved Washing Registry</h3>
+            <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table id="washingTable">
+                    <thead>
+                        <tr>
+                            <th>Design</th>
+                            <th>Washing Unit</th>
+                            <th>Slip</th>
+                            <th>Piece</th>
+                            <th>Sent Mtr</th>
+                            <th>Process</th>
+                            <th>Rcvd Date</th>
+                            <th>Rcvd Mtr</th>
+                            <th>Shrink %</th>
+                            <th class="no-print">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <!-- Data populates here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -417,6 +457,63 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDesignDropdowns();
     renderTable();
 });
+
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
+function openDesignModal() {
+    let modal = document.getElementById('designModal');
+    modal.style.display = 'flex';
+    
+    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+    let pendingItems = issues.filter(r => r.status === 'Pending');
+    
+    let modalList = document.getElementById('modalDesignList');
+    modalList.innerHTML = '';
+
+    if(pendingItems.length === 0) {
+        modalList.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748B; font-weight:600;">No pending washing orders found!</div>';
+    } else {
+        let uniqueMap = new Map();
+        pendingItems.forEach(item => {
+            let key = `${item.designNo}_${item.unit}`;
+            if(!uniqueMap.has(key)) {
+                uniqueMap.set(key, { designNo: item.designNo, unit: item.unit });
+            }
+        });
+
+        uniqueMap.forEach((val) => {
+            let div = document.createElement('div');
+            div.className = 'design-option';
+            div.innerHTML = `<span><b style="color:#2F4F38;">${val.designNo}</b> <span style="color:#D97706; font-size:10px; margin-left:8px; background:#FEF3C7; padding:2px 6px; border-radius:6px;">${val.unit}</span></span>`;
+            div.onclick = function() {
+                document.getElementById('botDesignDisplay').value = `${val.designNo} - ${val.unit}`;
+                document.getElementById('botDesignNo').value = val.designNo;
+                document.getElementById('botUnitName').value = val.unit;
+                closeDesignModal();
+                loadBottomData();
+            };
+            modalList.appendChild(div);
+        });
+    }
+    
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeDesignModal() {
+    let modal = document.getElementById('designModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
 
 function loadDesignDropdowns() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -450,7 +547,7 @@ async function saveTopOrder() {
 
     let btn = document.getElementById('saveTopBtnTxt');
     let origText = btn.innerText;
-    btn.innerText = "Saving ☁️...";
+    btn.innerText = "⏳ Saving to Cloud...";
 
     let rows = document.querySelectorAll('#topLinesContainer .line-row');
     if(rows.length === 0) {
@@ -510,46 +607,6 @@ async function saveTopOrder() {
     btn.innerText = origText;
 }
 
-function openDesignModal() {
-    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let pendingItems = issues.filter(r => r.status === 'Pending');
-    
-    let modalList = document.getElementById('modalDesignList');
-    modalList.innerHTML = '';
-
-    if(pendingItems.length === 0) {
-        modalList.innerHTML = '<div style="padding: 10px; text-align: center; color: #888;">No pending washing orders found</div>';
-    } else {
-        let uniqueMap = new Map();
-        pendingItems.forEach(item => {
-            let key = `${item.designNo}_${item.unit}`;
-            if(!uniqueMap.has(key)) {
-                uniqueMap.set(key, { designNo: item.designNo, unit: item.unit });
-            }
-        });
-
-        uniqueMap.forEach((val) => {
-            let div = document.createElement('div');
-            div.className = 'design-option';
-            div.innerHTML = `<span><b>${val.designNo}</b> <span style="color:#D97706;">(${val.unit})</span></span>`;
-            div.onclick = function() {
-                document.getElementById('botDesignDisplay').value = `${val.designNo} - ${val.unit}`;
-                document.getElementById('botDesignNo').value = val.designNo;
-                document.getElementById('botUnitName').value = val.unit;
-                closeDesignModal();
-                loadBottomData();
-            };
-            modalList.appendChild(div);
-        });
-    }
-
-    document.getElementById('designModal').style.display = 'flex';
-}
-
-function closeDesignModal() {
-    document.getElementById('designModal').style.display = 'none';
-}
-
 function loadBottomData() {
     let dNo = document.getElementById('botDesignNo').value;
     let uName = document.getElementById('botUnitName').value;
@@ -593,7 +650,7 @@ async function saveBottomEntry() {
 
     let btn = document.getElementById('saveBotBtnTxt');
     let origText = btn.innerText;
-    btn.innerText = "Saving ☁️...";
+    btn.innerText = "⏳ Saving to Cloud...";
 
     let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
     if(rows.length === 0) {
@@ -682,6 +739,7 @@ async function editWashingRecord(issueId, isReceived) {
             document.getElementById('botDesignDisplay').value = `${recRecord.designNo} - ${recRecord.unit}`;
             document.getElementById('botDesignNo').value = recRecord.designNo;
             document.getElementById('botUnitName').value = recRecord.unit;
+            closeModal('savedListModal');
             loadBottomData();
             
             setTimeout(() => {
@@ -691,6 +749,7 @@ async function editWashingRecord(issueId, isReceived) {
                         row.querySelector('.b-received').value = recRecord.receivedMtr;
                     }
                 });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }, 100);
             renderTable();
         }
@@ -719,8 +778,9 @@ async function editWashingRecord(issueId, isReceived) {
                     <button class="add-btn" onclick="addNewTopRow(this)">+</button>
                 </div>
             `;
+            closeModal('savedListModal');
             renderTable();
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 }
@@ -767,7 +827,7 @@ function renderTable() {
     tbody.innerHTML = '';
 
     if(issues.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="padding:15px;">No Records Found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="padding:20px; color:#A0AFA0;">No Records Found.</td></tr>`;
         return;
     }
 
@@ -781,25 +841,21 @@ function renderTable() {
             botDateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
         }
 
-        let rcvMtr = matchingRec ? matchingRec.receivedMtr : "-";
+        let rcvMtr = matchingRec ? `<span style="color:#10B981; font-weight:bold;">${matchingRec.receivedMtr}</span>` : `<span class="status-pending">Pending</span>`;
         let shrinkPerc = matchingRec ? matchingRec.shrinkagePerc : "-";
         let shrinkDisplay = (shrinkPerc !== "-") ? `<span class="shrink-text">${shrinkPerc}</span>` : "-";
         
         let actionBtns = `
             <div class="action-btns">
-                <button class="edit-action-btn" onclick="editWashingRecord(${issue.id}, ${isReceived})">✏️</button>
-                <button class="del-action-btn" onclick="deleteWashingRecord(${issue.id}, ${isReceived})">🗑️</button>
+                <button class="edit-action-btn" onclick="editWashingRecord(${issue.id}, ${isReceived})" title="Edit">✏️</button>
+                <button class="del-action-btn" onclick="deleteWashingRecord(${issue.id}, ${isReceived})" title="Delete">🗑️</button>
             </div>
         `;
-
-        if(!isReceived) {
-            rcvMtr = `<span class="status-pending">Pending</span>`;
-        }
 
         tbody.innerHTML += `
             <tr>
                 <td><b>${issue.designNo}</b></td>
-                <td style="color:#D97706; font-weight:bold;">${issue.unit}</td>
+                <td style="color:#D97706; font-weight:700;">${issue.unit}</td>
                 <td>${issue.slip}</td>
                 <td>${issue.piece}</td>
                 <td>${issue.mtr}</td>
@@ -816,31 +872,31 @@ function renderTable() {
 function openPreview() {
     let tableBody = document.getElementById('dataTableBody'); 
     
-    let html = `<div style="text-align: center; margin-bottom: 15px;">
-                    <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Washing Production Report</h2>
+    let html = `<div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">
+                    <h2 style="color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Washing Production Report</h2>
                 </div>
                 <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; background:#FFF; color:#000;">`;
+                <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center; background:#FFF; color:#1E2B23; border:1px solid #D1DED1;">`;
     
-    html += `<tr style="background:#f2f2f2;">`;
+    html += `<tr style="background:#EAF0EA;">`;
     let headers = document.querySelectorAll('.table-container table thead th');
     headers.forEach((th, idx) => {
         if(idx < headers.length - 1) { 
-            html += `<th style="border:1px solid #999; padding:8px; font-weight:bold;">${th.innerText}</th>`;
+            html += `<th style="border:1px solid #D1DED1; padding:10px; font-weight:bold; color:#2F4F38; text-transform:uppercase;">${th.innerText}</th>`;
         }
     });
     html += `</tr>`;
 
     let rows = tableBody.querySelectorAll('tr');
     if(rows.length === 0 || rows[0].innerText.includes("No Records Found")) {
-        html += `<tr><td colspan="9" style="border:1px solid #999; padding:15px; text-align:center;">No Data Found</td></tr>`;
+        html += `<tr><td colspan="9" style="border:1px solid #D1DED1; padding:20px; text-align:center;">No Data Found</td></tr>`;
     } else {
         rows.forEach(tr => {
             let cells = tr.querySelectorAll('td');
-            html += `<tr>`;
+            html += `<tr style="border-bottom:1px dashed #E2E8E2;">`;
             cells.forEach((td, idx) => {
                 if(idx < cells.length - 1) { 
-                    html += `<td style="border:1px solid #999; padding:8px;">${td.innerText}</td>`;
+                    html += `<td style="border:1px solid #E2E8E2; padding:10px;">${td.innerText}</td>`;
                 }
             });
             html += `</tr>`;
@@ -849,7 +905,7 @@ function openPreview() {
     
     html += `</table></div>`;
     document.getElementById('previewContent').innerHTML = html;
-    document.getElementById('previewModal').style.display = 'flex';
+    openModal('previewModal');
 }
 
 function printReport() {
@@ -903,8 +959,8 @@ function printReport() {
     // Sync Data on Load
     window.addEventListener('load', async function() {
         let btn = document.getElementById('saveTopBtnTxt');
-        let origText = btn ? btn.innerText : "Save Top Order";
-        if(btn) btn.innerText = "Syncing ☁️...";
+        let origText = btn ? btn.innerText : "✅ Save Washing Order";
+        if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
         let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers'];
         
