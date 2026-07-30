@@ -104,9 +104,10 @@
         border: 1px solid rgba(130, 59, 78, 0.2);
     }
 
+    /* Grid Updated for Dyeing Unit Column */
     .receive-grid-header {
         display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template-columns: 0.6fr 1fr 1.5fr 1fr 1fr 1fr 0.8fr 0.9fr;
         gap: 4px;
         padding: 0 4px;
         margin-bottom: 6px;
@@ -121,14 +122,14 @@
 
     .line-row {
         display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template-columns: 0.6fr 1fr 1.5fr 1fr 1fr 1fr 0.8fr 0.9fr;
         gap: 4px;
         align-items: center;
         margin-bottom: 8px;
     }
     
     .line-row input {
-        padding: 8px 4px;
+        padding: 8px 2px;
         font-size: 10px;
         text-align: center;
     }
@@ -199,13 +200,8 @@
         justify-content: center;
     }
 
-    .edit-action-btn {
-        background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px;
-    }
-    
-    .del-action-btn {
-        background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px;
-    }
+    .edit-action-btn { background: #3F5A3E; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    .del-action-btn { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
 </style>
 </head>
 <body>
@@ -229,28 +225,27 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label>Dyeing Name</label>
-        <input type="text" id="dyeingName" placeholder="Dyeing Unit Name" readonly>
-    </div>
-
     <!-- 📌 TOGGLE OPTION: Combine Same Count & Colour -->
     <div style="background: rgba(130, 59, 78, 0.1); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
-        <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #823B4E; cursor: pointer;">🔗 Combine Same Count & Colour</label>
+        <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #823B4E; cursor: pointer;">🔗 Combine Same Count, Colour & Unit</label>
         <input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width: 18px; height: 18px; accent-color: #823B4E; cursor: pointer;">
     </div>
 
-    <div style="margin-top: 10px;">
-        <div class="receive-grid-header">
-            <div>Count</div>
-            <div>Colour</div>
-            <div>Issued Wt</div>
-            <div>Rcvd Wt</div>
-            <div>Loss Wt</div>
-            <div>Loss %</div>
-            <div>Excess Wt (>5%)</div>
+    <!-- Scrollable container for mobile to fit 8 columns -->
+    <div style="margin-top: 10px; overflow-x: auto; padding-bottom: 10px;">
+        <div style="min-width: 650px;">
+            <div class="receive-grid-header">
+                <div>Count</div>
+                <div>Colour</div>
+                <div>Dyeing Unit</div>
+                <div>Issued Wt</div>
+                <div>Rcvd Wt</div>
+                <div>Loss Wt</div>
+                <div>Loss %</div>
+                <div>Excess(>5%)</div>
+            </div>
+            <div id="receiveLinesContainer"></div>
         </div>
-        <div id="receiveLinesContainer"></div>
     </div>
 
     <button class="save-main-btn" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">Save Received Entry</button>
@@ -264,6 +259,7 @@
                     <th>Design</th>
                     <th>Count</th>
                     <th>Colour</th>
+                    <th>Dyeing Unit</th>
                     <th>Issued Wt</th>
                     <th>Rcvd Wt</th>
                     <th>Loss Wt</th>
@@ -305,7 +301,6 @@ function loadPendingItems() {
     let dNo = document.getElementById('designNumber').value;
     let container = document.getElementById('receiveLinesContainer');
     container.innerHTML = '';
-    document.getElementById('dyeingName').value = '';
 
     if(!dNo) return;
 
@@ -314,18 +309,18 @@ function loadPendingItems() {
     let isCombineChecked = document.getElementById('combineToggle').checked;
 
     if(pendingItems.length > 0) {
-        document.getElementById('dyeingName').value = pendingItems[0].unit;
-
         let displayList = [];
 
         if (isCombineChecked) {
             let map = new Map();
             pendingItems.forEach(item => {
-                let key = item.count.toLowerCase().trim() + '_' + item.color.toLowerCase().trim();
+                // Modified Combine Logic: Now includes dyeing unit name to prevent merging different units
+                let key = item.count.toLowerCase().trim() + '_' + item.color.toLowerCase().trim() + '_' + (item.unit || '').toLowerCase().trim();
                 if (!map.has(key)) {
                     map.set(key, {
                         count: item.count,
                         color: item.color,
+                        unit: item.unit || '-',
                         issueWt: 0,
                         ids: []
                     });
@@ -339,6 +334,7 @@ function loadPendingItems() {
             displayList = pendingItems.map(item => ({
                 count: item.count,
                 color: item.color,
+                unit: item.unit || '-',
                 issueWt: parseFloat(item.issueWt) || 0,
                 ids: [item.id]
             }));
@@ -347,12 +343,13 @@ function loadPendingItems() {
         displayList.forEach(item => {
             let row = document.createElement('div');
             row.className = 'line-row';
-            // Store IDs as comma-separated string for multi-id matching during save/edit
             row.setAttribute('data-ids', item.ids.join(','));
+            row.setAttribute('data-unit', item.unit);
             
             row.innerHTML = `
-                <input type="text" class="inp-count" value="${item.count}" readonly>
-                <input type="text" class="inp-color" value="${item.color}" readonly>
+                <input type="text" class="inp-count" value="${item.count}" readonly title="${item.count}">
+                <input type="text" class="inp-color" value="${item.color}" readonly title="${item.color}">
+                <input type="text" class="inp-unit" value="${item.unit}" readonly title="${item.unit}">
                 <input type="text" class="inp-issued" value="${item.issueWt.toFixed(3)}" readonly>
                 <input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)">
                 <input type="text" class="inp-loss-wt" placeholder="0.000" readonly>
@@ -410,7 +407,6 @@ function calculateLoss(inp) {
 async function saveReceiveEntry() {
     let dateVal = document.getElementById('receiveDate').value;
     let dNo = document.getElementById('designNumber').value;
-    let dName = document.getElementById('dyeingName').value;
 
     if(!dNo) {
         alert("Please select a Design Number!");
@@ -434,6 +430,7 @@ async function saveReceiveEntry() {
         if(rcvWt > 0) {
             let recIdsStr = row.getAttribute('data-ids');
             let recIds = recIdsStr ? recIdsStr.split(',') : [];
+            let unitName = row.getAttribute('data-unit') || '-';
             
             let issuedTotalWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
             let lossWt = parseFloat(row.querySelector('.inp-loss-wt').value) || 0;
@@ -447,7 +444,7 @@ async function saveReceiveEntry() {
                 issueIds: recIds,
                 issueId: recIds[0], // backward compatibility
                 date: dateVal,
-                unit: dName,
+                unit: unitName,
                 designNo: dNo,
                 count: row.querySelector('.inp-count').value,
                 color: row.querySelector('.inp-color').value,
@@ -480,7 +477,6 @@ async function saveReceiveEntry() {
 
         alert("Received Entry Saved to Cloud Successfully! ✅☁️");
         
-        document.getElementById('dyeingName').value = '';
         document.getElementById('receiveLinesContainer').innerHTML = '';
         loadPendingDesigns(); 
         renderReceivedList();
@@ -575,7 +571,6 @@ async function deleteReceiveRecord(recId) {
         renderReceivedList();
         
         document.getElementById('receiveLinesContainer').innerHTML = '';
-        document.getElementById('dyeingName').value = '';
         document.getElementById('designNumber').value = '';
     }
 }
@@ -586,7 +581,7 @@ function renderReceivedList() {
     tbody.innerHTML = '';
 
     if(receiveRecords.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="padding:15px;">No Dyeing Orders Received yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:15px;">No Dyeing Orders Received yet.</td></tr>`;
         return;
     }
 
@@ -604,6 +599,7 @@ function renderReceivedList() {
                 <td>${record.designNo}</td>
                 <td>${record.count}</td>
                 <td>${record.color}</td>
+                <td><b>${record.unit || '-'}</b></td>
                 <td>${record.issuedWt}</td>
                 <td>${record.receivedWt}</td>
                 <td>${record.lossWt}</td>

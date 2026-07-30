@@ -121,8 +121,8 @@
 
     .issue-grid-header {
         display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr 1fr 32px;
-        gap: 8px;
+        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.5fr 28px;
+        gap: 6px;
         padding: 0 4px;
         margin-bottom: 4px;
     }
@@ -135,18 +135,23 @@
 
     .line-row {
         display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr 1fr 32px;
-        gap: 8px;
+        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.5fr 28px;
+        gap: 6px;
         align-items: center;
         margin-bottom: 8px;
+    }
+    
+    .line-row input {
+        padding: 8px 4px;
+        font-size: 11px;
     }
 
     .del-btn {
         background: #D97706;
         color: white;
         border: none;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 6px;
         cursor: pointer;
         font-size: 14px;
@@ -245,38 +250,37 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label>Dyeing Name</label>
-        <input type="text" id="dyeingName" placeholder="Enter Dyeing Unit Name">
-    </div>
+    <!-- Datalist for Autocomplete Dyeing Names -->
+    <datalist id="dyeing-list">
+        <!-- Options will be loaded dynamically here -->
+    </datalist>
 
-    <!-- 📌 TOGGLE OPTION: Combine Same Count & Colour -->
     <div style="background: rgba(82, 110, 81, 0.1); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
         <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #3F5A3E; cursor: pointer;">🔗 Combine Warp + Weft (Same Count & Colour)</label>
         <input type="checkbox" id="combineToggle" checked onchange="loadYarnRequirements()" style="width: 18px; height: 18px; accent-color: #526E51; cursor: pointer;">
     </div>
 
-    <!-- 📌 COMBINED / WARP YARN SECTION -->
     <div style="margin-top: 5px;">
         <div class="section-title-sub" id="sectionTitleLabel">🧵 YARN ISSUE DETAILS</div>
         <div class="issue-grid-header">
             <div>Count</div>
             <div>Colour</div>
-            <div>Order Wt</div>
-            <div>Issued Wt</div>
+            <div>Ord Wt</div>
+            <div>Iss Wt</div>
+            <div>Dyeing Unit</div>
             <div></div>
         </div>
         <div id="warpIssueLinesContainer"></div>
     </div>
 
-    <!-- 📌 WEFT SECTION (Will hide automatically if Combine is checked and merged) -->
     <div id="weftSectionWrapper" style="margin-top: 10px;">
         <div class="section-title-sub">🧶 WEFT YARN ISSUE</div>
         <div class="issue-grid-header">
             <div>Count</div>
             <div>Colour</div>
-            <div>Order Wt</div>
-            <div>Issued Wt</div>
+            <div>Ord Wt</div>
+            <div>Iss Wt</div>
+            <div>Dyeing Unit</div>
             <div></div>
         </div>
         <div id="weftIssueLinesContainer"></div>
@@ -317,8 +321,17 @@ function cleanDesignName(str) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('issueDate').valueAsDate = new Date();
     loadDesignDropdown();
+    loadDyeingList(); // Load dynamic dyeing names
     renderIssuedList();
 });
+
+// Dynamic Dyeing Name List
+function loadDyeingList() {
+    let units = JSON.parse(localStorage.getItem('dyeing_unit_names')) || ["Ganesa Dyeing", "Murugan Dyeing", "Sri Sakthi Dyeing"];
+    let dl = document.getElementById('dyeing-list');
+    dl.innerHTML = '';
+    units.forEach(u => dl.innerHTML += `<option value="${u}">`);
+}
 
 function loadDesignDropdown() {
     var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -401,20 +414,10 @@ function loadYarnRequirements() {
     if(!dName) {
         warpContainer.innerHTML = '';
         weftContainer.innerHTML = '';
-        document.getElementById('dyeingName').value = '';
         return;
     }
 
     let cleanDNo = cleanDesignName(dName);
-
-    let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
-    let existingRecord = issueRecords.slice().reverse().find(r => cleanDesignName(r.designNo) === cleanDNo);
-    if(existingRecord) {
-        document.getElementById('dyeingName').value = existingRecord.unit;
-    } else {
-        document.getElementById('dyeingName').value = '';
-    }
-
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
@@ -445,7 +448,6 @@ function loadYarnRequirements() {
     let defaultCountText = foundMaster.count1 || sp.warp || '20';
     let defaultCountNum = getResultantCount(defaultCountText) || 20;
 
-    // --- WARP ---
     let totalWarpEnds = Math.round(uiReed * baseWidth);
     let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
     
@@ -473,7 +475,6 @@ function loadYarnRequirements() {
         });
     }
 
-    // --- WEFT ---
     let totalFabricPick = weftWidth * uiPick;
     let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
     let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
@@ -523,7 +524,6 @@ function loadYarnRequirements() {
         finalWeftList = Array.from(weftMap.values());
     }
 
-    // Render Main / Warp Section
     warpContainer.innerHTML = '';
     if(finalWarpList.length === 0) {
         warpContainer.innerHTML = '<div style="font-size:10px; text-align:center; padding:6px; color:#D97706;">No Yarn Data</div>';
@@ -534,16 +534,16 @@ function loadYarnRequirements() {
             row.setAttribute('data-type', item.type);
             row.innerHTML = `
                 <input type="text" class="inp-count" value="${item.count}" readonly>
-                <input type="text" class="inp-color" value="${item.color}" readonly>
+                <input type="text" class="inp-color" value="${item.color}" readonly title="${item.color}">
                 <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
                 <input type="number" class="inp-issue" placeholder="Wt">
+                <input type="text" class="inp-dyeing" placeholder="Dyeing Unit" list="dyeing-list">
                 <button class="del-btn" onclick="this.parentElement.remove()">×</button>
             `;
             warpContainer.appendChild(row);
         });
     }
 
-    // Render Weft Section (If not combined)
     weftContainer.innerHTML = '';
     if(!isCombineChecked) {
         if(finalWeftList.length === 0) {
@@ -555,9 +555,10 @@ function loadYarnRequirements() {
                 row.setAttribute('data-type', 'Weft');
                 row.innerHTML = `
                     <input type="text" class="inp-count" value="${item.count}" readonly>
-                    <input type="text" class="inp-color" value="${item.color}" readonly>
+                    <input type="text" class="inp-color" value="${item.color}" readonly title="${item.color}">
                     <input type="text" class="inp-order" value="${item.weight.toFixed(3)}" readonly>
                     <input type="number" class="inp-issue" placeholder="Wt">
+                    <input type="text" class="inp-dyeing" placeholder="Dyeing Unit" list="dyeing-list">
                     <button class="del-btn" onclick="this.parentElement.remove()">×</button>
                 `;
                 weftContainer.appendChild(row);
@@ -566,15 +567,13 @@ function loadYarnRequirements() {
     }
 }
 
-// 📌 FIREBASE SYNC: saveDyeingIssue
 async function saveDyeingIssue() {
     let dateVal = document.getElementById('issueDate').value;
-    let dName = document.getElementById('dyeingName').value.trim();
     let dNumber = document.getElementById('designNumber').value;
     let isCombineChecked = document.getElementById('combineToggle').checked;
 
-    if(!dateVal || !dName || !dNumber) {
-        alert("Please fill Date, Dyeing Name, and Design Number!");
+    if(!dateVal || !dNumber) {
+        alert("Please fill Date and Design Number!");
         return;
     }
 
@@ -591,58 +590,76 @@ async function saveDyeingIssue() {
     btn.innerText = "Saving ☁️...";
 
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let savedUnitsList = JSON.parse(localStorage.getItem('dyeing_unit_names')) || ["Ganesa Dyeing", "Murugan Dyeing", "Sri Sakthi Dyeing"];
+    let newDyeingAdded = false;
 
     if (editingIssueId) {
         let idx = issueRecords.findIndex(r => r.id == editingIssueId);
         if(idx !== -1) {
             let row = document.querySelector('.line-row');
             if(row) {
+                let unitName = row.querySelector('.inp-dyeing').value.trim();
                 issueRecords[idx].date = dateVal;
-                issueRecords[idx].unit = dName;
+                issueRecords[idx].unit = unitName;
                 issueRecords[idx].designNo = dNumber;
                 issueRecords[idx].issueWt = parseFloat(row.querySelector('.inp-issue').value || 0).toFixed(3);
+                
+                // Add to auto-complete list if new
+                if (unitName && !savedUnitsList.includes(unitName)) {
+                    savedUnitsList.push(unitName);
+                    newDyeingAdded = true;
+                }
             }
         }
         editingIssueId = null;
         alert("Dyeing Order Updated to Cloud Successfully! ✅☁️");
     } else {
-        // Process Main / Warp Container rows
+        let hasData = false;
+        
         warpRows.forEach(row => {
             let count = row.querySelector('.inp-count').value;
             let color = row.querySelector('.inp-color').value;
             let orderWt = row.querySelector('.inp-order').value;
             let issueWt = row.querySelector('.inp-issue').value.trim();
+            let dyeingUnit = row.querySelector('.inp-dyeing').value.trim();
             let rowType = row.getAttribute('data-type') || 'Warp';
 
-            if(issueWt) {
+            if(issueWt && dyeingUnit) {
+                hasData = true;
                 issueRecords.push({
                     id: Date.now() + Math.random(),
                     date: dateVal,
-                    unit: dName,
+                    unit: dyeingUnit,
                     designNo: dNumber,
-                    yarnType: rowType, // Will store "Combined" or "Warp"
+                    yarnType: rowType,
                     count: count,
                     color: color,
                     orderWt: parseFloat(orderWt).toFixed(3),
                     issueWt: parseFloat(issueWt).toFixed(3),
                     status: "Pending"
                 });
+
+                if (!savedUnitsList.includes(dyeingUnit)) {
+                    savedUnitsList.push(dyeingUnit);
+                    newDyeingAdded = true;
+                }
             }
         });
 
-        // Process Weft Rows (if separate)
         if (!isCombineChecked) {
             weftRows.forEach(row => {
                 let count = row.querySelector('.inp-count').value;
                 let color = row.querySelector('.inp-color').value;
                 let orderWt = row.querySelector('.inp-order').value;
                 let issueWt = row.querySelector('.inp-issue').value.trim();
+                let dyeingUnit = row.querySelector('.inp-dyeing').value.trim();
 
-                if(issueWt) {
+                if(issueWt && dyeingUnit) {
+                    hasData = true;
                     issueRecords.push({
                         id: Date.now() + Math.random(),
                         date: dateVal,
-                        unit: dName,
+                        unit: dyeingUnit,
                         designNo: dNumber,
                         yarnType: "Weft",
                         count: count,
@@ -651,17 +668,36 @@ async function saveDyeingIssue() {
                         issueWt: parseFloat(issueWt).toFixed(3),
                         status: "Pending"
                     });
+
+                    if (!savedUnitsList.includes(dyeingUnit)) {
+                        savedUnitsList.push(dyeingUnit);
+                        newDyeingAdded = true;
+                    }
                 }
             });
         }
+        
+        if(!hasData) {
+            btn.innerText = origText;
+            alert("Please enter both Issued Wt and Dyeing Unit for at least one colour.");
+            return;
+        }
 
-        alert("Dyeing Order Issued to Cloud Successfully! ✅☁️");
+        alert("Dyeing Orders Issued to Cloud Successfully! ✅☁️");
     }
 
+    // Save Data
     localStorage.setItem('dyeing_issue_records', JSON.stringify(issueRecords));
     
+    // Save updated Dyeing Names list
+    if (newDyeingAdded) {
+        localStorage.setItem('dyeing_unit_names', JSON.stringify(savedUnitsList));
+        loadDyeingList(); // Refresh dropdown
+    }
+
     if (window.firebaseSave) {
         await window.firebaseSave('dyeing_issue_records', issueRecords);
+        if(newDyeingAdded) await window.firebaseSave('dyeing_unit_names', savedUnitsList);
     }
     
     document.getElementById('designNumber').value = '';
@@ -678,7 +714,6 @@ function editIssueRecord(id) {
         editingIssueId = id;
         document.getElementById('issueDate').value = rec.date;
         document.getElementById('designNumber').value = rec.designNo;
-        document.getElementById('dyeingName').value = rec.unit;
         
         let container = (rec.yarnType === 'Weft') ? document.getElementById('weftIssueLinesContainer') : document.getElementById('warpIssueLinesContainer');
         document.getElementById('warpIssueLinesContainer').innerHTML = '';
@@ -690,6 +725,7 @@ function editIssueRecord(id) {
                 <input type="text" class="inp-color" value="${rec.color}" readonly>
                 <input type="text" class="inp-order" value="${rec.orderWt}" readonly>
                 <input type="number" class="inp-issue" value="${rec.issueWt}">
+                <input type="text" class="inp-dyeing" value="${rec.unit}" list="dyeing-list">
                 <button class="del-btn" onclick="this.parentElement.remove()">×</button>
             </div>
         `;
@@ -746,9 +782,9 @@ function renderIssuedList() {
         tbody.innerHTML += `
             <tr>
                 <td>${dateStr}</td>
-                <td>${record.unit}</td>
+                <td><b>${record.unit}</b></td>
                 <td>${record.designNo}</td>
-                <td><b>${yType}</b></td>
+                <td>${yType}</td>
                 <td>${record.count}</td>
                 <td>${record.color}</td>
                 <td>${orderWtFormatted}</td>
@@ -803,7 +839,7 @@ function renderIssuedList() {
         let origText = btn ? btn.innerText : "Save Dyeing Order Issue";
         if(btn) btn.innerText = "Syncing ☁️...";
 
-        let collections = ['dyeing_issue_records', 'pre_design_numbers', 'design_masters_data', 'design_specs'];
+        let collections = ['dyeing_issue_records', 'pre_design_numbers', 'design_masters_data', 'design_specs', 'dyeing_unit_names'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
@@ -813,6 +849,7 @@ function renderIssuedList() {
         if(btn) btn.innerText = origText;
         
         loadDesignDropdown();
+        loadDyeingList(); // Ensure dynamic list updates from Firebase as well
         renderIssuedList();
     });
 </script>
