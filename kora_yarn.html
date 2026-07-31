@@ -94,6 +94,17 @@
         font-weight: 700;
     }
 
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 40px;
+        border-radius: 4px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        cursor: zoom-in;
+        transition: transform 0.2s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     .page-title {
         font-size: 16px;
         margin-bottom: 5px;
@@ -225,6 +236,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design with Horizontal Scroll */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -264,9 +291,11 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div id="bitmapDisplayContainer">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
         </div>
     </div>
 
@@ -332,7 +361,7 @@
         <div class="form-row full">
             <div class="form-group">
                 <label>Design Number</label>
-                <select id="designNo">
+                <select id="designNo" onchange="onDesignSelect(this.value)">
                     <option value="">Select Design</option>
                 </select>
             </div>
@@ -414,6 +443,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 let editingInwardId = null;
 let editingIssueId = null;
@@ -437,12 +472,73 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let imgHtml = '';
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+    
+    let wasChecked = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) wasChecked = cb.checked;
+    
+    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+    
+    if(wasChecked) {
+        document.getElementById('top_completed_status').checked = true;
+    }
+}
+
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let select = document.getElementById('designNo');
     let html = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
     select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && preDesignList.includes(activeDesign)) {
+        select.value = activeDesign;
+        onDesignSelect(activeDesign);
+    } else {
+        loadBitmapImage();
+    }
+}
+
+function onDesignSelect(val) {
+    loadBitmapImage();
+    if(!val) return;
+    localStorage.setItem('selected_design_number', val);
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
+
+    if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = true;
+    } else {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = false;
+    }
 }
 
 function toggleStockType() {
@@ -459,6 +555,74 @@ function toggleStockType() {
     }
 }
 
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('designNo').value;
+    let cb = document.getElementById('top_completed_status');
+    let isCompleted = cb ? cb.checked : false;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        if(cb) cb.checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Kora Issue Records Save / Update
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let updated = false;
+
+    issues.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
+        let dyeingName = document.getElementById('dyeingName').value.trim() || 'Direct Unit';
+        let issueMillName = document.getElementById('issueMillName').value.trim() || 'Main Mill';
+        let count = document.getElementById('issueCount').value.trim() || '20/s';
+        let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
+
+        issues.push({
+            id: Date.now(),
+            date: dateVal,
+            dyeingName: dyeingName,
+            millName: issueMillName,
+            designNo: dNo,
+            count: count,
+            issueWt: issueWt.toFixed(3),
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('kora_issue_records', JSON.stringify(issues));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('kora_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    refreshAllTables();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
 // 1. SAVE INWARD STOCK
 async function saveInward() {
     let stockType = document.getElementById('stockType').value;
@@ -466,7 +630,10 @@ async function saveInward() {
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
     let weight = parseFloat(document.getElementById('inwardWt').value) || 0;
-    let isCompleted = document.getElementById('top_completed_status').checked;
+    
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) isCompleted = cb.checked;
 
     if(!supplier || !count || weight <= 0) {
         alert("Please enter Name, Count, and valid Weight!");
@@ -513,7 +680,7 @@ async function saveInward() {
     document.getElementById('supplierName').value = '';
     document.getElementById('inwardCount').value = '';
     document.getElementById('inwardWt').value = '';
-    document.getElementById('top_completed_status').checked = false; // reset
+    if(cb) cb.checked = false; 
     
     refreshAllTables();
     btn.innerText = "✅ Save Kora Stock";
@@ -527,7 +694,10 @@ async function saveIssue() {
     let dNo = document.getElementById('designNo').value;
     let count = document.getElementById('issueCount').value.trim();
     let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
-    let isCompleted = document.getElementById('top_completed_status').checked;
+    
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) isCompleted = cb.checked;
 
     if(!dyeingName || !dNo || !count || issueWt <= 0 || !issueMillName) {
         alert("Please fill all details to issue yarn (including Mill Name)!");
@@ -567,10 +737,17 @@ async function saveIssue() {
         alert("Kora Yarn Issued to Cloud Successfully! ✅☁️");
     }
 
+    // Sync design_specs status for Design List Page
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) designSpecs[dNo] = {};
+    designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
     
     if (window.firebaseSave) {
         await window.firebaseSave('kora_issue_records', issues);
+        await window.firebaseSave('design_specs', designSpecs);
     }
 
     document.getElementById('dyeingName').value = '';
@@ -578,7 +755,7 @@ async function saveIssue() {
     document.getElementById('designNo').value = '';
     document.getElementById('issueCount').value = '';
     document.getElementById('issueWt').value = '';
-    document.getElementById('top_completed_status').checked = false; // reset
+    if(cb) cb.checked = false; 
     
     refreshAllTables();
     btn.innerText = "➕ Add Kora Issue";
@@ -612,6 +789,17 @@ async function toggleIssueStatus(id, newStatus) {
             records[index].status = newStatus;
             localStorage.setItem('kora_issue_records', JSON.stringify(records));
             
+            let dNo = records[index].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('kora_issue_records', records);
             }
@@ -619,7 +807,6 @@ async function toggleIssueStatus(id, newStatus) {
         }
     }
 }
-
 
 // 3. REFRESH HISTORY TABLES ONLY
 function refreshAllTables() {
@@ -708,7 +895,10 @@ function editInward(id) {
         document.getElementById('supplierName').value = rec.supplier;
         document.getElementById('inwardCount').value = rec.count;
         document.getElementById('inwardWt').value = rec.weight;
-        document.getElementById('top_completed_status').checked = (rec.status === 'completed');
+        
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = (rec.status === 'completed');
+        
         document.getElementById('saveInwardBtn').innerText = "🔄 Update Kora Stock";
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -738,7 +928,12 @@ function editIssue(id) {
         document.getElementById('designNo').value = rec.designNo;
         document.getElementById('issueCount').value = rec.count;
         document.getElementById('issueWt').value = rec.issueWt;
-        document.getElementById('top_completed_status').checked = (rec.status === 'completed');
+        
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = (rec.status === 'completed');
+        
+        onDesignSelect(rec.designNo);
+
         document.getElementById('saveIssueBtn').innerText = "🔄 Update Issue";
         document.getElementById('dyeingName').scrollIntoView({behavior: 'smooth'});
     }
@@ -807,7 +1002,7 @@ async function deleteIssue(id) {
         if(btn1) btn1.innerText = "⏳ Syncing...";
         if(btn2) btn2.innerText = "⏳ Syncing...";
 
-        let collections = ['kora_stock_records', 'kora_issue_records', 'pre_design_numbers'];
+        let collections = ['kora_stock_records', 'kora_issue_records', 'pre_design_numbers', 'design_specs'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);

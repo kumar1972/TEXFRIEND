@@ -300,7 +300,7 @@
             <a href="dashboard.html" class="back-link">← Back to Menu</a>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div class="completed-checkbox">
-                    <input type="checkbox" id="top_completed_status">
+                    <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
                     <label for="top_completed_status">Completed</label>
                 </div>
                 <div id="bitmapDisplayContainer"></div>
@@ -669,6 +669,15 @@
                 let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
                 let specs = specKey ? designSpecs[specKey] : { warp: '', warp2: '', weft: '', reed: '', pick: '' };
                 
+                let specStatus = (specs && specs.status) ? specs.status.toLowerCase() : '';
+                let rec = weavingMasterData.find(r => (r.designNo === val || r.designNumber === val));
+
+                if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
+                    document.getElementById('top_completed_status').checked = true;
+                } else {
+                    document.getElementById('top_completed_status').checked = false;
+                }
+
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
                 document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || ''; 
                 document.getElementById('weftCount').value = specs.weft || '';
@@ -885,6 +894,74 @@
             `;
         }
 
+        // 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+        async function quickCompleteToggle() {
+            let dNo = document.getElementById('topDesignNo').value;
+            let isCompleted = document.getElementById('top_completed_status').checked;
+
+            if(!dNo) {
+                alert("Mudhala Design Number select pannunga bro");
+                document.getElementById('top_completed_status').checked = false;
+                return;
+            }
+
+            let statusText = isCompleted ? 'completed' : 'running';
+
+            // 1. LocalStorage-il Weaving Master Data & Transactions Save / Update
+            let weaverName = document.getElementById('topWeaverName').value.trim() || 'Direct Weaver';
+            let index = weavingMasterData.findIndex(x => x.designNo === dNo);
+
+            if(index > -1) {
+                weavingMasterData[index].status = statusText;
+            } else {
+                weavingMasterData.push({
+                    id: Date.now(),
+                    date: document.getElementById('topDate').value || new Date().toISOString().split('T')[0],
+                    weaverName: weaverName,
+                    designNo: dNo,
+                    weavingMts: document.getElementById('weavingMts').value || '100',
+                    warpRows: [],
+                    weftRows: [],
+                    status: statusText
+                });
+            }
+
+            warpTransactions.forEach(x => {
+                if(x.designNo === dNo) x.status = statusText;
+            });
+            weftTransactions.forEach(x => {
+                if(x.designNo === dNo) x.status = statusText;
+            });
+
+            localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
+            localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+            localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+
+            // 2. Design List Page Sync (design_specs Update)
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            if(!designSpecs[dNo]) {
+                designSpecs[dNo] = {};
+            }
+            designSpecs[dNo].status = statusText;
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+            // 3. Save to Firebase Cloud Instant Sync
+            try {
+                if (window.firebaseSave) {
+                    await window.firebaseSave('weaving_master_data', weavingMasterData);
+                    await window.firebaseSave('weaving_warp_trans', warpTransactions);
+                    await window.firebaseSave('weaving_weft_trans', weftTransactions);
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            } catch(e) {
+                console.error("Firebase Sync Error: ", e);
+            }
+
+            updateTables();
+            // 📌 POPUP ALERT MESSAGE RESTORED HERE:
+            alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+        }
+
         async function saveTopData(e) {
             e.preventDefault();
             const designNo = document.getElementById('topDesignNo').value.trim();
@@ -981,6 +1058,11 @@
                 });
             });
 
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            if(!designSpecs[designNo]) designSpecs[designNo] = {};
+            designSpecs[designNo].status = isCompleted ? 'completed' : 'running';
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
             localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
             localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
@@ -989,6 +1071,7 @@
                 await window.firebaseSave('weaving_master_data', weavingMasterData);
                 await window.firebaseSave('weaving_warp_trans', warpTransactions);
                 await window.firebaseSave('weaving_weft_trans', weftTransactions);
+                await window.firebaseSave('design_specs', designSpecs);
             }
 
             updateTables();
@@ -1113,6 +1196,16 @@
             if(confirm(msg)) {
                 warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                
+                let item = warpTransactions.find(x => x.id === id);
+                if(item && item.designNo) {
+                    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                    if(!designSpecs[item.designNo]) designSpecs[item.designNo] = {};
+                    designSpecs[item.designNo].status = newStatus;
+                    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                    if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+                }
+
                 if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
                 updateTables();
             }
@@ -1123,6 +1216,16 @@
             if(confirm(msg)) {
                 weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                
+                let item = weftTransactions.find(x => x.id === id);
+                if(item && item.designNo) {
+                    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                    if(!designSpecs[item.designNo]) designSpecs[item.designNo] = {};
+                    designSpecs[item.designNo].status = newStatus;
+                    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                    if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+                }
+
                 if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 updateTables();
             }

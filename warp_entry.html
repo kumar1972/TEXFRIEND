@@ -64,6 +64,17 @@
     }
     .back-btn:hover { background: #0F1713; transform: translateY(-2px); }
 
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     /* Checkbox Styling */
     .completed-checkbox {
         display: flex;
@@ -158,17 +169,17 @@
     }
     input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-    /* 📌 Pattern Grids */
+    /* 📌 Fixed Pattern Grids (Ensuring Ends column is fully visible like the old layout) */
     .header-grid {
         display: grid;
         grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
+        gap: 4px; padding: 5px 0; font-size: 9px; font-weight: 700;
         color: #2F4F38; text-align: center; text-transform: uppercase;
     }
     .row-grid {
         display: grid;
         grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 6px; margin-bottom: 8px; align-items: center;
+        gap: 4px; margin-bottom: 8px; align-items: center;
     }
 
     .header-grid-range {
@@ -183,7 +194,7 @@
         gap: 6px; margin-bottom: 8px; align-items: center;
     }
 
-    .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 4px; font-size: 11px; }
+    .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 2px; font-size: 11px; }
 
     .line-no {
         font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center;
@@ -244,6 +255,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design with Horizontal Scroll */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -281,9 +308,11 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div id="bitmapDisplayContainer">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
         </div>
     </div>
 
@@ -434,6 +463,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 let currentBaseSpecs = {};
 
@@ -449,6 +484,40 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let imgHtml = '';
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+    
+    let wasChecked = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) wasChecked = cb.checked;
+    
+    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+    
+    if(wasChecked) {
+        document.getElementById('top_completed_status').checked = true;
+    }
+}
+
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
@@ -457,8 +526,16 @@ function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let select = document.getElementById('designNo');
     let html = '<option value="">Select Design No</option>';
-    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    preDesignList.forEach(d => { html += '<option value="' + d + '">' + d + '</option>'; });
     select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && preDesignList.includes(activeDesign)) {
+        select.value = activeDesign;
+        loadDesignData();
+    } else {
+        loadBitmapImage();
+    }
 }
 
 function calculateOnloomWidth() {
@@ -476,6 +553,9 @@ function calculateOnloomWidth() {
 
 function loadDesignData() {
     let dNo = document.getElementById('designNo').value;
+    loadBitmapImage();
+    if(dNo) localStorage.setItem('selected_design_number', dNo);
+
     let linesContainer = document.getElementById('warpLinesContainer');
     let rangesContainer = document.getElementById('warpRangesContainer');
     let saveBtn = document.getElementById('saveBtnTxt');
@@ -491,7 +571,9 @@ function loadDesignData() {
     document.getElementById('infoReed').value = '';
     document.getElementById('infoPick').value = '';
     document.getElementById('infoWidth').value = '';
-    document.getElementById('top_completed_status').checked = false;
+    if(document.getElementById('top_completed_status')) {
+        document.getElementById('top_completed_status').checked = false;
+    }
 
     if(!dNo) {
         saveBtn.innerText = "💾 Save";
@@ -513,11 +595,24 @@ function loadDesignData() {
     let autoPick = basePick > 0 ? (basePick - 4) : '';
 
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let designOrders = orders.filter(o => cleanDesignName(o.designNo) === cleanDNo);
+    let designOrders = orders.filter(o => cleanDesignName(o.designNo || o.designNumber) === cleanDNo);
     let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
+
+    // Check status in design_specs and masters
+    let specStatus = (currentBaseSpecs && currentBaseSpecs.status) ? currentBaseSpecs.status.toLowerCase() : '';
+
+    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) {
+        if(document.getElementById('top_completed_status')) {
+            document.getElementById('top_completed_status').checked = true;
+        }
+    } else {
+        if(document.getElementById('top_completed_status')) {
+            document.getElementById('top_completed_status').checked = false;
+        }
+    }
 
     if (found) {
         saveBtn.innerText = "✏️ Update"; 
@@ -529,7 +624,6 @@ function loadDesignData() {
         
         document.getElementById('infoReed').value = found.reed || autoReed;
         document.getElementById('infoPick').value = found.pick || autoPick;
-        document.getElementById('top_completed_status').checked = (found.status === 'completed');
 
         if(found.warpLines && found.warpLines.length > 0) {
             found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends));
@@ -612,6 +706,59 @@ function updateLineNumbers() {
     });
 }
 
+// 📌 FIXED: Completed Checkbox Toggle with Alert Pop-up & Design List Sync
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('designNo').value;
+    let cb = document.getElementById('top_completed_status');
+    let isCompleted = cb ? cb.checked : false;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        if(cb) cb.checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Design Masters Update
+    let cleanDNo = cleanDesignName(dNo);
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+
+    if(idx > -1) {
+        masters[idx].status = statusText;
+    } else {
+        masters.push({
+            name: dNo,
+            status: statusText,
+            warpLines: [],
+            warpRanges: []
+        });
+    }
+    localStorage.setItem('design_masters_data', JSON.stringify(masters));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('design_masters_data', masters);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderSavedList();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
 // 📌 FIREBASE SYNC: saveWarpDesign
 window.saveWarpDesign = async function() {
     let dNo = document.getElementById('designNo').value;
@@ -631,7 +778,10 @@ window.saveWarpDesign = async function() {
     let reed = document.getElementById('infoReed').value.trim();
     let pick = document.getElementById('infoPick').value.trim();
     let width = document.getElementById('infoWidth').value.trim();
-    let isCompleted = document.getElementById('top_completed_status').checked;
+    
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) isCompleted = cb.checked;
 
     let lines = [];
     document.querySelectorAll('.line-item').forEach(row => {
@@ -683,10 +833,17 @@ window.saveWarpDesign = async function() {
         masters[idx] = Object.assign({}, masters[idx], patternData);
     }
 
+    // Sync design_specs status for Design List Page
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) designSpecs[dNo] = {};
+    designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
     if(window.firebaseSave) {
         await window.firebaseSave('design_masters_data', masters);
+        await window.firebaseSave('design_specs', designSpecs);
     }
 
     saveBtn.innerText = originalText;
@@ -705,8 +862,14 @@ async function toggleStatus(dNo, newStatus) {
             masters[index].status = newStatus;
             localStorage.setItem('design_masters_data', JSON.stringify(masters));
             
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            if(!designSpecs[dNo]) designSpecs[dNo] = {};
+            designSpecs[dNo].status = newStatus;
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
             if(window.firebaseSave) {
                 await window.firebaseSave('design_masters_data', masters);
+                await window.firebaseSave('design_specs', designSpecs);
             }
             renderSavedList();
         }
@@ -889,7 +1052,7 @@ function previewPattern() {
 
             blockLines.forEach((item, index) => {
                 let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 20px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 20px; color: #2F4F38;">${item.ends}</span>`;
-                let colorTamil = translateColorToTamil(item.color);
+                let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
                 
                 tbodyHtml += `<tr>
                     <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
@@ -916,7 +1079,7 @@ function previewPattern() {
             }
             
             let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 20px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 20px; color: #2F4F38;">${item.ends}</span>`;
-            let colorTamil = translateColorToTamil(item.color);
+            let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
             
             tbodyHtml += `<tr>
                 <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
@@ -1037,8 +1200,9 @@ function previewPattern() {
         let preDesigns = await window.firebaseLoad('pre_design_numbers');
         if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
 
-        let specs = await window.firebaseLoad('design_specs');
-        if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
+        let specs = await window.firebaseLoad('design_masters_data'); // keeping safe load
+        let designSpecs = await window.firebaseLoad('design_specs');
+        if (designSpecs) localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
         let orders = await window.firebaseLoad('party_orders_data');
         if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
@@ -1046,7 +1210,10 @@ function previewPattern() {
         if(saveBtn) saveBtn.innerText = "💾 Save";
         
         loadDesignDropdown();
-        addWarpLine(); 
+        if(!document.getElementById('designNo').value) {
+            addWarpLine(); 
+        }
+        loadBitmapImage();
     });
 </script>
 </body>

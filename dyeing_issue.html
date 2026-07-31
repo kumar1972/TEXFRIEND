@@ -94,6 +94,19 @@
         font-weight: 700;
     }
 
+    #bitmapDisplayContainer {
+        text-align: right;
+    }
+    #bitmapDisplayContainer img {
+        max-height: 40px;
+        border-radius: 4px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        cursor: zoom-in;
+        transition: transform 0.2s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     .card-header {
         font-size: 16px;
         margin-bottom: 5px;
@@ -315,6 +328,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design with Horizontal Scroll */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -360,9 +389,12 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
         </div>
     </div>
 
@@ -460,6 +492,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 let editingIssueId = null;
 
@@ -481,6 +519,29 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
+}
+
 function loadDesignDropdowns() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
@@ -498,6 +559,14 @@ function loadDesignDropdowns() {
         if(d) html += '<option value="' + d + '">' + d + '</option>';
     });
     select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && allDesigns.has(activeDesign)) {
+        select.value = activeDesign;
+        loadDesignItems();
+    } else {
+        loadBitmapImage();
+    }
 }
 
 function resolvePattern(lines, ranges, type, defaultCount) {
@@ -556,6 +625,7 @@ function parseYarnCount(countStr) {
 }
 
 function loadDesignItems() {
+    loadBitmapImage();
     let dNo = document.getElementById('designNumber').value;
     let container = document.getElementById('issueLinesContainer');
     container.innerHTML = '';
@@ -572,6 +642,16 @@ function loadDesignItems() {
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(designSpecs).find(k => k.replace('#', '').trim().toLowerCase() === cleanDNo);
     let foundSpec = specKey ? designSpecs[specKey] : {};
+
+    let specStatus = (foundSpec && foundSpec.status) ? foundSpec.status.toLowerCase() : '';
+    let existingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let rec = existingIssues.find(r => (r.designNo === dNo || r.designNumber === dNo));
+
+    if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
+        document.getElementById('top_completed_status').checked = true;
+    } else {
+        document.getElementById('top_completed_status').checked = false;
+    }
 
     let defaultWarpCount = foundMaster.count1 || foundSpec.warp || '20';
     let defaultWeftCount = foundMaster.weftCount || foundSpec.weft || '40';
@@ -629,8 +709,6 @@ function loadDesignItems() {
 
     let displayList = Array.from(combinedMap.values());
 
-    // 📌 NEW LOGIC: Deduct Already Issued Yarn to show only remaining balance
-    let existingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let cleanSelectedDNoForFilter = (dNo || "").trim().toLowerCase();
     
     displayList.forEach(item => {
@@ -648,7 +726,6 @@ function loadDesignItems() {
         item.orderWt = item.orderWt - alreadyIssuedWt;
     });
 
-    // 📌 Filter out fully issued items (threshold 0.005 to handle small float rounding errors)
     displayList = displayList.filter(item => item.orderWt > 0.005);
 
     if(displayList.length > 0) {
@@ -668,7 +745,18 @@ function loadDesignItems() {
         });
         updateTotals();
     } else {
-        container.innerHTML = '<div style="font-size:12px; text-align:center; padding:15px; color:#10B981; font-weight:bold; background:#F4F7F4; border-radius:10px; border:1px solid #D1DED1;">✅ All yarns are fully issued for this design!</div>';
+        let row = document.createElement('div');
+        row.className = 'line-row';
+        row.innerHTML = `
+            <input type="text" class="inp-count" value="20/s" placeholder="Count">
+            <input type="text" class="inp-color" value="White" placeholder="Colour">
+            <input type="number" class="inp-ordwt" value="0.000" step="0.001">
+            <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
+            <input type="text" class="inp-unit" placeholder="Dyeing Unit">
+            <input type="hidden" class="inp-type" value="Combined">
+            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+        `;
+        container.appendChild(row);
         updateTotals();
     }
 }
@@ -687,6 +775,78 @@ function updateTotals() {
     document.getElementById('sumIssWt').innerText = totalIss.toFixed(3);
 }
 
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('designNumber').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        document.getElementById('top_completed_status').checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Dyeing Issue Records Save / Update
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let updated = false;
+
+    records.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
+        let firstRow = document.querySelector('.line-row');
+        let count = firstRow ? firstRow.querySelector('.inp-count').value : '20/s';
+        let color = firstRow ? firstRow.querySelector('.inp-color').value : 'General';
+        let ordWt = firstRow ? parseFloat(firstRow.querySelector('.inp-ordwt').value) || 0 : 0;
+        let issWt = firstRow ? parseFloat(firstRow.querySelector('.inp-isswt').value) || 0 : 0;
+        let unit = firstRow ? firstRow.querySelector('.inp-unit').value.trim() : 'Main Unit';
+        let type = firstRow ? firstRow.querySelector('.inp-type').value : 'Combined';
+
+        records.push({
+            id: Date.now(),
+            date: dateVal,
+            designNo: dNo,
+            yarnType: type,
+            count: count,
+            color: color,
+            orderWt: ordWt.toFixed(3),
+            issueWt: issWt.toFixed(3),
+            unit: unit || 'Main Unit',
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_issue_records', records);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderIssuedList();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
 // 📌 FIREBASE SYNC: saveIssueEntries
 async function saveIssueEntries() {
     let dateVal = document.getElementById('issueDate').value;
@@ -698,10 +858,23 @@ async function saveIssueEntries() {
         return;
     }
 
-    let rows = document.querySelectorAll('#issueLinesContainer .line-row');
+    let container = document.getElementById('issueLinesContainer');
+    let rows = container.querySelectorAll('.line-row');
+    
     if(rows.length === 0) {
-        alert("No items to save!");
-        return;
+        let row = document.createElement('div');
+        row.className = 'line-row';
+        row.innerHTML = `
+            <input type="text" class="inp-count" value="20/s" placeholder="Count">
+            <input type="text" class="inp-color" value="General" placeholder="Colour">
+            <input type="number" class="inp-ordwt" value="0.000" step="0.001">
+            <input type="number" class="inp-isswt" value="1.000" step="0.001" oninput="updateTotals()">
+            <input type="text" class="inp-unit" value="Main Unit" placeholder="Dyeing Unit">
+            <input type="hidden" class="inp-type" value="Combined">
+            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+        `;
+        container.appendChild(row);
+        rows = container.querySelectorAll('.line-row');
     }
 
     let btn = document.getElementById('saveIssueBtnTxt');
@@ -711,11 +884,10 @@ async function saveIssueEntries() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let savedCount = 0;
     
-    // If we are editing, update the existing record
     if(editingIssueId) {
        let rowIndex = records.findIndex(r => r.id == editingIssueId);
        if(rowIndex > -1) {
-           let row = rows[0]; // Assuming only one item row gets loaded for edit
+           let row = rows[0]; 
            records[rowIndex].date = dateVal;
            records[rowIndex].designNo = dNo;
            records[rowIndex].issueWt = parseFloat(row.querySelector('.inp-isswt').value).toFixed(3) || "0.000";
@@ -723,7 +895,7 @@ async function saveIssueEntries() {
            records[rowIndex].status = isCompleted ? "completed" : "running";
            savedCount++;
        }
-       editingIssueId = null; // reset
+       editingIssueId = null; 
     } else {
         rows.forEach(row => {
             let count = row.querySelector('.inp-count').value.trim();
@@ -733,40 +905,46 @@ async function saveIssueEntries() {
             let unit = row.querySelector('.inp-unit').value.trim();
             let type = row.querySelector('.inp-type').value.trim();
 
-            if(issWt > 0 && unit) {
-                records.push({
-                    id: Date.now() + Math.random(),
-                    date: dateVal,
-                    designNo: dNo,
-                    yarnType: type,
-                    count: count,
-                    color: color,
-                    orderWt: ordWt.toFixed(3),
-                    issueWt: issWt.toFixed(3),
-                    unit: unit,
-                    status: isCompleted ? "completed" : "running"
-                });
-                savedCount++;
-            }
+            if(!unit) unit = "Default Unit";
+
+            records.push({
+                id: Date.now() + Math.random(),
+                date: dateVal,
+                designNo: dNo,
+                yarnType: type,
+                count: count || '20/s',
+                color: color || '-',
+                orderWt: ordWt.toFixed(3),
+                issueWt: (issWt > 0 ? issWt : ordWt).toFixed(3),
+                unit: unit,
+                status: isCompleted ? "completed" : "running"
+            });
+            savedCount++;
         });
     }
 
     if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[dNo]) designSpecs[dNo] = {};
+        designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
         localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
         
         if (window.firebaseSave) {
             await window.firebaseSave('dyeing_issue_records', records);
+            await window.firebaseSave('design_specs', designSpecs);
         }
 
-        alert("Dyeing Order Issues Saved to Cloud Successfully! ✅☁️");
+        alert("Dyeing Order Issues Saved Successfully! ✅☁️");
         
         document.getElementById('issueLinesContainer').innerHTML = '';
         document.getElementById('designNumber').value = '';
-        document.getElementById('top_completed_status').checked = false; // reset checkbox
+        document.getElementById('top_completed_status').checked = false; 
         updateTotals();
         renderIssuedList();
     } else {
-        alert("Please enter Issue Weight and Dyeing Unit for at least one item.");
+        alert("Please check your entry fields.");
     }
     btn.innerText = origText;
 }
@@ -778,13 +956,12 @@ async function editIssuedRecord(id) {
     if (!rec) return;
 
     closeModal('issuedListModal');
-    editingIssueId = id; // Set the ID being edited
+    editingIssueId = id; 
 
     document.getElementById('issueDate').value = rec.date || new Date().toISOString().split('T')[0];
     document.getElementById('designNumber').value = rec.designNo;
     document.getElementById('top_completed_status').checked = (rec.status === 'completed');
 
-    // Display only the item being edited
     let container = document.getElementById('issueLinesContainer');
     container.innerHTML = '';
     
@@ -815,6 +992,17 @@ async function toggleStatus(id, newStatus) {
             records[recIndex].status = newStatus;
             localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
             
+            let dNo = records[recIndex].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('dyeing_issue_records', records);
             }
@@ -837,7 +1025,6 @@ async function deleteIssuedRecord(id) {
     }
     
     renderIssuedList();
-    // loadDesignItems(); // Removed to prevent clearing form if deleting from modal while form is populated
 }
 
 function renderIssuedList() {

@@ -60,12 +60,13 @@
         }
         .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-        #bitmapDisplayContainer { text-align: right; }
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
         #bitmapDisplayContainer img {
             max-height: 45px;
             border-radius: 6px;
             border: 1px solid rgba(82, 110, 81, 0.2);
             box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            cursor: zoom-in;
             transition: transform 0.3s;
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
@@ -227,6 +228,22 @@
 
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
         /* 📌 Advanced Table Design */
         .excel-table {
             width: 100%; border-collapse: separate; border-spacing: 0;
@@ -261,7 +278,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
             <h2 class="card-header" style="margin-bottom: 0;">Create Party Order</h2>
             <label style="display: flex; align-items: center; gap: 6px; background: #ECFDF5; border: 1px solid #10B981; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin: 0;">
-                <input type="checkbox" id="orderStatusToggle" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                <input type="checkbox" id="orderStatusToggle" onchange="quickCompleteToggle()" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
                 <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase; margin: 0;">Completed</span>
             </label>
         </div>
@@ -378,6 +395,12 @@
         </div>
     </div>
 
+    <!-- 📌 Fullscreen Image Popup Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+        <button class="close-fullscreen">Close ✕</button>
+        <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+    </div>
+
     <script>
         let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let editingId = null;
@@ -385,14 +408,23 @@
         function openModal(modalId) {
             let modal = document.getElementById(modalId);
             modal.style.display = 'flex';
-            // Slight delay to allow display block to apply before adding show class for animation
             setTimeout(() => modal.classList.add('show'), 10);
         }
 
         function closeModal(modalId) {
             let modal = document.getElementById(modalId);
             modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 300); // match transition duration
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // 📌 Fullscreen Image Popup Controls
+        window.openFullscreenImage = function(src) {
+            if(!src || src === '' || src === 'null') return;
+            document.getElementById('fullscreenImg').src = src;
+            document.getElementById('fullscreenModal').style.display = 'flex';
+        }
+        window.closeFullscreenImage = function() {
+            document.getElementById('fullscreenModal').style.display = 'none';
         }
 
         function loadBitmapImage() {
@@ -406,7 +438,8 @@
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
             
             if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-                bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+                let b64 = designSpecs[activeDesign].bitmap;
+                bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
             } else {
                 bitmapContainer.innerHTML = '';
             }
@@ -414,19 +447,94 @@
 
         function onDesignSelect(val) {
             loadBitmapImage();
+
             if(val) {
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+                let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
+                let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                let order = orders.find(x => x.designNumber === val || x.designNo === val);
+
+                if (specStatus === 'completed' || (order && order.status.toLowerCase() === 'completed')) {
+                    document.getElementById('orderStatusToggle').checked = true;
+                } else {
+                    document.getElementById('orderStatusToggle').checked = false;
+                }
+
                 let specs = designSpecs[val] || { warp: '', weft: '', reed: '', pick: '' };
                 document.getElementById('warpCount').value = specs.warp || '';
                 document.getElementById('weftCount').value = specs.weft || '';
                 document.getElementById('reed').value = specs.reed || '';
                 document.getElementById('pick').value = specs.pick || '';
             } else {
+                document.getElementById('orderStatusToggle').checked = false;
                 document.getElementById('warpCount').value = '';
                 document.getElementById('weftCount').value = '';
                 document.getElementById('reed').value = '';
                 document.getElementById('pick').value = '';
             }
+        }
+
+        // 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+        async function quickCompleteToggle() {
+            let designNo = document.getElementById('designNumber').value;
+            let isCompleted = document.getElementById('orderStatusToggle').checked;
+
+            if(!designNo) {
+                alert("Mudhala Design Number select pannunga bro");
+                document.getElementById('orderStatusToggle').checked = false;
+                return;
+            }
+
+            let statusText = isCompleted ? 'completed' : 'running';
+
+            // 1. LocalStorage-il Party Orders Save / Update
+            let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+            let index = orders.findIndex(x => (x.designNumber === designNo || x.designNo === designNo));
+
+            if(index > -1) {
+                orders[index].status = statusText;
+            } else {
+                let newOrder = {
+                    id: Date.now(),
+                    date: document.getElementById('orderDate').value || new Date().toISOString().split('T')[0],
+                    partyName: document.getElementById('partyName').value.trim() || 'Direct Order',
+                    poNo: document.getElementById('poNumber').value.trim() || 'N/A',
+                    designNumber: designNo,
+                    warpCount: document.getElementById('warpCount').value.trim() || '-',
+                    weftCount: document.getElementById('weftCount').value.trim() || '-',
+                    reed: document.getElementById('reed').value.trim() || '-',
+                    pick: document.getElementById('pick').value.trim() || '-',
+                    width: document.getElementById('width').value.trim() || '-',
+                    weaveType: document.getElementById('weaveType').value.trim() || '-',
+                    orderMtr: document.getElementById('orderMtr').value.trim() || '0',
+                    rateMtr: document.getElementById('rateMtr').value.trim() || '0',
+                    deliveryDate: document.getElementById('deliveryDate').value || new Date().toISOString().split('T')[0],
+                    status: statusText
+                };
+                orders.push(newOrder);
+            }
+            localStorage.setItem('party_orders_data', JSON.stringify(orders));
+
+            // 2. Design List Page Sync (design_specs Update)
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            if(!designSpecs[designNo]) {
+                designSpecs[designNo] = {};
+            }
+            designSpecs[designNo].status = statusText;
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+            // 3. Save to Firebase Cloud Instant Sync
+            try {
+                if (window.firebaseSave) {
+                    await window.firebaseSave('party_orders_data', orders);
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            } catch(e) {
+                console.error("Firebase Sync Error: ", e);
+            }
+
+            updatePartyTable();
+            alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
         }
 
         // 📌 FIREBASE SYNC: savePartyOrder
@@ -466,16 +574,23 @@
                 alert("Party Order saved to Cloud successfully! ✅☁️");
             }
 
+            let designNo = orderData.designNumber;
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            if(!designSpecs[designNo]) designSpecs[designNo] = {};
+            designSpecs[designNo].status = orderData.status;
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
             localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
             
             if (window.firebaseSave) {
                 await window.firebaseSave('party_orders_data', partyOrders);
+                await window.firebaseSave('design_specs', designSpecs);
             }
 
             updatePartyTable();
             
             document.getElementById('partyOrderForm').reset();
-            document.getElementById('orderStatusToggle').checked = false; // Reset checkbox
+            document.getElementById('orderStatusToggle').checked = false;
             document.getElementById('orderDate').valueAsDate = new Date();
             document.getElementById('deliveryDate').valueAsDate = new Date();
             
@@ -489,7 +604,7 @@
         }
 
         function editOrder(id) {
-            closeModal('savedOrdersModal'); // 📌 Close modal when clicking edit
+            closeModal('savedOrdersModal');
             let item = partyOrders.find(x => x.id === id);
             if(!item) return;
 
@@ -498,7 +613,7 @@
             document.getElementById('deliveryDate').value = item.deliveryDate || '';
             document.getElementById('partyName').value = item.partyName || '';
             document.getElementById('poNumber').value = item.poNo || '';
-            document.getElementById('designNumber').value = item.designNumber || '';
+            document.getElementById('designNumber').value = item.designNumber || item.designNo || '';
             document.getElementById('warpCount').value = item.warpCount || '';
             document.getElementById('weftCount').value = item.weftCount || '';
             document.getElementById('reed').value = item.reed || '';
@@ -529,7 +644,7 @@
                     <td>${item.date}</td>
                     <td><b>${item.partyName}</b></td>
                     <td>${item.poNo}</td>
-                    <td><b style="color:#2F4F38;">${item.designNumber}</b></td>
+                    <td><b style="color:#2F4F38;">${item.designNumber || item.designNo}</b></td>
                     <td>${item.orderMtr}</td>
                     <td>₹${item.rateMtr}</td>
                     <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
@@ -544,13 +659,24 @@
             });
         }
 
-        // 📌 FIREBASE SYNC: toggleStatus
         async function toggleStatus(id, newStatus) {
             let msg = newStatus === 'completed' ? "Indha order-ai Completed-aga maatranuma?" : "Indha order-ai Running-ku maatranuma?";
             if(confirm(msg)) {
                 partyOrders = partyOrders.map(x => x.id === id ? {...x, status: newStatus} : x);
                 localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
                 
+                let item = partyOrders.find(x => x.id === id);
+                if(item) {
+                    let dNo = item.designNumber || item.designNo;
+                    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                    if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                    designSpecs[dNo].status = newStatus;
+                    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                    if (window.firebaseSave) {
+                        await window.firebaseSave('design_specs', designSpecs);
+                    }
+                }
+
                 if (window.firebaseSave) {
                     await window.firebaseSave('party_orders_data', partyOrders);
                 }
@@ -559,7 +685,6 @@
             }
         }
 
-        // 📌 FIREBASE SYNC: deleteOrder
         async function deleteOrder(id) {
             if(confirm("Indha order-ai delete pannanuma?")){
                 partyOrders = partyOrders.filter(x => x.id !== id);
@@ -612,7 +737,6 @@
             return null;
         }
 
-        // Sync Data on Load
         window.addEventListener('load', async function() {
             let btn = document.getElementById('saveBtn');
             let origText = btn ? btn.innerText : "✅ Save Order Details";

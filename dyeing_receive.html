@@ -94,6 +94,19 @@
         font-weight: 700;
     }
 
+    #bitmapDisplayContainer {
+        text-align: right;
+    }
+    #bitmapDisplayContainer img {
+        max-height: 40px;
+        border-radius: 4px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        cursor: zoom-in;
+        transition: transform 0.2s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     .card-header {
         font-size: 16px;
         margin-bottom: 5px;
@@ -270,6 +283,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -301,9 +330,12 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
         </div>
     </div>
 
@@ -385,6 +417,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('receiveDate').valueAsDate = new Date();
@@ -404,8 +442,32 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
+}
+
 // 📌 All Master Designs loaded in Dropdown like Dyeing Issue
 function loadPendingDesigns() {
+    loadBitmapImage();
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -429,14 +491,32 @@ function loadPendingDesigns() {
         if(d) html += '<option value="' + d + '">' + d + '</option>';
     });
     select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && allDesigns.has(activeDesign)) {
+        select.value = activeDesign;
+        loadPendingItems();
+    }
 }
 
 function loadPendingItems() {
+    loadBitmapImage();
     let dNoInput = document.getElementById('designNumber').value;
     let container = document.getElementById('receiveLinesContainer');
     container.innerHTML = '';
 
     if(!dNoInput) return;
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specStatus = (designSpecs[dNoInput] && designSpecs[dNoInput].status) ? designSpecs[dNoInput].status.toLowerCase() : '';
+    let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+    let rec = receives.find(r => (r.designNo === dNoInput || r.designNumber === dNoInput));
+
+    if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
+        document.getElementById('top_completed_status').checked = true;
+    } else {
+        document.getElementById('top_completed_status').checked = false;
+    }
 
     let cleanSelectedDNo = dNoInput.trim().toLowerCase();
     let issueRecords = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -518,7 +598,6 @@ function loadPendingItems() {
         container.innerHTML = gridHtml;
 
     } else {
-        // 📌 Note added to avoid confusion if data is not issued
         container.innerHTML = `
             <div style="font-size:12px; text-align:center; padding:15px; color:#4A7C59; background:#FFFFFF; border-radius:10px; border:1px solid #D1DED1;">
                 <b>No pending issues found for this Design!</b><br>
@@ -565,6 +644,81 @@ function calculateLoss(inp) {
         excessWtInp.value = "";
         excessWtInp.style.color = "#10B981";
     }
+}
+
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('designNumber').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        document.getElementById('top_completed_status').checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Dyeing Receive Records Save / Update
+    let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+    let updated = false;
+
+    receives.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('receiveDate').value || new Date().toISOString().split('T')[0];
+        let firstRow = document.querySelector('.receive-line-row');
+        let count = firstRow ? firstRow.querySelector('.inp-count').value : '20/s';
+        let color = firstRow ? firstRow.querySelector('.inp-color').value : 'General';
+        let unitName = firstRow ? firstRow.querySelector('.inp-unit').value : 'Main Unit';
+        let issuedTotalWt = firstRow ? parseFloat(firstRow.querySelector('.inp-issued').value) || 0 : 0;
+        let rcvWt = firstRow ? parseFloat(firstRow.querySelector('.inp-received').value) || 0 : 0;
+
+        receives.push({
+            id: Date.now(),
+            issueIds: [],
+            issueId: null,
+            date: dateVal,
+            unit: unitName,
+            designNo: dNo,
+            count: count,
+            color: color,
+            issuedWt: issuedTotalWt.toFixed(3),
+            receivedWt: rcvWt.toFixed(3),
+            lossWt: "0.000",
+            lossPerc: "0.00%",
+            excessWt: "-",
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_receive_records', receives);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderReceivedList();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
 // 📌 FIREBASE SYNC: saveReceiveEntry
@@ -632,18 +786,24 @@ async function saveReceiveEntry() {
     });
 
     if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[dNo]) designSpecs[dNo] = {};
+        designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
         localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
         localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
         
         if (window.firebaseSave) {
             await window.firebaseSave('dyeing_issue_records', issues);
             await window.firebaseSave('dyeing_receive_records', receives);
+            await window.firebaseSave('design_specs', designSpecs);
         }
 
         alert("Received Entry Saved to Cloud Successfully! ✅☁️");
         
         document.getElementById('receiveLinesContainer').innerHTML = '';
-        document.getElementById('top_completed_status').checked = false; // reset checkbox
+        document.getElementById('top_completed_status').checked = false; 
         loadPendingDesigns(); 
         renderReceivedList();
     } else {
@@ -662,6 +822,17 @@ async function toggleStatus(id, newStatus) {
             records[recIndex].status = newStatus;
             localStorage.setItem('dyeing_receive_records', JSON.stringify(records));
             
+            let dNo = records[recIndex].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('dyeing_receive_records', records);
             }
@@ -905,7 +1076,6 @@ function renderReceivedList() {
         let origText = btn ? btn.innerText : "✅ Save Received Entry";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        // 📌 FETCH ALL NEEDED COLLECTIONS HERE
         let collections = ['dyeing_receive_records', 'dyeing_issue_records', 'pre_design_numbers', 'design_masters_data', 'design_specs'];
         
         for(let col of collections) {

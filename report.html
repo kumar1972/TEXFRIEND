@@ -61,6 +61,17 @@
     }
     .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
 
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     .card-header {
         font-size: 18px;
         margin-bottom: 5px;
@@ -273,6 +284,22 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
     
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     @media print {
         body * { visibility: hidden; }
         .overlay-modal, .overlay-modal * { visibility: visible; }
@@ -289,6 +316,7 @@
     <div class="top-nav">
         <!-- 📌 Links back to dashboard.html -->
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div id="bitmapDisplayContainer"></div>
     </div>
 
     <h2 class="card-header" id="pageMainHeader">Reports & Analytics</h2>
@@ -346,11 +374,44 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 var currentTab = 'PartyOrders';
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designFilter').value;
+    if(activeDesign === 'All') {
+        activeDesign = localStorage.getItem('selected_design_number');
+    }
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    if (activeDesign && activeDesign !== 'All' && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
 }
 
 function loadDesignFilter() {
@@ -369,6 +430,12 @@ function loadDesignFilter() {
         html += `<option value="${d}">${d}</option>`;
     });
     select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && allDesigns.has(activeDesign)) {
+        select.value = activeDesign;
+    }
+    loadBitmapImage();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -391,6 +458,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function switchTab(tabName) {
     currentTab = tabName;
+    loadBitmapImage();
     document.querySelectorAll('.tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
     
     let activeBtn = document.getElementById('tab-' + tabName);
@@ -788,7 +856,7 @@ function exportToExcel() {
         let collections = [
             'party_orders_data', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records',
             'warping_issue_records', 'warping_receive_records', 'weaving_master_data', 
-            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers', 'despatch_records'
+            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers', 'despatch_records', 'design_specs'
         ];
         
         for(let col of collections) {

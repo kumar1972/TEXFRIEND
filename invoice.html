@@ -66,6 +66,7 @@
             border-radius: 6px;
             border: 1px solid rgba(82, 110, 81, 0.2);
             box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            cursor: zoom-in;
             transition: transform 0.3s;
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
@@ -259,6 +260,22 @@
 
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
         /* 📌 Advanced Table Design */
         .excel-table {
             width: 100%; border-collapse: separate; border-spacing: 0;
@@ -305,7 +322,7 @@
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
         <div id="bitmapDisplayContainer">
             <div class="completed-checkbox">
-                <input type="checkbox" id="top_completed_status">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
                 <label for="top_completed_status">Completed</label>
             </div>
             <!-- Image placeholder if any -->
@@ -460,6 +477,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <div id="printPreviewContainer"></div>
 
 <script>
@@ -478,6 +501,16 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
     let globalDesignSelect = document.getElementById('global_design');
@@ -488,17 +521,14 @@ function loadBitmapImage() {
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
-    // Check if image exists before appending to container
     let imgHtml = '';
     if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        imgHtml = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+        let b64 = designSpecs[activeDesign].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
     
-    // Keep checkbox, update image
-    let currentHtml = bitmapContainer.innerHTML;
-    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status"><label for="top_completed_status">Completed</label></div>`;
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
     
-    // Preserve checkbox status if it was set
     let wasChecked = false;
     let cb = document.getElementById('top_completed_status');
     if(cb) wasChecked = cb.checked;
@@ -534,8 +564,21 @@ function applyGlobalDesign(designNo) {
     localStorage.setItem('selected_design_number', designNo);
     loadBitmapImage();
     
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specStatus = (designSpecs[designNo] && designSpecs[designNo].status) ? designSpecs[designNo].status.toLowerCase() : '';
+    let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+    let invRec = invs.find(x => x.design === designNo);
+
+    if(specStatus === 'completed' || (invRec && invRec.status && invRec.status.toLowerCase() === 'completed')) {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = true;
+    } else {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = false;
+    }
+
     let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let matchedOrder = partyOrders.find(p => p.designNumber === designNo);
+    let matchedOrder = partyOrders.find(p => p.designNumber === designNo || p.designNo === designNo);
     
     if(matchedOrder) {
         if(matchedOrder.partyName && !document.getElementById('party_address').value) {
@@ -543,7 +586,6 @@ function applyGlobalDesign(designNo) {
         }
     }
 
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(designSpecs[designNo]) {
         document.getElementById('global_reed').value = designSpecs[designNo].reed || '';
         document.getElementById('global_pick').value = designSpecs[designNo].pick || '';
@@ -589,6 +631,82 @@ function calcTotal(element) {
     let rate = parseFloat(row.querySelector('.i-rate').value) || 0;
     let totalField = row.querySelector('.i-total');
     totalField.value = (qty * rate).toFixed(2);
+}
+
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+async function quickCompleteToggle() {
+    let designNo = document.getElementById('global_design').value;
+    let cb = document.getElementById('top_completed_status');
+    let isCompleted = cb ? cb.checked : false;
+
+    if(!designNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        if(cb) cb.checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Saved Invoices Save / Update
+    let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+    let updated = false;
+
+    invs.forEach(r => {
+        if(r.design === designNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let invNo = document.getElementById('inv_no').value.trim() || 'INV-01';
+        let invDate = document.getElementById('inv_date').value || new Date().toISOString().split('T')[0];
+        let compAddress = document.getElementById('comp_address').value;
+        let partyAddress = document.getElementById('party_address').value;
+        
+        invs.push({
+            id: Date.now(),
+            invNo: invNo,
+            invDate: invDate,
+            compAddress: compAddress,
+            partyAddress: partyAddress,
+            transport: document.getElementById('inv_transport').value || '',
+            lr: document.getElementById('inv_lr').value || '',
+            gstType: document.getElementById('gst_type').value || 'none',
+            design: designNo,
+            countVal: document.getElementById('global_count').value || '',
+            reed: document.getElementById('global_reed').value || '',
+            pick: document.getElementById('global_pick').value || '',
+            weave: document.getElementById('global_weave').value || '',
+            items: [],
+            totalQty: 0,
+            grandTotal: 0,
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('saved_invoices_data', JSON.stringify(invs));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[designNo]) {
+        designSpecs[designNo] = {};
+    }
+    designSpecs[designNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('saved_invoices_data', invs);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    updateInvoicesTable();
+    alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
 // 📌 FIREBASE SYNC: saveInvoice
@@ -658,6 +776,16 @@ async function saveInvoice() {
         savedInvoices.push(invoiceObj);
     }
 
+    if(design) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[design]) designSpecs[design] = {};
+        designSpecs[design].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        if (window.firebaseSave) {
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    }
+
     localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
     
     // Cloud Sync
@@ -712,6 +840,17 @@ async function toggleStatus(id, newStatus) {
             savedInvoices[index].status = newStatus;
             localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
             
+            let dNo = savedInvoices[index].design;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('saved_invoices_data', savedInvoices);
             }
@@ -753,7 +892,7 @@ function updateInvoicesTable() {
 }
 
 function editInvoice(id) {
-    closeModal('invoiceListModal'); // Close modal on edit
+    closeModal('invoiceListModal');
     let inv = savedInvoices.find(x => x.id === id);
     if(!inv) return;
 
@@ -939,10 +1078,8 @@ function showFullPreview() {
             '<div style="flex:1;"></div>' +
         '</div>' +
         '<div class="invoice-header">' +
-            '<div><strong>From:</strong><br>' + compAddr.replace(/
-/g, '<br>') + '</div>' +
-            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/
-/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
+            '<div><strong>From:</strong><br>' + compAddr.replace(/\n/g, '<br>') + '</div>' +
+            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/\n/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
         '</div>' +
         '<div style="font-size:11px; margin-bottom:10px; background:#f8fafc; padding:6px; border:1px solid #ccc;"><strong>Design No:</strong> <span style="font-weight:bold;">' + design + '</span>, <strong>Count:</strong> <span style="font-weight:bold;">' + countVal + '</span>, <strong>Reed:</strong> <span style="font-weight:bold;">' + reed + '</span>, <strong>Pick:</strong> <span style="font-weight:bold;">' + pick + '</span>, <strong>Weave:</strong> <span style="font-weight:bold;">' + weave + '</span></div>' +
         '<table class="invoice-table">' +
@@ -1046,7 +1183,9 @@ function goBackToForm() {
         if(btn) btn.innerText = origText;
         
         document.getElementById('inv_date').valueAsDate = new Date();
-        document.querySelector('.i-date').valueAsDate = new Date();
+        if(document.querySelector('.i-date')) {
+            document.querySelector('.i-date').valueAsDate = new Date();
+        }
         let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
         document.getElementById('comp_address').value = defaultComp;
         loadDesignDropdowns();

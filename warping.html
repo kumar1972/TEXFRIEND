@@ -64,6 +64,17 @@
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
     /* Checkbox Styling */
     .completed-checkbox {
         display: flex;
@@ -258,6 +269,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -318,9 +345,12 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
         </div>
     </div>
 
@@ -458,6 +488,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 let editingWarpId = null;
 
@@ -477,6 +513,40 @@ function closeModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.classList.remove('show');
     setTimeout(() => modal.style.display = 'none', 300);
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let imgHtml = '';
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+    
+    let wasChecked = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) wasChecked = cb.checked;
+    
+    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+    
+    if(wasChecked) {
+        document.getElementById('top_completed_status').checked = true;
+    }
 }
 
 function cleanDesignName(str) {
@@ -618,12 +688,27 @@ function closeDesignModal() {
 }
 
 function loadTopDesignSpecs(dNo) {
+    loadBitmapImage();
+    localStorage.setItem('selected_design_number', dNo);
+    
     let cleanDNo = cleanDesignName(dNo);
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
+
+    let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let rec = issues.find(r => (r.designNo === dNo || r.designNumber === dNo));
+
+    if(specStatus === 'completed' || (rec && rec.status.toLowerCase() === 'completed')) {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = true;
+    } else {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = false;
+    }
 
     let reed = found.reed || sp.reed || sp.baseReed || 52;
     let count1 = found.count1 || sp.warp || '20';
@@ -680,12 +765,86 @@ function loadTopYarnLines() {
     }
 }
 
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let cb = document.getElementById('top_completed_status');
+    let isCompleted = cb ? cb.checked : false;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        if(cb) cb.checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Warping Issue Records Save / Update
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let updated = false;
+
+    issues.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('topDate').value || new Date().toISOString().split('T')[0];
+        let unit = document.getElementById('topUnit').value.trim() || 'Main Unit';
+        let firstRow = document.querySelector('.line-row');
+        let count = firstRow ? firstRow.querySelector('.t-count').value : '20/s';
+        let color = firstRow ? firstRow.querySelector('.t-color').value : 'General';
+        let ordWt = firstRow ? parseFloat(firstRow.querySelector('.t-orderwt').value) || 0 : 0;
+        let issWt = firstRow ? parseFloat(firstRow.querySelector('.t-isswt').value) || 0 : 0;
+
+        issues.push({
+            id: Date.now(),
+            date: dateVal,
+            unit: unit,
+            designNo: dNo,
+            count: count,
+            color: color,
+            orderWt: ordWt.toFixed(3),
+            issueWt: issWt.toFixed(3),
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderTable();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
 // 📌 FIREBASE SYNC: saveTopOrder
 async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value.trim();
     let dNo = document.getElementById('topDesignNo').value;
-    let isCompleted = document.getElementById('top_completed_status').checked;
+    
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) isCompleted = cb.checked;
 
     if(!dNo || !unit) { alert("Please fill Warping Unit and Design Number!"); return; }
 
@@ -725,9 +884,16 @@ async function saveTopOrder() {
     });
 
     if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[dNo]) designSpecs[dNo] = {};
+        designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
         localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
         if (window.firebaseSave) {
             await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
         }
         
         alert("Warping Order Saved to Cloud Successfully! ✅☁️");
@@ -737,9 +903,10 @@ async function saveTopOrder() {
         document.getElementById('topUnit').value = '';
         document.getElementById('topReed').value = '';
         document.getElementById('topCount').value = '';
-        document.getElementById('top_completed_status').checked = false;
+        if(cb) cb.checked = false;
         
         renderTable();
+        loadBitmapImage();
     } else {
         alert("Please enter valid Issued Weight.");
     }
@@ -852,6 +1019,18 @@ async function toggleStatus(id, newStatus) {
             issues[index].status = newStatus;
             localStorage.setItem('warping_issue_records', JSON.stringify(issues));
             
+            let dNo = issues[index].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('warping_issue_records', issues);
             }
@@ -909,7 +1088,10 @@ async function editWarpingRecord(issueId, isReceived) {
             document.getElementById('topDate').value = issRecord.date;
             document.getElementById('topUnit').value = issRecord.unit;
             document.getElementById('topDesignNo').value = issRecord.designNo;
-            document.getElementById('top_completed_status').checked = (issRecord.status === 'completed');
+            
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = (issRecord.status === 'completed');
+            
             loadTopDesignSpecs(issRecord.designNo);
             
             setTimeout(() => {
@@ -1075,6 +1257,7 @@ function renderTable() {
         if(btn) btn.innerText = origText;
         
         renderTable();
+        loadBitmapImage();
     });
 </script>
 </body>

@@ -63,12 +63,36 @@
     tbody tr:hover { background: #F8FAF8; }
     td b { color: #2F4F38; font-weight: 800; }
 
+    /* Table Bitmap Thumbnail */
+    .table-img {
+        width: 35px; height: 35px; object-fit: cover; border-radius: 6px; border: 1px solid #4A7C59;
+        cursor: zoom-in; transition: transform 0.2s; vertical-align: middle;
+    }
+    .table-img:hover { transform: scale(1.15); }
+
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     .empty-msg { text-align: center; padding: 40px 20px; color: #64748B; font-weight: 600; font-size: 12px; background: #F8FAF8; border-radius: 10px; border: 1px dashed #D1DED1; }
     
     @media print {
         body { background: #FFF; padding: 0; }
         .container { box-shadow: none; border: none; padding: 0; width: 100%; max-width: 100%; }
         .top-nav, .action-btns { display: none !important; }
+        .table-img { border: 1px solid #000; }
     }
 </style>
 </head>
@@ -97,6 +121,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -111,6 +141,16 @@ function exportToExcel() {
     link.href = url;
     link.download = 'Design_List_Report.xls';
     link.click();
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
 }
 
 // 📌 FIREBASE SYNC: Toggle Status for Specific Module Records
@@ -176,7 +216,7 @@ window.renderDesignList = function() {
 
     // --- 1. TOTAL DESIGNS (ALL) ---
     if (type === 'all') {
-        theadHtml = `<tr><th>S.No</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th><th>Status (Tick to Complete)</th></tr>`;
+        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th><th>Status (Tick to Complete)</th></tr>`;
         
         let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
         let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -196,10 +236,13 @@ window.renderDesignList = function() {
             let displayStatus = isCompleted ? 'Completed' : 'Running';
             let statusColor = isCompleted ? '#059669' : '#D97706';
             let statusBg = isCompleted ? '#ECFDF5' : '#FFFBEB';
+            
+            let bitmapImgHtml = s.bitmap ? `<img src="${s.bitmap}" class="table-img" onclick="openFullscreenImage('${s.bitmap}')" title="Click to zoom">` : '-';
 
             totalRecordsCount++;
             tbodyHtml += `<tr>
                 <td>${totalRecordsCount}</td>
+                <td>${bitmapImgHtml}</td>
                 <td><b>${dNo}</b></td>
                 <td>${s.warp || s.count1 || 20}</td>
                 <td>${s.reed || s.baseReed || '-'}</td>
@@ -222,16 +265,21 @@ window.renderDesignList = function() {
     // --- 2. ORDER DESIGNS ---
     else if (type === 'order' || type === 'party_orders') {
         let storageKey = 'party_orders_data';
-        theadHtml = `<tr><th>S.No</th><th>Date</th><th>Party Name</th><th>Design</th><th>Meters</th><th>Status (Tick to Complete)</th></tr>`;
+        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Date</th><th>Party Name</th><th>Design</th><th>Meters</th><th>Status (Tick to Complete)</th></tr>`;
         
         let orders = JSON.parse(localStorage.getItem(storageKey)) || [];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
         
         orders.forEach((o, index) => {
             // Apply Design Filter
+            let dNo = o.designNo || o.designNumber || '';
             if(designFilter !== 'all' && designFilter !== '') {
-                let currentD = cleanDesignName(o.designNo || o.designNumber);
-                if(currentD !== cleanDesignName(designFilter)) return; // Filter skip
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; // Filter skip
             }
+
+            let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
+            let bitmapUrl = specs[specKey] ? specs[specKey].bitmap : '';
+            let bitmapImgHtml = bitmapUrl ? `<img src="${bitmapUrl}" class="table-img" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : '-';
 
             let currentStatus = (o.status || 'Running').toLowerCase();
             let isCompleted = (currentStatus === 'completed' || currentStatus === 'received');
@@ -249,9 +297,10 @@ window.renderDesignList = function() {
             totalRecordsCount++;
             tbodyHtml += `<tr>
                 <td>${totalRecordsCount}</td>
+                <td>${bitmapImgHtml}</td>
                 <td>${o.date || '-'}</td>
                 <td><b>${o.partyName || o.party || '-'}</b></td>
-                <td><b>${o.designNo || o.designNumber || '-'}</b></td>
+                <td><b>${dNo || '-'}</b></td>
                 <td>${mtr.toFixed(2)}</td>
                 <td>
                     <label style="display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin: 0;">
@@ -274,15 +323,20 @@ window.renderDesignList = function() {
         if(type === 'weaving') storageKey = 'weaving_master_data'; 
         
         let records = JSON.parse(localStorage.getItem(storageKey)) || [];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
         let valUnit = (type === 'dyeing' || type === 'warping') ? 'KG' : 'Mtr';
-        theadHtml = `<tr><th>S.No</th><th>Date</th><th>Unit / Name</th><th>Design</th><th>Value (${valUnit})</th><th>Status (Tick to Complete)</th></tr>`;
+        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Date</th><th>Unit / Name</th><th>Design</th><th>Value (${valUnit})</th><th>Status (Tick to Complete)</th></tr>`;
 
         records.forEach((r, index) => {
             // Apply Design Filter
+            let dNo = r.designNo || r.designNumber || '';
             if(designFilter !== 'all' && designFilter !== '') {
-                let currentD = cleanDesignName(r.designNo || r.designNumber);
-                if(currentD !== cleanDesignName(designFilter)) return; // Filter skip
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; // Filter skip
             }
+
+            let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
+            let bitmapUrl = specs[specKey] ? specs[specKey].bitmap : '';
+            let bitmapImgHtml = bitmapUrl ? `<img src="${bitmapUrl}" class="table-img" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : '-';
 
             let currentStatus = (r.status || 'Pending').toLowerCase();
             let isCompleted = (currentStatus === 'completed' || currentStatus === 'received');
@@ -302,9 +356,10 @@ window.renderDesignList = function() {
             totalRecordsCount++;
             tbodyHtml += `<tr>
                 <td>${totalRecordsCount}</td>
+                <td>${bitmapImgHtml}</td>
                 <td>${r.date || r.botDate || '-'}</td>
                 <td><b>${unitName}</b></td>
-                <td><b>${r.designNo || r.designNumber || '-'}</b></td>
+                <td><b>${dNo || '-'}</b></td>
                 <td>${value.toFixed(3)}</td>
                 <td>
                     <label style="display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin: 0;">

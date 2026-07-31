@@ -21,7 +21,8 @@
     body { 
         padding: 12px; 
         display: flex;
-        flex-direction: column;        align-items: center;
+        flex-direction: column;
+        align-items: center;
     }
 
     /* 📌 Main Container */
@@ -62,6 +63,17 @@
         transition: all 0.3s ease;
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
     /* Checkbox Styling */
     .completed-checkbox {
@@ -264,6 +276,22 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
     /* 📌 Advanced Table Design with Horizontal Scroll */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
@@ -332,9 +360,12 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status">
-            <label for="top_completed_status">Completed</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
         </div>
     </div>
 
@@ -361,7 +392,7 @@
             </div>
             <div class="form-group">
                 <label>Design Number</label>
-                <select id="topDesignNo">
+                <select id="topDesignNo" onchange="onDesignSelect(this.value)">
                     <option value="">Select Design No</option>
                 </select>
             </div>
@@ -488,6 +519,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('topDate').valueAsDate = new Date();
@@ -506,6 +543,30 @@ function closeModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.classList.remove('show');
     setTimeout(() => modal.style.display = 'none', 300);
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let imgHtml = '';
+    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+        let b64 = designSpecs[activeDesign].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    
+    bitmapContainer.innerHTML = imgHtml;
 }
 
 function openDesignModal() {
@@ -564,6 +625,31 @@ function loadDesignDropdowns() {
     let topHtml = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { topHtml += `<option value="${d}">${d}</option>`; });
     topSelect.innerHTML = topHtml;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && preDesignList.includes(activeDesign)) {
+        topSelect.value = activeDesign;
+        onDesignSelect(activeDesign);
+    } else {
+        loadBitmapImage();
+    }
+}
+
+function onDesignSelect(val) {
+    loadBitmapImage();
+    if(!val) return;
+    localStorage.setItem('selected_design_number', val);
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
+    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+    let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
+
+    if(specStatus === 'completed' || (rec && rec.status.toLowerCase() === 'completed')) {
+        document.getElementById('top_completed_status').checked = true;
+    } else {
+        document.getElementById('top_completed_status').checked = false;
+    }
 }
 
 function addNewTopRow(btn) {
@@ -578,6 +664,76 @@ function addNewTopRow(btn) {
         <button class="del-btn" onclick="this.parentElement.remove()">×</button>
     `;
     container.insertBefore(row, btn.parentElement.nextSibling);
+}
+
+// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        document.getElementById('top_completed_status').checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    // 1. LocalStorage-il Washing Issue Records Save / Update
+    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+    let updated = false;
+
+    issues.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('topDate').value || new Date().toISOString().split('T')[0];
+        let unit = document.getElementById('topUnit').value.trim() || 'Main Unit';
+        let firstRow = document.querySelector('.line-row');
+        let slip = firstRow ? firstRow.querySelector('.t-slip').value.trim() : 'S-01';
+        let piece = firstRow ? parseInt(firstRow.querySelector('.t-piece').value) || 1 : 1;
+        let mtr = firstRow ? parseFloat(firstRow.querySelector('.t-mtr').value) || 0 : 0;
+        let process = firstRow ? firstRow.querySelector('.t-process').value.trim() : 'General';
+
+        issues.push({
+            id: Date.now(),
+            date: dateVal,
+            unit: unit,
+            designNo: dNo,
+            slip: slip,
+            piece: piece,
+            mtr: mtr.toFixed(2),
+            process: process,
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('washing_issue_records', JSON.stringify(issues));
+
+    // 2. Design List Page Sync (design_specs Update)
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) {
+        designSpecs[dNo] = {};
+    }
+    designSpecs[dNo].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    // 3. Save to Firebase Cloud Instant Sync
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('washing_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderTable();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
 // 📌 FIREBASE SYNC: saveTopOrder
@@ -625,9 +781,16 @@ async function saveTopOrder() {
     });
 
     if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[dNo]) designSpecs[dNo] = {};
+        designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
         localStorage.setItem('washing_issue_records', JSON.stringify(issues));
+        
         if (window.firebaseSave) {
             await window.firebaseSave('washing_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
         }
         
         alert("Top Order Saved to Cloud Successfully! ✅☁️");
@@ -646,6 +809,7 @@ async function saveTopOrder() {
         document.getElementById('top_completed_status').checked = false;
         
         renderTable();
+        loadBitmapImage();
     } else {
         alert("Please fill Slip, Piece, and Mtr correctly.");
     }
@@ -773,6 +937,18 @@ async function toggleStatus(id, newStatus) {
             issues[index].status = newStatus;
             localStorage.setItem('washing_issue_records', JSON.stringify(issues));
             
+            let dNo = issues[index].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
             if(window.firebaseSave) {
                 await window.firebaseSave('washing_issue_records', issues);
             }
@@ -780,7 +956,6 @@ async function toggleStatus(id, newStatus) {
         }
     }
 }
-
 
 // 📌 FIREBASE SYNC: editWashingRecord
 async function editWashingRecord(issueId, isReceived) {
@@ -846,6 +1021,7 @@ async function editWashingRecord(issueId, isReceived) {
             closeModal('savedListModal');
             renderTable();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            loadBitmapImage();
         }
     }
 }
@@ -1031,7 +1207,7 @@ function printReport() {
         let origText = btn ? btn.innerText : "✅ Save Washing Order";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers'];
+        let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers', 'design_specs'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
@@ -1042,6 +1218,7 @@ function printReport() {
         
         loadDesignDropdowns();
         renderTable();
+        loadBitmapImage();
     });
 </script>
 </body>

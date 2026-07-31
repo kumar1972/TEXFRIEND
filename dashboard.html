@@ -65,7 +65,6 @@
         .logo-placeholder { font-size: 10px; background: #F4F7F4; padding: 12px 8px; border-radius: 10px; border: 2px dashed #4A7C59; color: #4A7C59; font-weight: 700; text-align: center; }
 
         h1 { color: #2F4F38; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin:0; text-shadow: none; }
-        .subtitle { display: none; }
         
         /* 📌 Form & Setup */
         .base-setup { 
@@ -89,11 +88,14 @@
             transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02); 
         }
         input:focus, select:focus, textarea:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); background: #FFFFFF; }
-        input::placeholder { color: #A0AFA0; font-weight: 400; }
-
-        input[type="file"] { padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; color: #2F4F38; cursor: pointer; box-shadow: none; }
-        input[type="file"]::file-selector-button { background: #4A7C59; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 10px; cursor: pointer; margin-right: 10px; transition: background 0.2s; box-shadow: 0 2px 5px rgba(74, 124, 89, 0.2); }
         
+        .custom-upload-btn {
+            background: #F4F7F4; border: 1px dashed #4A7C59; color: #2F4F38; padding: 10px 14px;
+            border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; text-align: center;
+            display: block; transition: background 0.2s;
+        }
+        .custom-upload-btn:hover { background: #EAF0EA; }
+
         /* 📌 Buttons */
         .btn-add { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
         .btn-del { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
@@ -122,9 +124,13 @@
             background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
             padding: 15px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;
         }
+        .matrix-header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #EAF0EA; padding-bottom: 8px; flex-wrap: wrap; gap: 8px;
+        }
         .matrix-title {
-            font-size: 12px; font-weight: 800; color: #2F4F38; text-transform: uppercase;
-            display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #EAF0EA; padding-bottom: 8px;
+            font-size: 11px; font-weight: 800; color: #2F4F38; text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px;
         }
         .matrix-table-wrapper {
             width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid #D1DED1; background: #FFFFFF;
@@ -149,9 +155,44 @@
         .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
         .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
 
-        /* 📌 Bitmap Preview Styling */
+        /* 📌 Bitmap Preview Styling with Zoom Cursor */
         #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; }
-        #bitmapImgTag { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none !important; }
+        #bitmapImgTag { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none !important; cursor: zoom-in; }
+
+        /* 📌 Selection Modal for Camera vs Gallery */
+        .choice-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px); z-index: 99999;
+            justify-content: center; align-items: center; padding: 15px;
+        }
+        .choice-content {
+            background: #FFFFFF; width: 100%; max-width: 320px; border-radius: 16px;
+            padding: 20px; display: flex; flex-direction: column; gap: 10px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .choice-content h4 { color: #2F4F38; font-size: 14px; margin-bottom: 5px; }
+        .choice-btn {
+            background: #4A7C59; color: white; border: none; padding: 12px; border-radius: 8px;
+            font-weight: 700; font-size: 12px; cursor: pointer; text-transform: uppercase;
+        }
+        .choice-btn.gallery { background: #3B82F6; }
+        .choice-btn.cancel { background: #EF4444; }
+
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -222,9 +263,8 @@ window.onclick = function(event) {
             <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
             
             <h1 id="appHeading">TEXFRIEND ERP</h1>
-            
         </div>
-        <p class="subtitle">SELECT A MODULE</p>
+        <p class="subtitle" style="display:none;"></p>
 
         <div class="base-setup">
             <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
@@ -249,12 +289,20 @@ window.onclick = function(event) {
                 <div class="form-group"><label>Pick</label><input type="text" id="pick"></div>
                 <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
             </div>
+            
             <div class="form-group">
                 <label>Design Bitmap / Photo Upload</label>
-                <input type="file" id="designBitmap" accept="image/*" onchange="previewBitmap(this)">
+                <!-- 📌 Custom Selection Button for Camera / Gallery -->
+                <button type="button" class="custom-upload-btn" onclick="openChoiceModal()">📷 Take Photo / 🖼️ Choose from Gallery</button>
+                
+                <!-- Hidden inputs for Camera and Gallery separately -->
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelect(this)">
+                <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
             </div>
+
+            <!-- 📌 Added onclick to trigger Fullscreen Image Popup -->
             <div id="bitmapPreviewBox" style="text-align:center; display:none;">
-                <img id="bitmapImgTag" src="" alt="Bitmap">
+                <img id="bitmapImgTag" src="" alt="Bitmap" onclick="openFullscreenImage(this.src)" title="Click to view full screen">
             </div>
             <button class="btn-edit" id="editBtn" onclick="updateDesign()">✏️ Update / Edit Design</button>
         </div>
@@ -278,14 +326,16 @@ window.onclick = function(event) {
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
         </div>
 
-        <!-- 📌 Live Matrix Progress Table with Report Direct Links -->
+        <!-- 📌 Live Matrix Progress Table with Title Next to Design No Column Header -->
         <div class="matrix-container">
-            <div class="matrix-title">📊 Live Multi-Design Process Status Matrix (Click to View Report)</div>
+            <div class="matrix-header-row">
+                <div class="matrix-title">📊 Live Multi-Design Process Status Matrix (Click to View Report)</div>
+            </div>
             <div class="matrix-table-wrapper">
                 <table class="matrix-table">
                     <thead>
                         <tr>
-                            <th>Design No</th>
+                            <th style="text-align: left; padding-left: 15px;">Design No ➔ Live Process Status Matrix</th>
                             <th>🧵 Kora Issue</th>
                             <th>🎨 Dyeing</th>
                             <th>📏 Warping</th>
@@ -300,6 +350,22 @@ window.onclick = function(event) {
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- 📌 Choice Modal for Camera or Gallery -->
+    <div id="choiceModal" class="choice-modal">
+        <div class="choice-content">
+            <h4>Select Image Source</h4>
+            <button class="choice-btn" onclick="triggerCamera()">📷 Take Photo (Camera)</button>
+            <button class="choice-btn gallery" onclick="triggerGallery()">🖼️ Choose from Gallery</button>
+            <button class="choice-btn cancel" onclick="closeChoiceModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- 📌 Fullscreen Image Popup Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+        <button class="close-fullscreen">Close ✕</button>
+        <img id="fullscreenImg" src="" alt="Fullscreen Preview">
     </div>
 
     <!-- Firebase App SDK (CDN) & Core Logic -->
@@ -391,29 +457,83 @@ window.onclick = function(event) {
             return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
         }
 
+        // 📌 Modal Controls for Camera/Gallery choice
+        window.openChoiceModal = function() {
+            document.getElementById('choiceModal').style.display = 'flex';
+        }
+        window.closeChoiceModal = function() {
+            document.getElementById('choiceModal').style.display = 'none';
+        }
+        window.triggerCamera = function() {
+            closeChoiceModal();
+            document.getElementById('cameraInput').click();
+        }
+        window.triggerGallery = function() {
+            closeChoiceModal();
+            document.getElementById('galleryInput').click();
+        }
+
+        // 📌 Fullscreen Image Popup Controls
+        window.openFullscreenImage = function(src) {
+            document.getElementById('fullscreenImg').src = src;
+            document.getElementById('fullscreenModal').style.display = 'flex';
+        }
+        window.closeFullscreenImage = function() {
+            document.getElementById('fullscreenModal').style.display = 'none';
+        }
+
         window.uploadQuickLogo = async function(input) {
             if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = async function(e) {
-                    let b64 = e.target.result;
-                    localStorage.setItem('company_logo', b64);
-                    document.getElementById('companyLogoContainer').innerHTML = `<img src="${b64}" alt="Logo">`;
-                    await firebaseSave('company_logo', b64);
-                }
-                reader.readAsDataURL(input.files[0]);
+                compressImage(input.files[0], 300, 300, 0.7, async function(compressedB64) {
+                    localStorage.setItem('company_logo', compressedB64);
+                    document.getElementById('companyLogoContainer').innerHTML = `<img src="${compressedB64}" alt="Logo">`;
+                    await firebaseSave('company_logo', compressedB64);
+                });
             }
         }
 
-        window.previewBitmap = function(input) {
+        window.handleFileSelect = function(input) {
             if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    tempBitmapData = e.target.result;
+                compressImage(input.files[0], 800, 800, 0.75, function(compressedB64) {
+                    tempBitmapData = compressedB64;
                     let imgTag = document.getElementById('bitmapImgTag');
                     imgTag.src = tempBitmapData;
                     document.getElementById('bitmapPreviewBox').style.display = 'block';
+                });
+            }
+        }
+
+        function compressImage(file, maxWidth, maxHeight, quality, callback) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                let img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = Math.round((height *= maxWidth / width));
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = Math.round((width *= maxHeight / height));
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    let ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    callback(dataUrl);
                 }
-                reader.readAsDataURL(input.files[0]);
             }
         }
 
@@ -436,7 +556,7 @@ window.onclick = function(event) {
             designList.push(designNo);
             
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, bitmap: tempBitmapData };
+            designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, status: 'running', bitmap: tempBitmapData };
             
             localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
             localStorage.setItem('selected_design_number', designNo);
@@ -472,9 +592,11 @@ window.onclick = function(event) {
             let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
             
             let existingBitmap = designSpecs[specKey] ? designSpecs[specKey].bitmap : "";
+            let existingStatus = designSpecs[specKey] ? designSpecs[specKey].status : "running";
             
             designSpecs[specKey] = { 
                 warp, warp2, weft, width, reed, pick, weave, 
+                status: existingStatus,
                 bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
             };
             
@@ -482,6 +604,7 @@ window.onclick = function(event) {
             await firebaseSave('design_specs', designSpecs);
 
             editBtn.innerText = "✏️ Update / Edit Design";
+            renderMatrixTable();
             alert("Updated successfully! ✅");
         }
 
@@ -541,7 +664,7 @@ window.onclick = function(event) {
                 let cleanVal = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 
-                let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanVal) || val;
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
                 let specs = designSpecs[specKey] || {};
 
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
@@ -577,34 +700,37 @@ window.onclick = function(event) {
             document.getElementById('bitmapPreviewBox').style.display = 'none';
         }
 
-        // 📌 Helper to check if a design's process is completed based on records and completed status
         function getProcessStatus(records, dNo, linkPage) {
             let cDNo = cleanDesignName(dNo);
-            let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
-            if (matched.length === 0) return { text: 'NONE', className: 'none' };
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cDNo);
+            let isGlobalCompleted = (specKey && designSpecs[specKey].status === 'completed');
 
-            // Check if any matched record has status 'completed'
-            let isCompleted = matched.some(r => r.status === 'completed');
-            if (isCompleted) {
+            let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
+            
+            if (isGlobalCompleted || matched.some(r => r.status === 'completed')) {
                 return { text: '✅', className: 'done' };
             }
 
-            // Otherwise determine text based on values / status
+            if (matched.length === 0) return { text: 'NONE', className: 'none' };
+
             let hasRunning = matched.some(r => r.status === 'running');
             return { text: hasRunning ? 'RUNNING' : 'PENDING', className: 'run' };
         }
 
-        // 📌 Live Matrix Progress Table Logic with Report Direct Links
         window.renderMatrixTable = function() {
             let tbody = document.getElementById('matrixTableBody');
             if(!tbody) return;
             tbody.innerHTML = '';
 
             let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            if(preDesigns.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#64748B;">No designs found.</td></tr>`;
-                return;
-            }
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+
+            let allDesignSet = new Set();
+            preDesigns.forEach(d => allDesignSet.add(d));
+            
+            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+            designMasters.forEach(d => { if(d.name) allDesignSet.add(d.name); });
 
             let koraIssues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
             let dIss = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -613,19 +739,34 @@ window.onclick = function(event) {
             let wash = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
             let desp = JSON.parse(localStorage.getItem('despatch_data')) || [];
 
+            [koraIssues, dIss, warpIss, weav, wash, desp].forEach(arr => {
+                arr.forEach(r => {
+                    let d = r.designNo || r.designNumber || r.design || r.name || '';
+                    if(d.trim() !== '') allDesignSet.add(d.trim());
+                });
+            });
+
+            if(allDesignSet.size === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#64748B;">No designs found.</td></tr>`;
+                return;
+            }
+
             let html = '';
-            preDesigns.forEach(dNo => {
+            [...allDesignSet].forEach(dNo => {
                 let cDNo = cleanDesignName(dNo);
 
-                // Helper to build badge with proper link and status check
                 function buildCell(records, label, linkPage) {
                     let statusObj = getProcessStatus(records, dNo, linkPage);
                     return `<td><a href="${linkPage}?design=${encodeURIComponent(dNo)}" class="status-badge ${statusObj.className}" title="View ${label}">${statusObj.text}</a></td>`;
                 }
 
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cDNo);
+                let bitmapUrl = specKey && designSpecs[specKey].bitmap ? designSpecs[specKey].bitmap : '';
+                let thumbnailHtml = bitmapUrl ? `<img src="${bitmapUrl}" style="width:28px; height:28px; object-fit:cover; border-radius:4px; border:1px solid #4A7C59; vertical-align:middle; margin-right:8px; cursor:zoom-in;" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : '';
+
                 html += `
                     <tr>
-                        <td><b>${dNo}</b></td>
+                        <td style="text-align: left; padding-left: 15px; white-space: nowrap;">${thumbnailHtml}<b>${dNo}</b></td>
                         ${buildCell(koraIssues, 'Kora Issue', 'kora_yarn.html')}
                         ${buildCell(dIss, 'Dyeing', 'dyeing_issue.html')}
                         ${buildCell(warpIss, 'Warping', 'warping.html')}
