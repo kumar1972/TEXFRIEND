@@ -66,44 +66,19 @@
 
         h1 { color: #2F4F38; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin:0; text-shadow: none; }
         
-        /* 📌 Form & Setup */
-        .base-setup { 
-            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px; 
-            padding: 20px 15px 15px 15px; margin-bottom: 5px; position: relative; 
-            display: flex; flex-direction: column; gap: 12px; box-shadow: none; 
+        /* 📌 Top Prominent Setup Button */
+        .master-setup-btn {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white; padding: 18px; border-radius: 14px;
+            text-decoration: none; font-weight: 700; font-size: 16px;
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+            transition: all 0.3s ease; border: none; width: 100%;
         }
-        .base-setup-title { 
-            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF; 
-            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px; 
-            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); margin: 0;
-        }
-        
-        .form-row { display: flex; gap: 12px; align-items: flex-end; }
-        .form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-size: 10px; color: #4A554A; font-weight: 600; white-space: nowrap; }
-        
-        input, select, textarea { 
-            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1; 
-            background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; 
-            transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02); 
-        }
-        input:focus, select:focus, textarea:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); background: #FFFFFF; }
-        
-        .custom-upload-btn {
-            background: #F4F7F4; border: 1px dashed #4A7C59; color: #2F4F38; padding: 10px 14px;
-            border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; text-align: center;
-            display: block; transition: background 0.2s;
-        }
-        .custom-upload-btn:hover { background: #EAF0EA; }
+        .master-setup-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.35); }
 
-        /* 📌 Buttons */
-        .btn-add { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
-        .btn-del { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; }
-        .btn-edit { background: linear-gradient(135deg, #3B82F6, #1D4ED8); width: 100%; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase; margin-top: 5px; }
-        .btn-add:hover, .btn-del:hover, .btn-edit:hover { transform: translateY(-2px); }
-        
         /* 📌 Menu Grid */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
         .menu-btn { color: #FFFFFF; padding: 16px 8px; border-radius: 14px; text-decoration: none; font-weight: 700; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 11px; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.1); transition: all 0.3s ease; border: none; }
         .menu-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(30, 43, 35, 0.15); }
         .menu-btn .tab-icon { font-size: 26px; }
@@ -154,29 +129,6 @@
         .status-badge.done { background: #ECFDF5; color: #059669; border: 1px solid rgba(16,185,129,0.3); }
         .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
         .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
-
-        /* 📌 Bitmap Preview Styling with Zoom Cursor */
-        #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; }
-        #bitmapImgTag { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none !important; cursor: zoom-in; }
-
-        /* 📌 Selection Modal for Camera vs Gallery */
-        .choice-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px); z-index: 99999;
-            justify-content: center; align-items: center; padding: 15px;
-        }
-        .choice-content {
-            background: #FFFFFF; width: 100%; max-width: 320px; border-radius: 16px;
-            padding: 20px; display: flex; flex-direction: column; gap: 10px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-        .choice-content h4 { color: #2F4F38; font-size: 14px; margin-bottom: 5px; }
-        .choice-btn {
-            background: #4A7C59; color: white; border: none; padding: 12px; border-radius: 8px;
-            font-weight: 700; font-size: 12px; cursor: pointer; text-transform: uppercase;
-        }
-        .choice-btn.gallery { background: #3B82F6; }
-        .choice-btn.cancel { background: #EF4444; }
 
         /* 📌 Fullscreen Image Popup Modal */
         .fullscreen-modal {
@@ -264,48 +216,11 @@ window.onclick = function(event) {
             
             <h1 id="appHeading">TEXFRIEND ERP</h1>
         </div>
-        <p class="subtitle" style="display:none;"></p>
 
-        <div class="base-setup">
-            <p class="base-setup-title">📌 Active Design Number (Base Setup)</p>
-            <div class="form-row">
-                <select id="designSelect" onchange="selectDesign(this.value)" style="flex:2;"></select>
-                <button class="btn-del" id="delBtn" onclick="deleteDesign()">Delete</button>
-            </div>
-            <div class="form-row">
-                <input type="text" id="newDesign" placeholder="New Design" style="flex:2;">
-                <button class="btn-add" id="addBtn" onclick="addDesign()">+ Add</button>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group"><label>Warp 1 (Grnd)</label><input type="text" id="warpCount" placeholder="2/60"></div>
-                <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
-                <div class="form-group"><label>Weft Count</label><input type="text" id="weftCount" placeholder="40s"></div>
-                <div class="form-group"><label>Width (Inch)</label><input type="number" id="width" placeholder="66" step="0.01"></div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group"><label>Reed</label><input type="text" id="reed"></div>
-                <div class="form-group"><label>Pick</label><input type="text" id="pick"></div>
-                <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
-            </div>
-            
-            <div class="form-group">
-                <label>Design Bitmap / Photo Upload</label>
-                <!-- 📌 Custom Selection Button for Camera / Gallery -->
-                <button type="button" class="custom-upload-btn" onclick="openChoiceModal()">📷 Take Photo / 🖼️ Choose from Gallery</button>
-                
-                <!-- Hidden inputs for Camera and Gallery separately -->
-                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelect(this)">
-                <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
-            </div>
-
-            <!-- 📌 Added onclick to trigger Fullscreen Image Popup -->
-            <div id="bitmapPreviewBox" style="text-align:center; display:none;">
-                <img id="bitmapImgTag" src="" alt="Bitmap" onclick="openFullscreenImage(this.src)" title="Click to view full screen">
-            </div>
-            <button class="btn-edit" id="editBtn" onclick="updateDesign()">✏️ Update / Edit Design</button>
-        </div>
+        <!-- 📌 Link to New Design Master Page -->
+        <a href="design_master.html" class="master-setup-btn">
+            <span style="font-size: 24px;">🎨</span> Create / Edit Design Master Setup
+        </a>
 
         <div class="menu-grid">
             <a href="Party_Orders.html" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</a>
@@ -326,7 +241,7 @@ window.onclick = function(event) {
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
         </div>
 
-        <!-- 📌 Live Matrix Progress Table with Title Next to Design No Column Header -->
+        <!-- 📌 Live Matrix Progress Table -->
         <div class="matrix-container">
             <div class="matrix-header-row">
                 <div class="matrix-title">📊 Live Multi-Design Process Status Matrix (Click to View Report)</div>
@@ -349,16 +264,6 @@ window.onclick = function(event) {
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <!-- 📌 Choice Modal for Camera or Gallery -->
-    <div id="choiceModal" class="choice-modal">
-        <div class="choice-content">
-            <h4>Select Image Source</h4>
-            <button class="choice-btn" onclick="triggerCamera()">📷 Take Photo (Camera)</button>
-            <button class="choice-btn gallery" onclick="triggerGallery()">🖼️ Choose from Gallery</button>
-            <button class="choice-btn cancel" onclick="closeChoiceModal()">Cancel</button>
         </div>
     </div>
 
@@ -389,25 +294,16 @@ window.onclick = function(event) {
         async function firebaseSave(key, data) {
             try {
                 await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-            } catch (e) {
-                console.error("Firebase Save Error: ", e);
-            }
+            } catch (e) { console.error("Firebase Save Error: ", e); }
         }
 
         async function firebaseLoad(key) {
             try {
                 const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-                if (docSnap.exists()) {
-                    return JSON.parse(docSnap.data().content);
-                }
-            } catch (e) {
-                console.error("Firebase Load Error: ", e);
-            }
+                if (docSnap.exists()) { return JSON.parse(docSnap.data().content); }
+            } catch (e) { console.error("Firebase Load Error: ", e); }
             return null;
         }
-
-        let designList = [];
-        let tempBitmapData = "";
 
         window.onload = async function() {
             document.getElementById('appHeading').innerText = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
@@ -419,8 +315,6 @@ window.onclick = function(event) {
                 logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
             }
 
-            designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            loadDesignDropdown();
             renderMatrixTable();
 
             try {
@@ -436,44 +330,21 @@ window.onclick = function(event) {
                     localStorage.setItem('company_logo', logoData);
                 }
 
+                // Sync designs and specs to keep matrix updated
                 let cloudDesigns = await firebaseLoad('pre_design_numbers');
-                if(cloudDesigns) {
-                    designList = cloudDesigns;
-                    localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-                    loadDesignDropdown();
-                    renderMatrixTable();
-                }
+                if(cloudDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(cloudDesigns));
 
                 let cloudSpecs = await firebaseLoad('design_specs');
-                if(cloudSpecs) {
-                    localStorage.setItem('design_specs', JSON.stringify(cloudSpecs));
-                }
+                if(cloudSpecs) localStorage.setItem('design_specs', JSON.stringify(cloudSpecs));
+                
+                renderMatrixTable();
             } catch (e) {
                 console.error("Background Sync Error: ", e);
             }
         }
 
-        function cleanDesignName(str) {
-            return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-        }
+        function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
-        // 📌 Modal Controls for Camera/Gallery choice
-        window.openChoiceModal = function() {
-            document.getElementById('choiceModal').style.display = 'flex';
-        }
-        window.closeChoiceModal = function() {
-            document.getElementById('choiceModal').style.display = 'none';
-        }
-        window.triggerCamera = function() {
-            closeChoiceModal();
-            document.getElementById('cameraInput').click();
-        }
-        window.triggerGallery = function() {
-            closeChoiceModal();
-            document.getElementById('galleryInput').click();
-        }
-
-        // 📌 Fullscreen Image Popup Controls
         window.openFullscreenImage = function(src) {
             document.getElementById('fullscreenImg').src = src;
             document.getElementById('fullscreenModal').style.display = 'flex';
@@ -492,212 +363,21 @@ window.onclick = function(event) {
             }
         }
 
-        window.handleFileSelect = function(input) {
-            if (input.files && input.files[0]) {
-                compressImage(input.files[0], 800, 800, 0.75, function(compressedB64) {
-                    tempBitmapData = compressedB64;
-                    let imgTag = document.getElementById('bitmapImgTag');
-                    imgTag.src = tempBitmapData;
-                    document.getElementById('bitmapPreviewBox').style.display = 'block';
-                });
-            }
-        }
-
         function compressImage(file, maxWidth, maxHeight, quality, callback) {
             let reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
-                let img = new Image();
-                img.src = event.target.result;
+                let img = new Image(); img.src = event.target.result;
                 img.onload = function() {
                     let canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = Math.round((height *= maxWidth / width));
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxHeight) {
-                            width = Math.round((width *= maxHeight / height));
-                            height = maxHeight;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    let ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
-                    callback(dataUrl);
+                    let width = img.width; let height = img.height;
+                    if (width > height && width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } 
+                    else if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; }
+                    canvas.width = width; canvas.height = height;
+                    let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', quality));
                 }
             }
-        }
-
-        window.addDesign = async function() {
-            let designNo = document.getElementById('newDesign').value.trim();
-            let warp = document.getElementById('warpCount').value.trim();
-            let warp2 = document.getElementById('warpCount2').value.trim();
-            let weft = document.getElementById('weftCount').value.trim();
-            let width = document.getElementById('width').value.trim();
-            let reed = document.getElementById('reed').value.trim();
-            let pick = document.getElementById('pick').value.trim();
-            let weave = document.getElementById('weave').value.trim();
-
-            if(!designNo) { alert("Design Number type pannu"); return; }
-            if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
-
-            let addBtn = document.getElementById('addBtn');
-            addBtn.innerText = "Saving...";
-
-            designList.push(designNo);
-            
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            designSpecs[designNo] = { warp, warp2, weft, width, reed, pick, weave, status: 'running', bitmap: tempBitmapData };
-            
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('selected_design_number', designNo);
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            await firebaseSave('pre_design_numbers', designList);
-            await firebaseSave('design_specs', designSpecs);
-
-            addBtn.innerText = "+ Add";
-            loadDesignDropdown();
-            renderMatrixTable();
-            document.getElementById('newDesign').value = '';
-            alert("Design " + designNo + " Saved successfully! ✅");
-        }
-
-        window.updateDesign = async function() {
-            let designNo = document.getElementById('designSelect').value;
-            if(!designNo) { alert("Select Design!"); return; }
-            
-            let warp = document.getElementById('warpCount').value.trim();
-            let warp2 = document.getElementById('warpCount2').value.trim();
-            let weft = document.getElementById('weftCount').value.trim();
-            let width = document.getElementById('width').value.trim();
-            let reed = document.getElementById('reed').value.trim();
-            let pick = document.getElementById('pick').value.trim();
-            let weave = document.getElementById('weave').value.trim();
-
-            let editBtn = document.getElementById('editBtn');
-            editBtn.innerText = "Updating...";
-
-            let cleanDNo = cleanDesignName(designNo);
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
-            
-            let existingBitmap = designSpecs[specKey] ? designSpecs[specKey].bitmap : "";
-            let existingStatus = designSpecs[specKey] ? designSpecs[specKey].status : "running";
-            
-            designSpecs[specKey] = { 
-                warp, warp2, weft, width, reed, pick, weave, 
-                status: existingStatus,
-                bitmap: tempBitmapData ? tempBitmapData : existingBitmap 
-            };
-            
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            await firebaseSave('design_specs', designSpecs);
-
-            editBtn.innerText = "✏️ Update / Edit Design";
-            renderMatrixTable();
-            alert("Updated successfully! ✅");
-        }
-
-        window.deleteDesign = async function() {
-            let designNo = document.getElementById('designSelect').value;
-            if(!designNo) { alert("Select Design!"); return; }
-            
-            if(confirm(designNo + " delete pannalama?")){
-                let delBtn = document.getElementById('delBtn');
-                delBtn.innerText = "Del...";
-
-                designList = designList.filter(x => x != designNo);
-                
-                let cleanDNo = cleanDesignName(designNo);
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
-                
-                if(specKey) { delete designSpecs[specKey]; }
-                
-                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-                localStorage.removeItem('selected_design_number');
-
-                await firebaseSave('pre_design_numbers', designList);
-                await firebaseSave('design_specs', designSpecs);
-
-                delBtn.innerText = "Delete";
-                loadDesignDropdown();
-                renderMatrixTable();
-                clearForm();
-                alert("Deleted successfully! 🗑️");
-            }
-        }
-
-        function loadDesignDropdown() {
-            designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let select = document.getElementById('designSelect');
-            let html = '<option value="">Select Design</option>';
-            designList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
-            select.innerHTML = html;
-            
-            let active = localStorage.getItem('selected_design_number');
-            if(active && designList.includes(active)) { 
-                select.value = active; 
-                window.selectDesign(active); 
-            } else if(designList.length > 0) {
-                select.value = designList[0];
-                window.selectDesign(designList[0]);
-            } else {
-                clearForm();
-            }
-        }
-
-        window.selectDesign = function(val){
-            localStorage.setItem('selected_design_number', val);
-            if(val) {
-                let cleanVal = cleanDesignName(val);
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
-                let specs = designSpecs[specKey] || {};
-
-                document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
-                document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || '';
-                document.getElementById('weftCount').value = specs.weft || '';
-                document.getElementById('width').value = specs.width || specs.baseWidth || '';
-                document.getElementById('reed').value = specs.reed || specs.baseReed || '';
-                document.getElementById('pick').value = specs.pick || specs.basePick || '';
-                document.getElementById('weave').value = specs.weave || '';
-                
-                if(specs.bitmap) {
-                    tempBitmapData = specs.bitmap;
-                    document.getElementById('bitmapImgTag').src = specs.bitmap;
-                    document.getElementById('bitmapPreviewBox').style.display = 'block';
-                } else { 
-                    tempBitmapData = "";
-                    document.getElementById('bitmapPreviewBox').style.display = 'none'; 
-                }
-            } else {
-                clearForm();
-            }
-        }
-
-        function clearForm() {
-            document.getElementById('warpCount').value = '';
-            document.getElementById('warpCount2').value = '';
-            document.getElementById('weftCount').value = '';
-            document.getElementById('width').value = '';
-            document.getElementById('reed').value = '';
-            document.getElementById('pick').value = '';
-            document.getElementById('weave').value = '';
-            tempBitmapData = "";
-            document.getElementById('bitmapPreviewBox').style.display = 'none';
         }
 
         function getProcessStatus(records, dNo, linkPage) {
@@ -707,13 +387,8 @@ window.onclick = function(event) {
             let isGlobalCompleted = (specKey && designSpecs[specKey].status === 'completed');
 
             let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
-            
-            if (isGlobalCompleted || matched.some(r => r.status === 'completed')) {
-                return { text: '✅', className: 'done' };
-            }
-
+            if (isGlobalCompleted || matched.some(r => r.status === 'completed')) return { text: '✅', className: 'done' };
             if (matched.length === 0) return { text: 'NONE', className: 'none' };
-
             let hasRunning = matched.some(r => r.status === 'running');
             return { text: hasRunning ? 'RUNNING' : 'PENDING', className: 'run' };
         }
@@ -725,7 +400,6 @@ window.onclick = function(event) {
 
             let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-
             let allDesignSet = new Set();
             preDesigns.forEach(d => allDesignSet.add(d));
             
@@ -778,10 +452,6 @@ window.onclick = function(event) {
             });
 
             tbody.innerHTML = html;
-        }
-
-        window.goToStatus = function(type, status){
-            window.location.href = `design_list.html?type=${type}&status=${status}`;
         }
     </script>
 </body>
