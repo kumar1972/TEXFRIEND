@@ -64,7 +64,37 @@
         }
         .back-link:hover { background: #000000; transform: translateY(-2px); }
 
-        #bitmapDisplayContainer { text-align: right; }
+        /* Checkbox Styling */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
         #bitmapDisplayContainer img {
             max-height: 45px;
             border-radius: 6px;
@@ -165,11 +195,11 @@
         .action-del { background: #FEE2E2; color: #DC2626; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s; }
         .action-del:hover { background: #FECACA; transform: scale(1.05); }
         
-        .action-complete { background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
-        .action-complete:hover { background: #059669; }
+        .action-complete { background: #526E51; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
+        .action-complete:hover { background: #3F5A3E; }
         
-        .action-running { background: #F59E0B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
-        .action-running:hover { background: #D97706; }
+        .action-running { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
+        .action-running:hover { background: #B45309; }
 
         .report-btn-group { display: flex; gap: 8px; }
         .report-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
@@ -268,7 +298,13 @@
     <div class="container">
         <div class="top-nav">
             <a href="dashboard.html" class="back-link">← Back to Menu</a>
-            <div id="bitmapDisplayContainer"></div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="completed-checkbox">
+                    <input type="checkbox" id="top_completed_status">
+                    <label for="top_completed_status">Completed</label>
+                </div>
+                <div id="bitmapDisplayContainer"></div>
+            </div>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 6px;">
@@ -855,6 +891,7 @@
             const weaverName = document.getElementById('topWeaverName').value.trim();
             const topDate = document.getElementById('topDate').value;
             const weavingMts = document.getElementById('weavingMts').value;
+            const isCompleted = document.getElementById('top_completed_status').checked;
 
             if(!designNo || !weaverName) {
                 alert("Please fill Weaver Name and Design Number!");
@@ -900,7 +937,8 @@
                 designNo: designNo,
                 weavingMts: weavingMts,
                 warpRows: warpRows,
-                weftRows: weftRows
+                weftRows: weftRows,
+                status: isCompleted ? 'completed' : 'running'
             };
 
             let existingIndex = weavingMasterData.findIndex(x => x.designNo === designNo && x.weaverName === weaverName);
@@ -924,7 +962,7 @@
                     issuedWt: parseFloat(r.issuedWt) || 0,
                     returnWt: '',
                     diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                    status: 'running'
+                    status: isCompleted ? 'completed' : 'running'
                 });
             });
 
@@ -939,7 +977,7 @@
                     issuedWt: parseFloat(r.issuedWt) || 0,
                     returnWt: '',
                     diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                    status: 'running'
+                    status: isCompleted ? 'completed' : 'running'
                 });
             });
 
@@ -961,6 +999,7 @@
             document.getElementById('warpCount').value = '';
             document.getElementById('warpCount2').value = '';
             document.getElementById('weftCount').value = '';
+            document.getElementById('top_completed_status').checked = false;
             loadBitmapImage();
             btn.innerText = origText;
         }
@@ -1069,13 +1108,33 @@
             btn.innerText = origText;
         }
 
+        async function toggleWarpStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Change this warp entry to Completed?" : "Change this warp entry to Running?";
+            if(confirm(msg)) {
+                warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
+                updateTables();
+            }
+        }
+
+        async function toggleWeftStatus(id, newStatus) {
+            let msg = newStatus === 'completed' ? "Change this weft entry to Completed?" : "Change this weft entry to Running?";
+            if(confirm(msg)) {
+                weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
+                localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
+                if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
+                updateTables();
+            }
+        }
+
         function updateTables() {
             const warpTbody = document.querySelector('#warpTable tbody');
             warpTbody.innerHTML = '';
             warpTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
-                let statusColor = item.status == 'running' ? '#D97706' : '#10B981';
+                let statusColor = item.status == 'running' ? '#D97706' : '#526E51';
                 let statusBtn = item.status == 'running' 
                     ? `<button class="action-complete" onclick="toggleWarpStatus(${item.id}, 'completed')">Complete</button>` 
                     : `<button class="action-running" onclick="toggleWarpStatus(${item.id}, 'running')">Running</button>`;
@@ -1090,7 +1149,7 @@
                     <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
                     <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
                     <td>-</td>
-                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
                     <td style="white-space:nowrap;">
                         ${statusBtn}
                         <button class="action-del" onclick="deleteWarp(${item.id})">🗑️</button>
@@ -1103,7 +1162,7 @@
             weftTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
 
-                let statusColor = item.status == 'running' ? '#D97706' : '#10B981';
+                let statusColor = item.status == 'running' ? '#D97706' : '#526E51';
                 let statusBtn = item.status == 'running' 
                     ? `<button class="action-complete" onclick="toggleWeftStatus(${item.id}, 'completed')">Complete</button>` 
                     : `<button class="action-running" onclick="toggleWeftStatus(${item.id}, 'running')">Running</button>`;
@@ -1118,33 +1177,13 @@
                     <td>${item.issuedWt !== '' && item.issuedWt !== undefined ? Number(item.issuedWt).toFixed(3) : '-'}</td>
                     <td>${item.returnWt !== '' && item.returnWt !== undefined ? Number(item.returnWt).toFixed(3) : '-'}</td>
                     <td>-</td>
-                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
                     <td style="white-space:nowrap;">
                         ${statusBtn}
                         <button class="action-del" onclick="deleteWeft(${item.id})">🗑️</button>
                     </td>
                 `;
             });
-        }
-
-        async function toggleWarpStatus(id, newStatus) {
-            let msg = newStatus === 'completed' ? "Indha warp entry-ai Completed-aga maatranuma?" : "Indha warp entry-ai Running-ku maatranuma?";
-            if(confirm(msg)) {
-                warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
-                localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
-                if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
-                updateTables();
-            }
-        }
-
-        async function toggleWeftStatus(id, newStatus) {
-            let msg = newStatus === 'completed' ? "Indha weft entry-ai Completed-aga maatranuma?" : "Indha weft entry-ai Running-ku maatranuma?";
-            if(confirm(msg)) {
-                weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
-                localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
-                if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
-                updateTables();
-            }
         }
 
         async function deleteWarp(id) {

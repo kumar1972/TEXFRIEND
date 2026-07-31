@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Warp Entry - TEXFRIEND ERP</title>
+<title>Warping - TEXFRIEND</title>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -64,6 +64,36 @@
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
+    /* Checkbox Styling */
+    .completed-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
     .page-title {
         font-size: 16px;
         margin-bottom: 5px;
@@ -83,7 +113,7 @@
         background: #F8FAF8;
         border: 1px solid #E2E8E2;
         border-radius: 14px;
-        padding: 20px 15px 15px 15px;
+        padding: 22px 15px 15px 15px;
         margin-bottom: 5px;
         position: relative;
     }
@@ -104,9 +134,17 @@
     }
     .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
 
-    .form-grid {
+    /* 📌 Clean Multi-Row Grid Layout */
+    .form-grid-2 {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 12px;
         margin-bottom: 12px;
     }
@@ -126,57 +164,68 @@
         box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
     input::placeholder { color: #A0AFA0; font-weight: 400; }
+    input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
 
-    .header-grid {
+    /* 📌 Advanced Grids */
+    .grid-header {
         display: grid;
-        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
-        color: #2F4F38; text-align: center; text-transform: uppercase;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
     }
-    .row-grid {
+    .grid-header-bot {
         display: grid;
-        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 6px; margin-bottom: 8px; align-items: center;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
     }
 
-    .header-grid-range {
+    .grid-header div, .grid-header-bot div {
+        font-size: 10px; font-weight: 700; color: #2F4F38;
+        text-align: center; text-transform: uppercase;
+    }
+
+    .line-row {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 35px;
-        gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
-        color: #2F4F38; text-align: center; text-transform: uppercase;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; align-items: center; margin-bottom: 8px;
     }
-    .row-grid-range {
+    .line-row-bot {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 35px;
-        gap: 6px; margin-bottom: 8px; align-items: center;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px; align-items: center; margin-bottom: 8px;
     }
 
-    .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 4px; font-size: 11px; }
+    .line-row input, .line-row-bot input { padding: 10px 4px; font-size: 11px; text-align: center; }
 
-    .line-no {
-        font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center;
-        background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1;
+    .add-btn, .del-btn {
+        color: white; border: none; width: 35px; height: 35px; border-radius: 8px;
+        cursor: pointer; font-size: 16px; font-weight: bold; display: flex;
+        align-items: center; justify-content: center; transition: all 0.2s ease;
     }
+    .add-btn { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+    .add-btn:hover { transform: scale(1.05); }
+    .del-btn { background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1); }
+    .del-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
-    .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s ease; }
-    .btn-del-small:hover { background: #FECACA; transform: scale(1.05); }
-
-    /* 📌 Smart Action Buttons */
-    .action-btns-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-    
+    /* 📌 Smart Buttons */
     .btn-main {
-        width: 100%; padding: 14px; border: none; border-radius: 10px;
-        color: white; font-weight: 700; font-size: 12px; cursor: pointer;
+        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
+        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
         transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
-        display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .btn-main:hover { transform: translateY(-2px); }
-    .btn-main:active { transform: translateY(1px); }
-
-    .btn-preview { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
     .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
-    .btn-list { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25); }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+    
+    .btn-blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
+    .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+
+    .popup-trigger-btn {
+        background: linear-gradient(135deg, #6366F1, #4338CA);
+        color: white; border: none; padding: 14px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+    }
+    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
     /* 📌 Advanced Pop-up Modal Styling */
     .overlay-modal {
@@ -187,7 +236,7 @@
     .overlay-modal.show { opacity: 1; }
     
     .modal-content {
-        background: #FFFFFF; width: 100%; max-width: 600px; margin: auto; height: 90vh; border-radius: 16px;
+        background: #FFFFFF; width: 100%; max-width: 800px; margin: auto; height: 90vh; border-radius: 16px;
         display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
     }
@@ -197,11 +246,9 @@
         padding: 15px 20px; background: #F4F7F4; display: flex;
         justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
     }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; border:none; padding:0; }
-    
+    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
     .modal-actions { display: flex; gap: 8px; }
     
-    .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
     .close-btn {
         background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
         border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
@@ -211,7 +258,7 @@
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-    /* 📌 Advanced Table Design with Horizontal Scroll */
+    /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
@@ -219,23 +266,51 @@
     }
 
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
     th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
     tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: #F8FAF8; }
     
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
+    .action-cell { display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; }
+    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; width: 100%; }
     .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; width: 100%; }
     .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
 
-    @media print {
-        body * { visibility: hidden; }
-        .overlay-modal, .overlay-modal * { visibility: visible; }
-        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
-        .no-print { display: none !important; }
+    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; width: 100%; }
+    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; width: 100%; }
+
+    .excess-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
+    .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
+
+    /* 📌 Design Selection Modal */
+    #designModal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; justify-content: center; align-items: center;
+        opacity: 0; transition: opacity 0.3s ease;
     }
+    #designModal.show { opacity: 1; }
+    
+    .design-modal-content {
+        background: #FFFFFF; width: 90%; max-width: 400px; border-radius: 16px;
+        overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    #designModal.show .design-modal-content { transform: scale(1); }
+    
+    .design-modal-header {
+        background: #F4F7F4; color: #2F4F38; padding: 15px 20px; font-weight: 800;
+        font-size: 13px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #E2E8E2; text-transform: uppercase;
+    }
+    .design-modal-body { padding: 10px 15px; max-height: 400px; overflow-y: auto; background: #FAFCFA; }
+    .design-option {
+        display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+        border-bottom: 1px solid #E2E8E2; cursor: pointer; font-size: 12px; color: #1E2B23;
+        transition: background 0.2s; border-radius: 8px; margin-bottom: 5px; background: #FFFFFF;
+    }
+    .design-option:hover { background: #EAF0EA; border-color: #4A7C59; }
 </style>
 </head>
 <body>
@@ -243,126 +318,110 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-    </div>
-
-    <h2 class="page-title">📐 Warp Pattern Entry</h2>
-
-    <!-- 📌 Section 1: Design Specs -->
-    <div class="form-section" style="margin-top: 5px;">
-        <div class="section-badge">General Specs</div>
-        
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label>Design Number</label>
-            <select id="designNo" onchange="loadDesignData()">
-                <option value="">Select Design No</option>
-            </select>
-        </div>
-
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Order Mtrs</label>
-                <input type="number" id="infoOrderMtr" placeholder="Mtrs" step="0.01" oninput="calculateTopBeam()">
-            </div>
-            <div class="form-group">
-                <label>Top Beam Mtrs</label>
-                <input type="text" id="infoTopBeam" placeholder="e.g. 130 or +30%" onblur="calculateTopBeam()" onchange="calculateTopBeam()">
-            </div>
-            <div class="form-group">
-                <label>Fabric Type</label>
-                <select id="infoType">
-                    <option value="Plain">Plain</option>
-                    <option value="Twill">Twill</option>
-                    <option value="Dobby">Dobby</option>
-                    <option value="Seersucker">Seersucker</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); background: #FFFFFF; padding: 12px; border-radius: 10px; border: 1px dashed #D1DED1; margin-top: 5px;">
-            <div class="form-group">
-                <label>Count 1</label>
-                <input type="text" id="infoCount1" placeholder="C1">
-            </div>
-            <div class="form-group">
-                <label>Count 2</label>
-                <input type="text" id="infoCount2" placeholder="C2">
-            </div>
-            <div class="form-group">
-                <label>O.Reed</label>
-                <input type="text" id="infoReed" placeholder="Reed" oninput="calculateOnloomWidth()">
-            </div>
-            <div class="form-group">
-                <label>O.Pick</label>
-                <input type="text" id="infoPick" placeholder="Pick">
-            </div>
-            <div class="form-group">
-                <label>O.Width</label>
-                <input type="text" id="infoWidth" placeholder="Width">
-            </div>
+        <div class="completed-checkbox">
+            <input type="checkbox" id="top_completed_status">
+            <label for="top_completed_status">Completed</label>
         </div>
     </div>
 
-    <!-- 📌 Section 2: Thread Pattern -->
-    <div class="form-section">
-        <div class="section-badge blue">Warp Thread Pattern</div>
-        <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Ends to add new line)</div>
+    <div class="page-title" style="font-size: 18px; font-weight: 800;">Warping Entry System</div>
+
+    <!-- 📌 1. TOP SECTION (ORDER DETAILS) - Clean 2 & 3 Row Layout -->
+    <div class="form-section" id="sectionTop">
+        <div class="section-badge">1. Warping Order Details (Top)</div>
         
-        <div style="overflow-x: auto;">
-            <div style="min-width: 450px;">
-                <div class="header-grid">
-                    <div>#</div>
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="topDate">
+            </div>
+            <div class="form-group">
+                <label>Warping Unit</label>
+                <input type="text" id="topUnit" placeholder="Name">
+            </div>
+            <div class="form-group">
+                <label>Design No</label>
+                <input type="text" id="topDesignNo" placeholder="Select" readonly onclick="openDesignModal('top')" style="cursor: pointer; background:#FFFFFF; font-weight:700;">
+            </div>
+        </div>
+
+        <div class="form-grid-3" style="margin-top: 10px;">
+            <div class="form-group">
+                <label>Reed</label>
+                <input type="text" id="topReed" placeholder="0" readonly>
+            </div>
+            <div class="form-group">
+                <label>Count</label>
+                <input type="text" id="topCount" placeholder="Count" readonly>
+            </div>
+            <div class="form-group">
+                <label>Warping Mts</label>
+                <input type="number" id="topWarpingMts" placeholder="100" step="0.01" oninput="loadTopYarnLines()">
+            </div>
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 10px;">
+            <div style="min-width: 500px;">
+                <div class="grid-header">
                     <div>Count</div>
                     <div>Colour</div>
-                    <div>Beam</div>
-                    <div>Ends</div>
+                    <div>Order Wt</div>
+                    <div>Issued Wt</div>
                     <div></div>
                 </div>
-                <div id="warpLinesContainer"></div>
+                <div id="topLinesContainer">
+                    <!-- Dynamic rows here -->
+                </div>
             </div>
         </div>
+
+        <button class="btn-main btn-save" id="saveTopBtnTxt" onclick="saveTopOrder()">Save Top Order</button>
     </div>
 
-    <!-- 📌 Section 3: Pattern Repeats -->
-    <div class="form-section">
-        <div class="section-badge amber">Pattern Repeats (Groups)</div>
-        <div style="text-align: right; margin-bottom: 5px;">
-            <button class="btn-add-small" onclick="addWarpRange()">➕ Add Range</button>
-        </div>
+    <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) - Clean 2 Row Layout -->
+    <div class="form-section" id="sectionBottom">
+        <div class="section-badge blue">2. Warping Received & Loss (Bottom)</div>
         
-        <div style="overflow-x: auto;">
-            <div style="min-width: 350px;">
-                <div class="header-grid-range">
-                    <div>Start Line</div>
-                    <div>End Line</div>
-                    <div>X (Times)</div>
-                    <div></div>
-                </div>
-                <div id="warpRangesContainer"></div>
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="botDate">
             </div>
+            <div class="form-group">
+                <label>Design Number (Select)</label>
+                <input type="text" id="botDesignDisplay" placeholder="Select Pending Design" readonly onclick="openDesignModal('bot')" style="cursor: pointer; font-weight:700;">
+                <input type="hidden" id="botDesignNo">
+                <input type="hidden" id="botUnitName">
+            </div>
+        </div>
+
+        <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
+            <div style="min-width: 550px;">
+                <div class="grid-header-bot">
+                    <div>Count</div>
+                    <div>Colour</div>
+                    <div>Order Wt</div>
+                    <div>Issued Wt</div>
+                    <div>Rcvd Wt</div>
+                </div>
+                <div id="botLinesContainer"></div>
+            </div>
+            <button class="btn-main btn-blue" id="saveBotBtnTxt" onclick="saveBottomEntry()">Save Bottom Entry</button>
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="action-btns-row">
-        <button class="btn-main btn-preview" onclick="previewPattern()">👁️ Preview</button>
-        <button class="btn-main btn-save" onclick="saveWarpDesign()" id="saveBtnTxt">💾 Save</button>
-        <button class="btn-main btn-list" onclick="openSavedModal()">📂 Saved List</button>
-    </div>
+    <!-- 📌 3. SAVED DATA POPUP BUTTON -->
+    <button type="button" class="popup-trigger-btn" onclick="openModal('savedListModal')">View Saved Warping Data</button>
 </div>
 
-<!-- 📌 Print Preview Modal with Horizontal Scroll -->
-<div id="previewModal" class="overlay-modal">
-    <div class="modal-content">
-        <div class="modal-header no-print">
-            <h3>👁️ Warp Pattern Preview</h3>
-            <div class="modal-actions">
-                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-                <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
-            </div>
+<!-- 📌 Selection Modal for Design -->
+<div id="designModal">
+    <div class="design-modal-content">
+        <div class="design-modal-header">
+            <span id="modalTitle">Select Design</span>
+            <span style="cursor: pointer; font-size: 16px; color:#DC2626;" onclick="closeDesignModal()">✕</span>
         </div>
-        <div class="modal-body" id="previewContent" style="padding: 20px;">
-            <!-- Generated HTML goes here -->
-        </div>
+        <div class="design-modal-body" id="modalDesignList"></div>
     </div>
 </div>
 
@@ -370,7 +429,7 @@
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>📋 Saved Warp Patterns</h3>
+            <h3>Saved Warping Data</h3>
             <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
         </div>
         <div class="modal-body">
@@ -378,13 +437,20 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Design No</th>
-                            <th>Total Lines</th>
+                            <th>Date</th>
+                            <th>Design</th>
+                            <th>Count</th>
+                            <th>Colour</th>
+                            <th>Order Wt</th>
+                            <th>Issued Wt</th>
+                            <th>Rcvd Wt</th>
+                            <th>Excess</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="savedPatternsBody">
-                        <!-- Data here -->
+                    <tbody id="dataTableBody">
+                        <!-- Data populates here -->
                     </tbody>
                 </table>
             </div>
@@ -393,7 +459,13 @@
 </div>
 
 <script>
-let currentBaseSpecs = {};
+let editingWarpId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('topDate').valueAsDate = new Date();
+    document.getElementById('botDate').valueAsDate = new Date();
+    renderTable();
+});
 
 function openModal(modalId) {
     let modal = document.getElementById(modalId);
@@ -411,508 +483,545 @@ function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
 
-function loadDesignDropdown() {
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-    let select = document.getElementById('designNo');
-    let html = '<option value="">Select Design No</option>';
-    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
-    select.innerHTML = html;
+function parseYarnCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
 }
 
-function calculateOnloomWidth() {
-    let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
-    let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
-    let onloomReed = parseFloat(document.getElementById('infoReed').value) || 0;
+function resolvePattern(lines, ranges, type, defaultCount) {
+    if(!lines || lines.length === 0) return [];
+    let covered = new Array(lines.length).fill(false);
+    let orderedPattern = [];
 
-    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) {
-        let calcWidth = (baseReed * baseWidth) / onloomReed;
-        document.getElementById('infoWidth').value = calcWidth.toFixed(2);
-    } else if (baseWidth > 0) {
-        document.getElementById('infoWidth').value = baseWidth.toFixed(2);
+    if(ranges && ranges.length > 0) {
+        ranges.forEach(r => {
+            for(let s=0; s<r.set; s++) {
+                for(let j = r.start; j <= r.end; j++) {
+                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                }
+            }
+            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+        });
     }
+    lines.forEach((l, idx) => {
+        if(!covered[idx]) orderedPattern.push({...l});
+    });
+
+    let exactSequence = [];
+    orderedPattern.forEach(item => {
+        let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+        let clr = item.color ? String(item.color).trim() : '-';
+        for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
+    });
+
+    let summaryMap = new Map();
+    let order = [];
+    exactSequence.forEach(item => {
+        let key = item.count.toLowerCase() + "||" + item.color.toLowerCase().trim();
+        if(!summaryMap.has(key)) {
+            summaryMap.set(key, { count: item.count, color: item.color.trim(), patternVal: 0 });
+            order.push(key);
+        }
+        summaryMap.get(key).patternVal++;
+    });
+
+    return order.map(k => summaryMap.get(k));
 }
 
-function loadDesignData() {
-    let dNo = document.getElementById('designNo').value;
-    let linesContainer = document.getElementById('warpLinesContainer');
-    let rangesContainer = document.getElementById('warpRangesContainer');
-    let saveBtn = document.getElementById('saveBtnTxt');
+function openDesignModal(target) {
+    activeTargetInput = target;
+    const modal = document.getElementById('designModal');
+    const modalList = document.getElementById('modalDesignList');
+    modalList.innerHTML = '';
     
-    linesContainer.innerHTML = '';
-    rangesContainer.innerHTML = '';
-    
-    document.getElementById('infoCount1').value = '';
-    document.getElementById('infoCount2').value = '';
-    document.getElementById('infoOrderMtr').value = '';
-    document.getElementById('infoTopBeam').value = '';
-    document.getElementById('infoType').value = 'Plain';
-    document.getElementById('infoReed').value = '';
-    document.getElementById('infoPick').value = '';
-    document.getElementById('infoWidth').value = '';
+    if (target === 'top') {
+        document.getElementById('modalTitle').innerText = "Select Design";
+        let allDesignSet = new Set();
+        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        preDesignList.forEach(d => allDesignSet.add(d));
 
-    if(!dNo) {
-        saveBtn.innerText = "💾 Save";
-        addWarpLine();
-        return;
-    }
+        let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        designMasters.forEach(d => allDesignSet.add(d.name));
 
-    let cleanDNo = cleanDesignName(dNo);
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    currentBaseSpecs = specKey ? specs[specKey] : {};
-
-    let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
-    let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
-    let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
-
-    let autoReed = baseReed > 0 ? (baseReed - 8) : '';
-    let autoPick = basePick > 0 ? (basePick - 4) : '';
-
-    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let designOrders = orders.filter(o => cleanDesignName(o.designNo) === cleanDNo);
-    let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
-
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
-
-    if (found) {
-        saveBtn.innerText = "✏️ Update"; 
-        document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
-        document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
-        document.getElementById('infoOrderMtr').value = found.orderMtr || (totalOrderMtr > 0 ? totalOrderMtr : '');
-        document.getElementById('infoTopBeam').value = found.topBeam || '';
-        document.getElementById('infoType').value = found.type || 'Plain';
-        
-        document.getElementById('infoReed').value = found.reed || autoReed;
-        document.getElementById('infoPick').value = found.pick || autoPick;
-
-        if(found.warpLines && found.warpLines.length > 0) {
-            found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends));
+        if(allDesignSet.size === 0) {
+            modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No designs found</div>';
         } else {
-            addWarpLine();
+            allDesignSet.forEach(designNo => {
+                if(designNo) {
+                    let div = document.createElement('div');
+                    div.className = 'design-option';
+                    div.innerHTML = `<span><b>${designNo}</b></span>`;
+                    div.onclick = function() {
+                        document.getElementById('topDesignNo').value = designNo;
+                        closeDesignModal();
+                        loadTopDesignSpecs(designNo);
+                    };
+                    modalList.appendChild(div);
+                }
+            });
         }
+    } else if (target === 'bot') {
+        document.getElementById('modalTitle').innerText = "Select Pending Design";
+        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
         
-        if(found.warpRanges) {
-            found.warpRanges.forEach(r => addWarpRange(r.start, r.end, r.set));
+        let pendingItems = issues.filter(issue => {
+            let hasReceive = receives.some(r => r.issueId == issue.id);
+            return !hasReceive; 
+        });
+
+        if(pendingItems.length === 0) {
+            modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No pending warping orders found</div>';
+        } else {
+            let uniqueMap = new Map();
+            pendingItems.forEach(item => {
+                let key = `${item.designNo}_${item.unit}`;
+                if(!uniqueMap.has(key)) {
+                    uniqueMap.set(key, { designNo: item.designNo, unit: item.unit });
+                }
+            });
+
+            uniqueMap.forEach((val) => {
+                let div = document.createElement('div');
+                div.className = 'design-option';
+                div.innerHTML = `<span><b>${val.designNo}</b> <span style="color:#D97706; font-size:10px; margin-left:8px; background:#FEF3C7; padding:2px 6px; border-radius:6px;">${val.unit}</span></span>`;
+                div.onclick = function() {
+                    document.getElementById('botDesignDisplay').value = `${val.designNo} - ${val.unit}`;
+                    document.getElementById('botDesignNo').value = val.designNo;
+                    document.getElementById('botUnitName').value = val.unit;
+                    closeDesignModal();
+                    loadBottomRows();
+                };
+                modalList.appendChild(div);
+            });
         }
-    } else {
-        saveBtn.innerText = "💾 Save";
-        document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
-        document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
-        document.getElementById('infoOrderMtr').value = totalOrderMtr > 0 ? totalOrderMtr : '';
-        
-        document.getElementById('infoReed').value = autoReed;
-        document.getElementById('infoPick').value = autoPick;
-        addWarpLine();
-    }
-    
-    calculateOnloomWidth();
-    updateLineNumbers();
-}
-
-function calculateTopBeam() {
-    let orderMtr = parseFloat(document.getElementById('infoOrderMtr').value) || 0;
-    let topBeamInput = document.getElementById('infoTopBeam');
-    let topBeamStr = topBeamInput.value.trim();
-
-    if (orderMtr > 0 && topBeamStr) {
-        let cleanStr = topBeamStr.replace('+', '').replace('%', '').trim();
-        let val = parseFloat(cleanStr) || 0;
-
-        if (topBeamStr.includes('%') || (val > 0 && val < 50 && !topBeamStr.includes('.'))) {
-            let calculated = orderMtr + (orderMtr * val / 100);
-            topBeamInput.value = calculated.toFixed(2);
-        }
-    }
-}
-
-function addWarpLine(count = '', color = '', beam = 'Ground', ends = '') {
-    let container = document.getElementById('warpLinesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid line-item';
-    row.innerHTML = `
-        <div class="line-no"></div>
-        <input type="text" class="inp-count" placeholder="Count" value="${count}">
-        <input type="text" class="inp-color" placeholder="Colour" value="${color}">
-        <select class="inp-beam">
-            <option value="Ground" ${beam === 'Ground' ? 'selected' : ''}>Ground</option>
-            <option value="Top Beam" ${beam === 'Top Beam' ? 'selected' : ''}>Top Beam</option>
-        </select>
-        <input type="number" class="inp-ends" placeholder="Ends" value="${ends}" 
-               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWarpLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
-        <button class="btn-del-small" onclick="this.parentElement.remove(); updateLineNumbers();">×</button>
-    `;
-    container.appendChild(row);
-    updateLineNumbers();
-}
-
-function addWarpRange(start = '', end = '', set = '') {
-    let container = document.getElementById('warpRangesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid-range range-item';
-    row.innerHTML = `
-        <input type="number" class="inp-start" placeholder="Start" value="${start}">
-        <input type="number" class="inp-end" placeholder="End" value="${end}">
-        <input type="number" class="inp-set" placeholder="Times" value="${set}"
-               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWarpRange(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-start'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
-        <button class="btn-del-small" onclick="this.parentElement.remove()">×</button>
-    `;
-    container.appendChild(row);
-}
-
-function updateLineNumbers() {
-    let lines = document.querySelectorAll('.line-item .line-no');
-    lines.forEach((elem, idx) => {
-        elem.innerText = idx + 1;
-    });
-}
-
-// 📌 FIREBASE SYNC: saveWarpDesign
-async function saveWarpDesign() {
-    let dNo = document.getElementById('designNo').value;
-    if(!dNo) {
-        alert("Please select a Design Number!");
-        return;
     }
 
-    calculateTopBeam();
-    calculateOnloomWidth();
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
 
-    let count1 = document.getElementById('infoCount1').value.trim();
-    let count2 = document.getElementById('infoCount2').value.trim();
-    let orderMtr = document.getElementById('infoOrderMtr').value.trim();
-    let topBeam = document.getElementById('infoTopBeam').value.trim();
-    let type = document.getElementById('infoType').value;
-    let reed = document.getElementById('infoReed').value.trim();
-    let pick = document.getElementById('infoPick').value.trim();
-    let width = document.getElementById('infoWidth').value.trim();
+function closeDesignModal() {
+    let modal = document.getElementById('designModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
 
-    let lines = [];
-    document.querySelectorAll('.line-item').forEach(row => {
-        let count = row.querySelector('.inp-count').value.trim();
-        let color = row.querySelector('.inp-color').value.trim();
-        let beam = row.querySelector('.inp-beam').value;
-        let ends = row.querySelector('.inp-ends').value.trim();
-        if(count || color || ends) {
-            lines.push({ count: count, color: color, beam: beam, ends: ends });
-        }
-    });
-
-    let ranges = [];
-    document.querySelectorAll('.range-item').forEach(row => {
-        let start = row.querySelector('.inp-start').value.trim();
-        let end = row.querySelector('.inp-end').value.trim();
-        let set = row.querySelector('.inp-set').value.trim();
-        if(start && end && set) {
-            ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
-        }
-    });
-
-    let saveBtn = document.getElementById('saveBtnTxt');
-    let originalText = saveBtn.innerText;
-    saveBtn.innerText = "⏳ Saving to Cloud...";
-
+function loadTopDesignSpecs(dNo) {
     let cleanDNo = cleanDesignName(dNo);
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
-    
-    let patternData = { 
-        name: dNo, 
-        count1: count1, 
-        count2: count2, 
-        orderMtr: orderMtr,
-        topBeam: topBeam,
-        type: type,
-        reed: reed, 
-        pick: pick, 
-        width: width, 
-        warpLines: lines, 
-        warpRanges: ranges 
-    };
-
-    if(idx === -1) {
-        masters.push(patternData);
-    } else {
-        masters[idx] = Object.assign({}, masters[idx], patternData);
-    }
-
-    localStorage.setItem('design_masters_data', JSON.stringify(masters));
-
-    if(window.firebaseSave) {
-        await window.firebaseSave('design_masters_data', masters);
-    }
-
-    saveBtn.innerText = originalText;
-    alert("Warp Pattern Saved to Cloud Successfully! ✅☁️");
-}
-
-function openSavedModal() {
-    renderSavedList();
-    openModal('savedListModal');
-}
-
-function renderSavedList() {
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let tbody = document.getElementById('savedPatternsBody');
-    tbody.innerHTML = '';
-
-    let hasData = false;
-    masters.forEach(m => {
-        if (m.warpLines && m.warpLines.length > 0) {
-            hasData = true;
-            tbody.innerHTML += `
-                <tr>
-                    <td><b>${m.name}</b></td>
-                    <td>${m.warpLines.length} Lines</td>
-                    <td>
-                        <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
-                    </td>
-                </tr>
-            `;
-        }
-    });
-
-    if(!hasData) {
-        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; color:#D97706;">No Warp Patterns saved yet.</td></tr>`;
-    }
-}
-
-function editDesignPattern(dNo) {
-    closeModal('savedListModal');
-    document.getElementById('designNo').value = dNo;
-    loadDesignData();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function previewPattern() {
-    calculateTopBeam();
-    calculateOnloomWidth();
-    let dNo = document.getElementById('designNo').value;
-    
-    let lines = [];
-    document.querySelectorAll('.line-item').forEach(row => {
-        let count = row.querySelector('.inp-count').value.trim();
-        let color = row.querySelector('.inp-color').value.trim();
-        let beam = row.querySelector('.inp-beam').value;
-        let ends = parseFloat(row.querySelector('.inp-ends').value) || 0;
-        if(count || color || ends) {
-            lines.push({ count: count, color: color, beam: beam, ends: ends });
-        }
-    });
-
-    let ranges = [];
-    document.querySelectorAll('.range-item').forEach(row => {
-        let start = parseInt(row.querySelector('.inp-start').value) || 0;
-        let end = parseInt(row.querySelector('.inp-end').value) || 0;
-        let set = parseInt(row.querySelector('.inp-set').value) || 0;
-        if(start && end && set) ranges.push({ start, end, set });
-    });
-
-    if(lines.length === 0) {
-        alert("No pattern to preview! Please add lines.");
-        return;
-    }
-
-    let cleanDNo = cleanDesignName(dNo);
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
-    let baseReed = parseFloat(sp.reed || sp.baseReed) || 0;
-    let baseWidth = parseFloat(sp.width || sp.baseWidth) || 0;
-    let baseTotalEnds = Math.round(baseReed * baseWidth);
 
-    let c1 = document.getElementById('infoCount1').value || '-';
-    let c2 = document.getElementById('infoCount2').value || '-';
-    let orderMtr = document.getElementById('infoOrderMtr').value || '-';
-    let topBeam = document.getElementById('infoTopBeam').value || '-';
-    let type = document.getElementById('infoType').value || 'Plain';
-    let reed = document.getElementById('infoReed').value || '-';
-    let pick = document.getElementById('infoPick').value || '-';
-    let width = document.getElementById('infoWidth').value || '-';
+    let reed = found.reed || sp.reed || sp.baseReed || 52;
+    let count1 = found.count1 || sp.warp || '20';
+    let baseOrderMtr = parseFloat(found.orderMtr) || 100;
+    let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
 
-    let headerHtml = `
-        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F4F7F4; border:1px solid #4A7C59; padding:12px; border-radius:10px; margin-bottom:15px; font-size:12px; font-weight:700; color:#1E2B23;">
-            <span style="margin-right:8px;">Design: <span style="color:#4A7C59;">${dNo || '-'}</span></span>
-            <span style="margin-right:8px;">Counts: ${c1}, ${c2}</span>
-            <span style="margin-right:8px;">Order Mtr: ${orderMtr}</span>
-            <span style="margin-right:8px;">Top Beam: ${topBeam}</span>
-            <span style="margin-right:8px;">Type: ${type}</span>
-            <span style="margin-right:8px;">Reed: ${reed}</span>
-            <span style="margin-right:8px;">Pick: ${pick}</span>
-            <span>Width: ${width}"</span>
-        </div>
-    `;
+    document.getElementById('topReed').value = reed;
+    document.getElementById('topCount').value = count1;
+    document.getElementById('topWarpingMts').value = warpingMts.toFixed(2);
 
-    let flatPattern = [];
-    let idxFlat = 0;
-    while (idxFlat < lines.length) {
-        let currentLineNum = idxFlat + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
-        if (range && range.end >= range.start) {
-            for(let rep = 0; rep < range.set; rep++) {
-                for(let j = range.start; j <= range.end; j++) {
-                    if(lines[j-1]) {
-                        flatPattern.push({
-                            lineNo: j,
-                            count: lines[j-1].count || '-', 
-                            color: lines[j-1].color || '-',
-                            ends: parseFloat(lines[j-1].ends) || 0, 
-                            beam: lines[j-1].beam
-                        });
-                    }
-                }
-            }
-            idxFlat = range.end;
-        } else {
-            flatPattern.push({
-                lineNo: idxFlat + 1,
-                count: lines[idxFlat].count || '-', 
-                color: lines[idxFlat].color || '-',
-                ends: parseFloat(lines[idxFlat].ends) || 0, 
-                beam: lines[idxFlat].beam
-            });
-            idxFlat++;
-        }
-    }
+    loadTopYarnLines();
+}
 
-    let tbodyHtml = '';
-    let groundTotal = 0;
-    let topTotal = 0;
-    let grandTotalPattern = 0;
-    let i = 0;
-    
-    let tdStyle = "padding:10px; border-bottom:1px dashed #D1DED1; border-right:1px dotted #A0AFA0; text-align:center; color:#1E2B23;";
-    let tdStyleLast = "padding:10px; border-bottom:1px dashed #D1DED1; vertical-align:middle; color:#1E2B23; text-align:left;";
+function loadTopYarnLines() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let container = document.getElementById('topLinesContainer');
+    container.innerHTML = '';
 
-    while (i < lines.length) {
-        let currentLineNum = i + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
-        
-        if (range && range.end >= range.start) {
-            let blockLines = [];
-            let blockGroundEnds = 0;
-            let blockTopEnds = 0;
-            
-            for (let j = range.start; j <= range.end; j++) {
-                if (lines[j - 1]) {
-                    let lineItem = Object.assign({}, lines[j - 1]);
-                    lineItem.lineNo = j;
-                    blockLines.push(lineItem);
-                    if(lines[j - 1].beam === 'Top Beam') {
-                        blockTopEnds += lines[j-1].ends;
-                    } else {
-                        blockGroundEnds += lines[j-1].ends;
-                    }
-                }
-            }
-            
-            let blockTotalEnds = (blockGroundEnds + blockTopEnds) * range.set;
-            groundTotal += blockGroundEnds * range.set;
-            topTotal += blockTopEnds * range.set;
+    if(!dNo) return;
 
-            blockLines.forEach((item, index) => {
-                let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 35px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 35px; color: #2F4F38;">${item.ends}</span>`;
-                let colorTamil = translateColorToTamil(item.color);
-                
-                tbodyHtml += `<tr>
-                    <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
-                    <td style="${tdStyle}">${item.count || '-'}</td>
-                    <td style="${tdStyle}">${colorTamil}</td>
-                    <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>`;
-                
-                if (index === 0) {
-                    tbodyHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
-                        <span style="font-size:18px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalEnds}</span></b>
-                    </td>`;
-                }
-                tbodyHtml += `</tr>`;
-            });
-            i = range.end; 
-        } else {
-            let item = Object.assign({}, lines[i]);
-            item.lineNo = i + 1;
+    let cleanDNo = cleanDesignName(dNo);
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
 
-            if(item.beam === 'Top Beam') {
-                topTotal += item.ends;
-            } else {
-                groundTotal += item.ends;
-            }
-            
-            let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 35px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 35px; color: #2F4F38;">${item.ends}</span>`;
-            let colorTamil = translateColorToTamil(item.color);
-            
-            tbodyHtml += `<tr>
-                <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
-                <td style="${tdStyle}">${item.count || '-'}</td>
-                <td style="${tdStyle}">${colorTamil}</td>
-                <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>
-                <td style="padding:10px; border-bottom:1px dashed #D1DED1;"></td>
-            </tr>`;
-            i++;
-        }
-    }
+    let reed = parseFloat(document.getElementById('topReed').value) || parseFloat(found.reed || sp.reed || sp.baseReed) || 52;
+    let baseWidth = parseFloat(found.width || sp.width || sp.baseWidth) || 66.92;
+    let totalWarpEnds = Math.round(reed * baseWidth);
+    let warpingMts = parseFloat(document.getElementById('topWarpingMts').value) || 100;
+    let defaultWarpCount = found.count1 || sp.warp || '20';
 
-    grandTotalPattern = groundTotal + topTotal;
-    let finalTotalDisplay = topTotal > 0 ? `<span style="color:#3F5A3E;">${groundTotal} <span style="font-size:10px;">(Grnd)</span></span> + <span style="color:#D97706;">${topTotal} <span style="font-size:10px;">(Top)</span></span> = ${grandTotalPattern}` : `${grandTotalPattern}`;
+    let warpList = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
 
-    let html = headerHtml;
-    html += '<div class="table-container" style="border:1px solid #D1DED1;"><table style="width:100%; border-collapse:collapse; font-size:12px; background:#FFF;">';
-    html += `<tr style="background:#EAF0EA; border-bottom:2px solid #A0AFA0;">
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">#</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Count</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Colour / Beam</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; line-height:1.3; color:#2F4F38; text-transform:uppercase; font-size:11px;">Ends<br><span style="font-size:9px; color:#4A554A; font-weight:600;">Ground &nbsp;&nbsp;|&nbsp;&nbsp; Top</span></th>
-                <th style="padding:12px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:11px;">Set</th>
-             </tr>`;
-    html += tbodyHtml;
-    
-    html += `<tr style="font-weight:bold; font-size:13px; background:#F8FAF8; border-top:2px solid #A0AFA0;">
-        <td colspan="4" style="padding:12px; text-align:right; border-right:1px dotted #A0AFA0; color:#2F4F38;">Total Pattern Ends:</td>
-        <td style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; white-space:nowrap; color:#1E2B23;">${finalTotalDisplay}</td>
-    </tr>`;
+    if(warpList.length > 0) {
+        let totalPatternVal = warpList.reduce((a, b) => a + b.patternVal, 0) || 1;
+        warpList.forEach(item => {
+            let calcCount = parseYarnCount(item.count) || parseYarnCount(defaultWarpCount) || 20;
+            let totalEndsForColor = item.patternVal * Math.floor(totalWarpEnds / totalPatternVal);
+            let weightKg = (totalEndsForColor * warpingMts) / (1693.33 * calcCount);
 
-    if (baseReed > 0 && baseWidth > 0 && grandTotalPattern > 0) {
-        let repeats = Math.floor(baseTotalEnds / grandTotalPattern);
-        let remEnds = baseTotalEnds % grandTotalPattern;
-
-        let countTotals = {};
-        flatPattern.forEach(item => {
-            let c = item.count;
-            countTotals[c] = (countTotals[c] || 0) + (item.ends * repeats);
+            let row = document.createElement('div');
+            row.className = 'line-row';
+            row.innerHTML = `
+                <input type="text" class="t-count" value="${item.count}" readonly>
+                <input type="text" class="t-color" value="${item.color}" readonly>
+                <input type="number" class="t-orderwt" value="${weightKg.toFixed(3)}" step="0.001" readonly>
+                <input type="number" class="t-isswt" value="${weightKg.toFixed(3)}" step="0.001">
+                <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(row);
         });
+    }
+}
 
-        let endsToDistribute = remEnds;
-        for (let item of flatPattern) {
-            if (endsToDistribute <= 0) break;
-            let c = item.count;
-            let take = Math.min(item.ends, endsToDistribute);
-            countTotals[c] = (countTotals[c] || 0) + take;
-            endsToDistribute -= take;
-        }
+// 📌 FIREBASE SYNC: saveTopOrder
+async function saveTopOrder() {
+    let dateVal = document.getElementById('topDate').value;
+    let unit = document.getElementById('topUnit').value.trim();
+    let dNo = document.getElementById('topDesignNo').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
-        html += `<tr style="font-weight:700; font-size:14px; background:#FFFFFF; color:#2F4F38; border-top:1px solid #A0AFA0;">
-            <td colspan="5" style="padding:15px; text-align:center;">
-                ${repeats} Set + ${remEnds} Ends = <span style="font-size:16px; color:#1E2B23;">${baseTotalEnds}</span> Total Ends
-            </td>
-        </tr>`;
+    if(!dNo || !unit) { alert("Please fill Warping Unit and Design Number!"); return; }
 
-        let breakdownHtml = Object.keys(countTotals).map(c => `<span style="color:#1E2B23;"><b>${c}</b>: ${countTotals[c]} Ends</span>`).join(' &nbsp;&nbsp;|&nbsp;&nbsp; ');
-        html += `<tr style="font-size:13px; background:#EAF0EA; border-top:1px solid #A0AFA0;">
-            <td colspan="5" style="padding:15px; text-align:center;">
-                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;">Count Wise Total:</span> ${breakdownHtml}
-            </td>
-        </tr>`;
+    let btn = document.getElementById('saveTopBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "⏳ Saving to Cloud...";
+
+    let rows = document.querySelectorAll('#topLinesContainer .line-row');
+    if(rows.length === 0) {
+        btn.innerText = origText;
+        return;
     }
 
-    html += '</table></div>';
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let savedCount = 0;
 
-    document.getElementById('previewContent').innerHTML = html;
-    openModal('previewModal');
+    rows.forEach(row => {
+        let count = row.querySelector('.t-count').value.trim();
+        let color = row.querySelector('.t-color').value.trim();
+        let orderWt = parseFloat(row.querySelector('.t-orderwt').value) || 0;
+        let issWt = parseFloat(row.querySelector('.t-isswt').value) || 0;
+
+        if(count && issWt > 0) {
+            issues.push({
+                id: Date.now() + Math.random(),
+                date: dateVal,
+                unit: unit,
+                designNo: dNo,
+                count: count,
+                color: color,
+                orderWt: orderWt.toFixed(3),
+                issueWt: issWt.toFixed(3),
+                status: isCompleted ? 'completed' : 'running'
+            });
+            savedCount++;
+        }
+    });
+
+    if(savedCount > 0) {
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+        }
+        
+        alert("Warping Order Saved to Cloud Successfully! ✅☁️");
+        
+        document.getElementById('topLinesContainer').innerHTML = '';
+        document.getElementById('topDesignNo').value = '';
+        document.getElementById('topUnit').value = '';
+        document.getElementById('topReed').value = '';
+        document.getElementById('topCount').value = '';
+        document.getElementById('top_completed_status').checked = false;
+        
+        renderTable();
+    } else {
+        alert("Please enter valid Issued Weight.");
+    }
+    btn.innerText = origText;
+}
+
+function loadBottomRows() {
+    let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
+    let wrapper = document.getElementById('botGridWrapper');
+    let container = document.getElementById('botLinesContainer');
+    container.innerHTML = '';
+    
+    if(!dNo || !uName) {
+        wrapper.style.display = 'none';
+        return;
+    }
+    
+    wrapper.style.display = 'block';
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+
+    let pendingItems = issues.filter(issue => {
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
+    });
+
+    pendingItems.forEach(item => {
+        let row = document.createElement('div');
+        row.className = 'line-row-bot';
+        row.setAttribute('data-id', item.id);
+        
+        row.innerHTML = `
+            <input type="text" class="b-count" value="${item.count}" readonly>
+            <input type="text" class="b-color" value="${item.color}" readonly>
+            <input type="text" class="b-orderwt" value="${item.orderWt}" readonly>
+            <input type="text" class="b-isswt" value="${item.issueWt}" readonly>
+            <input type="number" class="b-received" placeholder="Rcvd Wt" step="0.001">
+        `;
+        container.appendChild(row);
+    });
+}
+
+// 📌 FIREBASE SYNC: saveBottomEntry
+async function saveBottomEntry() {
+    let dateVal = document.getElementById('botDate').value;
+    let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
+
+    if(!dNo || !uName) { alert("Please select a Pending Warping Order!"); return; }
+
+    let btn = document.getElementById('saveBotBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "⏳ Saving to Cloud...";
+
+    let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+    if(rows.length === 0) {
+        btn.innerText = origText;
+        return;
+    }
+
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let savedCount = 0;
+
+    rows.forEach(row => {
+        let rcvWt = parseFloat(row.querySelector('.b-received').value);
+        let recId = row.getAttribute('data-id');
+        
+        if(rcvWt > 0) {
+            receives.push({
+                id: Date.now() + Math.random(),
+                issueId: recId,
+                botDate: dateVal,
+                designNo: dNo,
+                unit: uName,
+                receivedWt: rcvWt.toFixed(3)
+            });
+            savedCount++;
+        }
+    });
+
+    if(savedCount > 0) {
+        localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_receive_records', receives);
+        }
+
+        alert("Bottom Entry Saved to Cloud Successfully! ✅☁️");
+        
+        document.getElementById('botDesignDisplay').value = '';
+        document.getElementById('botDesignNo').value = '';
+        document.getElementById('botUnitName').value = '';
+        document.getElementById('botGridWrapper').style.display = 'none';
+        renderTable();
+    } else {
+        alert("Please enter Received Weight for at least one item.");
+    }
+    btn.innerText = origText;
+}
+
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
+    if(confirm(msg)) {
+        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        let index = issues.findIndex(r => r.id == id);
+        
+        if(index > -1) {
+            issues[index].status = newStatus;
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('warping_issue_records', issues);
+            }
+            renderTable();
+        }
+    }
+}
+
+// 📌 FIREBASE SYNC: editWarpingRecord
+async function editWarpingRecord(issueId, isReceived) {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) {
+            let recRecord = receives[recIndex];
+            
+            receives.splice(recIndex, 1);
+            localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+            
+            if (window.firebaseSave) {
+                window.firebaseSave('warping_receive_records', receives);
+            }
+            
+            document.getElementById('botDate').value = recRecord.botDate;
+            document.getElementById('botDesignDisplay').value = `${recRecord.designNo} - ${recRecord.unit}`;
+            document.getElementById('botDesignNo').value = recRecord.designNo;
+            document.getElementById('botUnitName').value = recRecord.unit;
+            closeModal('savedListModal');
+            loadBottomRows();
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+                rows.forEach(row => {
+                    if(row.getAttribute('data-id') == issueId) {
+                        row.querySelector('.b-received').value = recRecord.receivedWt;
+                    }
+                });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }, 100);
+            renderTable();
+        }
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) {
+            let issRecord = issues[issueIndex];
+            issues.splice(issueIndex, 1);
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            
+            if (window.firebaseSave) {
+                window.firebaseSave('warping_issue_records', issues);
+            }
+            
+            document.getElementById('topDate').value = issRecord.date;
+            document.getElementById('topUnit').value = issRecord.unit;
+            document.getElementById('topDesignNo').value = issRecord.designNo;
+            document.getElementById('top_completed_status').checked = (issRecord.status === 'completed');
+            loadTopDesignSpecs(issRecord.designNo);
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#topLinesContainer .line-row');
+                rows.forEach(row => {
+                    if(row.querySelector('.t-count').value === issRecord.count && row.querySelector('.t-color').value === issRecord.color) {
+                        row.querySelector('.t-isswt').value = issRecord.issueWt;
+                    }
+                });
+            }, 100);
+
+            closeModal('savedListModal');
+            renderTable();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+}
+
+// 📌 FIREBASE SYNC: deleteWarpingRecord
+async function deleteWarpingRecord(issueId, isReceived) {
+    if(!confirm("Are you sure you want to delete this record?")) return;
+    
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) receives.splice(recIndex, 1);
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) issues.splice(issueIndex, 1);
+    }
+    
+    localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('warping_receive_records', receives);
+        await window.firebaseSave('warping_issue_records', issues);
+    }
+    
+    renderTable();
+    
+    document.getElementById('botLinesContainer').innerHTML = '';
+    document.getElementById('botGridWrapper').style.display = 'none';
+    document.getElementById('botDesignDisplay').value = '';
+}
+
+function renderTable() {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+
+    let tbody = document.getElementById('dataTableBody');
+    tbody.innerHTML = '';
+
+    if(issues.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="padding:20px; color:#A0AFA0;">No Records Found.</td></tr>`;
+        return;
+    }
+
+    issues.slice().reverse().forEach(issue => {
+        let matchingRec = receives.find(r => r.issueId == issue.id);
+        let isReceived = !!matchingRec;
+        
+        let dateObj = new Date(issue.date);
+        let dateStr = ("0" + dateObj.getDate()).slice(-2) + "/" + ("0" + (dateObj.getMonth() + 1)).slice(-2) + "/" + dateObj.getFullYear();
+
+        let rcvWt = matchingRec ? `<span style="color:#10B981; font-weight:bold;">${matchingRec.receivedWt}</span>` : `<span class="status-pending">Pending</span>`;
+        let issWtNum = parseFloat(issue.issueWt) || 0;
+        let rcvWtNum = matchingRec ? parseFloat(matchingRec.receivedWt) || 0 : 0;
+        
+        let excessDisplay = "-";
+        if(matchingRec) {
+            let diff = issWtNum - rcvWtNum;
+            if(diff < 0) {
+                excessDisplay = `<span class="excess-text">${Math.abs(diff).toFixed(3)}</span>`;
+            }
+        }
+        
+        if(!issue.status) issue.status = "running";
+        let statusColor = issue.status === 'running' ? '#D97706' : '#526E51';
+        let statusBtn = issue.status === 'running' 
+            ? `<button class="action-complete" onclick="toggleStatus(${issue.id}, 'completed')">Complete</button>` 
+            : `<button class="action-running" onclick="toggleStatus(${issue.id}, 'running')">Running</button>`;
+
+        let actionBtns = `
+            <div class="action-cell">
+                ${statusBtn}
+                <button class="edit-action-btn" onclick="editWarpingRecord(${issue.id}, ${isReceived})" title="Edit">✏️</button>
+                <button class="del-action-btn" onclick="deleteWarpingRecord(${issue.id}, ${isReceived})" title="Delete">🗑️</button>
+            </div>
+        `;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${dateStr}</td>
+                <td><b>${issue.designNo}</b></td>
+                <td>${issue.count}</td>
+                <td>${issue.color}</td>
+                <td>${issue.orderWt}</td>
+                <td>${issue.issueWt}</td>
+                <td>${rcvWt}</td>
+                <td>${excessDisplay}</td>
+                <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${issue.status}</td>
+                <td class="no-print">${actionBtns}</td>
+            </tr>
+        `;
+    });
 }
 </script>
 
-<!-- Firebase App SDK (CDN) & Core Logic -->
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -952,25 +1061,20 @@ function previewPattern() {
 
     // Sync Data on Load
     window.addEventListener('load', async function() {
-        let saveBtn = document.getElementById('saveBtnTxt');
-        if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
+        let btn = document.getElementById('saveTopBtnTxt');
+        let origText = btn ? btn.innerText : "Save Top Order";
+        if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        let masters = await window.firebaseLoad('design_masters_data');
-        if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
-
-        let preDesigns = await window.firebaseLoad('pre_design_numbers');
-        if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
-
-        let specs = await window.firebaseLoad('design_specs');
-        if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
-
-        let orders = await window.firebaseLoad('party_orders_data');
-        if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
-
-        if(saveBtn) saveBtn.innerText = "💾 Save";
+        let collections = ['warping_issue_records', 'warping_receive_records', 'pre_design_numbers', 'design_masters_data', 'design_specs'];
         
-        loadDesignDropdown();
-        addWarpLine(); 
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        if(btn) btn.innerText = origText;
+        
+        renderTable();
     });
 </script>
 </body>

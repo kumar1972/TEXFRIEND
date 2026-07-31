@@ -21,8 +21,7 @@
     body { 
         padding: 12px; 
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column;        align-items: center;
     }
 
     /* 📌 Main Container */
@@ -63,6 +62,36 @@
         transition: all 0.3s ease;
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+    /* Checkbox Styling */
+    .completed-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
 
     .page-header-row {
         display: flex;
@@ -248,10 +277,14 @@
     tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: #F8FAF8; }
     
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
+    .action-cell { display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; }
+    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; width: 100%; }
     .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; width: 100%; }
     .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+
+    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; width: 100%; }
+    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; width: 100%; }
 
     .shrink-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
     .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
@@ -299,6 +332,10 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div class="completed-checkbox">
+            <input type="checkbox" id="top_completed_status">
+            <label for="top_completed_status">Completed</label>
+        </div>
     </div>
 
     <div class="page-header-row">
@@ -438,6 +475,7 @@
                             <th>Rcvd Date</th>
                             <th>Rcvd Mtr</th>
                             <th>Shrink %</th>
+                            <th>Status</th>
                             <th class="no-print">Action</th>
                         </tr>
                     </thead>
@@ -475,8 +513,13 @@ function openDesignModal() {
     modal.style.display = 'flex';
     
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let pendingItems = issues.filter(r => r.status === 'Pending');
-    
+    let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
+
+    let pendingItems = issues.filter(issue => {
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive; 
+    });
+
     let modalList = document.getElementById('modalDesignList');
     modalList.innerHTML = '';
 
@@ -542,6 +585,7 @@ async function saveTopOrder() {
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value.trim();
     let dNo = document.getElementById('topDesignNo').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
     if(!dNo || !unit) { alert("Please fill Date, Washing Name, and Design Number!"); return; }
 
@@ -574,7 +618,7 @@ async function saveTopOrder() {
                 piece: piece,
                 mtr: mtr.toFixed(2),
                 process: process,
-                status: 'Pending'
+                status: isCompleted ? 'completed' : 'running'
             });
             savedCount++;
         }
@@ -599,6 +643,7 @@ async function saveTopOrder() {
         `;
         document.getElementById('topDesignNo').value = '';
         document.getElementById('topUnit').value = '';
+        document.getElementById('top_completed_status').checked = false;
         
         renderTable();
     } else {
@@ -622,7 +667,12 @@ function loadBottomData() {
     wrapper.style.display = 'block';
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let pendingItems = issues.filter(r => r.status === 'Pending' && r.designNo === dNo && r.unit === uName);
+    let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
+
+    let pendingItems = issues.filter(issue => {
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
+    });
 
     pendingItems.forEach(item => {
         let row = document.createElement('div');
@@ -669,7 +719,6 @@ async function saveBottomEntry() {
         if(rcvMtr > 0) {
             let issueIndex = issues.findIndex(r => r.id == recId);
             if(issueIndex !== -1) {
-                issues[issueIndex].status = "Received";
                 let issMtr = parseFloat(issues[issueIndex].mtr);
                 
                 let shrinkPerc = 0;
@@ -713,6 +762,26 @@ async function saveBottomEntry() {
     btn.innerText = origText;
 }
 
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
+    if(confirm(msg)) {
+        let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+        let index = issues.findIndex(r => r.id == id);
+        
+        if(index > -1) {
+            issues[index].status = newStatus;
+            localStorage.setItem('washing_issue_records', JSON.stringify(issues));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('washing_issue_records', issues);
+            }
+            renderTable();
+        }
+    }
+}
+
+
 // 📌 FIREBASE SYNC: editWashingRecord
 async function editWashingRecord(issueId, isReceived) {
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
@@ -723,16 +792,11 @@ async function editWashingRecord(issueId, isReceived) {
         if(recIndex !== -1) {
             let recRecord = receives[recIndex];
             
-            let issueIndex = issues.findIndex(iss => iss.id == issueId);
-            if(issueIndex !== -1) issues[issueIndex].status = "Pending";
-            
             receives.splice(recIndex, 1);
             localStorage.setItem('washing_receive_records', JSON.stringify(receives));
-            localStorage.setItem('washing_issue_records', JSON.stringify(issues));
             
             if (window.firebaseSave) {
                 window.firebaseSave('washing_receive_records', receives);
-                window.firebaseSave('washing_issue_records', issues);
             }
             
             document.getElementById('botDate').value = recRecord.botDate;
@@ -767,6 +831,7 @@ async function editWashingRecord(issueId, isReceived) {
             document.getElementById('topDate').value = issRecord.date;
             document.getElementById('topUnit').value = issRecord.unit;
             document.getElementById('topDesignNo').value = issRecord.designNo;
+            document.getElementById('top_completed_status').checked = (issRecord.status === 'completed');
             
             let container = document.getElementById('topLinesContainer');
             container.innerHTML = `
@@ -795,10 +860,6 @@ async function deleteWashingRecord(issueId, isReceived) {
     if (isReceived) {
         let recIndex = receives.findIndex(r => r.issueId == issueId);
         if(recIndex !== -1) receives.splice(recIndex, 1);
-        
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
-        if(issueIndex !== -1) issues[issueIndex].status = "Pending";
-        
     } else {
         let issueIndex = issues.findIndex(iss => iss.id == issueId);
         if(issueIndex !== -1) issues.splice(issueIndex, 1);
@@ -827,7 +888,7 @@ function renderTable() {
     tbody.innerHTML = '';
 
     if(issues.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="padding:20px; color:#A0AFA0;">No Records Found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:20px; color:#A0AFA0;">No Records Found.</td></tr>`;
         return;
     }
 
@@ -845,8 +906,15 @@ function renderTable() {
         let shrinkPerc = matchingRec ? matchingRec.shrinkagePerc : "-";
         let shrinkDisplay = (shrinkPerc !== "-") ? `<span class="shrink-text">${shrinkPerc}</span>` : "-";
         
+        if(!issue.status) issue.status = "running";
+        let statusColor = issue.status === 'running' ? '#D97706' : '#526E51';
+        let statusBtn = issue.status === 'running' 
+            ? `<button class="action-complete" onclick="toggleStatus(${issue.id}, 'completed')">Complete</button>` 
+            : `<button class="action-running" onclick="toggleStatus(${issue.id}, 'running')">Running</button>`;
+
         let actionBtns = `
-            <div class="action-btns">
+            <div class="action-cell">
+                ${statusBtn}
                 <button class="edit-action-btn" onclick="editWashingRecord(${issue.id}, ${isReceived})" title="Edit">✏️</button>
                 <button class="del-action-btn" onclick="deleteWashingRecord(${issue.id}, ${isReceived})" title="Delete">🗑️</button>
             </div>
@@ -863,6 +931,7 @@ function renderTable() {
                 <td>${botDateStr}</td>
                 <td>${rcvMtr}</td>
                 <td>${shrinkDisplay}</td>
+                <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${issue.status}</td>
                 <td class="no-print">${actionBtns}</td>
             </tr>
         `;
@@ -889,14 +958,14 @@ function openPreview() {
 
     let rows = tableBody.querySelectorAll('tr');
     if(rows.length === 0 || rows[0].innerText.includes("No Records Found")) {
-        html += `<tr><td colspan="9" style="border:1px solid #D1DED1; padding:20px; text-align:center;">No Data Found</td></tr>`;
+        html += `<tr><td colspan="10" style="border:1px solid #D1DED1; padding:20px; text-align:center;">No Data Found</td></tr>`;
     } else {
         rows.forEach(tr => {
             let cells = tr.querySelectorAll('td');
             html += `<tr style="border-bottom:1px dashed #E2E8E2;">`;
             cells.forEach((td, idx) => {
                 if(idx < cells.length - 1) { 
-                    html += `<td style="border:1px solid #E2E8E2; padding:10px;">${td.innerText}</td>`;
+                    html += `<td style="border:1px solid #E2E8E2; padding:10px;">${td.innerHTML}</td>`;
                 }
             });
             html += `</tr>`;

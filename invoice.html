@@ -60,7 +60,7 @@
         }
         .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-        #bitmapDisplayContainer { text-align: right; }
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
         #bitmapDisplayContainer img {
             max-height: 45px;
             border-radius: 6px;
@@ -69,6 +69,36 @@
             transition: transform 0.3s;
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        /* Checkbox Styling */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
         .card-header {
             font-size: 16px;
@@ -240,13 +270,15 @@
         .excel-table tr:last-child td { border-bottom: none; }
         .excel-table tbody tr:hover { background: #F8FAF8; }
 
-        .action-cell { display: flex; flex-direction: row; gap: 5px; align-items: center; }
+        .action-cell { display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
         .action-btn {
             border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;
-            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease;
+            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease; width: 100%;
         }
         .action-del { background: #EF4444; } .action-del:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
         .action-edit { background: #64748B; } .action-edit:hover { background: #475569; box-shadow: 0 2px 5px rgba(71, 85, 105, 0.3); }
+        .action-complete { background: #526E51; } .action-complete:hover { background: #3F5A3E; }
+        .action-running { background: #D97706; } .action-running:hover { background: #B45309; }
 
         #printPreviewContainer { display: none; background: #FFFFFF; color: #000000; padding: 25px; border-radius: 12px; margin-top: 10px; border: 1px solid #ccc; width: 100%; max-width: 100%; }
         .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-size: 12px; align-items: flex-start; }
@@ -271,7 +303,13 @@
 <div class="container" id="mainContainer">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div id="bitmapDisplayContainer"></div>
+        <div id="bitmapDisplayContainer">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <!-- Image placeholder if any -->
+        </div>
     </div>
 
     <h2 class="card-header">Invoice / Bill Entry</h2>
@@ -411,6 +449,7 @@
                             <th>Design No</th>
                             <th>Total Qty</th>
                             <th>Grand Total</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -449,10 +488,25 @@ function loadBitmapImage() {
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
+    // Check if image exists before appending to container
+    let imgHtml = '';
     if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
-    } else {
-        bitmapContainer.innerHTML = '';
+        imgHtml = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+    }
+    
+    // Keep checkbox, update image
+    let currentHtml = bitmapContainer.innerHTML;
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status"><label for="top_completed_status">Completed</label></div>`;
+    
+    // Preserve checkbox status if it was set
+    let wasChecked = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) wasChecked = cb.checked;
+    
+    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+    
+    if(wasChecked) {
+        document.getElementById('top_completed_status').checked = true;
     }
 }
 
@@ -545,6 +599,12 @@ async function saveInvoice() {
         return;
     }
 
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) {
+        isCompleted = cb.checked;
+    }
+
     let btn = document.getElementById('saveInvBtn');
     let origText = btn.innerText;
     btn.innerText = "⏳ Saving to Cloud...";
@@ -587,7 +647,8 @@ async function saveInvoice() {
     let invoiceObj = {
         id: editingInvoiceId !== null ? editingInvoiceId : Date.now(),
         invNo, invDate, compAddress, partyAddress, transport, lr, gstType,
-        design, countVal, reed, pick, weave, items, totalQty, grandTotal
+        design, countVal, reed, pick, weave, items, totalQty, grandTotal,
+        status: isCompleted ? 'completed' : 'running'
     };
 
     if(editingInvoiceId !== null) {
@@ -610,6 +671,9 @@ async function saveInvoice() {
     document.getElementById('inv_no').value = '';
     document.getElementById('inv_transport').value = '';
     document.getElementById('inv_lr').value = '';
+    if(document.getElementById('top_completed_status')) {
+        document.getElementById('top_completed_status').checked = false;
+    }
     document.getElementById('invoiceItemsContainer').innerHTML = `
         <div class="item-row">
             <div class="item-col-group">
@@ -639,12 +703,35 @@ async function saveInvoice() {
     btn.innerText = "✅ Save Invoice Details";
 }
 
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this invoice to Completed?" : "Change this invoice to Running?";
+    if(confirm(msg)) {
+        let index = savedInvoices.findIndex(r => r.id == id);
+        if(index > -1) {
+            savedInvoices[index].status = newStatus;
+            localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('saved_invoices_data', savedInvoices);
+            }
+            updateInvoicesTable();
+        }
+    }
+}
+
 function updateInvoicesTable() {
     savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let tbody = document.querySelector('#invoicesTable tbody');
     tbody.innerHTML = '';
 
     savedInvoices.slice().reverse().forEach(inv => {
+        if(!inv.status) inv.status = "running";
+        let statusColor = inv.status === 'running' ? '#D97706' : '#526E51';
+        let statusBtn = inv.status === 'running' 
+            ? `<button class="action-btn action-complete" onclick="toggleStatus(${inv.id}, 'completed')">Complete</button>` 
+            : `<button class="action-btn action-running" onclick="toggleStatus(${inv.id}, 'running')">Running</button>`;
+
         let row = tbody.insertRow();
         row.innerHTML = `
             <td><b>${inv.invNo}</b></td>
@@ -653,8 +740,10 @@ function updateInvoicesTable() {
             <td>${inv.design || '-'}</td>
             <td>${inv.totalQty.toFixed(2)}</td>
             <td style="font-weight:bold; color:#10B981;">₹${inv.grandTotal.toFixed(2)}</td>
+            <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${inv.status}</td>
             <td>
                 <div class="action-cell">
+                    ${statusBtn}
                     <button class="action-btn action-edit" onclick="editInvoice(${inv.id})">Edit</button>
                     <button class="action-btn action-del" onclick="deleteInvoice(${inv.id})">Del</button>
                 </div>
@@ -682,6 +771,10 @@ function editInvoice(id) {
     document.getElementById('global_reed').value = inv.reed || '';
     document.getElementById('global_pick').value = inv.pick || '';
     document.getElementById('global_weave').value = inv.weave || '';
+
+    if(document.getElementById('top_completed_status')) {
+        document.getElementById('top_completed_status').checked = (inv.status === 'completed');
+    }
 
     let container = document.getElementById('invoiceItemsContainer');
     container.innerHTML = '';
@@ -846,8 +939,10 @@ function showFullPreview() {
             '<div style="flex:1;"></div>' +
         '</div>' +
         '<div class="invoice-header">' +
-            '<div><strong>From:</strong><br>' + compAddr.replace(/\n/g, '<br>') + '</div>' +
-            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/\n/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
+            '<div><strong>From:</strong><br>' + compAddr.replace(/
+/g, '<br>') + '</div>' +
+            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/
+/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
         '</div>' +
         '<div style="font-size:11px; margin-bottom:10px; background:#f8fafc; padding:6px; border:1px solid #ccc;"><strong>Design No:</strong> <span style="font-weight:bold;">' + design + '</span>, <strong>Count:</strong> <span style="font-weight:bold;">' + countVal + '</span>, <strong>Reed:</strong> <span style="font-weight:bold;">' + reed + '</span>, <strong>Pick:</strong> <span style="font-weight:bold;">' + pick + '</span>, <strong>Weave:</strong> <span style="font-weight:bold;">' + weave + '</span></div>' +
         '<table class="invoice-table">' +
@@ -961,4 +1056,3 @@ function goBackToForm() {
 </script>
 </body>
 </html>
-

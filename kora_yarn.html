@@ -64,6 +64,36 @@
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
+    /* Checkbox Styling */
+    .completed-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
     .page-title {
         font-size: 16px;
         margin-bottom: 5px;
@@ -214,6 +244,9 @@
     .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
     .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
 
+    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+
     .badge-type {
         background: #E2E8F0;
         color: #334155;
@@ -231,6 +264,10 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div class="completed-checkbox">
+            <input type="checkbox" id="top_completed_status">
+            <label for="top_completed_status">Completed</label>
+        </div>
     </div>
 
     <div class="page-title">🧵 Kora Yarn Management</div>
@@ -337,6 +374,7 @@
                             <th>Type / Supplier</th>
                             <th>Count</th>
                             <th>Weight</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -365,6 +403,7 @@
                             <th>Design</th>
                             <th>Count</th>
                             <th>Weight</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -427,6 +466,7 @@ async function saveInward() {
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
     let weight = parseFloat(document.getElementById('inwardWt').value) || 0;
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
     if(!supplier || !count || weight <= 0) {
         alert("Please enter Name, Count, and valid Weight!");
@@ -447,6 +487,7 @@ async function saveInward() {
             records[idx].supplier = supplier;
             records[idx].count = count;
             records[idx].weight = weight.toFixed(3);
+            records[idx].status = isCompleted ? 'completed' : 'running';
         }
         editingInwardId = null;
         alert("Kora Stock Updated to Cloud Successfully! ✅☁️");
@@ -457,7 +498,8 @@ async function saveInward() {
             date: dateVal,
             supplier: supplier,
             count: count,
-            weight: weight.toFixed(3)
+            weight: weight.toFixed(3),
+            status: isCompleted ? 'completed' : 'running'
         });
         alert("Kora Stock Added to Cloud Successfully! ✅☁️");
     }
@@ -471,6 +513,7 @@ async function saveInward() {
     document.getElementById('supplierName').value = '';
     document.getElementById('inwardCount').value = '';
     document.getElementById('inwardWt').value = '';
+    document.getElementById('top_completed_status').checked = false; // reset
     
     refreshAllTables();
     btn.innerText = "✅ Save Kora Stock";
@@ -484,6 +527,7 @@ async function saveIssue() {
     let dNo = document.getElementById('designNo').value;
     let count = document.getElementById('issueCount').value.trim();
     let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
     if(!dyeingName || !dNo || !count || issueWt <= 0 || !issueMillName) {
         alert("Please fill all details to issue yarn (including Mill Name)!");
@@ -505,6 +549,7 @@ async function saveIssue() {
             issues[idx].designNo = dNo;
             issues[idx].count = count;
             issues[idx].issueWt = issueWt.toFixed(3);
+            issues[idx].status = isCompleted ? 'completed' : 'running';
         }
         editingIssueId = null;
         alert("Kora Issue Updated to Cloud Successfully! ✅☁️");
@@ -516,7 +561,8 @@ async function saveIssue() {
             millName: issueMillName, 
             designNo: dNo,
             count: count,
-            issueWt: issueWt.toFixed(3)
+            issueWt: issueWt.toFixed(3),
+            status: isCompleted ? 'completed' : 'running'
         });
         alert("Kora Yarn Issued to Cloud Successfully! ✅☁️");
     }
@@ -532,10 +578,48 @@ async function saveIssue() {
     document.getElementById('designNo').value = '';
     document.getElementById('issueCount').value = '';
     document.getElementById('issueWt').value = '';
+    document.getElementById('top_completed_status').checked = false; // reset
     
     refreshAllTables();
     btn.innerText = "➕ Add Kora Issue";
 }
+
+// 📌 FIREBASE SYNC: toggleStatus for Inward
+async function toggleInwardStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this stock to Completed?" : "Change this stock to Running?";
+    if(confirm(msg)) {
+        let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+        let index = records.findIndex(r => r.id == id);
+        if(index > -1) {
+            records[index].status = newStatus;
+            localStorage.setItem('kora_stock_records', JSON.stringify(records));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('kora_stock_records', records);
+            }
+            refreshAllTables();
+        }
+    }
+}
+
+// 📌 FIREBASE SYNC: toggleStatus for Issue
+async function toggleIssueStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this issue to Completed?" : "Change this issue to Running?";
+    if(confirm(msg)) {
+        let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        let index = records.findIndex(r => r.id == id);
+        if(index > -1) {
+            records[index].status = newStatus;
+            localStorage.setItem('kora_issue_records', JSON.stringify(records));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('kora_issue_records', records);
+            }
+            refreshAllTables();
+        }
+    }
+}
+
 
 // 3. REFRESH HISTORY TABLES ONLY
 function refreshAllTables() {
@@ -545,7 +629,7 @@ function refreshAllTables() {
     let inBody = document.getElementById('inwardHistoryBody');
     inBody.innerHTML = '';
     if(inwards.length === 0) {
-        inBody.innerHTML = `<tr><td colspan="5" style="padding:20px; color:#4A554A;">No inward records found.</td></tr>`;
+        inBody.innerHTML = `<tr><td colspan="6" style="padding:20px; color:#4A554A;">No inward records found.</td></tr>`;
     } else {
         [...inwards].reverse().forEach(item => {
             let dObj = new Date(item.date);
@@ -554,13 +638,21 @@ function refreshAllTables() {
             let badgeClass = item.stockType === 'Office Stock' ? 'office' : '';
             let badgeText = item.stockType === 'Office Stock' ? 'OFFICE' : 'MILL';
             
+            if(!item.status) item.status = "running";
+            let statusColor = item.status === 'running' ? '#D97706' : '#526E51';
+            let statusBtn = item.status === 'running' 
+                ? `<button class="action-complete" onclick="toggleInwardStatus(${item.id}, 'completed')">Complete</button>` 
+                : `<button class="action-running" onclick="toggleInwardStatus(${item.id}, 'running')">Running</button>`;
+
             inBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
                     <td style="text-align:left;"><span class="badge-type ${badgeClass}">${badgeText}</span> <b>${item.supplier}</b></td>
                     <td>${item.count}</td>
                     <td style="font-weight:bold; color:#10B981;">${item.weight}</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
                     <td class="action-btns">
+                        ${statusBtn}
                         <button class="edit-action-btn" onclick="closeModal('inwardModal'); editInward(${item.id})">✏️</button>
                         <button class="del-action-btn" onclick="deleteInward(${item.id})">🗑️</button>
                     </td>
@@ -572,11 +664,18 @@ function refreshAllTables() {
     let outBody = document.getElementById('issueHistoryBody');
     outBody.innerHTML = '';
     if(issues.length === 0) {
-        outBody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:#4A554A;">No issue records found.</td></tr>`;
+        outBody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#4A554A;">No issue records found.</td></tr>`;
     } else {
         [...issues].reverse().forEach(item => {
             let dObj = new Date(item.date);
             let dStr = ("0"+dObj.getDate()).slice(-2)+"/"+("0"+(dObj.getMonth()+1)).slice(-2)+"/"+dObj.getFullYear();
+            
+            if(!item.status) item.status = "running";
+            let statusColor = item.status === 'running' ? '#D97706' : '#526E51';
+            let statusBtn = item.status === 'running' 
+                ? `<button class="action-complete" onclick="toggleIssueStatus(${item.id}, 'completed')">Complete</button>` 
+                : `<button class="action-running" onclick="toggleIssueStatus(${item.id}, 'running')">Running</button>`;
+
             outBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
@@ -585,7 +684,9 @@ function refreshAllTables() {
                     <td><b style="color:#2F4F38;">${item.designNo}</b></td>
                     <td>${item.count}</td>
                     <td style="font-weight:bold; color:#D97706;">${item.issueWt}</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
                     <td class="action-btns">
+                        ${statusBtn}
                         <button class="edit-action-btn" onclick="closeModal('issueModal'); editIssue(${item.id})">✏️</button>
                         <button class="del-action-btn" onclick="deleteIssue(${item.id})">🗑️</button>
                     </td>
@@ -607,6 +708,7 @@ function editInward(id) {
         document.getElementById('supplierName').value = rec.supplier;
         document.getElementById('inwardCount').value = rec.count;
         document.getElementById('inwardWt').value = rec.weight;
+        document.getElementById('top_completed_status').checked = (rec.status === 'completed');
         document.getElementById('saveInwardBtn').innerText = "🔄 Update Kora Stock";
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -636,6 +738,7 @@ function editIssue(id) {
         document.getElementById('designNo').value = rec.designNo;
         document.getElementById('issueCount').value = rec.count;
         document.getElementById('issueWt').value = rec.issueWt;
+        document.getElementById('top_completed_status').checked = (rec.status === 'completed');
         document.getElementById('saveIssueBtn').innerText = "🔄 Update Issue";
         document.getElementById('dyeingName').scrollIntoView({behavior: 'smooth'});
     }

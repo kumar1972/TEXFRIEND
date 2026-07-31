@@ -26,7 +26,7 @@
         }
 
         /* 📌 Main Container */
-        .main-card {
+        .container {
             width: 100%;
             max-width: 900px;
             margin: 0;
@@ -63,6 +63,36 @@
             transition: all 0.3s ease;
         }
         .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        /* Checkbox Styling */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
         .page-title {
             font-size: 16px;
@@ -236,8 +266,14 @@
         tr:last-child td { border-bottom: none; }
         tbody tr:hover { background: #F8FAF8; }
         
-        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .action-cell { display: flex; gap: 4px; justify-content: center; }
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
         .edit-action-btn:hover { background: #475569; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+
+        .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
         @media print {
             body * { visibility: hidden; }
@@ -253,6 +289,10 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div class="completed-checkbox">
+            <input type="checkbox" id="top_completed_status">
+            <label for="top_completed_status">Completed</label>
+        </div>
     </div>
 
     <h2 class="page-title">🧶 Weft Pattern Entry</h2>
@@ -371,6 +411,7 @@
                         <tr>
                             <th>Design No</th>
                             <th>Total Lines</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -423,6 +464,7 @@ function loadWeftDesignData() {
     document.getElementById('infoWeave').value = '';
     document.getElementById('displayTotalPicks').innerText = '0';
     document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
+    document.getElementById('top_completed_status').checked = false;
 
     if(!dNo) {
         saveBtn.innerText = "💾 Save";
@@ -455,6 +497,7 @@ function loadWeftDesignData() {
         document.getElementById('infoWeftCount').value = found.weftCount || sp.weft || sp.count1 || '';
         document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
         document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
+        document.getElementById('top_completed_status').checked = (found.status === 'completed');
 
         if(found.weftLines && found.weftLines.length > 0) {
             found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
@@ -577,6 +620,7 @@ async function saveWeftDesign() {
     let wCount = document.getElementById('infoWeftCount').value.trim();
     let pick = document.getElementById('infoPick').value.trim();
     let weave = document.getElementById('infoWeave').value.trim();
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
     let lines = [];
     document.querySelectorAll('.line-item').forEach(row => {
@@ -609,7 +653,8 @@ async function saveWeftDesign() {
         weftPick: pick, 
         weaveType: weave, 
         weftLines: lines, 
-        weftRanges: ranges 
+        weftRanges: ranges,
+        status: isCompleted ? 'completed' : 'running'
     };
 
     if(idx === -1) {
@@ -628,6 +673,26 @@ async function saveWeftDesign() {
     alert("Weft Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(dNo, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?";
+    if(confirm(msg)) {
+        let cleanDNo = cleanDesignName(dNo);
+        let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+        
+        if(index > -1) {
+            masters[index].status = newStatus;
+            localStorage.setItem('design_masters_data', JSON.stringify(masters));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('design_masters_data', masters);
+            }
+            renderSavedList();
+        }
+    }
+}
+
 function openSavedModal() {
     renderSavedList();
     openModal('savedListModal');
@@ -642,12 +707,22 @@ function renderSavedList() {
     masters.forEach(m => {
         if (m.weftLines && m.weftLines.length > 0) {
             hasData = true;
+            if(!m.status) m.status = "running";
+            let statusColor = m.status === 'running' ? '#D97706' : '#526E51';
+            let statusBtn = m.status === 'running' 
+                ? `<button class="action-complete" onclick="toggleStatus('${m.name}', 'completed')">Complete</button>` 
+                : `<button class="action-running" onclick="toggleStatus('${m.name}', 'running')">Running</button>`;
+
             tbody.innerHTML += `
                 <tr>
                     <td><b>${m.name}</b></td>
                     <td>${m.weftLines.length} Lines</td>
+                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${m.status}</td>
                     <td>
-                        <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
+                        <div class="action-cell">
+                            ${statusBtn}
+                            <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -655,7 +730,7 @@ function renderSavedList() {
     });
 
     if(!hasData) {
-        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px; color:#D97706;">No Weft Patterns saved yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#D97706;">No Weft Patterns saved yet.</td></tr>`;
     }
 }
 

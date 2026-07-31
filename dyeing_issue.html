@@ -64,6 +64,36 @@
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
+    /* Checkbox Styling for Top Right */
+    .completed-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
     .card-header {
         font-size: 16px;
         margin-bottom: 5px;
@@ -214,7 +244,7 @@
         border: 1px solid #D1DED1;
         min-width: 80px;
         text-align: center;
-        color: #10B981; /* Emerald for values */
+        color: #10B981; 
     }
 
     /* 📌 Smart Buttons */
@@ -318,6 +348,11 @@
         margin-bottom: 12px; display: flex; align-items: center; 
         justify-content: space-between; border: 1px dashed #A0AFA0;
     }
+
+    /* Action buttons in modal */
+    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+
 </style>
 </head>
 <body>
@@ -325,6 +360,10 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div class="completed-checkbox">
+            <input type="checkbox" id="top_completed_status">
+            <label for="top_completed_status">Completed</label>
+        </div>
     </div>
 
     <h2 class="card-header">Dyeing Issue (Warp + Weft)</h2>
@@ -369,7 +408,7 @@
 
         <div class="totals-box">
             <div class="total-item">
-                <span>Total Ord Wt:</span>
+                <span>Total Balance Ord Wt:</span>
                 <span id="sumOrdWt">0.000</span>
             </div>
             <div class="total-item">
@@ -405,6 +444,7 @@
                             <th>Colour</th>
                             <th>Ord Wt</th>
                             <th>Iss Wt</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -421,6 +461,8 @@
 </div>
 
 <script>
+let editingIssueId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('issueDate').valueAsDate = new Date();
     loadDesignDropdowns();
@@ -587,6 +629,28 @@ function loadDesignItems() {
 
     let displayList = Array.from(combinedMap.values());
 
+    // 📌 NEW LOGIC: Deduct Already Issued Yarn to show only remaining balance
+    let existingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let cleanSelectedDNoForFilter = (dNo || "").trim().toLowerCase();
+    
+    displayList.forEach(item => {
+        let alreadyIssuedWt = 0;
+        existingIssues.forEach(rec => {
+            let rDno = (rec.designNo || rec.designNumber || rec.design || "").trim().toLowerCase();
+            let rCount = (rec.count || "").trim().toLowerCase();
+            let rColor = (rec.color || "").trim().toLowerCase();
+            
+            if(rDno === cleanSelectedDNoForFilter && rCount === item.count.toLowerCase().trim() && rColor === item.color.toLowerCase().trim()) {
+                alreadyIssuedWt += (parseFloat(rec.issueWt) || 0);
+            }
+        });
+        
+        item.orderWt = item.orderWt - alreadyIssuedWt;
+    });
+
+    // 📌 Filter out fully issued items (threshold 0.005 to handle small float rounding errors)
+    displayList = displayList.filter(item => item.orderWt > 0.005);
+
     if(displayList.length > 0) {
         displayList.forEach(item => {
             let row = document.createElement('div');
@@ -594,7 +658,7 @@ function loadDesignItems() {
             row.innerHTML = `
                 <input type="text" class="inp-count" value="${item.count}" readonly>
                 <input type="text" class="inp-color" value="${item.color}" readonly>
-                <input type="number" class="inp-ordwt" value="${item.orderWt.toFixed(3)}" step="0.001" oninput="updateTotals()">
+                <input type="number" class="inp-ordwt" value="${item.orderWt.toFixed(3)}" step="0.001" readonly>
                 <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
                 <input type="text" class="inp-unit" placeholder="Dyeing Unit">
                 <input type="hidden" class="inp-type" value="${item.type}">
@@ -604,7 +668,7 @@ function loadDesignItems() {
         });
         updateTotals();
     } else {
-        container.innerHTML = '<div style="font-size:11px; text-align:center; padding:10px; color:#4A7C59;">No yarn pattern found for this Design. Add items manually if needed.</div>';
+        container.innerHTML = '<div style="font-size:12px; text-align:center; padding:15px; color:#10B981; font-weight:bold; background:#F4F7F4; border-radius:10px; border:1px solid #D1DED1;">✅ All yarns are fully issued for this design!</div>';
         updateTotals();
     }
 }
@@ -627,6 +691,7 @@ function updateTotals() {
 async function saveIssueEntries() {
     let dateVal = document.getElementById('issueDate').value;
     let dNo = document.getElementById('designNumber').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
 
     if(!dNo) {
         alert("Please select a Design Number!");
@@ -645,31 +710,46 @@ async function saveIssueEntries() {
 
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let savedCount = 0;
+    
+    // If we are editing, update the existing record
+    if(editingIssueId) {
+       let rowIndex = records.findIndex(r => r.id == editingIssueId);
+       if(rowIndex > -1) {
+           let row = rows[0]; // Assuming only one item row gets loaded for edit
+           records[rowIndex].date = dateVal;
+           records[rowIndex].designNo = dNo;
+           records[rowIndex].issueWt = parseFloat(row.querySelector('.inp-isswt').value).toFixed(3) || "0.000";
+           records[rowIndex].unit = row.querySelector('.inp-unit').value.trim();
+           records[rowIndex].status = isCompleted ? "completed" : "running";
+           savedCount++;
+       }
+       editingIssueId = null; // reset
+    } else {
+        rows.forEach(row => {
+            let count = row.querySelector('.inp-count').value.trim();
+            let color = row.querySelector('.inp-color').value.trim();
+            let ordWt = parseFloat(row.querySelector('.inp-ordwt').value) || 0;
+            let issWt = parseFloat(row.querySelector('.inp-isswt').value) || 0;
+            let unit = row.querySelector('.inp-unit').value.trim();
+            let type = row.querySelector('.inp-type').value.trim();
 
-    rows.forEach(row => {
-        let count = row.querySelector('.inp-count').value.trim();
-        let color = row.querySelector('.inp-color').value.trim();
-        let ordWt = parseFloat(row.querySelector('.inp-ordwt').value) || 0;
-        let issWt = parseFloat(row.querySelector('.inp-isswt').value) || 0;
-        let unit = row.querySelector('.inp-unit').value.trim();
-        let type = row.querySelector('.inp-type').value.trim();
-
-        if(issWt > 0 && unit) {
-            records.push({
-                id: Date.now() + Math.random(),
-                date: dateVal,
-                designNo: dNo,
-                yarnType: type,
-                count: count,
-                color: color,
-                orderWt: ordWt.toFixed(3),
-                issueWt: issWt.toFixed(3),
-                unit: unit,
-                status: "Pending"
-            });
-            savedCount++;
-        }
-    });
+            if(issWt > 0 && unit) {
+                records.push({
+                    id: Date.now() + Math.random(),
+                    date: dateVal,
+                    designNo: dNo,
+                    yarnType: type,
+                    count: count,
+                    color: color,
+                    orderWt: ordWt.toFixed(3),
+                    issueWt: issWt.toFixed(3),
+                    unit: unit,
+                    status: isCompleted ? "completed" : "running"
+                });
+                savedCount++;
+            }
+        });
+    }
 
     if(savedCount > 0) {
         localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
@@ -682,6 +762,7 @@ async function saveIssueEntries() {
         
         document.getElementById('issueLinesContainer').innerHTML = '';
         document.getElementById('designNumber').value = '';
+        document.getElementById('top_completed_status').checked = false; // reset checkbox
         updateTotals();
         renderIssuedList();
     } else {
@@ -697,34 +778,49 @@ async function editIssuedRecord(id) {
     if (!rec) return;
 
     closeModal('issuedListModal');
+    editingIssueId = id; // Set the ID being edited
 
     document.getElementById('issueDate').value = rec.date || new Date().toISOString().split('T')[0];
     document.getElementById('designNumber').value = rec.designNo;
-    loadDesignItems();
+    document.getElementById('top_completed_status').checked = (rec.status === 'completed');
 
-    setTimeout(() => {
-        let rows = document.querySelectorAll('#issueLinesContainer .line-row');
-        rows.forEach(row => {
-            let c = row.querySelector('.inp-count').value.trim();
-            let col = row.querySelector('.inp-color').value.trim();
-            if (c.toLowerCase() === rec.count.toLowerCase() && col.toLowerCase() === rec.color.toLowerCase()) {
-                row.querySelector('.inp-ordwt').value = rec.orderWt;
-                row.querySelector('.inp-isswt').value = rec.issueWt;
-                row.querySelector('.inp-unit').value = rec.unit;
-                row.querySelector('.inp-type').value = rec.yarnType || 'Combined';
+    // Display only the item being edited
+    let container = document.getElementById('issueLinesContainer');
+    container.innerHTML = '';
+    
+    let row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `
+        <input type="text" class="inp-count" value="${rec.count}" readonly>
+        <input type="text" class="inp-color" value="${rec.color}" readonly>
+        <input type="number" class="inp-ordwt" value="${rec.orderWt}" step="0.001" readonly>
+        <input type="number" class="inp-isswt" value="${rec.issueWt}" step="0.001" oninput="updateTotals()">
+        <input type="text" class="inp-unit" value="${rec.unit}">
+        <input type="hidden" class="inp-type" value="${rec.yarnType}">
+        <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+    `;
+    container.appendChild(row);
+    
+    updateTotals();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this issue to Completed?" : "Change this issue to Running?";
+    if(confirm(msg)) {
+        let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+        let recIndex = records.findIndex(r => r.id == id);
+        if(recIndex > -1) {
+            records[recIndex].status = newStatus;
+            localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+            
+            if(window.firebaseSave) {
+                await window.firebaseSave('dyeing_issue_records', records);
             }
-        });
-        updateTotals();
-        
-        // Remove old record so saving acts as an update
-        records = records.filter(r => r.id != id);
-        localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
-        if (window.firebaseSave) {
-            window.firebaseSave('dyeing_issue_records', records);
+            renderIssuedList();
         }
-        renderIssuedList();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 150);
+    }
 }
 
 // 📌 FIREBASE SYNC: deleteIssuedRecord
@@ -741,6 +837,7 @@ async function deleteIssuedRecord(id) {
     }
     
     renderIssuedList();
+    // loadDesignItems(); // Removed to prevent clearing form if deleting from modal while form is populated
 }
 
 function renderIssuedList() {
@@ -751,7 +848,7 @@ function renderIssuedList() {
     tfoot.innerHTML = '';
 
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued yet.</td></tr>`;
         return;
     }
 
@@ -766,6 +863,12 @@ function renderIssuedList() {
         let iWt = parseFloat(record.issueWt) || 0;
         grandOrdWt += oWt;
         grandIssWt += iWt;
+        
+        if(!record.status) record.status = "running";
+        let statusColor = record.status === 'running' ? '#D97706' : '#526E51';
+        let statusBtn = record.status === 'running' 
+            ? `<button class="action-complete" onclick="toggleStatus('${record.id}', 'completed')">Complete</button>` 
+            : `<button class="action-running" onclick="toggleStatus('${record.id}', 'running')">Running</button>`;
 
         tbody.innerHTML += `
             <tr>
@@ -777,9 +880,13 @@ function renderIssuedList() {
                 <td>${record.color}</td>
                 <td>${oWt.toFixed(3)}</td>
                 <td style="color:#10B981; font-weight:bold;">${iWt.toFixed(3)}</td>
+                <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${record.status}</td>
                 <td style="white-space:nowrap;">
-                    <button class="edit-action-btn" onclick="editIssuedRecord(${record.id})" title="Edit">✏️</button>
-                    <button class="del-action-btn" onclick="deleteIssuedRecord(${record.id})" title="Delete">🗑️</button>
+                    <div style="display: flex; gap: 4px; justify-content: center;">
+                        ${statusBtn}
+                        <button class="edit-action-btn" onclick="editIssuedRecord('${record.id}')" title="Edit">✏️</button>
+                        <button class="del-action-btn" onclick="deleteIssuedRecord('${record.id}')" title="Delete">🗑️</button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -790,7 +897,7 @@ function renderIssuedList() {
             <td colspan="6" style="text-align: right; padding: 12px;">Grand Total:</td>
             <td><b>${grandOrdWt.toFixed(3)}</b></td>
             <td><b style="color:#10B981;">${grandIssWt.toFixed(3)}</b></td>
-            <td></td>
+            <td colspan="2"></td>
         </tr>
     `;
 }

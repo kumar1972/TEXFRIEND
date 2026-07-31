@@ -244,6 +244,7 @@
     .bal-negative { color: #DC2626; font-weight: 800; }
     .pending-txt { color: #F59E0B; font-weight: 800; font-size: 10px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px;}
 
+    /* Modals */
     .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
@@ -260,8 +261,9 @@
 
     .modal-header {
         padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
     }
+    .modal-header h3 { margin: 0; font-size: 15px; color: #2F4F38; font-weight: 800; text-transform: uppercase; }
     .close-btn {
         background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
         border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
@@ -285,7 +287,8 @@
 
 <div class="main-card">
     <div class="top-nav">
-        <a href="index.html" class="back-btn">← Back to Menu</a>
+        <!-- 📌 Links back to dashboard.html -->
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
     </div>
 
     <h2 class="card-header" id="pageMainHeader">Reports & Analytics</h2>
@@ -310,24 +313,28 @@
         <button class="invoice-tab-btn" id="tab-Invoice" onclick="switchTab('Invoice')">📄 Invoice / Billing Report</button>
     </div>
 
-    <div class="report-header-bar">
-        <span id="reportTitle">📊 Report Data</span>
-        <div class="header-btns">
-            <button class="action-btn preview-btn" onclick="previewReport()">👁️ Preview</button>
-            <button class="action-btn print-btn" onclick="printReport()">🖨️ Print</button>
-            <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Excel</button>
+    <!-- Standard Report Container -->
+    <div id="standardReportContainer">
+        <div class="report-header-bar">
+            <span id="reportTitle">📊 Report Data</span>
+            <div class="header-btns">
+                <button class="action-btn preview-btn" onclick="previewReport()">👁️ Preview</button>
+                <button class="action-btn print-btn" onclick="printReport()">🖨️ Print</button>
+                <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Excel</button>
+            </div>
         </div>
-    </div>
 
-    <div class="table-container">
-        <table id="reportTable">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot"></tfoot>
-        </table>
+        <div class="table-container">
+            <table id="reportTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFoot"></tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
+<!-- Existing Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -367,7 +374,6 @@ function loadDesignFilter() {
 window.addEventListener('DOMContentLoaded', () => {
     loadDesignFilter();
     
-    // Check URL parameters for direct routing (e.g., from Quick Status Tracking)
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     if(tabParam) {
@@ -376,7 +382,8 @@ window.addEventListener('DOMContentLoaded', () => {
         else if(tabParam === 'Dyeing') currentTab = 'Dyeing';
         else if(tabParam === 'Warping') currentTab = 'Warping';
         else if(tabParam === 'Washing') currentTab = 'Washing';
-        else if(tabParam === 'Despatch') currentTab = 'PartyOrders'; // or fallback
+        else if(tabParam === 'Despatch') currentTab = 'PartyOrders';
+        else if(tabParam === 'Invoice') currentTab = 'Invoice';
     }
     
     switchTab(currentTab);
@@ -390,7 +397,6 @@ function switchTab(tabName) {
     if(activeBtn) activeBtn.classList.add('active');
 
     let filterVal = document.getElementById('designFilter').value;
-    
     let titleElem = document.getElementById('reportTitle');
     let head = document.getElementById('tableHead');
     let body = document.getElementById('tableBody');
@@ -594,155 +600,67 @@ function switchTab(tabName) {
 function renderDesignStockTable(stockList, filterVal) {
     let body = document.getElementById('tableBody');
     let foot = document.getElementById('tableFoot');
-    body.innerHTML = '';
-    foot.innerHTML = '';
-
+    body.innerHTML = ''; foot.innerHTML = '';
     if (!stockList || stockList.length === 0) {
         body.innerHTML = `<tr><td colspan="5" class="no-data">No Kora stock issue records found.</td></tr>`;
         return;
     }
-
     let filtered = stockList;
-    if (filterVal !== 'All') {
-        let cleanFilter = cleanDesignName(filterVal);
-        filtered = stockList.filter(item => cleanDesignName(item.designNo) === cleanFilter);
-    }
-
+    if (filterVal !== 'All') filtered = stockList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
     if (filtered.length === 0) {
         body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
         return;
     }
-
-    let grandInward = 0;
-    let grandIssued = 0;
-
+    let grandInward = 0; let grandIssued = 0;
     filtered.forEach(item => {
-        let inWt = item.inwardWt;
-        let iWt = item.issuedWt;
-        let bal = item.balance;
-
-        grandInward += inWt;
-        grandIssued += iWt;
-
-        let balDisplay = bal >= 0 ? `<span class="bal-positive">${bal.toFixed(3)}</span>` : `<span class="bal-negative">${bal.toFixed(3)}</span>`;
-
-        body.innerHTML += `
-            <tr>
-                <td><b>${item.designNo}</b></td>
-                <td>${item.count}</td>
-                <td>${inWt.toFixed(3)}</td>
-                <td>${iWt.toFixed(3)}</td>
-                <td>${balDisplay}</td>
-            </tr>
-        `;
+        grandInward += item.inwardWt; grandIssued += item.issuedWt;
+        let balDisplay = item.balance >= 0 ? `<span class="bal-positive">${item.balance.toFixed(3)}</span>` : `<span class="bal-negative">${item.balance.toFixed(3)}</span>`;
+        body.innerHTML += `<tr><td><b>${item.designNo}</b></td><td>${item.count}</td><td>${item.inwardWt.toFixed(3)}</td><td>${item.issuedWt.toFixed(3)}</td><td>${balDisplay}</td></tr>`;
     });
-
     let grandBal = grandInward - grandIssued;
     let grandBalDisplay = grandBal >= 0 ? `<span class="bal-positive">${grandBal.toFixed(3)}</span>` : `<span class="bal-negative">${grandBal.toFixed(3)}</span>`;
-
-    foot.innerHTML = `
-        <tr>
-            <td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td>
-            <td><b>${grandInward.toFixed(3)}</b></td>
-            <td><b>${grandIssued.toFixed(3)}</b></td>
-            <td><b>${grandBalDisplay}</b></td>
-        </tr>
-    `;
+    foot.innerHTML = `<tr><td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td><td><b>${grandInward.toFixed(3)}</b></td><td><b>${grandIssued.toFixed(3)}</b></td><td><b>${grandBalDisplay}</b></td></tr>`;
 }
 
 function renderDyeingReportTable(dataList, filterVal) {
     let body = document.getElementById('tableBody');
     let foot = document.getElementById('tableFoot');
-    body.innerHTML = '';
-    foot.innerHTML = '';
-
+    body.innerHTML = ''; foot.innerHTML = '';
     if (!dataList || dataList.length === 0) {
         body.innerHTML = `<tr><td colspan="5" class="no-data">No dyeing records found.</td></tr>`;
         return;
     }
-
     let filtered = dataList;
-    if (filterVal !== 'All') {
-        let cleanFilter = cleanDesignName(filterVal);
-        filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanFilter);
-    }
-
+    if (filterVal !== 'All') filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
     if (filtered.length === 0) {
         body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
         return;
     }
-
-    let grandKoraWt = 0;
-    let grandDyeingWt = 0;
-
+    let grandKoraWt = 0; let grandDyeingWt = 0;
     filtered.forEach(item => {
-        let kWt = item.koraIssueWt;
-        let dWt = item.dyeingIssueWt;
-        let diff = kWt - dWt;
-
-        grandKoraWt += kWt;
-        grandDyeingWt += dWt;
-
-        let diffDisplay = "-";
-        if (diff > 0) {
-            diffDisplay = `<span class="bal-positive">Bal: +${diff.toFixed(3)}</span>`;
-        } else if (diff < 0) {
-            diffDisplay = `<span class="bal-negative">Ex: ${diff.toFixed(3)}</span>`;
-        } else {
-            diffDisplay = `<span style="color:#10B981; font-weight:800;">Settled</span>`;
-        }
-
-        body.innerHTML += `
-            <tr>
-                <td><b>${item.unit}</b></td>
-                <td>${item.designNo}</td>
-                <td>${kWt.toFixed(3)}</td>
-                <td>${dWt.toFixed(3)}</td>
-                <td>${diffDisplay}</td>
-            </tr>
-        `;
+        grandKoraWt += item.koraIssueWt; grandDyeingWt += item.dyeingIssueWt;
+        let diff = item.koraIssueWt - item.dyeingIssueWt;
+        let diffDisplay = diff > 0 ? `<span class="bal-positive">Bal: +${diff.toFixed(3)}</span>` : (diff < 0 ? `<span class="bal-negative">Ex: ${diff.toFixed(3)}</span>` : `<span style="color:#10B981; font-weight:800;">Settled</span>`);
+        body.innerHTML += `<tr><td><b>${item.unit}</b></td><td>${item.designNo}</td><td>${item.koraIssueWt.toFixed(3)}</td><td>${item.dyeingIssueWt.toFixed(3)}</td><td>${diffDisplay}</td></tr>`;
     });
-
     let grandDiff = grandKoraWt - grandDyeingWt;
-    let grandDiffDisplay = "-";
-    if (grandDiff > 0) {
-        grandDiffDisplay = `<span class="bal-positive">Bal: +${grandDiff.toFixed(3)}</span>`;
-    } else if (grandDiff < 0) {
-        grandDiffDisplay = `<span class="bal-negative">Ex: ${grandDiff.toFixed(3)}</span>`;
-    } else {
-        grandDiffDisplay = `<span style="color:#10B981; font-weight:800;">Settled</span>`;
-    }
-
-    foot.innerHTML = `
-        <tr>
-            <td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td>
-            <td><b>${grandKoraWt.toFixed(3)}</b></td>
-            <td><b>${grandDyeingWt.toFixed(3)}</b></td>
-            <td><b>${grandDiffDisplay}</b></td>
-        </tr>
-    `;
+    let grandDiffDisplay = grandDiff > 0 ? `<span class="bal-positive">Bal: +${grandDiff.toFixed(3)}</span>` : (grandDiff < 0 ? `<span class="bal-negative">Ex: ${grandDiff.toFixed(3)}</span>` : `<span style="color:#10B981; font-weight:800;">Settled</span>`);
+    foot.innerHTML = `<tr><td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td><td><b>${grandKoraWt.toFixed(3)}</b></td><td><b>${grandDyeingWt.toFixed(3)}</b></td><td><b>${grandDiffDisplay}</b></td></tr>`;
 }
 
 function renderGenericTable(dataList, filterVal, keys) {
     let body = document.getElementById('tableBody');
     body.innerHTML = '';
-
     if (!dataList || dataList.length === 0) {
         body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for this module.</td></tr>`;
         return;
     }
-
     let filtered = dataList;
-    if (filterVal !== 'All') {
-        let cleanFilter = cleanDesignName(filterVal);
-        filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanFilter);
-    }
-
+    if (filterVal !== 'All') filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
     if (filtered.length === 0) {
         body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
         return;
     }
-
     filtered.slice().reverse().forEach(item => {
         let rowHtml = '<tr>';
         keys.forEach(k => {
@@ -819,9 +737,7 @@ function printReport() {
     if(document.getElementById('previewModal').style.display !== 'flex') {
         previewReport();
     }
-    setTimeout(() => {
-        window.print();
-    }, 300);
+    setTimeout(() => { window.print(); }, 300);
 }
 
 function exportToExcel() {
@@ -872,7 +788,7 @@ function exportToExcel() {
         let collections = [
             'party_orders_data', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records',
             'warping_issue_records', 'warping_receive_records', 'weaving_master_data', 
-            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers'
+            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers', 'despatch_records'
         ];
         
         for(let col of collections) {
@@ -881,7 +797,6 @@ function exportToExcel() {
         }
 
         mainHeader.innerText = origText;
-        
         loadDesignFilter();
     });
 </script>

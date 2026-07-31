@@ -16,7 +16,7 @@
         
         /* 📌 Premium Top Header */
         .top-header-container { 
-            width: 100%; max-width: 900px; display: flex; justify-content: space-between; 
+            width: 100%; max-width: 1100px; display: flex; justify-content: space-between; 
             align-items: center; padding: 12px 18px; 
             background: linear-gradient(135deg, #4A7C59, #2F4F38); 
             color: white; border-radius: 14px; margin-bottom: 15px;
@@ -48,7 +48,7 @@
 
         /* 📌 Main Container */
         .container { 
-            width: 100%; max-width: 900px; margin: 0; background: #FFFFFF; 
+            width: 100%; max-width: 1100px; margin: 0; background: #FFFFFF; 
             padding: 20px; border-radius: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06); 
             border: 1px solid rgba(82, 110, 81, 0.15); flex: 1; display: flex; 
             flex-direction: column; gap: 16px; position: relative; 
@@ -111,21 +111,43 @@
         .btn-theme-3 { background: linear-gradient(135deg, #6366F1, #4338CA); } 
         .btn-theme-4 { background: linear-gradient(135deg, #D97706, #B45309); } 
 
-        .menu-btn.full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 12px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #4A7C59, #2F4F38); }
-        .menu-btn.full-span .tab-icon { font-size: 24px; }
+        .menu-grid .full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 12px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #4A7C59, #2F4F38); }
+        .menu-grid .full-span .tab-icon { font-size: 24px; }
         
-        .btn-m-all { background: linear-gradient(135deg, #EAB308, #D97706); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25); border: none; }
-        .btn-m-all .tab-icon { font-size: 24px; }
+        .menu-grid .btn-m-all { background: linear-gradient(135deg, #EAB308, #D97706); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25); border: none; }
+        .menu-grid .btn-m-all .tab-icon { font-size: 24px; }
 
-        /* 📌 Status Grid */
-        .status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
-        .status-box { background: #F8FAF8; padding: 15px; border-radius: 12px; border: 1px solid #E2E8E2; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); }
-        .status-title { font-size: 11px; color: #3F5A3E; font-weight: 700; text-align: center; text-transform: uppercase; margin: 0; }
-        .status-options { display: flex; gap: 8px; }
-        .status-btn { flex: 1; color: white; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(30, 43, 35, 0.05); text-transform: uppercase; border: none; }
-        .status-btn:hover { transform: translateY(-1px); }
-        .status-btn.running { background: #F59E0B; color: #FFFFFF; }
-        .status-btn.completed { background: #10B981; color: #FFFFFF; }
+        /* 📌 Live Matrix Progress Table Styles */
+        .matrix-container {
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+            padding: 15px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .matrix-title {
+            font-size: 12px; font-weight: 800; color: #2F4F38; text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #EAF0EA; padding-bottom: 8px;
+        }
+        .matrix-table-wrapper {
+            width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid #D1DED1; background: #FFFFFF;
+        }
+        .matrix-table {
+            width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; white-space: nowrap;
+        }
+        .matrix-table th {
+            background: #EAF0EA; color: #2F4F38; padding: 10px; font-weight: 700; border-bottom: 2px solid #D1DED1;
+            font-size: 10px; text-transform: uppercase;
+        }
+        .matrix-table td {
+            padding: 10px; border-bottom: 1px solid #E2E8E2; color: #1E2B23;
+        }
+        .matrix-table tr:hover { background: #F8FAF8; }
+        
+        .status-badge {
+            padding: 5px 10px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; display: inline-block; cursor: pointer; transition: transform 0.2s; text-decoration: none;
+        }
+        .status-badge:hover { transform: scale(1.05); }
+        .status-badge.done { background: #ECFDF5; color: #059669; border: 1px solid rgba(16,185,129,0.3); }
+        .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
+        .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
 
         /* 📌 Bitmap Preview Styling */
         #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; }
@@ -153,7 +175,6 @@
     </div>
 
 <script>
-// பக்கம் லோட் ஆனவுடன் லைவ் யூசர் மற்றும் ரோலை டிராப்-டவுனில் காட்டும் ஸ்கிரிப்ட்
 window.addEventListener('DOMContentLoaded', (event) => {
     let role = localStorage.getItem('erp_logged_role') || 'Guest';
     let username = localStorage.getItem('erp_logged_user') || 'Unknown';
@@ -161,6 +182,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     if(box) {
         box.innerHTML = `🟢 Role: <span style="color:#2563EB;">${role}</span><br>👤 Name: <span style="color:#059669;">${username}</span>`;
     }
+    renderMatrixTable();
 });
 
 function toggleMenu() {
@@ -172,7 +194,7 @@ function logoutUser() {
     if(confirm("Are you sure you want to log out?")) {
         localStorage.removeItem('erp_logged_role');
         localStorage.removeItem('erp_logged_user');
-        window.location.href = "index.html"; // லாகின் பக்கத்திற்குத் திருப்பும்
+        window.location.href = "index.html";
     }
 }
 
@@ -184,7 +206,6 @@ function clearCacheData() {
     }
 }
 
-// বাইরে கிளிக் செய்தால் மெனு மறைந்துவிடும்
 window.onclick = function(event) {
     if (!event.target.matches('button') && !event.target.closest('#dropdownMenu')) {
         let dropdown = document.getElementById('dropdownMenu');
@@ -200,7 +221,7 @@ window.onclick = function(event) {
             <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
             <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
             
-            <h1 id="appHeading">Connecting... ☁️</h1>
+            <h1 id="appHeading">TEXFRIEND ERP</h1>
             
         </div>
         <p class="subtitle">SELECT A MODULE</p>
@@ -257,48 +278,26 @@ window.onclick = function(event) {
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all"><span class="tab-icon">✨</span> Total Saved Designs List ✨</a>
         </div>
 
-        <div class="status-grid">
-            <div class="status-box">
-                <p class="status-title">Order Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('order', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('order', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <p class="status-title">Weaving Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('weaving', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('weaving', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <p class="status-title">Dyeing Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('dyeing', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('dyeing', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <p class="status-title">Warping Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('warping', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('warping', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <p class="status-title">Despatch Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('despatch', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('despatch', 'completed')">Completed</button>
-                </div>
-            </div>
-            <div class="status-box">
-                <p class="status-title">Washing Design</p>
-                <div class="status-options">
-                    <button class="status-btn running" onclick="goToStatus('washing', 'running')">Running</button>
-                    <button class="status-btn completed" onclick="goToStatus('washing', 'completed')">Completed</button>
-                </div>
+        <!-- 📌 Live Matrix Progress Table with Report Direct Links -->
+        <div class="matrix-container">
+            <div class="matrix-title">📊 Live Multi-Design Process Status Matrix (Click to View Report)</div>
+            <div class="matrix-table-wrapper">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Design No</th>
+                            <th>🧵 Kora Issue</th>
+                            <th>🎨 Dyeing</th>
+                            <th>📏 Warping</th>
+                            <th>🏭 Weaving</th>
+                            <th>🌊 Washing</th>
+                            <th>🚚 Despatch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody">
+                        <!-- Dynamically generated rows -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -345,26 +344,47 @@ window.onclick = function(event) {
         let tempBitmapData = "";
 
         window.onload = async function() {
-            let heading = await firebaseLoad('app_heading_name') || localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
-            document.getElementById('appHeading').innerText = heading;
-            localStorage.setItem('app_heading_name', heading);
-
-            let logoData = await firebaseLoad('company_logo') || localStorage.getItem('company_logo') || '';
+            document.getElementById('appHeading').innerText = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+            let localLogo = localStorage.getItem('company_logo') || '';
             let logoContainer = document.getElementById('companyLogoContainer');
-            if (logoData) {
-                logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
-                localStorage.setItem('company_logo', logoData);
+            if (localLogo) {
+                logoContainer.innerHTML = `<img src="${localLogo}" alt="Logo">`;
             } else {
                 logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
             }
 
-            designList = await firebaseLoad('pre_design_numbers') || JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let designSpecs = await firebaseLoad('design_specs') || JSON.parse(localStorage.getItem('design_specs')) || {};
-            
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
+            designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             loadDesignDropdown();
+            renderMatrixTable();
+
+            try {
+                let heading = await firebaseLoad('app_heading_name');
+                if(heading) {
+                    document.getElementById('appHeading').innerText = heading;
+                    localStorage.setItem('app_heading_name', heading);
+                }
+
+                let logoData = await firebaseLoad('company_logo');
+                if (logoData) {
+                    logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
+                    localStorage.setItem('company_logo', logoData);
+                }
+
+                let cloudDesigns = await firebaseLoad('pre_design_numbers');
+                if(cloudDesigns) {
+                    designList = cloudDesigns;
+                    localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+                    loadDesignDropdown();
+                    renderMatrixTable();
+                }
+
+                let cloudSpecs = await firebaseLoad('design_specs');
+                if(cloudSpecs) {
+                    localStorage.setItem('design_specs', JSON.stringify(cloudSpecs));
+                }
+            } catch (e) {
+                console.error("Background Sync Error: ", e);
+            }
         }
 
         function cleanDesignName(str) {
@@ -411,7 +431,7 @@ window.onclick = function(event) {
             if(designList.includes(designNo)) { alert("Indha Design already iruku"); return; }
 
             let addBtn = document.getElementById('addBtn');
-            addBtn.innerText = "Saving ☁️...";
+            addBtn.innerText = "Saving...";
 
             designList.push(designNo);
             
@@ -427,8 +447,9 @@ window.onclick = function(event) {
 
             addBtn.innerText = "+ Add";
             loadDesignDropdown();
+            renderMatrixTable();
             document.getElementById('newDesign').value = '';
-            alert("Design " + designNo + " Saved & Synced to Cloud! ✅☁️");
+            alert("Design " + designNo + " Saved successfully! ✅");
         }
 
         window.updateDesign = async function() {
@@ -444,7 +465,7 @@ window.onclick = function(event) {
             let weave = document.getElementById('weave').value.trim();
 
             let editBtn = document.getElementById('editBtn');
-            editBtn.innerText = "Updating ☁️...";
+            editBtn.innerText = "Updating...";
 
             let cleanDNo = cleanDesignName(designNo);
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -461,7 +482,7 @@ window.onclick = function(event) {
             await firebaseSave('design_specs', designSpecs);
 
             editBtn.innerText = "✏️ Update / Edit Design";
-            alert("Updated successfully on Cloud! ✅☁️");
+            alert("Updated successfully! ✅");
         }
 
         window.deleteDesign = async function() {
@@ -470,7 +491,7 @@ window.onclick = function(event) {
             
             if(confirm(designNo + " delete pannalama?")){
                 let delBtn = document.getElementById('delBtn');
-                delBtn.innerText = "Del ☁️...";
+                delBtn.innerText = "Del...";
 
                 designList = designList.filter(x => x != designNo);
                 
@@ -489,8 +510,9 @@ window.onclick = function(event) {
 
                 delBtn.innerText = "Delete";
                 loadDesignDropdown();
+                renderMatrixTable();
                 clearForm();
-                alert("Deleted successfully from Cloud! 🗑️☁️");
+                alert("Deleted successfully! 🗑️");
             }
         }
 
@@ -519,7 +541,7 @@ window.onclick = function(event) {
                 let cleanVal = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanVal) || val;
+                let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanVal) || val;
                 let specs = designSpecs[specKey] || {};
 
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
@@ -553,6 +575,68 @@ window.onclick = function(event) {
             document.getElementById('weave').value = '';
             tempBitmapData = "";
             document.getElementById('bitmapPreviewBox').style.display = 'none';
+        }
+
+        // 📌 Helper to check if a design's process is completed based on records and completed status
+        function getProcessStatus(records, dNo, linkPage) {
+            let cDNo = cleanDesignName(dNo);
+            let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
+            if (matched.length === 0) return { text: 'NONE', className: 'none' };
+
+            // Check if any matched record has status 'completed'
+            let isCompleted = matched.some(r => r.status === 'completed');
+            if (isCompleted) {
+                return { text: '✅', className: 'done' };
+            }
+
+            // Otherwise determine text based on values / status
+            let hasRunning = matched.some(r => r.status === 'running');
+            return { text: hasRunning ? 'RUNNING' : 'PENDING', className: 'run' };
+        }
+
+        // 📌 Live Matrix Progress Table Logic with Report Direct Links
+        window.renderMatrixTable = function() {
+            let tbody = document.getElementById('matrixTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            if(preDesigns.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#64748B;">No designs found.</td></tr>`;
+                return;
+            }
+
+            let koraIssues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+            let dIss = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+            let warpIss = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+            let weav = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+            let wash = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+            let desp = JSON.parse(localStorage.getItem('despatch_data')) || [];
+
+            let html = '';
+            preDesigns.forEach(dNo => {
+                let cDNo = cleanDesignName(dNo);
+
+                // Helper to build badge with proper link and status check
+                function buildCell(records, label, linkPage) {
+                    let statusObj = getProcessStatus(records, dNo, linkPage);
+                    return `<td><a href="${linkPage}?design=${encodeURIComponent(dNo)}" class="status-badge ${statusObj.className}" title="View ${label}">${statusObj.text}</a></td>`;
+                }
+
+                html += `
+                    <tr>
+                        <td><b>${dNo}</b></td>
+                        ${buildCell(koraIssues, 'Kora Issue', 'kora_yarn.html')}
+                        ${buildCell(dIss, 'Dyeing', 'dyeing_issue.html')}
+                        ${buildCell(warpIss, 'Warping', 'warping.html')}
+                        ${buildCell(weav, 'Weaving', 'weaving.html')}
+                        ${buildCell(wash, 'Washing', 'washing.html')}
+                        ${buildCell(desp, 'Despatch', 'Despatch.html')}
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
         }
 
         window.goToStatus = function(type, status){

@@ -257,7 +257,14 @@
             <div id="bitmapDisplayContainer"></div>
         </div>
         
-        <h2 class="card-header">Create Party Order</h2>
+        <!-- 📌 Header with Checkbox -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <h2 class="card-header" style="margin-bottom: 0;">Create Party Order</h2>
+            <label style="display: flex; align-items: center; gap: 6px; background: #ECFDF5; border: 1px solid #10B981; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin: 0;">
+                <input type="checkbox" id="orderStatusToggle" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                <span style="font-size: 11px; font-weight: 800; color: #059669; text-transform: uppercase; margin: 0;">Completed</span>
+            </label>
+        </div>
 
         <form id="partyOrderForm" onsubmit="savePartyOrder(event)">
             
@@ -440,7 +447,7 @@
                 orderMtr: document.getElementById('orderMtr').value.trim(),
                 rateMtr: document.getElementById('rateMtr').value.trim(),
                 deliveryDate: document.getElementById('deliveryDate').value,
-                status: editingId !== null ? (partyOrders.find(x => x.id === editingId)?.status || 'running') : 'running'
+                status: document.getElementById('orderStatusToggle').checked ? 'completed' : 'running'
             };
 
             let btn = document.getElementById('saveBtn');
@@ -468,6 +475,7 @@
             updatePartyTable();
             
             document.getElementById('partyOrderForm').reset();
+            document.getElementById('orderStatusToggle').checked = false; // Reset checkbox
             document.getElementById('orderDate').valueAsDate = new Date();
             document.getElementById('deliveryDate').valueAsDate = new Date();
             
@@ -499,6 +507,7 @@
             document.getElementById('weaveType').value = item.weaveType || '';
             document.getElementById('orderMtr').value = item.orderMtr || '';
             document.getElementById('rateMtr').value = item.rateMtr || '';
+            document.getElementById('orderStatusToggle').checked = (item.status === 'completed');
 
             document.getElementById('saveBtn').innerText = "🔄 Update Order Details";
             window.scrollTo({ top: 0, behavior: 'smooth' });
