@@ -26,7 +26,7 @@
 
     .main-card {
         width: 100%;
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0;
         background: #FFFFFF;
         border: 1px solid rgba(82, 110, 81, 0.15);
@@ -141,7 +141,7 @@
 
     .report-tabs {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
         gap: 8px;
         margin-top: 5px;
     }
@@ -152,7 +152,7 @@
         border: 1px solid #D1DED1;
         padding: 12px 6px;
         border-radius: 10px;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 700;
         cursor: pointer;
         text-align: center;
@@ -168,6 +168,16 @@
         border-color: transparent;
         box-shadow: 0 6px 12px rgba(74, 124, 89, 0.3);
         transform: translateY(-2px);
+    }
+
+    .special-tab-btn {
+        background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+        color: white;
+        border: none;
+    }
+    .special-tab-btn.active {
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
     }
 
     .invoice-tab-btn {
@@ -245,15 +255,57 @@
     .no-data {
         padding: 30px;
         color: #64748B;
-        font-size: 12px;
+        font-size: 13px;
         text-align: center;
         font-weight: 600;
         background: #F8FAF8;
+        border-radius: 12px;
+        border: 1px dashed #D1DED1;
     }
 
-    .bal-positive { color: #10B981; font-weight: 800; }
-    .bal-negative { color: #DC2626; font-weight: 800; }
-    .pending-txt { color: #F59E0B; font-weight: 800; font-size: 10px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px;}
+    /* 📌 Smart Balance Badges */
+    .badge-stock { background: #ECFDF5; color: #059669; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); display: inline-block;}
+    .badge-pending { background: #FEF2F2; color: #DC2626; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(220,38,38,0.3); display: inline-block;}
+    .badge-excess { background: #FFFBEB; color: #D97706; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); display: inline-block;}
+    .badge-neutral { background: #F1F5F9; color: #64748B; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(100,116,139,0.3); display: inline-block;}
+
+    /* 📌 360 Analytics CSS */
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        padding: 20px;
+        background: #FFFFFF;
+        border-radius: 0 0 12px 12px;
+    }
+    .analytic-card {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        transition: transform 0.3s;
+    }
+    .analytic-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+    .analytic-card h3 { font-size: 12px; color: #4A554A; text-transform: uppercase; margin-bottom: 10px; }
+    .analytic-card p { font-size: 22px; font-weight: 800; color: #2F4F38; margin: 0; }
+    
+    .progress-wrapper {
+        margin: 0 20px 20px 20px;
+        background: #F4F7F4;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #D1DED1;
+    }
+    .progress-bar-container {
+        width: 100%; background: #E2E8E2; border-radius: 10px; height: 24px; overflow: hidden; margin-top: 10px;
+    }
+    .progress-bar-fill {
+        background: linear-gradient(135deg, #10B981, #059669);
+        height: 100%; text-align: center; color: white; font-size: 12px; line-height: 24px; font-weight: bold;
+        transition: width 0.5s ease;
+    }
 
     /* Modals */
     .overlay-modal {
@@ -284,7 +336,7 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
     
-    /* 📌 Fullscreen Image Popup Modal */
+    /* Fullscreen Image Popup Modal */
     .fullscreen-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -314,12 +366,11 @@
 
 <div class="main-card">
     <div class="top-nav">
-        <!-- 📌 Links back to dashboard.html -->
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
         <div id="bitmapDisplayContainer"></div>
     </div>
 
-    <h2 class="card-header" id="pageMainHeader">Reports & Analytics</h2>
+    <h2 class="card-header" id="pageMainHeader">Management Reports & Analytics</h2>
 
     <div class="form-section">
         <div class="section-badge">Filter Records</div>
@@ -332,37 +383,40 @@
     </div>
 
     <div class="report-tabs">
-        <button class="tab-btn active" id="tab-PartyOrders" onclick="switchTab('PartyOrders')">📦 Orders</button>
-        <button class="tab-btn" id="tab-KoraStock" onclick="switchTab('KoraStock')">🧵 Yarn Stock</button>
-        <button class="tab-btn" id="tab-Dyeing" onclick="switchTab('Dyeing')">🎨 Dyeing</button>
-        <button class="tab-btn" id="tab-Warping" onclick="switchTab('Warping')">📐 Warping</button>
-        <button class="tab-btn" id="tab-Weaving" onclick="switchTab('Weaving')">🏭 Weaving</button>
-        <button class="tab-btn" id="tab-Washing" onclick="switchTab('Washing')">🌊 Washing</button>
-        <button class="invoice-tab-btn" id="tab-Invoice" onclick="switchTab('Invoice')">📄 Invoice / Billing Report</button>
+        <button class="tab-btn active" id="tab-KoraDyeing" onclick="switchTab('KoraDyeing')">🏭 Kora at Dyeing</button>
+        <button class="tab-btn" id="tab-KoraStock" onclick="switchTab('KoraStock')">🧵 Kora Stock</button>
+        <button class="tab-btn" id="tab-Dyeing" onclick="switchTab('Dyeing')">🎨 Dyeing Balance</button>
+        <button class="tab-btn special-tab-btn" id="tab-Analytics360" onclick="switchTab('Analytics360')">🌟 360° Design Analytics</button>
+        <button class="invoice-tab-btn" id="tab-Invoice" onclick="switchTab('Invoice')">📄 Invoice / Financial Report</button>
     </div>
 
     <!-- Standard Report Container -->
     <div id="standardReportContainer">
         <div class="report-header-bar">
             <span id="reportTitle">📊 Report Data</span>
-            <div class="header-btns">
+            <div class="header-btns" id="exportBtns">
                 <button class="action-btn preview-btn" onclick="previewReport()">👁️ Preview</button>
                 <button class="action-btn print-btn" onclick="printReport()">🖨️ Print</button>
                 <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Excel</button>
             </div>
         </div>
 
-        <div class="table-container">
+        <div class="table-container" id="tableWrapper">
             <table id="reportTable">
                 <thead id="tableHead"></thead>
                 <tbody id="tableBody"></tbody>
                 <tfoot id="tableFoot"></tfoot>
             </table>
         </div>
+
+        <!-- 360 Analytics Custom Layout (Hidden by default) -->
+        <div id="analyticsWrapper" style="display: none; border: 1px solid #E2E8E2; border-top: none; border-radius: 0 0 12px 12px; background: #FFFFFF;">
+            <!-- Content gets injected here -->
+        </div>
     </div>
 </div>
 
-<!-- Existing Preview Modal -->
+<!-- Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -374,14 +428,14 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Popup Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
 <script>
-var currentTab = 'PartyOrders';
+var currentTab = 'KoraDyeing';
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -399,9 +453,7 @@ window.closeFullscreenImage = function() {
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designFilter').value;
-    if(activeDesign === 'All') {
-        activeDesign = localStorage.getItem('selected_design_number');
-    }
+    if(activeDesign === 'All') activeDesign = localStorage.getItem('selected_design_number');
     
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
@@ -416,7 +468,6 @@ function loadBitmapImage() {
 
 function loadDesignFilter() {
     let allDesigns = new Set();
-    
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     preDesigns.forEach(d => allDesigns.add(d));
 
@@ -425,397 +476,389 @@ function loadDesignFilter() {
 
     let select = document.getElementById('designFilter');
     let html = '<option value="All">All Designs (மொத்தம்)</option>';
-    
-    [...allDesigns].forEach(function(d) {
-        html += `<option value="${d}">${d}</option>`;
-    });
+    [...allDesigns].forEach(d => html += `<option value="${d}">${d}</option>`);
     select.innerHTML = html;
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && allDesigns.has(activeDesign)) {
-        select.value = activeDesign;
-    }
+    if(activeDesign && allDesigns.has(activeDesign)) select.value = activeDesign;
     loadBitmapImage();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     loadDesignFilter();
-    
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = newSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     if(tabParam) {
-        if(tabParam === 'order' || tabParam === 'PartyOrders') currentTab = 'PartyOrders';
-        else if(tabParam === 'Weaving') currentTab = 'Weaving';
-        else if(tabParam === 'Dyeing') currentTab = 'Dyeing';
-        else if(tabParam === 'Warping') currentTab = 'Warping';
-        else if(tabParam === 'Washing') currentTab = 'Washing';
-        else if(tabParam === 'Despatch') currentTab = 'PartyOrders';
-        else if(tabParam === 'Invoice') currentTab = 'Invoice';
+        let tabMap = { 'KoraDyeing':'KoraDyeing', 'KoraStock':'KoraStock', 'Dyeing':'Dyeing', 'Invoice':'Invoice', 'Analytics360': 'Analytics360' };
+        if(tabMap[tabParam]) currentTab = tabMap[tabParam];
     }
-    
     switchTab(currentTab);
 });
 
 function switchTab(tabName) {
     currentTab = tabName;
     loadBitmapImage();
-    document.querySelectorAll('.tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
     
+    document.querySelectorAll('.tab-btn, .special-tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
     let activeBtn = document.getElementById('tab-' + tabName);
     if(activeBtn) activeBtn.classList.add('active');
 
     let filterVal = document.getElementById('designFilter').value;
     let titleElem = document.getElementById('reportTitle');
+    let tableWrap = document.getElementById('tableWrapper');
+    let analyticsWrap = document.getElementById('analyticsWrapper');
+    let exportBtns = document.getElementById('exportBtns');
     let head = document.getElementById('tableHead');
-    let body = document.getElementById('tableBody');
     let foot = document.getElementById('tableFoot');
+    if(head) head.innerHTML = ''; if(foot) foot.innerHTML = ''; 
 
-    head.innerHTML = '';
-    body.innerHTML = '';
-    foot.innerHTML = '';
+    if(tabName === 'Analytics360') {
+        titleElem.innerText = "🌟 360° DESIGN LIFECYCLE SUMMARY";
+        tableWrap.style.display = 'none'; exportBtns.style.display = 'none'; analyticsWrap.style.display = 'block';
+        render360Analytics(filterVal);
+        return;
+    } else {
+        tableWrap.style.display = 'block'; exportBtns.style.display = 'flex'; analyticsWrap.style.display = 'none';
+    }
 
-    if (tabName === 'PartyOrders') {
-        titleElem.innerText = "📦 PARTY ORDERS Report";
-        head.innerHTML = `<tr><th>Date</th><th>Party Name</th><th>Design No</th><th>Meters</th><th>PO No</th></tr>`;
-        
-        let rawData = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-        let mappedData = rawData.map(item => ({
-            date: item.date || '-',
-            partyName: item.partyName || '-',
-            designNo: item.designNumber || item.designNo || '-',
-            meters: item.orderMtr || item.meters || '-',
-            poles: item.poNo || '-'
-        }));
-        
-        renderGenericTable(mappedData, filterVal, ['date', 'partyName', 'designNo', 'meters', 'poles']);
+    if (tabName === 'KoraDyeing') {
+        titleElem.innerText = "🏭 KORA STOCK AT DYEING (Outward vs Dyeing Issue)";
+        head.innerHTML = `<tr><th>Date</th><th>Dyeing Unit</th><th>Design No</th><th>Mill Name</th><th>Count</th><th>Kora Outward (Kg)</th><th>Dyeing Issue (Kg)</th><th>Pending Bal (Kg)</th><th>Excess (Kg)</th><th>Status</th></tr>`;
+        renderKoraDyeingTable(filterVal);
     } 
     else if (tabName === 'KoraStock') {
-        titleElem.innerText = "🧵 KORA YARN STOCK Report";
-        head.innerHTML = `<tr><th>Design No</th><th>Count</th><th>Total Inward (Kg)</th><th>Total Issued (Kg)</th><th>Balance (Kg)</th></tr>`;
-        
-        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
-        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-
-        let designStockMap = new Map();
-
-        issues.forEach(item => {
-            let dNo = item.designNo || 'Unknown';
-            let cnt = item.count ? item.count.trim() : 'Unknown';
-            let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase();
-
-            if(!designStockMap.has(key)) {
-                designStockMap.set(key, {
-                    designNo: dNo,
-                    count: cnt,
-                    issuedWt: 0
-                });
-            }
-            designStockMap.get(key).issuedWt += parseFloat(item.issueWt) || 0;
-        });
-
-        let stockList = [];
-        designStockMap.forEach((val) => {
-            let inwardForCount = inwards.filter(i => (i.count || '').trim().toLowerCase() === val.count.toLowerCase()).reduce((s, x) => s + (parseFloat(x.weight) || 0), 0);
-            let bal = inwardForCount - val.issuedWt;
-
-            stockList.push({
-                designNo: val.designNo,
-                count: val.count,
-                inwardWt: inwardForCount,
-                issuedWt: val.issuedWt,
-                balance: bal
-            });
-        });
-
-        renderDesignStockTable(stockList, filterVal);
+        titleElem.innerText = "🧵 KORA YARN STOCK (Mill & Count-Wise Balance)";
+        head.innerHTML = `<tr><th>Design No</th><th>Mill Name</th><th>Count</th><th>Inward Rcvd (Kg)</th><th>Issued Out (Kg)</th><th>Current Stock (Kg)</th></tr>`;
+        renderKoraStockTable(filterVal);
     } 
     else if (tabName === 'Dyeing') {
-        titleElem.innerText = "🎨 DYEING Report";
-        head.innerHTML = `<tr><th>Dyeing Unit</th><th>Design No</th><th>Kora Issue (Kg)</th><th>Dyeing Rcvd (Kg)</th><th>Bal / Ex (Kg)</th></tr>`;
-        
-        let koraIssues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-        let dyeingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
-        
-        let unitDesignMap = new Map();
-
-        dyeingIssues.forEach(iss => {
-            let unitName = (iss.unit || iss.dyeingName || 'Unknown').trim();
-            let designNo = iss.designNo || '-';
-            let key = unitName.toLowerCase() + "_" + cleanDesignName(designNo);
-
-            if (!unitDesignMap.has(key)) {
-                unitDesignMap.set(key, {
-                    unit: unitName,
-                    designNo: designNo,
-                    koraWt: 0,
-                    dyeingWt: 0
-                });
-            }
-            unitDesignMap.get(key).dyeingWt += parseFloat(iss.issueWt) || 0;
-        });
-
-        koraIssues.forEach(k => {
-            let unitName = (k.dyeingName || k.unit || 'Unknown').trim();
-            let designNo = k.designNo || '-';
-            let key = unitName.toLowerCase() + "_" + cleanDesignName(designNo);
-
-            if (!unitDesignMap.has(key)) {
-                unitDesignMap.set(key, {
-                    unit: unitName,
-                    designNo: designNo,
-                    koraWt: 0,
-                    dyeingWt: 0
-                });
-            }
-            unitDesignMap.get(key).koraWt += parseFloat(k.issueWt) || 0;
-        });
-
-        let mergedList = [];
-        unitDesignMap.forEach((val) => {
-            let diff = val.koraWt - val.dyeingWt;
-            mergedList.push({
-                unit: val.unit,
-                designNo: val.designNo,
-                koraIssueWt: val.koraWt,
-                dyeingIssueWt: val.dyeingWt,
-                diffVal: diff
-            });
-        });
-
-        renderDyeingReportTable(mergedList, filterVal);
-    }
-    else if (tabName === 'Warping') {
-        titleElem.innerText = "📐 WARPING Report";
-        head.innerHTML = `<tr><th>Date</th><th>Unit</th><th>Design No</th><th>Count</th><th>Colour</th><th>Issued Wt</th><th>Rcvd Wt</th><th>Excess</th></tr>`;
-        
-        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-        let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
-        
-        let merged = issues.map(iss => {
-            let rec = receives.find(r => r.issueId == iss.id) || {};
-            return {
-                date: iss.date || rec.botDate || '-',
-                unit: iss.unit || '-',
-                designNo: iss.designNo || '-',
-                count: iss.count || '-',
-                color: iss.color || '-',
-                issuedWt: iss.issueWt || '-',
-                receivedWt: rec.receivedWt || 'Pending',
-                excessWt: rec.excessWt && rec.excessWt !== '-' ? rec.excessWt : '0.000'
-            };
-        });
-        renderGenericTable(merged, filterVal, ['date', 'unit', 'designNo', 'count', 'color', 'issuedWt', 'receivedWt', 'excessWt']);
-    } 
-    else if (tabName === 'Weaving') {
-        titleElem.innerText = "🏭 WEAVING PRODUCTION Report";
-        head.innerHTML = `<tr><th>Date</th><th>Weaver</th><th>Design No</th><th>Order Mtrs</th><th>Items Count</th></tr>`;
-        
-        let rawData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
-        let mappedData = rawData.map(item => {
-            let totalItems = (item.warpRows ? item.warpRows.length : 0) + (item.weftRows ? item.weftRows.length : 0);
-            return {
-                date: item.date || '-',
-                weaver: item.weaverName || '-',
-                designNo: item.designNo || '-',
-                mtrs: item.weavingMts || '-',
-                items: totalItems + " Yarns"
-            };
-        });
-        
-        renderGenericTable(mappedData, filterVal, ['date', 'weaver', 'designNo', 'mtrs', 'items']);
-    } 
-    else if (tabName === 'Washing') {
-        titleElem.innerText = "🌊 WASHING Report";
-        head.innerHTML = `<tr><th>Date</th><th>Unit</th><th>Design No</th><th>Slip</th><th>Piece</th><th>Sent Mtr</th><th>Rcvd Mtr</th><th>Shrink %</th></tr>`;
-        
-        let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-        let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
-        
-        let merged = issues.map(iss => {
-            let rec = receives.find(r => r.issueId == iss.id) || {};
-            return {
-                date: iss.date || rec.botDate || '-',
-                unit: iss.unit || '-',
-                designNo: iss.designNo || '-',
-                slip: iss.slip || '-',
-                piece: iss.piece || '-',
-                sentMtr: iss.mtr || '-',
-                rcvdMtr: rec.receivedMtr || 'Pending',
-                shrink: rec.shrinkagePerc || '-'
-            };
-        });
-        
-        renderGenericTable(merged, filterVal, ['date', 'unit', 'designNo', 'slip', 'piece', 'sentMtr', 'rcvdMtr', 'shrink']);
+        titleElem.innerText = "🎨 DYEING Report (Sent vs Received Balance)";
+        head.innerHTML = `<tr><th>Dyeing Unit</th><th>Design No</th><th>Color / Count</th><th>Issued to Dyer (Kg)</th><th>Received (Kg)</th><th>Pending Bal (Kg)</th></tr>`;
+        renderDyeingTable(filterVal);
     }
     else if (tabName === 'Invoice') {
         titleElem.innerText = "📄 INVOICE / BILLING Report";
         head.innerHTML = `<tr><th>Inv No</th><th>Date</th><th>Party Name</th><th>Design No</th><th>Total Qty</th><th>Grand Total (₹)</th></tr>`;
+        renderInvoiceTable(filterVal);
+    }
+}
+
+/* -------------------------------------------------------------------------
+   🔥 SMART AUTO-TALLY: KORA STOCK AT DYEING
+------------------------------------------------------------------------- */
+function renderKoraDyeingTable(filterVal) {
+    let koraOutward = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let dyeingIssue = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let map = new Map();
+
+    // Smart Match Logic: Extacts only Numbers to group "40 kcc", "40s", "40" perfectly!
+    function getBasicCount(c) {
+        let m = (c || '').match(/\d+/);
+        return m ? m[0] : (c || '-').toLowerCase().trim();
+    }
+
+    // 1. Map Kora Outward
+    koraOutward.forEach(k => {
+        let dNo = k.designNo || k.designNumber || '-';
+        let cnt = (k.count || '-').trim();
+        let basicCnt = getBasicCount(cnt);
+        let key = cleanDesignName(dNo) + "_" + basicCnt;
+
+        if(!map.has(key)) {
+            map.set(key, { 
+                date: k.date || '-', 
+                designNo: dNo, 
+                count: cnt,
+                mill: new Set(),
+                unit: new Set(),
+                koraWt: 0, 
+                dyeWt: 0 
+            });
+        }
         
-        let rawData = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
-        let mappedData = rawData.map(item => ({
-            invNo: item.invNo || '-',
-            date: item.invDate || '-',
-            partyName: item.partyAddress ? item.partyAddress.split('\n')[0] : '-',
-            designNo: item.design || '-',
-            meters: item.totalQty ? item.totalQty.toFixed(2) : '0.00',
-            amount: item.grandTotal ? item.grandTotal.toFixed(2) : '0.00'
-        }));
+        let entry = map.get(key);
+        entry.koraWt += parseFloat(k.weight || k.issueWt || k.qty) || 0;
+        if (k.date) entry.date = k.date;
+        
+        let mName = (k.millName || k.mill || '').trim();
+        if(mName && mName !== '-') entry.mill.add(mName);
+        
+        let uName = (k.dyeingName || k.unit || k.dyeingUnit || '').trim();
+        if(uName && uName !== '-') entry.unit.add(uName);
+        
+        if(cnt.length > entry.count.length) entry.count = cnt; // Keep the most descriptive count string
+    });
 
-        renderGenericTable(mappedData, filterVal, ['invNo', 'date', 'partyName', 'designNo', 'meters', 'amount']);
-    }
-}
+    // 2. Map Dyeing Issue
+    dyeingIssue.forEach(d => {
+        let dNo = d.designNo || d.designNumber || '-';
+        let cnt = (d.count || '-').trim();
+        let basicCnt = getBasicCount(cnt);
+        let key = cleanDesignName(dNo) + "_" + basicCnt;
 
-function renderDesignStockTable(stockList, filterVal) {
+        if(!map.has(key)) {
+            map.set(key, { 
+                date: d.date || '-', 
+                designNo: dNo, 
+                count: cnt,
+                mill: new Set(),
+                unit: new Set(),
+                koraWt: 0, 
+                dyeWt: 0 
+            });
+        }
+        
+        let entry = map.get(key);
+        entry.dyeWt += parseFloat(d.issueWt || d.orderWt) || 0;
+        if(d.date && entry.koraWt === 0) entry.date = d.date;
+        
+        let mName = (d.millName || d.mill || '').trim();
+        if(mName && mName !== '-') entry.mill.add(mName);
+        
+        let uName = (d.unit || d.dyeingName || '').trim();
+        if(uName && uName !== '-') entry.unit.add(uName);
+        
+        if(cnt.length > entry.count.length) entry.count = cnt;
+    });
+
+    let mappedData = Array.from(map.values()).map(val => {
+        let diff = val.koraWt - val.dyeWt;
+        val.balance = diff > 0.005 ? diff : 0;
+        val.excess = diff < -0.005 ? Math.abs(diff) : 0;
+        
+        if (val.balance > 0.005) val.status = "Pending";
+        else if (val.excess > 0.005) val.status = "Excess Used";
+        else val.status = "Settled";
+        
+        val.millStr = val.mill.size > 0 ? Array.from(val.mill).join(', ') : '-';
+        val.unitStr = val.unit.size > 0 ? Array.from(val.unit).join(', ') : '-';
+        
+        return val;
+    });
+
     let body = document.getElementById('tableBody');
     let foot = document.getElementById('tableFoot');
     body.innerHTML = ''; foot.innerHTML = '';
-    if (!stockList || stockList.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="no-data">No Kora stock issue records found.</td></tr>`;
-        return;
-    }
-    let filtered = stockList;
-    if (filterVal !== 'All') filtered = stockList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
+    
+    let filtered = filterVal !== 'All' ? mappedData.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal)) : mappedData;
     if (filtered.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
-        return;
+        body.innerHTML = `<tr><td colspan="10" class="no-data">No records found.</td></tr>`; return;
     }
-    let grandInward = 0; let grandIssued = 0;
-    filtered.forEach(item => {
-        grandInward += item.inwardWt; grandIssued += item.issuedWt;
-        let balDisplay = item.balance >= 0 ? `<span class="bal-positive">${item.balance.toFixed(3)}</span>` : `<span class="bal-negative">${item.balance.toFixed(3)}</span>`;
-        body.innerHTML += `<tr><td><b>${item.designNo}</b></td><td>${item.count}</td><td>${item.inwardWt.toFixed(3)}</td><td>${item.issuedWt.toFixed(3)}</td><td>${balDisplay}</td></tr>`;
-    });
-    let grandBal = grandInward - grandIssued;
-    let grandBalDisplay = grandBal >= 0 ? `<span class="bal-positive">${grandBal.toFixed(3)}</span>` : `<span class="bal-negative">${grandBal.toFixed(3)}</span>`;
-    foot.innerHTML = `<tr><td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td><td><b>${grandInward.toFixed(3)}</b></td><td><b>${grandIssued.toFixed(3)}</b></td><td><b>${grandBalDisplay}</b></td></tr>`;
-}
 
-function renderDyeingReportTable(dataList, filterVal) {
-    let body = document.getElementById('tableBody');
-    let foot = document.getElementById('tableFoot');
-    body.innerHTML = ''; foot.innerHTML = '';
-    if (!dataList || dataList.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="no-data">No dyeing records found.</td></tr>`;
-        return;
-    }
-    let filtered = dataList;
-    if (filterVal !== 'All') filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
-    if (filtered.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
-        return;
-    }
-    let grandKoraWt = 0; let grandDyeingWt = 0;
-    filtered.forEach(item => {
-        grandKoraWt += item.koraIssueWt; grandDyeingWt += item.dyeingIssueWt;
-        let diff = item.koraIssueWt - item.dyeingIssueWt;
-        let diffDisplay = diff > 0 ? `<span class="bal-positive">Bal: +${diff.toFixed(3)}</span>` : (diff < 0 ? `<span class="bal-negative">Ex: ${diff.toFixed(3)}</span>` : `<span style="color:#10B981; font-weight:800;">Settled</span>`);
-        body.innerHTML += `<tr><td><b>${item.unit}</b></td><td>${item.designNo}</td><td>${item.koraIssueWt.toFixed(3)}</td><td>${item.dyeingIssueWt.toFixed(3)}</td><td>${diffDisplay}</td></tr>`;
-    });
-    let grandDiff = grandKoraWt - grandDyeingWt;
-    let grandDiffDisplay = grandDiff > 0 ? `<span class="bal-positive">Bal: +${grandDiff.toFixed(3)}</span>` : (grandDiff < 0 ? `<span class="bal-negative">Ex: ${grandDiff.toFixed(3)}</span>` : `<span style="color:#10B981; font-weight:800;">Settled</span>`);
-    foot.innerHTML = `<tr><td colspan="2" style="text-align: right; padding: 12px;">Grand Total:</td><td><b>${grandKoraWt.toFixed(3)}</b></td><td><b>${grandDyeingWt.toFixed(3)}</b></td><td><b>${grandDiffDisplay}</b></td></tr>`;
-}
-
-function renderGenericTable(dataList, filterVal, keys) {
-    let body = document.getElementById('tableBody');
-    body.innerHTML = '';
-    if (!dataList || dataList.length === 0) {
-        body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for this module.</td></tr>`;
-        return;
-    }
-    let filtered = dataList;
-    if (filterVal !== 'All') filtered = dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal));
-    if (filtered.length === 0) {
-        body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found for design: <b>${filterVal}</b></td></tr>`;
-        return;
-    }
+    let tKora = 0, tDye = 0;
     filtered.slice().reverse().forEach(item => {
+        tKora += item.koraWt; tDye += item.dyeWt; 
+        let balDisplay = item.balance > 0 ? `<span class="badge-pending">${item.balance.toFixed(3)}</span>` : `<span style="color:#A0AFA0;">-</span>`;
+        let excDisplay = item.excess > 0 ? `<span class="badge-excess">${item.excess.toFixed(3)}</span>` : `<span style="color:#A0AFA0;">-</span>`;
+        let statusBadge = item.status === 'Settled' ? `<span class="badge-stock">Received / Settled</span>` : 
+                         (item.status === 'Pending' ? `<span class="badge-pending">Pending</span>` : `<span class="badge-excess">Excess Used</span>`);
+
+        body.innerHTML += `<tr>
+            <td>${item.date}</td>
+            <td><b>${item.unitStr}</b></td>
+            <td><b>${item.designNo}</b></td>
+            <td><b>${item.millStr}</b></td>
+            <td>${item.count}</td>
+            <td>${item.koraWt.toFixed(3)}</td>
+            <td style="color:#10B981; font-weight:bold;">${item.dyeWt.toFixed(3)}</td>
+            <td>${balDisplay}</td>
+            <td>${excDisplay}</td>
+            <td>${statusBadge}</td>
+        </tr>`;
+    });
+
+    let netDiff = tKora - tDye;
+    let tBal = netDiff > 0.005 ? netDiff : 0;
+    let tExc = netDiff < -0.005 ? Math.abs(netDiff) : 0;
+
+    foot.innerHTML = `<tr>
+        <td colspan="5" style="text-align:right; padding:12px;">Grand Total:</td>
+        <td><b>${tKora.toFixed(3)}</b></td>
+        <td style="color:#10B981;"><b>${tDye.toFixed(3)}</b></td>
+        <td><b style="color:#DC2626;">${tBal > 0 ? tBal.toFixed(3) : '-'}</b></td>
+        <td><b style="color:#D97706;">${tExc > 0 ? tExc.toFixed(3) : '-'}</b></td>
+        <td></td>
+    </tr>`;
+}
+
+/* -------------------------------------------------------------------------
+   🔥 360° DESIGN ANALYTICS DASHBOARD
+------------------------------------------------------------------------- */
+function render360Analytics(filterVal) {
+    let wrap = document.getElementById('analyticsWrapper');
+    if(filterVal === 'All') {
+        wrap.innerHTML = `<div class="no-data" style="margin:20px;">ℹ️ தயவுசெய்து மேலே ஒரு குறிப்பிட்ட டிசைனை (Design Number) தேர்ந்தெடுக்கவும். அப்போதுதான் அந்த டிசைனின் முழு ஜாதகத்தையும் பார்க்க முடியும்!</div>`; return;
+    }
+
+    let cleanD = cleanDesignName(filterVal);
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let koraIssues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let weaving = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+    let despatch = JSON.parse(localStorage.getItem('despatch_records')) || [];
+
+    let totalOrderMtrs = orders.filter(o => cleanDesignName(o.designNumber || o.designNo) === cleanD).reduce((sum, o) => sum + (parseFloat(o.orderMtr || o.meters) || 0), 0);
+    let totalKoraKg = koraIssues.filter(k => cleanDesignName(k.designNo) === cleanD).reduce((sum, k) => sum + (parseFloat(k.weight || k.issueWt || k.qty) || 0), 0);
+    let totalWovenMtrs = weaving.filter(w => cleanDesignName(w.designNo) === cleanD).reduce((sum, w) => sum + (parseFloat(w.weavingMts) || 0), 0);
+    let totalDespatchMtrs = despatch.filter(d => cleanDesignName(d.designNo) === cleanD).reduce((sum, d) => sum + (parseFloat(d.mtr) || 0), 0);
+
+    let progress = totalOrderMtrs > 0 ? ((totalDespatchMtrs / totalOrderMtrs) * 100).toFixed(1) : 0;
+    let fillWidth = progress > 100 ? 100 : progress;
+
+    wrap.innerHTML = `
+        <div class="analytics-grid">
+            <div class="analytic-card"><h3>📦 Total Order Target</h3><p style="color:#3B82F6;">${totalOrderMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+            <div class="analytic-card"><h3>🧵 Total Kora Outward</h3><p style="color:#D97706;">${totalKoraKg.toFixed(2)} <span style="font-size:12px;">Kg</span></p></div>
+            <div class="analytic-card"><h3>🏭 Fabric Woven</h3><p style="color:#8B5CF6;">${totalWovenMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+            <div class="analytic-card"><h3>🚚 Final Despatched</h3><p style="color:#10B981;">${totalDespatchMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+        </div>
+        <div class="progress-wrapper">
+            <h4 style="margin:0 0 5px 0; color:#2F4F38; font-size:14px; text-transform:uppercase;">🚀 Overall Design Lifecycle Completion</h4>
+            <div style="font-size:11px; color:#64748B;">(Based on Total Despatched vs Total Ordered Meters)</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${fillWidth}%;">${progress}%</div></div>
+        </div>
+    `;
+}
+
+/* -------------------------------------------------------------------------
+   REPORT RENDERING LOGIC WITH BALANCE CALCULATIONS
+------------------------------------------------------------------------- */
+function renderKoraStockTable(filterVal) {
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let stockMap = new Map();
+
+    inwards.forEach(item => {
+        let dNo = item.designNo || item.designNumber || 'Unknown';
+        let cnt = (item.count || 'Unknown').trim();
+        let mill = (item.millName || item.supplier || item.mill || 'General').trim();
+        let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase() + "_" + mill.toLowerCase();
+        if(!stockMap.has(key)) stockMap.set(key, { designNo: dNo, count: cnt, mill: mill, inwardWt: 0, issuedWt: 0 });
+        stockMap.get(key).inwardWt += parseFloat(item.weight) || 0;
+    });
+
+    issues.forEach(item => {
+        let dNo = item.designNo || item.designNumber || 'Unknown';
+        let cnt = (item.count || 'Unknown').trim();
+        let mill = (item.millName || item.supplier || item.mill || 'General').trim(); 
+        let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase() + "_" + mill.toLowerCase();
+        if(!stockMap.has(key)) stockMap.set(key, { designNo: dNo, count: cnt, mill: mill, inwardWt: 0, issuedWt: 0 });
+        stockMap.get(key).issuedWt += parseFloat(item.weight || item.issueWt || item.qty) || 0;
+    });
+
+    let mappedData = Array.from(stockMap.values()).map(val => { val.balance = val.inwardWt - val.issuedWt; return val; });
+    generateBalanceHTML(mappedData, filterVal, ['designNo', 'mill', 'count', 'inwardWt', 'issuedWt', 'balance'], 'balance', 'Kg');
+}
+
+function renderDyeingTable(filterVal) {
+    let dyeingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || []; 
+    let dyeingReceives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || []; 
+    let unitMap = new Map();
+
+    dyeingIssues.forEach(iss => {
+        let unit = (iss.unit || iss.dyeingName || 'Unknown').trim();
+        let dNo = iss.designNo || '-';
+        let color = (iss.color || '-') + " (" + (iss.count || '') + ")";
+        let key = unit + "_" + cleanDesignName(dNo) + "_" + color;
+        if (!unitMap.has(key)) unitMap.set(key, { unit: unit, designNo: dNo, color: color, sentWt: 0, rcvdWt: 0 });
+        unitMap.get(key).sentWt += parseFloat(iss.issueWt || iss.orderWt) || 0;
+    });
+
+    dyeingReceives.forEach(rcv => {
+        let unit = (rcv.unit || rcv.dyeingName || 'Unknown').trim();
+        let dNo = rcv.designNo || '-';
+        let color = (rcv.color || '-') + " (" + (rcv.count || '') + ")";
+        let key = unit + "_" + cleanDesignName(dNo) + "_" + color;
+        if (!unitMap.has(key)) unitMap.set(key, { unit: unit, designNo: dNo, color: color, sentWt: 0, rcvdWt: 0 });
+        unitMap.get(key).rcvdWt += parseFloat(rcv.receivedWt || rcv.netWt) || 0;
+    });
+
+    let mappedData = Array.from(unitMap.values()).map(val => { val.balance = val.sentWt - val.rcvdWt; return val; });
+    generateBalanceHTML(mappedData, filterVal, ['unit', 'designNo', 'color', 'sentWt', 'rcvdWt', 'balance'], 'balance', 'Kg');
+}
+
+function renderInvoiceTable(filterVal) {
+    let rawData = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+    let mappedData = rawData.map(item => ({
+        invNo: item.invNo || '-', date: item.invDate || '-', partyName: item.partyAddress ? item.partyAddress.split('\n')[0] : '-',
+        designNo: item.design || '-', meters: item.totalQty ? parseFloat(item.totalQty) : 0, amount: item.grandTotal ? parseFloat(item.grandTotal) : 0
+    }));
+    generateBalanceHTML(mappedData, filterVal, ['invNo', 'date', 'partyName', 'designNo', 'meters', 'amount'], null, '');
+}
+
+function generateBalanceHTML(dataList, filterVal, keys, balanceKey, unitStr) {
+    let body = document.getElementById('tableBody'); let foot = document.getElementById('tableFoot');
+    body.innerHTML = ''; foot.innerHTML = '';
+    
+    let filtered = filterVal !== 'All' ? dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal)) : dataList;
+    if (filtered.length === 0) { body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found.</td></tr>`; return; }
+
+    let totals = {}; keys.forEach(k => totals[k] = 0);
+
+    filtered.forEach(item => {
         let rowHtml = '<tr>';
         keys.forEach(k => {
-            let val = item[k] !== undefined && item[k] !== '' ? item[k] : '-';
-            if (val === 'Pending') val = `<span class="pending-txt">Pending</span>`;
-            if (k === 'designNo') val = `<b>${val}</b>`;
-            if (k === 'amount') val = `<b>₹${val}</b>`;
+            let val = item[k];
+            if (!isNaN(parseFloat(val)) && typeof val === 'number') totals[k] += val;
+
+            if (k === 'designNo' || k === 'mill' || k === 'unit' || k === 'weaver') val = `<b>${val}</b>`;
+            else if (k === balanceKey) {
+                if (val > 0.05) val = `<span class="badge-pending">${val.toFixed(3)} ${unitStr}</span>`;
+                else if (val < -0.05) val = `<span class="badge-excess">Ex: ${Math.abs(val).toFixed(3)} ${unitStr}</span>`;
+                else val = `<span class="badge-stock">Settled</span>`;
+            }
+            else if (k === 'amount') val = `<span style="color:#10B981; font-weight:bold;">₹${val.toFixed(2)}</span>`;
+            else if (typeof val === 'number') val = val > 0 ? val.toFixed(3) : "0.000";
+            
             rowHtml += `<td>${val}</td>`;
         });
-        rowHtml += '</tr>';
-        body.innerHTML += rowHtml;
+        rowHtml += '</tr>'; body.innerHTML += rowHtml;
     });
+
+    let footHtml = `<tr><td colspan="${keys.length > 5 ? 3 : 2}" style="text-align:right; padding:12px;">Grand Total:</td>`;
+    for(let i = (keys.length > 5 ? 3 : 2); i < keys.length; i++) {
+        let k = keys[i];
+        if (k === balanceKey) {
+            let tBal = totals[k];
+            let balHTML = tBal > 0.05 ? `<span class="badge-pending">${tBal.toFixed(3)}</span>` : 
+                         (tBal < -0.05 ? `<span class="badge-excess">Ex: ${Math.abs(tBal).toFixed(3)}</span>` : `<span class="badge-stock">Settled</span>`);
+            footHtml += `<td>${balHTML}</td>`;
+        } else if (k === 'amount') footHtml += `<td style="color:#10B981;"><b>₹${totals[k].toFixed(2)}</b></td>`;
+        else if (totals[k] !== undefined && totals[k] !== 0) footHtml += `<td><b>${totals[k].toFixed(3)}</b></td>`;
+        else footHtml += `<td>-</td>`;
+    }
+    footHtml += `</tr>`; foot.innerHTML = footHtml;
 }
 
 function previewReport() {
-    let title = document.getElementById('reportTitle').innerText;
-    let filterVal = document.getElementById('designFilter').value;
+    let title = document.getElementById('reportTitle').innerText; let filterVal = document.getElementById('designFilter').value;
     let tableHtml = document.getElementById('reportTable').outerHTML;
     
     let html = `<div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">`;
     html += `<h2 style='color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-size:20px; font-weight:800; text-transform:uppercase;'>${title}</h2>`;
-    html += `<p style='font-family: sans-serif; font-size: 13px; margin-top: 0; color:#4A554A;'><b>Filter Applied:</b> ${filterVal}</p>`;
-    html += `</div>`;
-    
+    html += `<p style='font-family: sans-serif; font-size: 13px; margin-top: 0; color:#4A554A;'><b>Filter Applied:</b> ${filterVal}</p></div>`;
     html += `<div id="printTableWrapper" style="color: #1E2B23;">${tableHtml}</div>`;
     
     document.getElementById('previewContent').innerHTML = html;
-    
     let previewTable = document.getElementById('previewContent').querySelector('table');
     if(previewTable) {
-        previewTable.style.width = '100%';
-        previewTable.style.borderCollapse = 'collapse';
-        previewTable.style.color = '#1E2B23';
-        previewTable.style.fontFamily = 'sans-serif';
-        previewTable.style.fontSize = '12px';
+        previewTable.style.width = '100%'; previewTable.style.borderCollapse = 'collapse'; previewTable.style.color = '#1E2B23';
+        previewTable.style.fontFamily = 'sans-serif'; previewTable.style.fontSize = '12px';
         
-        let ths = previewTable.querySelectorAll('th');
-        ths.forEach(th => {
-            th.style.border = '1px solid #D1DED1';
-            th.style.padding = '10px';
-            th.style.background = '#EAF0EA';
-            th.style.color = '#2F4F38';
-            th.style.fontWeight = 'bold';
-            th.style.textTransform = 'uppercase';
-        });
-        
-        let tds = previewTable.querySelectorAll('td');
-        tds.forEach(td => {
-            td.style.border = '1px solid #E2E8E2';
-            td.style.padding = '10px';
-            td.style.color = '#1E2B23';
-        });
-
-        let tfoots = previewTable.querySelectorAll('tfoot td');
-        tfoots.forEach(td => {
-            td.style.background = '#F4F7F4';
-            td.style.fontWeight = 'bold';
-            td.style.borderTop = '2px solid #4A7C59';
-        });
+        previewTable.querySelectorAll('th').forEach(th => { th.style.border = '1px solid #D1DED1'; th.style.padding = '10px'; th.style.background = '#EAF0EA'; th.style.color = '#2F4F38'; th.style.fontWeight = 'bold'; th.style.textTransform = 'uppercase'; });
+        previewTable.querySelectorAll('td').forEach(td => { td.style.border = '1px solid #E2E8E2'; td.style.padding = '10px'; td.style.color = '#1E2B23'; });
+        previewTable.querySelectorAll('tfoot td').forEach(td => { td.style.background = '#F4F7F4'; td.style.fontWeight = 'bold'; td.style.borderTop = '2px solid #4A7C59'; });
     }
 
-    let modal = document.getElementById('previewModal');
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
+    let modal = document.getElementById('previewModal'); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10);
 }
 
 function closePreviewModal() {
-    let modal = document.getElementById('previewModal');
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
+    let modal = document.getElementById('previewModal'); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300);
 }
-
-function printReport() {
-    if(document.getElementById('previewModal').style.display !== 'flex') {
-        previewReport();
-    }
-    setTimeout(() => { window.print(); }, 300);
-}
-
+function printReport() { if(document.getElementById('previewModal').style.display !== 'flex') previewReport(); setTimeout(() => { window.print(); }, 300); }
 function exportToExcel() {
-    let table = document.getElementById('reportTable');
-    let html = table.outerHTML;
-    let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
-    let link = document.createElement('a');
-    link.href = url;
-    link.download = currentTab + '_Report.xls';
-    link.click();
+    let table = document.getElementById('reportTable'); let html = table.outerHTML; let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+    let link = document.createElement('a'); link.href = url; link.download = currentTab + '_Report.xls'; link.click();
 }
 </script>
 
@@ -823,49 +866,19 @@ function exportToExcel() {
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-        authDomain: "texfriend.firebaseapp.com",
-        projectId: "texfriend",
-        storageBucket: "texfriend.appspot.com",
-        messagingSenderId: "331673079578",
-        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-        measurementId: "G-2NP13ZTKCN"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const firebaseConfig = { apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM", authDomain: "texfriend.firebaseapp.com", projectId: "texfriend", storageBucket: "texfriend.appspot.com", messagingSenderId: "331673079578", appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3", measurementId: "G-2NP13ZTKCN" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
     window.firebaseLoad = async function(key) {
-        try {
-            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-            if (docSnap.exists()) {
-                return JSON.parse(docSnap.data().content);
-            }
-        } catch (e) {
-            console.error("Firebase Load Error: ", e);
-        }
-        return null;
+        try { const docSnap = await getDoc(doc(db, "texfriend_erp", key)); if (docSnap.exists()) return JSON.parse(docSnap.data().content); } 
+        catch (e) { console.error("Firebase Load Error: ", e); } return null;
     }
 
     window.addEventListener('load', async function() {
-        let mainHeader = document.getElementById('pageMainHeader');
-        let origText = mainHeader.innerText;
-        mainHeader.innerText = "⏳ Syncing Cloud Data...";
-
-        let collections = [
-            'party_orders_data', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records',
-            'warping_issue_records', 'warping_receive_records', 'weaving_master_data', 
-            'washing_issue_records', 'washing_receive_records', 'saved_invoices_data', 'pre_design_numbers', 'despatch_records', 'design_specs'
-        ];
-        
-        for(let col of collections) {
-            let data = await window.firebaseLoad(col);
-            if (data) localStorage.setItem(col, JSON.stringify(data));
-        }
-
-        mainHeader.innerText = origText;
-        loadDesignFilter();
+        let mainHeader = document.getElementById('pageMainHeader'); let origText = mainHeader.innerText; mainHeader.innerText = "⏳ Syncing Cloud Data...";
+        let collections = ['party_orders_data', 'kora_outward_records', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records', 'weaving_master_data', 'despatch_records', 'saved_invoices_data', 'pre_design_numbers', 'design_specs'];
+        for(let col of collections) { let data = await window.firebaseLoad(col); if (data) localStorage.setItem(col, JSON.stringify(data)); }
+        mainHeader.innerText = origText; loadDesignFilter();
     });
 </script>
 </body>

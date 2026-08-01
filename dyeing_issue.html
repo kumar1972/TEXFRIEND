@@ -15,7 +15,7 @@
         width: 100%; 
         min-height: 100vh; 
         background: #EAF0EA; 
-        color: #1E2B23; /* Deep Dark Green */
+        color: #1E2B23; 
     }
 
     body { 
@@ -181,10 +181,10 @@
         box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
 
-    /* 📌 Advanced Issue Grid */
+    /* 📌 Advanced Issue Grid (Updated with Mill Name column) */
     .issue-grid-header {
         display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.2fr 36px;
+        grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
         gap: 6px;
         padding: 0 4px;
         margin-bottom: 8px;
@@ -201,7 +201,7 @@
 
     .line-row {
         display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.2fr 36px;
+        grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
         gap: 6px;
         align-items: center;
         margin-bottom: 10px;
@@ -425,9 +425,10 @@
         </div>
 
         <div style="margin-top: 10px; overflow-x: auto;">
-            <div style="min-width: 500px;">
+            <div style="min-width: 600px;"> <!-- Increased width to fit Mill Name -->
                 <div class="issue-grid-header">
                     <div>Count</div>
+                    <div>Mill Name</div>
                     <div>Colour</div>
                     <div>Ord Wt</div>
                     <div>Iss Wt</div>
@@ -473,6 +474,7 @@
                             <th>Design No</th>
                             <th>Type</th>
                             <th>Count</th>
+                            <th>Mill Name</th>
                             <th>Colour</th>
                             <th>Ord Wt</th>
                             <th>Iss Wt</th>
@@ -624,6 +626,25 @@ function parseYarnCount(countStr) {
     return parseFloat(str) || 0;
 }
 
+// 📌 NEW: Fetch Mill Name from Kora Outward logic
+function getMillNameFromKora(designNo, countStr) {
+    let koraRecords = JSON.parse(localStorage.getItem('kora_outward_records')) || [];
+    if(koraRecords.length === 0) return "";
+    
+    let cleanDNo = String(designNo).trim().toLowerCase();
+    let cleanCount = String(countStr).trim().toLowerCase();
+
+    let match = koraRecords.find(r => 
+        (String(r.designNo || r.designNumber || "").trim().toLowerCase() === cleanDNo) &&
+        (String(r.count || "").trim().toLowerCase() === cleanCount)
+    );
+
+    if (match && match.millName) {
+        return match.millName;
+    }
+    return "";
+}
+
 function loadDesignItems() {
     loadBitmapImage();
     let dNo = document.getElementById('designNumber').value;
@@ -730,10 +751,12 @@ function loadDesignItems() {
 
     if(displayList.length > 0) {
         displayList.forEach(item => {
+            let autofillMill = getMillNameFromKora(dNo, item.count); // Fetch Mill Name
             let row = document.createElement('div');
             row.className = 'line-row';
             row.innerHTML = `
                 <input type="text" class="inp-count" value="${item.count}" readonly>
+                <input type="text" class="inp-mill" value="${autofillMill}" placeholder="Mill Name">
                 <input type="text" class="inp-color" value="${item.color}" readonly>
                 <input type="number" class="inp-ordwt" value="${item.orderWt.toFixed(3)}" step="0.001" readonly>
                 <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
@@ -745,10 +768,12 @@ function loadDesignItems() {
         });
         updateTotals();
     } else {
+        let autofillMill = getMillNameFromKora(dNo, '20/s');
         let row = document.createElement('div');
         row.className = 'line-row';
         row.innerHTML = `
             <input type="text" class="inp-count" value="20/s" placeholder="Count">
+            <input type="text" class="inp-mill" value="${autofillMill}" placeholder="Mill Name">
             <input type="text" class="inp-color" value="White" placeholder="Colour">
             <input type="number" class="inp-ordwt" value="0.000" step="0.001">
             <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
@@ -803,6 +828,7 @@ async function quickCompleteToggle() {
         let dateVal = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
         let firstRow = document.querySelector('.line-row');
         let count = firstRow ? firstRow.querySelector('.inp-count').value : '20/s';
+        let mill = firstRow ? firstRow.querySelector('.inp-mill').value : '';
         let color = firstRow ? firstRow.querySelector('.inp-color').value : 'General';
         let ordWt = firstRow ? parseFloat(firstRow.querySelector('.inp-ordwt').value) || 0 : 0;
         let issWt = firstRow ? parseFloat(firstRow.querySelector('.inp-isswt').value) || 0 : 0;
@@ -815,6 +841,7 @@ async function quickCompleteToggle() {
             designNo: dNo,
             yarnType: type,
             count: count,
+            millName: mill,
             color: color,
             orderWt: ordWt.toFixed(3),
             issueWt: issWt.toFixed(3),
@@ -866,6 +893,7 @@ async function saveIssueEntries() {
         row.className = 'line-row';
         row.innerHTML = `
             <input type="text" class="inp-count" value="20/s" placeholder="Count">
+            <input type="text" class="inp-mill" value="" placeholder="Mill Name">
             <input type="text" class="inp-color" value="General" placeholder="Colour">
             <input type="number" class="inp-ordwt" value="0.000" step="0.001">
             <input type="number" class="inp-isswt" value="1.000" step="0.001" oninput="updateTotals()">
@@ -890,6 +918,7 @@ async function saveIssueEntries() {
            let row = rows[0]; 
            records[rowIndex].date = dateVal;
            records[rowIndex].designNo = dNo;
+           records[rowIndex].millName = row.querySelector('.inp-mill').value.trim(); // Saving Mill Name
            records[rowIndex].issueWt = parseFloat(row.querySelector('.inp-isswt').value).toFixed(3) || "0.000";
            records[rowIndex].unit = row.querySelector('.inp-unit').value.trim();
            records[rowIndex].status = isCompleted ? "completed" : "running";
@@ -899,6 +928,7 @@ async function saveIssueEntries() {
     } else {
         rows.forEach(row => {
             let count = row.querySelector('.inp-count').value.trim();
+            let mill = row.querySelector('.inp-mill').value.trim(); // Extracting Mill Name
             let color = row.querySelector('.inp-color').value.trim();
             let ordWt = parseFloat(row.querySelector('.inp-ordwt').value) || 0;
             let issWt = parseFloat(row.querySelector('.inp-isswt').value) || 0;
@@ -913,6 +943,7 @@ async function saveIssueEntries() {
                 designNo: dNo,
                 yarnType: type,
                 count: count || '20/s',
+                millName: mill || '',
                 color: color || '-',
                 orderWt: ordWt.toFixed(3),
                 issueWt: (issWt > 0 ? issWt : ordWt).toFixed(3),
@@ -969,6 +1000,7 @@ async function editIssuedRecord(id) {
     row.className = 'line-row';
     row.innerHTML = `
         <input type="text" class="inp-count" value="${rec.count}" readonly>
+        <input type="text" class="inp-mill" value="${rec.millName || ''}">
         <input type="text" class="inp-color" value="${rec.color}" readonly>
         <input type="number" class="inp-ordwt" value="${rec.orderWt}" step="0.001" readonly>
         <input type="number" class="inp-isswt" value="${rec.issueWt}" step="0.001" oninput="updateTotals()">
@@ -1035,7 +1067,7 @@ function renderIssuedList() {
     tfoot.innerHTML = '';
 
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued yet.</td></tr>`;
         return;
     }
 
@@ -1064,6 +1096,7 @@ function renderIssuedList() {
                 <td><b>${record.designNo}</b></td>
                 <td>${record.yarnType || 'Combined'}</td>
                 <td>${record.count}</td>
+                <td>${record.millName || '-'}</td> <!-- Display Mill Name -->
                 <td>${record.color}</td>
                 <td>${oWt.toFixed(3)}</td>
                 <td style="color:#10B981; font-weight:bold;">${iWt.toFixed(3)}</td>
@@ -1081,7 +1114,7 @@ function renderIssuedList() {
 
     tfoot.innerHTML = `
         <tr>
-            <td colspan="6" style="text-align: right; padding: 12px;">Grand Total:</td>
+            <td colspan="7" style="text-align: right; padding: 12px;">Grand Total:</td>
             <td><b>${grandOrdWt.toFixed(3)}</b></td>
             <td><b style="color:#10B981;">${grandIssWt.toFixed(3)}</b></td>
             <td colspan="2"></td>
@@ -1133,7 +1166,8 @@ function renderIssuedList() {
         let origText = btn ? btn.innerText : "✅ Save Dyeing Order Issue";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        let collections = ['dyeing_issue_records', 'design_masters_data', 'design_specs', 'pre_design_numbers'];
+        // Added 'kora_outward_records' to load from Firebase to ensure Mill Name autofill works globally
+        let collections = ['dyeing_issue_records', 'design_masters_data', 'design_specs', 'pre_design_numbers', 'kora_outward_records'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);

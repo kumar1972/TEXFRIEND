@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Matrix - TEXFRIEND ERP</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        html, body { width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        
+        .main-card {
+            width: 100%; max-width: 1100px; margin: 0; background: #FFFFFF;
+            border-radius: 20px; padding: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            border: 1px solid rgba(82, 110, 81, 0.15); display: flex; flex-direction: column; gap: 15px;
+            flex: 1;
+        }
+
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+            text-decoration: none; font-weight: 600; font-size: 12px; background: #1A2421; 
+            padding: 10px 18px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        h2.card-header {
+            font-size: 18px; font-weight: 800; color: #2F4F38; text-align: left;
+            position: relative; padding-left: 12px; margin-bottom: 5px;
+        }
+        h2.card-header::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 5px;
+            background: #4A7C59; border-radius: 4px;
+        }
+
+        /* 📌 Live Matrix Progress Table Styles */
+        .matrix-container {
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+            padding: 15px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .matrix-header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #EAF0EA; padding-bottom: 8px; flex-wrap: wrap; gap: 8px;
+        }
+        .matrix-title {
+            font-size: 11px; font-weight: 800; color: #2F4F38; text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .matrix-table-wrapper {
+            width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid #D1DED1; background: #FFFFFF;
+            -webkit-overflow-scrolling: touch;
+        }
+        .matrix-table {
+            width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; white-space: nowrap;
+        }
+        .matrix-table th {
+            background: #EAF0EA; color: #2F4F38; padding: 12px 10px; font-weight: 700; border-bottom: 2px solid #D1DED1;
+            font-size: 11px; text-transform: uppercase; position: sticky; top: 0; z-index: 10;
+        }
+        .matrix-table td {
+            padding: 10px; border-bottom: 1px solid #E2E8E2; color: #1E2B23; vertical-align: middle;
+        }
+        .matrix-table tr:hover { background: #F4F7F4; }
+        
+        .status-badge {
+            padding: 6px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; cursor: pointer; transition: transform 0.2s; text-decoration: none;
+        }
+        .status-badge:hover { transform: scale(1.05); }
+        .status-badge.done { background: #ECFDF5; color: #059669; border: 1px solid rgba(16,185,129,0.3); }
+        .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
+        .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
+
+        /* Fullscreen Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <h2 class="card-header">📊 Live Multi-Design Process Status</h2>
+
+    <!-- 📌 Live Matrix Progress Table -->
+    <div class="matrix-container">
+        <div class="matrix-header-row">
+            <div class="matrix-title">Click on Status Badges to View Reports</div>
+        </div>
+        <div class="matrix-table-wrapper">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-left: 15px;">Design No ➔ Live Process Status</th>
+                        <th>🧵 Kora Issue</th>
+                        <th>🎨 Dyeing</th>
+                        <th>📏 Warping</th>
+                        <th>🏭 Weaving</th>
+                        <th>🌊 Washing</th>
+                        <th>🚚 Despatch</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixTableBody">
+                    <tr><td colspan="7" style="padding:20px; color:#64748B;">Loading Cloud Data... ⏳</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
+<!-- Firebase App SDK (CDN) & Core Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function firebaseLoad(key) {
+        try {
+            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+            if (docSnap.exists()) { return JSON.parse(docSnap.data().content); }
+        } catch (e) { console.error("Firebase Load Error: ", e); }
+        return null;
+    }
+
+    window.onload = async function() {
+        renderMatrixTable(); // Render local first
+
+        // Background Sync for all necessary tables
+        const collections = ['pre_design_numbers', 'design_specs', 'design_masters_data', 'kora_issue_records', 'dyeing_issue_records', 'warping_issue_records', 'weaving_master_data', 'washing_issue_records', 'despatch_data'];
+        
+        for (let col of collections) {
+            let cloudData = await firebaseLoad(col);
+            if(cloudData) localStorage.setItem(col, JSON.stringify(cloudData));
+        }
+        
+        renderMatrixTable(); // Render updated data
+    }
+
+    function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
+    window.openFullscreenImage = function(src) {
+        document.getElementById('fullscreenImg').src = src;
+        document.getElementById('fullscreenModal').style.display = 'flex';
+    }
+    window.closeFullscreenImage = function() {
+        document.getElementById('fullscreenModal').style.display = 'none';
+    }
+
+    function getProcessStatus(records, dNo, linkPage) {
+        let cDNo = cleanDesignName(dNo);
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cDNo);
+        let isGlobalCompleted = (specKey && designSpecs[specKey].status === 'completed');
+
+        let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
+        if (isGlobalCompleted || matched.some(r => r.status === 'completed')) return { text: '✅', className: 'done' };
+        if (matched.length === 0) return { text: 'NONE', className: 'none' };
+        let hasRunning = matched.some(r => r.status === 'running');
+        return { text: hasRunning ? 'RUNNING' : 'PENDING', className: 'run' };
+    }
+
+    window.renderMatrixTable = function() {
+        let tbody = document.getElementById('matrixTableBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+
+        let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let allDesignSet = new Set();
+        preDesigns.forEach(d => allDesignSet.add(d));
+        
+        let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        designMasters.forEach(d => { if(d.name) allDesignSet.add(d.name); });
+
+        let koraIssues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        let dIss = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+        let warpIss = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        let weav = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+        let wash = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+        let desp = JSON.parse(localStorage.getItem('despatch_data')) || [];
+
+        [koraIssues, dIss, warpIss, weav, wash, desp].forEach(arr => {
+            arr.forEach(r => {
+                let d = r.designNo || r.designNumber || r.design || r.name || '';
+                if(d.trim() !== '') allDesignSet.add(d.trim());
+            });
+        });
+
+        if(allDesignSet.size === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#64748B;">No designs found.</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        [...allDesignSet].forEach(dNo => {
+            let cDNo = cleanDesignName(dNo);
+
+            function buildCell(records, label, linkPage) {
+                let statusObj = getProcessStatus(records, dNo, linkPage);
+                return `<td><a href="${linkPage}?design=${encodeURIComponent(dNo)}" class="status-badge ${statusObj.className}" title="View ${label}">${statusObj.text}</a></td>`;
+            }
+
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cDNo);
+            let bitmapUrl = specKey && designSpecs[specKey].bitmap ? designSpecs[specKey].bitmap : '';
+            let thumbnailHtml = bitmapUrl ? `<img src="${bitmapUrl}" style="width:35px; height:35px; object-fit:cover; border-radius:6px; border:1px solid #4A7C59; vertical-align:middle; margin-right:10px; cursor:zoom-in; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : '';
+
+            html += `
+                <tr>
+                    <td style="text-align: left; padding-left: 15px; white-space: nowrap;">${thumbnailHtml}<b style="font-size:12px;">${dNo}</b></td>
+                    ${buildCell(koraIssues, 'Kora Issue', 'kora_yarn.html')}
+                    ${buildCell(dIss, 'Dyeing', 'dyeing_issue.html')}
+                    ${buildCell(warpIss, 'Warping', 'warping.html')}
+                    ${buildCell(weav, 'Weaving', 'weaving.html')}
+                    ${buildCell(wash, 'Washing', 'washing.html')}
+                    ${buildCell(desp, 'Despatch', 'Despatch.html')}
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+</script>
+</body>
+</html>

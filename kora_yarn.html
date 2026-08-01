@@ -252,7 +252,7 @@
         cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    /* 📌 Advanced Table Design with Horizontal Scroll */
+    /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
@@ -273,17 +273,6 @@
 
     .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
     .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-
-    .badge-type {
-        background: #E2E8F0;
-        color: #334155;
-        padding: 3px 8px;
-        border-radius: 10px;
-        font-size: 9px;
-        font-weight: 800;
-        margin-right: 5px;
-    }
-    .badge-type.office { background: #DBEAFE; color: #1E40AF; }
 </style>
 </head>
 <body>
@@ -305,24 +294,14 @@
     <div class="form-section" style="margin-top: 10px;">
         <div class="section-badge">📥 Inward Stock</div>
         
-        <div class="form-row full" style="margin-bottom: 12px;">
-            <div class="form-group">
-                <label>Stock Type</label>
-                <select id="stockType" onchange="toggleStockType()">
-                    <option value="Mill">Mill Inward</option>
-                    <option value="Office Stock">Office Stock</option>
-                </select>
-            </div>
-        </div>
-
         <div class="form-row">
             <div class="form-group">
                 <label>Date</label>
                 <input type="date" id="inwardDate">
             </div>
             <div class="form-group">
-                <label id="supplierLabel">Mill Name</label>
-                <input type="text" id="supplierName" placeholder="Enter Mill Name">
+                <label id="supplierLabel">Source / Mill Name</label>
+                <input type="text" id="supplierName" placeholder="Enter Source Mill Name">
             </div>
         </div>
         <div class="form-row">
@@ -400,7 +379,7 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Type / Supplier</th>
+                            <th>Source / Mill Name</th>
                             <th>Count</th>
                             <th>Weight</th>
                             <th>Status</th>
@@ -541,21 +520,7 @@ function onDesignSelect(val) {
     }
 }
 
-function toggleStockType() {
-    let type = document.getElementById('stockType').value;
-    let label = document.getElementById('supplierLabel');
-    let input = document.getElementById('supplierName');
-    
-    if(type === 'Office Stock') {
-        label.innerText = "Source / Office Note";
-        input.placeholder = "e.g. Office Reserve / Branch";
-    } else {
-        label.innerText = "Mill Name";
-        input.placeholder = "Enter Mill Name";
-    }
-}
-
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+// 📌 Completed Checkbox Quick Toggle
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNo').value;
     let cb = document.getElementById('top_completed_status');
@@ -569,7 +534,6 @@ async function quickCompleteToggle() {
 
     let statusText = isCompleted ? 'completed' : 'running';
 
-    // 1. LocalStorage-il Kora Issue Records Save / Update
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let updated = false;
 
@@ -601,7 +565,6 @@ async function quickCompleteToggle() {
 
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) {
         designSpecs[dNo] = {};
@@ -609,7 +572,6 @@ async function quickCompleteToggle() {
     designSpecs[dNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('kora_issue_records', issues);
@@ -625,7 +587,6 @@ async function quickCompleteToggle() {
 
 // 1. SAVE INWARD STOCK
 async function saveInward() {
-    let stockType = document.getElementById('stockType').value;
     let dateVal = document.getElementById('inwardDate').value;
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
@@ -636,7 +597,7 @@ async function saveInward() {
     if(cb) isCompleted = cb.checked;
 
     if(!supplier || !count || weight <= 0) {
-        alert("Please enter Name, Count, and valid Weight!");
+        alert("Please enter Source Name, Count, and valid Weight!");
         return;
     }
 
@@ -649,7 +610,6 @@ async function saveInward() {
     if (editingInwardId) {
         let idx = records.findIndex(r => r.id == editingInwardId);
         if(idx !== -1) {
-            records[idx].stockType = stockType;
             records[idx].date = dateVal;
             records[idx].supplier = supplier;
             records[idx].count = count;
@@ -661,7 +621,6 @@ async function saveInward() {
     } else {
         records.push({
             id: Date.now() + Math.random(),
-            stockType: stockType,
             date: dateVal,
             supplier: supplier,
             count: count,
@@ -737,7 +696,6 @@ async function saveIssue() {
         alert("Kora Yarn Issued to Cloud Successfully! ✅☁️");
     }
 
-    // Sync design_specs status for Design List Page
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) designSpecs[dNo] = {};
     designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
@@ -822,9 +780,6 @@ function refreshAllTables() {
             let dObj = new Date(item.date);
             let dStr = ("0"+dObj.getDate()).slice(-2)+"/"+("0"+(dObj.getMonth()+1)).slice(-2)+"/"+dObj.getFullYear();
             
-            let badgeClass = item.stockType === 'Office Stock' ? 'office' : '';
-            let badgeText = item.stockType === 'Office Stock' ? 'OFFICE' : 'MILL';
-            
             if(!item.status) item.status = "running";
             let statusColor = item.status === 'running' ? '#D97706' : '#526E51';
             let statusBtn = item.status === 'running' 
@@ -834,7 +789,7 @@ function refreshAllTables() {
             inBody.innerHTML += `
                 <tr>
                     <td>${dStr}</td>
-                    <td style="text-align:left;"><span class="badge-type ${badgeClass}">${badgeText}</span> <b>${item.supplier}</b></td>
+                    <td style="text-align:left;"><b>${item.supplier}</b></td>
                     <td>${item.count}</td>
                     <td style="font-weight:bold; color:#10B981;">${item.weight}</td>
                     <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${item.status}</td>
@@ -889,8 +844,6 @@ function editInward(id) {
     let rec = records.find(r => r.id == id);
     if(rec) {
         editingInwardId = id;
-        document.getElementById('stockType').value = rec.stockType || 'Mill';
-        toggleStockType();
         document.getElementById('inwardDate').value = rec.date;
         document.getElementById('supplierName').value = rec.supplier;
         document.getElementById('inwardCount').value = rec.count;
