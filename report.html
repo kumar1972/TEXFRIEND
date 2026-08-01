@@ -263,49 +263,9 @@
         border: 1px dashed #D1DED1;
     }
 
-    /* 📌 Smart Balance Badges */
     .badge-stock { background: #ECFDF5; color: #059669; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); display: inline-block;}
     .badge-pending { background: #FEF2F2; color: #DC2626; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(220,38,38,0.3); display: inline-block;}
     .badge-excess { background: #FFFBEB; color: #D97706; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); display: inline-block;}
-    .badge-neutral { background: #F1F5F9; color: #64748B; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(100,116,139,0.3); display: inline-block;}
-
-    /* 📌 360 Analytics CSS */
-    .analytics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        padding: 20px;
-        background: #FFFFFF;
-        border-radius: 0 0 12px 12px;
-    }
-    .analytic-card {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        transition: transform 0.3s;
-    }
-    .analytic-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
-    .analytic-card h3 { font-size: 12px; color: #4A554A; text-transform: uppercase; margin-bottom: 10px; }
-    .analytic-card p { font-size: 22px; font-weight: 800; color: #2F4F38; margin: 0; }
-    
-    .progress-wrapper {
-        margin: 0 20px 20px 20px;
-        background: #F4F7F4;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #D1DED1;
-    }
-    .progress-bar-container {
-        width: 100%; background: #E2E8E2; border-radius: 10px; height: 24px; overflow: hidden; margin-top: 10px;
-    }
-    .progress-bar-fill {
-        background: linear-gradient(135deg, #10B981, #059669);
-        height: 100%; text-align: center; color: white; font-size: 12px; line-height: 24px; font-weight: bold;
-        transition: width 0.5s ease;
-    }
 
     /* Modals */
     .overlay-modal {
@@ -336,22 +296,6 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
     
-    /* Fullscreen Image Popup Modal */
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
     @media print {
         body * { visibility: hidden; }
         .overlay-modal, .overlay-modal * { visibility: visible; }
@@ -372,7 +316,7 @@
 
     <h2 class="card-header" id="pageMainHeader">Management Reports & Analytics</h2>
 
-    <div class="form-section">
+    <div class="form-section" id="filterSection">
         <div class="section-badge">Filter Records</div>
         <div class="form-group">
             <label>🔍 Select Design Number:</label>
@@ -409,10 +353,8 @@
             </table>
         </div>
 
-        <!-- 360 Analytics Custom Layout (Hidden by default) -->
-        <div id="analyticsWrapper" style="display: none; border: 1px solid #E2E8E2; border-top: none; border-radius: 0 0 12px 12px; background: #FFFFFF;">
-            <!-- Content gets injected here -->
-        </div>
+        <!-- 360 Analytics Custom Layout -->
+        <div id="analyticsWrapper" style="display: none; border: 1px solid #E2E8E2; border-top: none; border-radius: 0 0 12px 12px; background: #FFFFFF;"></div>
     </div>
 </div>
 
@@ -428,42 +370,11 @@
     </div>
 </div>
 
-<!-- Fullscreen Image Popup Modal -->
-<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
-    <button class="close-fullscreen">Close ✕</button>
-    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
-</div>
-
 <script>
 var currentTab = 'KoraDyeing';
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
-
-// 📌 Fullscreen Image Popup Controls
-window.openFullscreenImage = function(src) {
-    if(!src || src === '' || src === 'null') return;
-    document.getElementById('fullscreenImg').src = src;
-    document.getElementById('fullscreenModal').style.display = 'flex';
-}
-window.closeFullscreenImage = function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-}
-
-function loadBitmapImage() {
-    let activeDesign = document.getElementById('designFilter').value;
-    if(activeDesign === 'All') activeDesign = localStorage.getItem('selected_design_number');
-    
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-    
-    if (activeDesign && activeDesign !== 'All' && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
-        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
-    } else {
-        bitmapContainer.innerHTML = '';
-    }
 }
 
 function loadDesignFilter() {
@@ -481,12 +392,11 @@ function loadDesignFilter() {
 
     let activeDesign = localStorage.getItem('selected_design_number');
     if(activeDesign && allDesigns.has(activeDesign)) select.value = activeDesign;
-    loadBitmapImage();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     loadDesignFilter();
-    const urlParams = newSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     if(tabParam) {
         let tabMap = { 'KoraDyeing':'KoraDyeing', 'KoraStock':'KoraStock', 'Dyeing':'Dyeing', 'Invoice':'Invoice', 'Analytics360': 'Analytics360' };
@@ -497,7 +407,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function switchTab(tabName) {
     currentTab = tabName;
-    loadBitmapImage();
     
     document.querySelectorAll('.tab-btn, .special-tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
     let activeBtn = document.getElementById('tab-' + tabName);
@@ -508,9 +417,16 @@ function switchTab(tabName) {
     let tableWrap = document.getElementById('tableWrapper');
     let analyticsWrap = document.getElementById('analyticsWrapper');
     let exportBtns = document.getElementById('exportBtns');
+    let filterSection = document.getElementById('filterSection');
     let head = document.getElementById('tableHead');
     let foot = document.getElementById('tableFoot');
     if(head) head.innerHTML = ''; if(foot) foot.innerHTML = ''; 
+
+    if (tabName === 'KoraStock') {
+        filterSection.style.display = 'none';
+    } else {
+        filterSection.style.display = 'block';
+    }
 
     if(tabName === 'Analytics360') {
         titleElem.innerText = "🌟 360° DESIGN LIFECYCLE SUMMARY";
@@ -527,9 +443,9 @@ function switchTab(tabName) {
         renderKoraDyeingTable(filterVal);
     } 
     else if (tabName === 'KoraStock') {
-        titleElem.innerText = "🧵 KORA YARN STOCK (Mill & Count-Wise Balance)";
-        head.innerHTML = `<tr><th>Design No</th><th>Mill Name</th><th>Count</th><th>Inward Rcvd (Kg)</th><th>Issued Out (Kg)</th><th>Current Stock (Kg)</th></tr>`;
-        renderKoraStockTable(filterVal);
+        titleElem.innerText = "🧵 KORA YARN STOCK (Mill-wise & Count Summary)";
+        head.innerHTML = `<tr><th>Mill / Count Summary</th><th>Inward Rcvd (Kg)</th><th>Issued Out (Kg)</th><th>Current Stock (Kg)</th></tr>`;
+        renderKoraStockTable();
     } 
     else if (tabName === 'Dyeing') {
         titleElem.innerText = "🎨 DYEING Report (Sent vs Received Balance)";
@@ -537,7 +453,7 @@ function switchTab(tabName) {
         renderDyeingTable(filterVal);
     }
     else if (tabName === 'Invoice') {
-        titleElem.innerText = "📄 INVOICE / BILLING Report";
+        titleElem.innerText = "📄 INVOICE / FINANCIAL Report";
         head.innerHTML = `<tr><th>Inv No</th><th>Date</th><th>Party Name</th><th>Design No</th><th>Total Qty</th><th>Grand Total (₹)</th></tr>`;
         renderInvoiceTable(filterVal);
     }
@@ -551,13 +467,11 @@ function renderKoraDyeingTable(filterVal) {
     let dyeingIssue = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let map = new Map();
 
-    // Smart Match Logic: Extacts only Numbers to group "40 kcc", "40s", "40" perfectly!
     function getBasicCount(c) {
         let m = (c || '').match(/\d+/);
         return m ? m[0] : (c || '-').toLowerCase().trim();
     }
 
-    // 1. Map Kora Outward
     koraOutward.forEach(k => {
         let dNo = k.designNo || k.designNumber || '-';
         let cnt = (k.count || '-').trim();
@@ -586,10 +500,9 @@ function renderKoraDyeingTable(filterVal) {
         let uName = (k.dyeingName || k.unit || k.dyeingUnit || '').trim();
         if(uName && uName !== '-') entry.unit.add(uName);
         
-        if(cnt.length > entry.count.length) entry.count = cnt; // Keep the most descriptive count string
+        if(cnt.length > entry.count.length) entry.count = cnt;
     });
 
-    // 2. Map Dyeing Issue
     dyeingIssue.forEach(d => {
         let dNo = d.designNo || d.designNumber || '-';
         let cnt = (d.count || '-').trim();
@@ -720,33 +633,126 @@ function render360Analytics(filterVal) {
 }
 
 /* -------------------------------------------------------------------------
-   REPORT RENDERING LOGIC WITH BALANCE CALCULATIONS
+   🔥 HIERARCHICAL KORA STOCK TABLE: MILL-WISE TOP + COUNT SUMMARY WITH MILL NAMES
 ------------------------------------------------------------------------- */
-function renderKoraStockTable(filterVal) {
-    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+function renderKoraStockTable() {
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || JSON.parse(localStorage.getItem('kora_inward_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-    let stockMap = new Map();
+    let millMap = new Map();
+    let countSummaryMap = new Map();
 
+    // 1. Process Inwards
     inwards.forEach(item => {
-        let dNo = item.designNo || item.designNumber || 'Unknown';
+        let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim();
         let cnt = (item.count || 'Unknown').trim();
-        let mill = (item.millName || item.supplier || item.mill || 'General').trim();
-        let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase() + "_" + mill.toLowerCase();
-        if(!stockMap.has(key)) stockMap.set(key, { designNo: dNo, count: cnt, mill: mill, inwardWt: 0, issuedWt: 0 });
-        stockMap.get(key).inwardWt += parseFloat(item.weight) || 0;
+        let wt = parseFloat(item.weight || item.qty) || 0;
+
+        // Mill-wise map
+        if(!millMap.has(mill)) millMap.set(mill, new Map());
+        let countMap = millMap.get(mill);
+        if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
+        countMap.get(cnt).inward += wt;
+
+        // Count Summary map (Bottom)
+        if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
+        countSummaryMap.get(cnt).inward += wt;
+        if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
     });
 
+    // 2. Process Issues/Outwards
     issues.forEach(item => {
-        let dNo = item.designNo || item.designNumber || 'Unknown';
+        let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim(); 
         let cnt = (item.count || 'Unknown').trim();
-        let mill = (item.millName || item.supplier || item.mill || 'General').trim(); 
-        let key = cleanDesignName(dNo) + "_" + cnt.toLowerCase() + "_" + mill.toLowerCase();
-        if(!stockMap.has(key)) stockMap.set(key, { designNo: dNo, count: cnt, mill: mill, inwardWt: 0, issuedWt: 0 });
-        stockMap.get(key).issuedWt += parseFloat(item.weight || item.issueWt || item.qty) || 0;
+        let wt = parseFloat(item.weight || item.issueWt || item.qty) || 0;
+
+        // Mill-wise map
+        if(!millMap.has(mill)) millMap.set(mill, new Map());
+        let countMap = millMap.get(mill);
+        if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
+        countMap.get(cnt).issued += wt;
+
+        // Count Summary map (Bottom)
+        if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
+        countSummaryMap.get(cnt).issued += wt;
+        if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
     });
 
-    let mappedData = Array.from(stockMap.values()).map(val => { val.balance = val.inwardWt - val.issuedWt; return val; });
-    generateBalanceHTML(mappedData, filterVal, ['designNo', 'mill', 'count', 'inwardWt', 'issuedWt', 'balance'], 'balance', 'Kg');
+    let body = document.getElementById('tableBody'); 
+    let foot = document.getElementById('tableFoot');
+    body.innerHTML = ''; foot.innerHTML = '';
+    
+    if (millMap.size === 0) { 
+        body.innerHTML = `<tr><td colspan="4" class="no-data">No stock records found.</td></tr>`; 
+        return; 
+    }
+
+    let grandIn = 0, grandOut = 0, grandBal = 0;
+    let sortedMills = Array.from(millMap.keys()).sort();
+
+    sortedMills.forEach(mill => {
+        // Mill Header Row
+        body.innerHTML += `<tr style="background:#EAF0EA; font-weight:bold;"><td colspan="4" style="text-align:left; padding-left:15px; color:#2F4F38;">🏭 MILL: ${mill.toUpperCase()}</td></tr>`;
+        
+        let countMap = millMap.get(mill);
+        let sortedCounts = Array.from(countMap.keys()).sort();
+        let millIn = 0, millOut = 0;
+
+        sortedCounts.forEach(cnt => {
+            let data = countMap.get(cnt);
+            let bal = data.inward - data.issued;
+            millIn += data.inward; millOut += data.issued;
+            
+            let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
+
+            body.innerHTML += `<tr>
+                <td style="text-align:left; padding-left:30px;">↳ Count: ${cnt}</td>
+                <td style="color:#10B981; font-weight:bold;">${data.inward.toFixed(3)}</td>
+                <td style="color:#D97706; font-weight:bold;">${data.issued.toFixed(3)}</td>
+                <td>${balDisplay}</td>
+            </tr>`;
+        });
+
+        let millBal = millIn - millOut;
+        let millBalDisplay = millBal >= 0 ? `<span class="badge-stock">${millBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(millBal).toFixed(3)} Kg</span>`;
+        
+        // Mill Subtotal Row
+        body.innerHTML += `<tr style="background:#F4F7F4; font-weight:bold; border-bottom:2px solid #D1DED1;">
+            <td style="text-align:left; padding-left:15px; color:#2F4F38;">📊 ${mill} Subtotal:</td>
+            <td style="color:#10B981;">${millIn.toFixed(3)}</td>
+            <td style="color:#D97706;">${millOut.toFixed(3)}</td>
+            <td>${millBalDisplay}</td>
+        </tr>`;
+    });
+
+    // 🌟 COUNT-WISE SUMMARY AT THE VERY BOTTOM WITH CORRESPONDING MILL NAMES
+    body.innerHTML += `<tr style="background:#4A7C59; color:white; font-weight:bold;"><td colspan="4" style="text-align:center; padding:10px; text-transform:uppercase;">📊 Overall Count-Wise Summary (கவுண்ட் வாரியாக மொத்த இருப்பு)</td></tr>`;
+    
+    let sortedSummaryCounts = Array.from(countSummaryMap.keys()).sort();
+    sortedSummaryCounts.forEach(cnt => {
+        let data = countSummaryMap.get(cnt);
+        let bal = data.inward - data.issued;
+        grandIn += data.inward; grandOut += data.issued; grandBal += bal;
+        let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
+
+        // Format Mill names string cleanly (e.g. "Arun, Guntur")
+        let millsArr = Array.from(data.mills).sort();
+        let millsStr = millsArr.length > 0 ? ` (${millsArr.join(', ')})` : '';
+
+        body.innerHTML += `<tr style="background:#FAFCFA;">
+            <td style="text-align:left; padding-left:25px;"><b>Count: ${cnt}</b><span style="color:#64748B; font-size:10px; font-weight:600;">${millsStr}</span></td>
+            <td style="color:#10B981; font-weight:bold;">${data.inward.toFixed(3)}</td>
+            <td style="color:#D97706; font-weight:bold;">${data.issued.toFixed(3)}</td>
+            <td>${balDisplay}</td>
+        </tr>`;
+    });
+
+    let grandBalDisplay = grandBal >= 0 ? `<span class="badge-stock">${grandBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(grandBal).toFixed(3)} Kg</span>`;
+    foot.innerHTML = `<tr>
+        <td style="text-align:right; padding:12px;">Grand Total (All Mills & Counts):</td>
+        <td style="color:#10B981;"><b>${grandIn.toFixed(3)}</b></td>
+        <td style="color:#D97706;"><b>${grandOut.toFixed(3)}</b></td>
+        <td><b>${grandBalDisplay}</b></td>
+    </tr>`;
 }
 
 function renderDyeingTable(filterVal) {
@@ -876,7 +882,7 @@ function exportToExcel() {
 
     window.addEventListener('load', async function() {
         let mainHeader = document.getElementById('pageMainHeader'); let origText = mainHeader.innerText; mainHeader.innerText = "⏳ Syncing Cloud Data...";
-        let collections = ['party_orders_data', 'kora_outward_records', 'kora_stock_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records', 'weaving_master_data', 'despatch_records', 'saved_invoices_data', 'pre_design_numbers', 'design_specs'];
+        let collections = ['party_orders_data', 'kora_outward_records', 'kora_stock_records', 'kora_inward_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records', 'weaving_master_data', 'despatch_records', 'saved_invoices_data', 'pre_design_numbers', 'design_specs'];
         for(let col of collections) { let data = await window.firebaseLoad(col); if (data) localStorage.setItem(col, JSON.stringify(data)); }
         mainHeader.innerText = origText; loadDesignFilter();
     });
