@@ -536,28 +536,41 @@ window.closeFullscreenImage = function() {
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
-    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMasters.find(d => d.name === activeDesign) || {};
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || 
+                        JSON.parse(localStorage.getItem('design_master')) || 
+                        JSON.parse(localStorage.getItem('design_specs')) || [];
+    if (!Array.isArray(designMasters) && typeof designMasters === 'object') {
+        designMasters = Object.keys(designMasters).map(k => ({ name: k, ...designMasters[k] }));
+    }
+    let foundMaster = designMasters.find(d => (d.name || d.designNo || d.designNumber) === activeDesign) || {};
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
-    if (activeDesign && foundMaster.bitmap) {
-        let b64 = foundMaster.bitmap;
+    let b64 = foundMaster.bitmap || foundMaster.bitmapData;
+    if (activeDesign && b64) {
         bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     } else {
         bitmapContainer.innerHTML = '';
     }
 }
 
-// 🔥 STRICTLY LOAD DESIGN DROPDOWN FROM DESIGN MASTERS ONLY (Ignoring old cache)
+// 🔥 ROBUST LOAD DESIGN DROPDOWN CHECKING MULTIPLE KEYS
 function loadDesignDropdowns() {
-    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || 
+                        JSON.parse(localStorage.getItem('design_master')) || 
+                        JSON.parse(localStorage.getItem('design_specs')) || [];
+    
+    if (!Array.isArray(designMasters) && typeof designMasters === 'object') {
+        designMasters = Object.keys(designMasters).map(k => ({ name: k, ...designMasters[k] }));
+    }
+
     let select = document.getElementById('designNumber');
     let html = '<option value="">Select Design No</option>';
     
     if (designMasters.length > 0) {
         designMasters.forEach(function(d) {
-            if(d && d.name) {
-                html += '<option value="' + d.name + '">' + d.name + '</option>';
+            let dName = d.name || d.designNo || d.designNumber;
+            if(dName) {
+                html += '<option value="' + dName + '">' + dName + '</option>';
             }
         });
     }
@@ -567,7 +580,7 @@ function loadDesignDropdowns() {
 
     let activeDesign = localStorage.getItem('selected_design_number');
     if(activeDesign) {
-        let match = designMasters.find(d => d.name === activeDesign);
+        let match = designMasters.find(d => (d.name || d.designNo || d.designNumber) === activeDesign);
         if(match) {
             select.value = activeDesign;
             loadDesignItems();
@@ -661,8 +674,16 @@ function loadDesignItems() {
     }
 
     let cleanDNo = dNo.replace('#', '').trim().toLowerCase();
-    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMastersList.find(d => d.name && d.name.replace('#', '').trim().toLowerCase() === cleanDNo) || {};
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || 
+                            JSON.parse(localStorage.getItem('design_master')) || 
+                            JSON.parse(localStorage.getItem('design_specs')) || [];
+    if (!Array.isArray(designMastersList) && typeof designMastersList === 'object') {
+        designMastersList = Object.keys(designMastersList).map(k => ({ name: k, ...designMastersList[k] }));
+    }
+    let foundMaster = designMastersList.find(d => {
+        let name = d.name || d.designNo || d.designNumber;
+        return name && name.replace('#', '').trim().toLowerCase() === cleanDNo;
+    }) || {};
     
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(designSpecs).find(k => k.replace('#', '').trim().toLowerCase() === cleanDNo);
