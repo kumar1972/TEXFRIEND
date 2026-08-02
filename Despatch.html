@@ -523,7 +523,7 @@ function onDesignSelect(val) {
     loadBitmapImage();
     if(!val) return;
 
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
     let despatchData = JSON.parse(localStorage.getItem('despatch_data')) || [];
     let rec = despatchData.find(d => d.items && d.items.some(i => i.designNo === val));
@@ -645,7 +645,7 @@ function addItemRow(design = '', bale = '', noBales = '', ord = '', des = '', ba
     }
 }
 
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let firstDesignSelect = document.querySelector('.item-design');
     let designNo = firstDesignSelect ? firstDesignSelect.value : '';
@@ -659,7 +659,6 @@ async function quickCompleteToggle() {
 
     let statusText = isCompleted ? 'completed' : 'running';
 
-    // 1. Despatch Records Save / Update
     let despatchRecords = JSON.parse(localStorage.getItem('despatch_records')) || [];
     let despatchData = JSON.parse(localStorage.getItem('despatch_data')) || [];
 
@@ -694,7 +693,6 @@ async function quickCompleteToggle() {
     localStorage.setItem('despatch_records', JSON.stringify(despatchRecords));
     localStorage.setItem('despatch_data', JSON.stringify(despatchData));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[designNo]) {
         designSpecs[designNo] = {};
@@ -702,7 +700,6 @@ async function quickCompleteToggle() {
     designSpecs[designNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('despatch_records', despatchRecords);
@@ -714,11 +711,10 @@ async function quickCompleteToggle() {
     }
 
     updateDespatchTable();
-    // 📌 POPUP ALERT MESSAGE RESTORED HERE:
     alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveDespatchEntry
+// 📌 FIREBASE SYNC: saveDespatchEntry with Re-entry Popup Confirmation
 async function saveDespatchEntry() {
     var date = document.getElementById('despatch_date').value;
     var invoiceNo = document.getElementById('invoice_no').value.trim();
@@ -728,6 +724,25 @@ async function saveDespatchEntry() {
     if(!invoiceNo || !partyName) {
         alert('தயவுசெய்து Invoice Number மற்றும் Party Name ஆகியவற்றை நிரப்பவும்!');
         return;
+    }
+
+    var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
+    
+    // Check for existing invoice / entry to prevent double entry or prompt re-entry
+    let firstRowDesign = document.querySelector('.item-design');
+    let currentDesignNo = firstRowDesign ? firstRowDesign.value : '';
+    
+    if(editingIndex === null && currentDesignNo) {
+        let alreadyExists = despatchList.some(entry => 
+            entry.items && entry.items.some(i => i.designNo === currentDesignNo)
+        );
+        
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; // Stop execution if user clicks Cancel
+            }
+        }
     }
 
     let confirmMsg = editingIndex !== null ? "Indha despatch entry-ai update pannanuma?" : "Indha despatch entry-ai save pannanuma?";
@@ -771,7 +786,7 @@ async function saveDespatchEntry() {
     });
 
     var entryData = {
-        id: editingIndex !== null ? JSON.parse(localStorage.getItem('despatch_data'))[editingIndex].id : Date.now(),
+        id: editingIndex !== null ? despatchList[editingIndex].id : Date.now(),
         date: date,
         invoiceNo: invoiceNo,
         partyName: partyName,
@@ -785,7 +800,6 @@ async function saveDespatchEntry() {
     let saveBtn = document.getElementById('saveBtn');
     saveBtn.innerText = "Saving ☁️...";
 
-    var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
     if(editingIndex !== null) {
         despatchList[editingIndex] = entryData;
         editingIndex = null;

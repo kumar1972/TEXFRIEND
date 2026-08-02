@@ -97,6 +97,54 @@
         .menu-grid .btn-matrix { background: linear-gradient(135deg, #6366F1, #4338CA); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25); border: none; margin-bottom: 5px;}
         .menu-grid .btn-matrix .tab-icon { font-size: 24px; }
 
+        /* 📌 Delayed Party Orders Alert Section (Red Mark Alerts at End) */
+        .delayed-orders-section {
+            margin-top: 15px;
+            background: #FEF2F2;
+            border: 1px solid #FCA5A5;
+            border-radius: 14px;
+            padding: 15px;
+        }
+        .delayed-orders-section h3 {
+            color: #DC2626;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .delayed-table-container {
+            width: 100%;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #FCA5A5;
+            background: #FFFFFF;
+        }
+        .delayed-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .delayed-table th, .delayed-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #FEE2E2;
+            color: #7F1D1D;
+        }
+        .delayed-table th {
+            background: #FEE2E2;
+            color: #991B1B;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+        .delayed-table tr:last-child td { border-bottom: none; }
+        .red-alert-text {
+            color: #DC2626;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body>
@@ -188,16 +236,36 @@ window.onclick = function(event) {
             <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
             
             <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
-           
-            </a>
 
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all">
                 <span class="tab-icon">✨</span> Total Saved Designs List ✨
+            </a>
                 
-                <!-- 📌 Link to New Matrix Page -->
+            <!-- 📌 Link to New Matrix Page -->
             <a href="process_matrix.html" class="menu-btn btn-matrix">
                 <span class="tab-icon">📊</span> Live Multi-Design Process Status Matrix
             </a>
+        </div>
+
+        <!-- 📌 Delayed Party Orders Section (Dashboard End) -->
+        <div id="delayedOrdersSection" class="delayed-orders-section" style="display: none;">
+            <h3>⚠️ Delayed Party Orders (Delivery Date Passed)</h3>
+            <div class="delayed-table-container">
+                <table class="delayed-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Design No</th>
+                            <th>Party Name</th>
+                            <th>Order Mtr</th>
+                            <th>Delivery Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="delayedOrdersBody">
+                        <!-- Delayed orders populate here in red mark -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -255,8 +323,61 @@ window.onclick = function(event) {
                     logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
                     localStorage.setItem('company_logo', logoData);
                 }
+
+                // Load party orders data from localStorage or firebase if synced
+                let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                let cloudOrders = await firebaseLoad('party_orders_data');
+                if (cloudOrders) {
+                    partyOrders = cloudOrders;
+                    localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
+                }
+
+                checkAndDisplayDelayedOrders(partyOrders);
+
             } catch (e) {
                 console.error("Background Sync Error: ", e);
+                let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                checkAndDisplayDelayedOrders(partyOrders);
+            }
+        }
+
+        function checkAndDisplayDelayedOrders(orders) {
+            if (!orders || orders.length === 0) return;
+
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let delayedList = orders.filter(o => {
+                let delDateStr = o.deliveryDate || o.date;
+                if (!delDateStr) return false;
+                let delDate = new Date(delDateStr);
+                delDate.setHours(0, 0, 0, 0);
+                return delDate < today;
+            });
+
+            if (delayedList.length > 0) {
+                let section = document.getElementById('delayedOrdersSection');
+                let tbody = document.getElementById('delayedOrdersBody');
+                tbody.innerHTML = '';
+
+                delayedList.forEach((item, index) => {
+                    let dNo = item.designNo || item.designNumber || '-';
+                    let pName = item.partyName || item.name || '-';
+                    let oMtr = item.meters || item.orderMtr || '0';
+                    let dDate = item.deliveryDate || item.date || '-';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><span class="red-alert-text">${dNo}</span></td>
+                            <td><span class="red-alert-text">${pName}</span></td>
+                            <td><span class="red-alert-text">${oMtr}</span></td>
+                            <td><span class="red-alert-text">${dDate}</span></td>
+                        </tr>
+                    `;
+                });
+
+                section.style.display = 'block';
             }
         }
 

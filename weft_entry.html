@@ -220,38 +220,38 @@
         .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
         .btn-list { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25); }
 
-        /* 📌 Advanced Pop-up Modal Styling */
+        /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
         .overlay-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
+            z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
         }
         .overlay-modal.show { opacity: 1; }
         
         .modal-content {
-            background: #FFFFFF; width: 100%; max-width: 700px; margin: auto; height: 90vh; border-radius: 16px;
-            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+            background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
+            display: flex; flex-direction: column; box-shadow: none;
+            overflow: hidden; transform: scale(1);
         }
-        .overlay-modal.show .modal-content { transform: scale(1); }
 
         .modal-header {
             padding: 15px 20px; background: #F4F7F4; display: flex;
             justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+            flex-shrink: 0;
         }
-        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; border:none; padding:0; }
+        .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
         
         .modal-actions { display: flex; gap: 8px; }
         
-        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .close-btn {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
             transition: all 0.2s ease;
         }
         .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
         /* 📌 Advanced Table Design with Horizontal Scroll */
         .table-container {
@@ -281,12 +281,13 @@
             .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
             .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
             .no-print { display: none !important; }
+            .modal-body { padding: 0; background: #FFFFFF; }
         }
     </style>
 </head>
 <body>
 
-<div class="main-card">
+<div class="container">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
         <div class="completed-checkbox">
@@ -381,17 +382,17 @@
     </div>
 </div>
 
-<!-- 📌 Preview Modal with Horizontal Scroll -->
+<!-- 📌 Full Screen Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
-            <h3>👁️ Weft Pattern Preview</h3>
+            <h3>👁️ Weft Pattern Full Screen Preview</h3>
             <div class="modal-actions">
                 <button class="print-btn" onclick="window.print()">🖨️ Print</button>
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent" style="padding: 20px;">
+        <div class="modal-body" id="previewContent">
             <!-- Preview Content injects here -->
         </div>
     </div>
@@ -399,7 +400,7 @@
 
 <!-- 📌 Saved Patterns Modal -->
 <div id="savedListModal" class="overlay-modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:600px; height:90vh; margin:auto; border-radius:16px;">
         <div class="modal-header">
             <h3>📋 Saved Weft Patterns</h3>
             <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
@@ -611,7 +612,7 @@ function calculateWeftValues() {
     document.getElementById('displayTotalPicks').innerText = totalPatternPicks;
 }
 
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNo').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -624,7 +625,6 @@ async function quickCompleteToggle() {
 
     let statusText = isCompleted ? 'completed' : 'running';
 
-    // 1. LocalStorage-il Design Masters Update
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
@@ -641,7 +641,6 @@ async function quickCompleteToggle() {
     }
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) {
         designSpecs[dNo] = {};
@@ -649,7 +648,6 @@ async function quickCompleteToggle() {
     designSpecs[dNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('design_masters_data', masters);
@@ -660,16 +658,29 @@ async function quickCompleteToggle() {
     }
 
     renderSavedList();
-    // 📌 POPUP ALERT MESSAGE RESTORED HERE:
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveWeftDesign
+// 📌 FIREBASE SYNC: saveWeftDesign with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveWeftDesign() {
     let dNo = document.getElementById('designNo').value;
     if(!dNo) {
         alert("Please select a Design Number!");
         return;
+    }
+
+    let cleanDNo = cleanDesignName(dNo);
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+
+    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
+    let alreadyExists = masters.some(m => cleanDesignName(m.name) === cleanDNo && m.weftLines && m.weftLines.length > 0);
+    if(alreadyExists) {
+        let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே வெப்ட் பேட்டர்ன் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+        if(!confirmReEntry) {
+            return; // Cancel save action if user clicks Cancel
+        }
+        // If confirmed, filter out old records of this design to prevent duplicate entries
+        masters = masters.filter(m => cleanDesignName(m.name) !== cleanDNo);
     }
 
     let saveBtn = document.getElementById('saveBtnTxt');
@@ -702,8 +713,6 @@ async function saveWeftDesign() {
         }
     });
 
-    let cleanDNo = cleanDesignName(dNo);
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
     
     let patternData = {

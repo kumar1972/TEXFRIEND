@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Invoice - TEXFRIEND ERP</title>
+    <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
@@ -325,7 +326,6 @@
                 <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
                 <label for="top_completed_status">Completed</label>
             </div>
-            <!-- Image placeholder if any -->
         </div>
     </div>
 
@@ -633,7 +633,7 @@ function calcTotal(element) {
     totalField.value = (qty * rate).toFixed(2);
 }
 
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let designNo = document.getElementById('global_design').value;
     let cb = document.getElementById('top_completed_status');
@@ -647,7 +647,6 @@ async function quickCompleteToggle() {
 
     let statusText = isCompleted ? 'completed' : 'running';
 
-    // 1. LocalStorage-il Saved Invoices Save / Update
     let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let updated = false;
 
@@ -687,7 +686,6 @@ async function quickCompleteToggle() {
 
     localStorage.setItem('saved_invoices_data', JSON.stringify(invs));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[designNo]) {
         designSpecs[designNo] = {};
@@ -695,7 +693,6 @@ async function quickCompleteToggle() {
     designSpecs[designNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('saved_invoices_data', invs);
@@ -709,12 +706,35 @@ async function quickCompleteToggle() {
     alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveInvoice
+// 📌 FIREBASE SYNC: saveInvoice with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveInvoice() {
     let invNo = document.getElementById('inv_no').value.trim();
     if(!invNo) {
         alert("Invoice Number-ஐ உள்ளிடவும்!");
         return;
+    }
+
+    let design = document.getElementById('global_design').value;
+    let cleanDesign = design ? design.replace('#', '').trim().toLowerCase() : '';
+
+    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
+    if(editingInvoiceId === null && cleanDesign) {
+        let alreadyExists = savedInvoices.some(inv => {
+            let invDesign = inv.design ? inv.design.replace('#', '').trim().toLowerCase() : '';
+            return invDesign === cleanDesign;
+        });
+
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; // Cancel save action if user clicks Cancel
+            }
+            // If confirmed, filter out old records of this design to prevent duplicate entries
+            savedInvoices = savedInvoices.filter(inv => {
+                let invDesign = inv.design ? inv.design.replace('#', '').trim().toLowerCase() : '';
+                return invDesign !== cleanDesign;
+            });
+        }
     }
 
     let isCompleted = false;
@@ -734,7 +754,6 @@ async function saveInvoice() {
     let lr = document.getElementById('inv_lr').value;
     let gstType = document.getElementById('gst_type').value;
 
-    let design = document.getElementById('global_design').value;
     let countVal = document.getElementById('global_count').value;
     let reed = document.getElementById('global_reed').value;
     let pick = document.getElementById('global_pick').value;

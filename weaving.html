@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Weaving Order - TEXFRIEND</title>
+    <title>Weaving Order - TEXFRIEND ERP</title>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -100,7 +100,10 @@
             border-radius: 6px;
             border: 2px solid #4A7C59;
             box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15);
+            cursor: zoom-in;
+            transition: transform 0.3s;
         }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
         h2 {
             font-size: 16px;
@@ -214,37 +217,37 @@
         }
         .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
-        /* 📌 Advanced Pop-up Modal Styling */
+        /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
         .overlay-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
+            z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
         }
         .overlay-modal.show { opacity: 1; }
         
         .modal-content {
-            background: #FFFFFF; width: 100%; max-width: 800px; margin: auto; height: 90vh; border-radius: 16px;
-            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+            background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
+            display: flex; flex-direction: column; box-shadow: none;
+            overflow: hidden; transform: scale(1);
         }
-        .overlay-modal.show .modal-content { transform: scale(1); }
 
         .modal-header {
             padding: 15px 20px; background: #F4F7F4; display: flex;
             justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+            flex-shrink: 0;
         }
-        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; border:none; padding:0; }
+        .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
         .modal-actions { display: flex; gap: 8px; }
         
-        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .close-btn {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
             transition: all 0.2s ease;
         }
         .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
         /* 📌 Advanced Table Design */
         .excel-table {
@@ -256,41 +259,29 @@
         .excel-table tr:last-child td { border-bottom: none; }
         .excel-table tbody tr:hover { background: #F8FAF8; }
 
-        /* 📌 Design Selection Modal */
-        #designModal {
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-            z-index: 99999; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
         }
-        #designModal.show { opacity: 1; }
-        
-        .design-modal-content {
-            background: #FFFFFF; width: 90%; max-width: 400px; border-radius: 16px;
-            overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            transform: scale(0.95); transition: transform 0.3s ease;
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
         }
-        #designModal.show .design-modal-content { transform: scale(1); }
-        
-        .design-modal-header {
-            background: #F4F7F4; color: #2F4F38; padding: 15px 20px; font-weight: 800;
-            font-size: 13px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #E2E8E2; text-transform: uppercase;
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .design-modal-body { padding: 10px 15px; max-height: 400px; overflow-y: auto; background: #FAFCFA; }
-        .design-option {
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
-            border-bottom: 1px solid #E2E8E2; cursor: pointer; font-size: 12px; color: #1E2B23;
-            transition: background 0.2s; border-radius: 8px; margin-bottom: 5px; background: #FFFFFF;
-        }
-        .design-option:hover { background: #EAF0EA; border-color: #4A7C59; }
 
         @media print {
             body * { visibility: hidden; }
-            #previewModal, #previewModal * { visibility: visible; }
-            #previewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: #fff; padding: 0; display: block !important; }
-            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none !important; width: 100% !important; border: none !important; padding: 0 !important; }
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
             .no-print { display: none !important; }
+            .modal-body { padding: 0; background: #FFFFFF; }
         }
     </style>
 </head>
@@ -329,8 +320,10 @@
                     <input type="text" id="topWeaverName" placeholder="Enter Weaver Name" required>
                 </div>
                 <div class="form-group">
-                    <label>Design Number (Auto)</label>
-                    <input type="text" id="topDesignNo" placeholder="Select Design" readonly onclick="openDesignModal('top')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+                    <label>Design Number</label>
+                    <select id="topDesignNo" onchange="onDesignSelect(this.value)" required>
+                        <option value="">Select Design</option>
+                    </select>
                 </div>
             </div>
 
@@ -407,7 +400,9 @@
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
                     <label>Design Number & Weaver (Select Active Order)</label>
-                    <input type="text" id="botDesignDisplay" placeholder="Click to Select Order" readonly onclick="openDesignModal('bot')" style="cursor: pointer; background:#FFFFFF; font-weight:bold;" required>
+                    <select id="botActiveOrderSelect" onchange="onBottomOrderSelect(this.value)" required>
+                        <option value="">Select Active Order</option>
+                    </select>
                     <input type="hidden" id="botDesignNo">
                     <input type="hidden" id="botWeaverName">
                 </div>
@@ -495,38 +490,32 @@
         </div>
     </div>
 
-    <!-- 📌 Design Selection Modal -->
-    <div id="designModal">
-        <div class="design-modal-content">
-            <div class="design-modal-header">
-                <span id="modalTitle">Select Design</span>
-                <span style="cursor: pointer; font-size: 16px; color:#DC2626;" onclick="closeDesignModal()">✕</span>
-            </div>
-            <div class="design-modal-body" id="modalDesignList"></div>
-        </div>
-    </div>
-
-    <!-- 📌 Preview & Print Modal -->
+    <!-- 📌 Full Screen Preview & Print Modal -->
     <div id="previewModal" class="overlay-modal">
         <div class="modal-content">
             <div class="modal-header no-print">
-                <h3 id="previewModalTitle">👁️ Weaving Order Preview</h3>
+                <h3 id="previewModalTitle">👁️ Weaving Order Full Screen Preview</h3>
                 <div class="modal-actions">
                     <button class="print-btn" onclick="window.print()">🖨️ Print</button>
                     <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
                 </div>
             </div>
-            <div class="modal-body" id="previewContent" style="padding: 20px;">
+            <div class="modal-body" id="previewContent">
                 <!-- Preview content injects here -->
             </div>
         </div>
+    </div>
+
+    <!-- 📌 Fullscreen Image Popup Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+        <button class="close-fullscreen">Close ✕</button>
+        <img id="fullscreenImg" src="" alt="Fullscreen Preview">
     </div>
 
     <script>
         let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
         let warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
         let weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];
-        let activeTargetInput = '';
 
         document.getElementById('topDate').valueAsDate = new Date();
         document.getElementById('botDate').valueAsDate = new Date();
@@ -588,10 +577,20 @@
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
             
             if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-                bitmapContainer.innerHTML = `<img src="${designSpecs[activeDesign].bitmap}" alt="Design Bitmap">`;
+                let b64 = designSpecs[activeDesign].bitmap;
+                bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
             } else {
                 bitmapContainer.innerHTML = '';
             }
+        }
+
+        window.openFullscreenImage = function(src) {
+            if(!src || src === '' || src === 'null') return;
+            document.getElementById('fullscreenImg').src = src;
+            document.getElementById('fullscreenModal').style.display = 'flex';
+        }
+        window.closeFullscreenImage = function() {
+            document.getElementById('fullscreenModal').style.display = 'none';
         }
 
         function formatDecimal(input) {
@@ -601,19 +600,41 @@
             }
         }
 
-        function loadActiveDesignNumber() {
-            let activeDesign = localStorage.getItem('selected_design_number') || '';
-            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            
-            if(!activeDesign && preDesigns.length > 0) {
-                activeDesign = preDesigns[0];
-            }
+        function loadTopDesignDropdown() {
+            let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
 
-            if(activeDesign) {
-                document.getElementById('topDesignNo').value = activeDesign;
+            let allDesigns = new Set();
+            preDesignList.forEach(d => allDesigns.add(d));
+            designMasters.forEach(d => allDesigns.add(d.name));
+            Object.keys(designSpecs).forEach(d => allDesigns.add(d));
+
+            let select = document.getElementById('topDesignNo');
+            let html = '<option value="">Select Design</option>';
+            [...allDesigns].forEach(d => { if(d) html += `<option value="${d}">${d}</option>`; });
+            select.innerHTML = html;
+
+            let activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign && allDesigns.has(activeDesign)) {
+                select.value = activeDesign;
                 onDesignSelect(activeDesign);
             }
-            loadBitmapImage(activeDesign);
+        }
+
+        function loadBottomOrderDropdown() {
+            let select = document.getElementById('botActiveOrderSelect');
+            let html = '<option value="">Select Active Order</option>';
+            
+            let added = new Set();
+            weavingMasterData.slice().reverse().forEach(order => {
+                let key = `${order.designNo}_${order.weaverName}`;
+                if(!added.has(key)) {
+                    added.add(key);
+                    html += `<option value="${key}">${order.designNo} - ${order.weaverName || 'Unknown'}</option>`;
+                }
+            });
+            select.innerHTML = html;
         }
 
         let baseWarpWeights = {};
@@ -742,14 +763,14 @@
                     <td><input type="text" placeholder="Colour" class="w-colour" required></td>
                     <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
                     <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
-                    <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWarpRow()">＋</button></td>
+                    <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
                 </tr>`;
                 document.querySelector('#weftRowsTable tbody').innerHTML = `<tr>
                     <td><input type="text" placeholder="Count" class="wf-count" required></td>
                     <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
                     <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
                     <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
-                    <td style="width: 35px;"><button type="button" class="action-btn" onclick="addWeftRow()">＋</button></td>
+                    <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
                 </tr>`;
             }
         }
@@ -790,84 +811,21 @@
             }
         }
 
-        function openDesignModal(target) {
-            activeTargetInput = target;
-            const modal = document.getElementById('designModal');
-            const modalList = document.getElementById('modalDesignList');
-            modalList.innerHTML = '';
-            
-            if (target === 'top') {
-                document.getElementById('modalTitle').innerText = "Select Design for New Order";
-                let allDesignSet = new Set();
-                let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-                preDesignList.forEach(d => allDesignSet.add(d));
-
-                let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-                designMasters.forEach(d => allDesignSet.add(d.name));
-
-                let currentVal = document.getElementById('topDesignNo').value;
-
-                if(allDesignSet.size === 0) {
-                    modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No designs found in Master</div>';
-                } else {
-                    allDesignSet.forEach(designNo => {
-                        if(designNo) {
-                            let isChecked = (designNo === currentVal) ? 'checked' : '';
-                            let div = document.createElement('div');
-                            div.className = 'design-option';
-                            div.innerHTML = `<span><b>${designNo}</b></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
-                            div.onclick = function() { selectDesign('top', designNo, ''); };
-                            modalList.appendChild(div);
-                        }
-                    });
-                }
-            } else if (target === 'bot') {
-                document.getElementById('modalTitle').innerText = "Select Active Weaving Order";
-                let allOrders = weavingMasterData; 
-                let currentDesign = document.getElementById('botDesignNo').value;
-                let currentWeaver = document.getElementById('botWeaverName').value;
-
-                if(allOrders.length === 0) {
-                    modalList.innerHTML = '<div style="padding: 15px; text-align: center; color: #64748B; font-weight:600;">No active weaving orders found</div>';
-                } else {
-                    let added = new Set();
-                    allOrders.slice().reverse().forEach(order => {
-                        let key = `${order.designNo}_${order.weaverName}`;
-                        if(!added.has(key)) {
-                            added.add(key);
-                            let isChecked = (order.designNo === currentDesign && order.weaverName === currentWeaver) ? 'checked' : '';
-                            let div = document.createElement('div');
-                            div.className = 'design-option';
-                            div.innerHTML = `<span><b>${order.designNo}</b> <span style="color:#D97706; font-size:10px; margin-left:8px; background:#FEF3C7; padding:2px 6px; border-radius:6px;">${order.weaverName || 'Unknown'}</span></span> <input type="radio" name="modalDesignRadio" ${isChecked}>`;
-                            div.onclick = function() { selectDesign('bot', order.designNo, order.weaverName); };
-                            modalList.appendChild(div);
-                        }
-                    });
-                }
+        function onBottomOrderSelect(val) {
+            if(!val) {
+                document.getElementById('botDesignNo').value = '';
+                document.getElementById('botWeaverName').value = '';
+                document.getElementById('botWarpTable').innerHTML = '';
+                document.getElementById('botWeftTable').innerHTML = '';
+                return;
             }
+            let parts = val.split('_');
+            let dNo = parts[0];
+            let weaver = parts.slice(1).join('_');
 
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('show'), 10);
-        }
-
-        function selectDesign(target, designNo, weaverName) {
-            if(target === 'top') {
-                document.getElementById('topDesignNo').value = designNo;
-                onDesignSelect(designNo);
-            } else if(target === 'bot') {
-                document.getElementById('botDesignDisplay').value = `${designNo} - ${weaverName || 'Unknown'}`;
-                document.getElementById('botDesignNo').value = designNo;
-                document.getElementById('botWeaverName').value = weaverName || '';
-                loadBottomRows();
-            }
-            closeDesignModal();
-            loadBitmapImage(designNo);
-        }
-
-        function closeDesignModal() {
-            let modal = document.getElementById('designModal');
-            modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 300);
+            document.getElementById('botDesignNo').value = dNo;
+            document.getElementById('botWeaverName').value = weaver;
+            loadBottomRows();
         }
 
         function addWarpRow(c = '', col = '', w = '', iss = '') {
@@ -894,7 +852,6 @@
             `;
         }
 
-        // 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
         async function quickCompleteToggle() {
             let dNo = document.getElementById('topDesignNo').value;
             let isCompleted = document.getElementById('top_completed_status').checked;
@@ -907,7 +864,6 @@
 
             let statusText = isCompleted ? 'completed' : 'running';
 
-            // 1. LocalStorage-il Weaving Master Data & Transactions Save / Update
             let weaverName = document.getElementById('topWeaverName').value.trim() || 'Direct Weaver';
             let index = weavingMasterData.findIndex(x => x.designNo === dNo);
 
@@ -937,7 +893,6 @@
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
             localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
 
-            // 2. Design List Page Sync (design_specs Update)
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             if(!designSpecs[dNo]) {
                 designSpecs[dNo] = {};
@@ -945,7 +900,6 @@
             designSpecs[dNo].status = statusText;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-            // 3. Save to Firebase Cloud Instant Sync
             try {
                 if (window.firebaseSave) {
                     await window.firebaseSave('weaving_master_data', weavingMasterData);
@@ -958,7 +912,6 @@
             }
 
             updateTables();
-            // 📌 POPUP ALERT MESSAGE RESTORED HERE:
             alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
         }
 
@@ -973,6 +926,19 @@
             if(!designNo || !weaverName) {
                 alert("Please fill Weaver Name and Design Number!");
                 return;
+            }
+
+            let cleanDNo = cleanDesignName(designNo);
+
+            let alreadyExists = weavingMasterData.some(x => cleanDesignName(x.designNo || x.designNumber) === cleanDNo);
+            if(alreadyExists) {
+                let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Weaving Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+                if(!confirmReEntry) {
+                    return; 
+                }
+                weavingMasterData = weavingMasterData.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
+                warpTransactions = warpTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
+                weftTransactions = weftTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
             }
 
             let btn = document.getElementById('saveTopBtnTxt');
@@ -1075,6 +1041,7 @@
             }
 
             updateTables();
+            loadBottomOrderDropdown();
             alert("Top Weaving Order Saved to Cloud Successfully! ✅☁️");
             
             document.getElementById('topDesignNo').value = '';
@@ -1182,7 +1149,7 @@
 
             updateTables();
             alert("Bottom Weaving Entry Saved to Cloud Successfully! ✅☁️");
-            document.getElementById('botDesignDisplay').value = '';
+            document.getElementById('botActiveOrderSelect').value = '';
             document.getElementById('botDesignNo').value = '';
             document.getElementById('botWeaverName').value = '';
             document.getElementById('botWarpTable').innerHTML = '';
@@ -1311,7 +1278,7 @@
 
         function openPreview(type) {
             let tableId = type === 'warp' ? 'warpTable' : 'weftTable';
-            let titleText = type === 'warp' ? '👁️ Warp Order Report Preview' : '👁️ Weft Order Report Preview';
+            let titleText = type === 'warp' ? '👁️ Warp Order Full Screen Preview' : '👁️ Weft Order Full Screen Preview';
             
             document.getElementById('previewModalTitle').innerText = titleText;
             
@@ -1383,7 +1350,7 @@
 
         window.firebaseLoad = async function(key) {
             try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
+                const docSnap = await getDoc(doc(db, "texfriend_erp, key"));
                 if (docSnap.exists()) {
                     return JSON.parse(docSnap.data().content);
                 }
@@ -1416,7 +1383,8 @@
 
             if(btn) btn.innerText = originalText;
             
-            loadActiveDesignNumber();
+            loadTopDesignDropdown();
+            loadBottomOrderDropdown();
             updateTables();
             loadBitmapImage();
         });

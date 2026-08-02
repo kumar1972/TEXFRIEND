@@ -256,15 +256,37 @@
         border-top: 2px solid #D1DED1;
     }
 
-    /* Modal for Print Preview */
-    #previewModal {
+    /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
+    .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px); z-index: 99999; overflow-y: auto; padding: 20px;
+        background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
+        z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
     }
+    .overlay-modal.show { opacity: 1; }
     
-    #previewModal > div:last-child {
-        background: #FFFFFF; max-width: 800px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    .modal-content {
+        background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
+        display: flex; flex-direction: column; box-shadow: none;
+        overflow: hidden; transform: scale(1);
     }
+
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        flex-shrink: 0;
+    }
+    .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
+    .modal-actions { display: flex; gap: 8px; }
+    
+    .print-btn-modal { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
+        transition: all 0.2s ease;
+    }
+    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
     /* 📌 Fullscreen Image Popup Modal */
     .fullscreen-modal {
@@ -284,10 +306,11 @@
 
     @media print {
         body * { visibility: hidden; }
-        #previewModal, #previewModal * { visibility: visible; }
-        #previewModal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        #previewModal > div:last-child { box-shadow: none; border-radius: 0; padding: 0; }
+        .overlay-modal, .overlay-modal * { visibility: visible; }
+        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
         .no-print { display: none !important; }
+        .modal-body { padding: 0; background: #FFFFFF; }
     }
 </style>
 </head>
@@ -305,7 +328,7 @@
     </div>
 
     <div class="header-bar">
-        <h3 id="pageHeaderTitle">🧵 Yarn Calculation</h3>
+        <h3 id="pageHeaderTitle">🧵 Yarn Calculation <span id="displayGsmBadge" style="background: #D97706; color: white; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-left: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">GSM: 0</span></h3>
         <div class="header-btns">
             <button class="preview-btn" onclick="previewReport()">👁️ Preview</button>
             <button class="print-btn" onclick="printReport()">🖨️ Print</button>
@@ -418,14 +441,20 @@
     </div>
 </div>
 
-<!-- Print Preview Modal -->
-<div id="previewModal">
-    <div class="no-print" style="margin-bottom: 20px; max-width: 800px; margin: 0 auto 15px auto;">
-        <button onclick="document.getElementById('previewModal').style.display='none'" style="float:right; background:#EF4444; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">Close ❌</button>
-        <button onclick="window.print()" style="float:right; background:#10B981; color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer; margin-right:10px;">Print 🖨️</button>
-        <div style="clear:both;"></div>
+<!-- 📌 Full Screen Print Preview Modal -->
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <h3>👁️ Yarn Calculation Full Screen Preview</h3>
+            <div class="modal-actions">
+                <button class="print-btn-modal" onclick="window.print()">🖨️ Print</button>
+                <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
+            </div>
+        </div>
+        <div class="modal-body" id="previewContent">
+            <!-- Content here -->
+        </div>
     </div>
-    <div id="previewContent" style="color: #000;"></div>
 </div>
 
 <!-- 📌 Fullscreen Image Popup Modal -->
@@ -435,6 +464,18 @@
 </div>
 
 <script>
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
@@ -537,6 +578,9 @@ function loadInitialData() {
         document.getElementById('topLengthMeters').value = '';
         let cb = document.getElementById('top_completed_status');
         if(cb) cb.checked = false;
+        
+        let gsmBadge = document.getElementById('displayGsmBadge');
+        if (gsmBadge) gsmBadge.innerText = "GSM: 0";
         return;
     }
 
@@ -598,7 +642,7 @@ function loadInitialData() {
     loadYarnData();
 }
 
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
 async function quickCompleteToggle() {
     let dName = document.getElementById('designNumber').value;
     let cb = document.getElementById('top_completed_status');
@@ -613,7 +657,6 @@ async function quickCompleteToggle() {
     let statusText = isCompleted ? 'completed' : 'running';
     let cleanDNo = cleanDesignName(dName);
 
-    // 1. LocalStorage-il Design Masters Update
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = designMastersList.findIndex(d => cleanDesignName(d.name) === cleanDNo);
 
@@ -627,7 +670,6 @@ async function quickCompleteToggle() {
     }
     localStorage.setItem('design_masters_data', JSON.stringify(designMastersList));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dName]) {
         designSpecs[dName] = {};
@@ -635,7 +677,6 @@ async function quickCompleteToggle() {
     designSpecs[dName].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('design_masters_data', designMastersList);
@@ -742,7 +783,6 @@ function loadYarnData() {
         weftTotals: { p: 0, t: 0, w: 0 }
     };
 
-    // --- WARP ---
     let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
     let totalWarpEnds = Math.round(uiReed * baseWidth);
     let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
@@ -808,7 +848,6 @@ function loadYarnData() {
         document.getElementById('topBeamWrapper').style.display = 'none';
     }
 
-    // --- WEFT ---
     let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
     let totalFabricPick = weftWidth * uiPick;
     
@@ -843,6 +882,19 @@ function loadYarnData() {
         wfHtml = `<tr><td colspan="5">No Weft Data Found</td></tr>`;
     }
     document.getElementById('weftTableBody').innerHTML = wfHtml;
+
+    let totalWeightKg = (gt ? gt.w : 0) + (tt ? tt.w : 0) + (wft ? wft.w : 0);
+    let fabricAreaSqMtrs = lengthM * (baseWidth * 0.0254); 
+    let gsmValue = 0;
+    
+    if (fabricAreaSqMtrs > 0) {
+        gsmValue = Math.round((totalWeightKg * 1000) / fabricAreaSqMtrs);
+    }
+    
+    let gsmBadge = document.getElementById('displayGsmBadge');
+    if (gsmBadge) gsmBadge.innerText = "GSM: " + gsmValue;
+    
+    window.calculatedYarnData.gsm = gsmValue; 
 }
 
 function generatePrintTableHtml(dataArray, totals, isWeft) {
@@ -887,7 +939,7 @@ function previewReport() {
             <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
             <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
                 <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} <br> 
-                <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts
+                <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts &nbsp;|&nbsp; <b style="color:#D97706;">GSM: ${d.gsm || 0}</b>
             </p>
         </div>
     `;
@@ -937,11 +989,11 @@ function previewReport() {
     `;
 
     document.getElementById('previewContent').innerHTML = html;
-    document.getElementById('previewModal').style.display = 'block';
+    openModal('previewModal');
 }
 
 function printReport() {
-    if(document.getElementById('previewModal').style.display !== 'block') {
+    if(document.getElementById('previewModal').style.display !== 'flex') {
         previewReport();
     }
     setTimeout(() => {

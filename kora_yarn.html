@@ -585,7 +585,7 @@ async function quickCompleteToggle() {
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 1. SAVE INWARD STOCK
+// 1. SAVE INWARD STOCK with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveInward() {
     let dateVal = document.getElementById('inwardDate').value;
     let supplier = document.getElementById('supplierName').value.trim();
@@ -601,11 +601,34 @@ async function saveInward() {
         return;
     }
 
+    let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let cleanSupplier = supplier.replace('#', '').trim().toLowerCase();
+
+    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION (Inward)
+    if(editingInwardId === null && cleanSupplier) {
+        let alreadyExists = records.some(r => {
+            let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
+            let rCount = r.count ? r.count.trim().toLowerCase() : '';
+            return rSup === cleanSupplier && rCount === count.trim().toLowerCase();
+        });
+
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த சப்ளையர் மற்றும் கவுண்டிற்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; // Cancel save action if user clicks Cancel
+            }
+            // If confirmed, filter out old records to prevent duplicates
+            records = records.filter(r => {
+                let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
+                let rCount = r.count ? r.count.trim().toLowerCase() : '';
+                return !(rSup === cleanSupplier && rCount === count.trim().toLowerCase());
+            });
+        }
+    }
+
     let btn = document.getElementById('saveInwardBtn');
     let origText = btn.innerText;
     btn.innerText = "⏳ Saving to Cloud...";
-
-    let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
 
     if (editingInwardId) {
         let idx = records.findIndex(r => r.id == editingInwardId);
@@ -645,7 +668,7 @@ async function saveInward() {
     btn.innerText = "✅ Save Kora Stock";
 }
 
-// 2. SAVE OUTWARD ISSUE
+// 2. SAVE OUTWARD ISSUE with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveIssue() {
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
@@ -663,11 +686,34 @@ async function saveIssue() {
         return;
     }
 
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let cleanDNo = dNo.replace('#', '').trim().toLowerCase();
+
+    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION (Issue)
+    if(editingIssueId === null && cleanDNo) {
+        let alreadyExists = issues.some(r => {
+            let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+            let rCount = r.count ? r.count.trim().toLowerCase() : '';
+            return rDno === cleanDNo && rCount === count.trim().toLowerCase();
+        });
+
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Kora Issue என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; // Cancel save action if user clicks Cancel
+            }
+            // If confirmed, filter out old records of this design & count to prevent duplicates
+            issues = issues.filter(r => {
+                let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+                let rCount = r.count ? r.count.trim().toLowerCase() : '';
+                return !(rDno === cleanDNo && rCount === count.trim().toLowerCase());
+            });
+        }
+    }
+
     let btn = document.getElementById('saveIssueBtn');
     let origText = btn.innerText;
     btn.innerText = "⏳ Saving to Cloud...";
-
-    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
 
     if (editingIssueId) {
         let idx = issues.findIndex(r => r.id == editingIssueId);

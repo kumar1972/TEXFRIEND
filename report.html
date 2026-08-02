@@ -459,9 +459,6 @@ function switchTab(tabName) {
     }
 }
 
-/* -------------------------------------------------------------------------
-   🔥 SMART AUTO-TALLY: KORA STOCK AT DYEING
-------------------------------------------------------------------------- */
 function renderKoraDyeingTable(filterVal) {
     let koraOutward = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let dyeingIssue = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -594,9 +591,6 @@ function renderKoraDyeingTable(filterVal) {
     </tr>`;
 }
 
-/* -------------------------------------------------------------------------
-   🔥 360° DESIGN ANALYTICS DASHBOARD
-------------------------------------------------------------------------- */
 function render360Analytics(filterVal) {
     let wrap = document.getElementById('analyticsWrapper');
     if(filterVal === 'All') {
@@ -632,46 +626,37 @@ function render360Analytics(filterVal) {
     `;
 }
 
-/* -------------------------------------------------------------------------
-   🔥 HIERARCHICAL KORA STOCK TABLE: MILL-WISE TOP + COUNT SUMMARY WITH MILL NAMES
-------------------------------------------------------------------------- */
 function renderKoraStockTable() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || JSON.parse(localStorage.getItem('kora_inward_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let millMap = new Map();
     let countSummaryMap = new Map();
 
-    // 1. Process Inwards
     inwards.forEach(item => {
         let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim();
         let cnt = (item.count || 'Unknown').trim();
         let wt = parseFloat(item.weight || item.qty) || 0;
 
-        // Mill-wise map
         if(!millMap.has(mill)) millMap.set(mill, new Map());
         let countMap = millMap.get(mill);
         if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
         countMap.get(cnt).inward += wt;
 
-        // Count Summary map (Bottom)
         if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
         countSummaryMap.get(cnt).inward += wt;
         if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
     });
 
-    // 2. Process Issues/Outwards
     issues.forEach(item => {
         let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim(); 
         let cnt = (item.count || 'Unknown').trim();
         let wt = parseFloat(item.weight || item.issueWt || item.qty) || 0;
 
-        // Mill-wise map
         if(!millMap.has(mill)) millMap.set(mill, new Map());
         let countMap = millMap.get(mill);
         if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
         countMap.get(cnt).issued += wt;
 
-        // Count Summary map (Bottom)
         if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
         countSummaryMap.get(cnt).issued += wt;
         if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
@@ -690,7 +675,6 @@ function renderKoraStockTable() {
     let sortedMills = Array.from(millMap.keys()).sort();
 
     sortedMills.forEach(mill => {
-        // Mill Header Row
         body.innerHTML += `<tr style="background:#EAF0EA; font-weight:bold;"><td colspan="4" style="text-align:left; padding-left:15px; color:#2F4F38;">🏭 MILL: ${mill.toUpperCase()}</td></tr>`;
         
         let countMap = millMap.get(mill);
@@ -715,7 +699,6 @@ function renderKoraStockTable() {
         let millBal = millIn - millOut;
         let millBalDisplay = millBal >= 0 ? `<span class="badge-stock">${millBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(millBal).toFixed(3)} Kg</span>`;
         
-        // Mill Subtotal Row
         body.innerHTML += `<tr style="background:#F4F7F4; font-weight:bold; border-bottom:2px solid #D1DED1;">
             <td style="text-align:left; padding-left:15px; color:#2F4F38;">📊 ${mill} Subtotal:</td>
             <td style="color:#10B981;">${millIn.toFixed(3)}</td>
@@ -724,7 +707,6 @@ function renderKoraStockTable() {
         </tr>`;
     });
 
-    // 🌟 COUNT-WISE SUMMARY AT THE VERY BOTTOM WITH CORRESPONDING MILL NAMES
     body.innerHTML += `<tr style="background:#4A7C59; color:white; font-weight:bold;"><td colspan="4" style="text-align:center; padding:10px; text-transform:uppercase;">📊 Overall Count-Wise Summary (கவுண்ட் வாரியாக மொத்த இருப்பு)</td></tr>`;
     
     let sortedSummaryCounts = Array.from(countSummaryMap.keys()).sort();
@@ -734,7 +716,6 @@ function renderKoraStockTable() {
         grandIn += data.inward; grandOut += data.issued; grandBal += bal;
         let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
 
-        // Format Mill names string cleanly (e.g. "Arun, Guntur")
         let millsArr = Array.from(data.mills).sort();
         let millsStr = millsArr.length > 0 ? ` (${millsArr.join(', ')})` : '';
 

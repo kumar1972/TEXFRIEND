@@ -3,49 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TEXFRIEND - Login</title>
+<title>TEXFRIEND - Premium Portal</title>
 <script src="translator.js"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-    body { width: 100%; min-height: 100vh; background: #2D402C; display: flex; justify-content: center; align-items: center; padding: 16px; }
-    .login-card { width: 100%; max-width: 400px; background: #F4F9F4; border-radius: 20px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 1px solid rgba(82, 110, 81, 0.3); display: flex; flex-direction: column; gap: 18px; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    body { 
+        width: 100%; 
+        min-height: 100vh; 
+        background: #0B130F;
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(74, 124, 89, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(30, 43, 35, 0.4) 0%, transparent 40%);
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 16px; 
+    }
+
+    .login-card { 
+        width: 100%; 
+        max-width: 420px; 
+        background: rgba(18, 28, 22, 0.75); 
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 28px; 
+        padding: 32px 26px; 
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1); 
+        border: 1px solid rgba(82, 110, 81, 0.3); 
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
     .logo-area { text-align: center; }
-    .logo-area h2 { font-size: 18px; color: #3F5A3E; font-weight: 700; margin-top: 6px; }
-    .logo-area p { font-size: 11px; color: #64748b; font-weight: 500; }
-    .role-tabs { display: grid; grid-template-columns: 1fr 1fr; background: #E2E8F0; border-radius: 10px; padding: 4px; gap: 4px; }
-    .role-btn { background: transparent; border: none; padding: 10px; font-size: 12px; font-weight: 600; color: #64748b; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
-    .role-btn.active { background: #3F5A3E; color: #FFFFFF; box-shadow: 0 4px 10px rgba(63, 90, 62, 0.2); }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group label { font-size: 11px; font-weight: 700; color: #3F5A3E; }
-    .input-box { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(82, 110, 81, 0.3); background: #FFFFFF; color: #1E2B23; font-size: 13px; font-weight: 600; outline: none; }
-    .login-submit-btn { width: 100%; background: #3F5A3E; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(63, 90, 62, 0.3); margin-top: 6px; }
-    .error-msg { color: #EF4444; font-size: 11px; text-align: center; font-weight: 600; display: none; }
+    .logo-badge {
+        width: 65px; height: 65px; 
+        background: linear-gradient(135deg, #4A7C59, #2C4A35); 
+        border-radius: 20px;
+        display: inline-flex; align-items: center; justify-content: center; font-size: 28px;
+        box-shadow: 0 10px 25px rgba(74, 124, 89, 0.4); 
+        margin-bottom: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .logo-area h2 { font-size: 22px; color: #FFFFFF; font-weight: 800; letter-spacing: 1px; }
+    .logo-area p { font-size: 11px; color: #8FA89B; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* 📌 Sleek Floating Tabs */
+    .role-tabs { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        background: rgba(255, 255, 255, 0.05); 
+        border-radius: 14px; 
+        padding: 4px; 
+        gap: 4px; 
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .role-btn { 
+        background: transparent; 
+        border: none; 
+        padding: 11px; 
+        font-size: 11px; 
+        font-weight: 700; 
+        color: #8FA89B; 
+        border-radius: 11px; 
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+    }
+    .role-btn.active { 
+        background: #4A7C59; 
+        color: #FFFFFF; 
+        box-shadow: 0 4px 15px rgba(74, 124, 89, 0.4); 
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 11px; font-weight: 700; color: #A3C1B2; letter-spacing: 0.3px; }
+    
+    .input-box { 
+        width: 100%; 
+        padding: 13px 16px; 
+        border-radius: 14px; 
+        border: 1.5px solid rgba(82, 110, 81, 0.4); 
+        background: rgba(11, 19, 15, 0.6); 
+        color: #FFFFFF; 
+        font-size: 12px; 
+        font-weight: 600; 
+        outline: none; 
+        transition: all 0.3s ease;
+    }
+    .input-box::placeholder { color: #4B6356; }
+    .input-box:focus {
+        border-color: #4A7C59;
+        background: rgba(11, 19, 15, 0.9);
+        box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.2);
+    }
+
+    .options-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: #8FA89B;
+        font-weight: 600;
+    }
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    .remember-me input {
+        width: 16px; height: 16px; accent-color: #4A7C59; cursor: pointer; border-radius: 4px;
+    }
+
+    .login-submit-btn { 
+        width: 100%; 
+        background: linear-gradient(135deg, #52795F, #3A5A40); 
+        color: white; 
+        border: none; 
+        padding: 14px; 
+        border-radius: 14px; 
+        font-size: 12px; 
+        font-weight: 800; 
+        cursor: pointer; 
+        box-shadow: 0 8px 25px rgba(74, 124, 89, 0.4); 
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 4px; 
+    }
+    .login-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(74, 124, 89, 0.6);
+        background: linear-gradient(135deg, #5E8A6D, #406348);
+    }
+
+    .error-msg { 
+        color: #FF6B6B; 
+        background: rgba(255, 107, 107, 0.1); 
+        padding: 10px; 
+        border-radius: 10px; 
+        font-size: 11px; 
+        text-align: center; 
+        font-weight: 700; 
+        display: none; 
+        border: 1px solid rgba(255, 107, 107, 0.3);
+    }
 </style>
 </head>
 <body>
 <div class="login-card">
     <div class="logo-area">
-        <span style="font-size: 32px;">🔐🔑</span>
+        <div class="logo-badge">⚡</div>
         <h2>TEXFRIEND</h2>
-        <p id="subtitleText">Admin Login & User Login</p>
+        <p id="subtitleText">Secure Access Portal</p>
     </div>
+
     <div class="role-tabs">
-        <button type="button" class="role-btn active" id="adminTab" onclick="switchRole('admin')">👑 Admin Login</button>
-        <button type="button" class="role-btn" id="userTab" onclick="switchRole('user')">👤 User Login</button>
+        <button type="button" class="role-btn active" id="adminTab" onclick="switchRole('admin')">👑 Admin</button>
+        <button type="button" class="role-btn" id="userTab" onclick="switchRole('user')">👤 User</button>
     </div>
+
     <div class="form-group">
         <label id="usernameLabel">Admin User Name</label>
-        <input type="text" id="loginUser" class="input-box" placeholder="Enter username">
+        <input type="text" id="loginUser" class="input-box" placeholder="Enter username" autocomplete="username">
     </div>
+
     <div class="form-group">
         <label>Password / கடவுச்சொல்</label>
-        <input type="password" id="loginPass" class="input-box" placeholder="Enter password">
+        <input type="password" id="loginPass" class="input-box" placeholder="Enter password" autocomplete="current-password">
     </div>
+
+    <div class="options-row">
+        <label class="remember-me">
+            <input type="checkbox" id="rememberMe"> Remember Me
+        </label>
+    </div>
+
     <div class="error-msg" id="errorMsg">⚠️ தவறான Username அல்லது Password!</div>
     <button type="button" class="login-submit-btn" onclick="validateLogin()">Login / உள்நுழை</button>
 </div>
+
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    let savedUser = localStorage.getItem('erp_remembered_user');
+    if(savedUser) {
+        document.getElementById('loginUser').value = savedUser;
+        document.getElementById('rememberMe').checked = true;
+    }
+});
+
 let currentRole = 'admin';
 function switchRole(role) {
     currentRole = role;
@@ -54,34 +209,53 @@ function switchRole(role) {
     let userLabel = document.getElementById('usernameLabel');
     let subText = document.getElementById('subtitleText');
     document.getElementById('errorMsg').style.display = 'none';
-    document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
+    
     if(role === 'admin') {
         adminBtn.classList.add('active'); userBtn.classList.remove('active');
-        userLabel.innerText = "Admin User Name"; subText.innerText = "Administrator Control Panel";
+        userLabel.innerText = "Admin User Name"; subText.innerText = "Administrator Access Portal";
     } else {
         userBtn.classList.add('active'); adminBtn.classList.remove('active');
-        userLabel.innerText = "Staff / User Name"; subText.innerText = "Standard User Portal";
+        userLabel.innerText = "Staff / User Name"; subText.innerText = "Standard Operator Portal";
     }
 }
+
 function validateLogin() {
     let u = document.getElementById('loginUser').value.trim();
     let p = document.getElementById('loginPass').value.trim();
     let err = document.getElementById('errorMsg');
-    if(!u || !p) { err.innerText = "⚠️ அனைத்து விவரங்களையும் நிரப்பவும்!"; err.style.display = 'block'; return; }
+    let remember = document.getElementById('rememberMe').checked;
+    
+    if(!u || !p) { 
+        err.innerText = "⚠️ அனைத்து விவரங்களையும் நிரப்பவும்!"; 
+        err.style.display = 'block'; 
+        return; 
+    }
+
+    if(remember) {
+        localStorage.setItem('erp_remembered_user', u);
+    } else {
+        localStorage.removeItem('erp_remembered_user');
+    }
     
     if(currentRole === 'admin') {
         if(u === 'admin' && p === '1234') {
             localStorage.setItem('erp_logged_role', 'Admin');
             localStorage.setItem('erp_logged_user', u);
-            window.location.href = "dashboard.html"; // 👈 திருத்தப்பட்டுள்ளது
-        } else { err.innerText = "⚠️ தவறான அட்மின் விவரங்கள்!"; err.style.display = 'block'; }
+            window.location.href = "dashboard.html";
+        } else { 
+            err.innerText = "⚠️ தவறான அட்மின் விவரங்கள்!"; 
+            err.style.display = 'block'; 
+        }
     } else {
         if(u !== '' && p !== '') { 
             localStorage.setItem('erp_logged_role', 'User');
             localStorage.setItem('erp_logged_user', u);
-            window.location.href = "dashboard.html"; // 👈 திருத்தப்பட்டுள்ளது
-        } else { err.innerText = "⚠️ தவறான யூசர் விவரங்கள்!"; err.style.display = 'block'; }
+            window.location.href = "dashboard.html";
+        } else { 
+            err.innerText = "⚠️ தவறான யூசர் விவரங்கள்!"; 
+            err.style.display = 'block'; 
+        }
     }
 }
 </script>

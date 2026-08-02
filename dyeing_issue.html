@@ -1,388 +1,388 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Dyeing Issue - TEXFRIEND</title>
-<script src="translator.js"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dyeing Issue - TEXFRIEND</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Background - STRICTLY NO BLACK */
-    html, body { 
-        width: 100%; 
-        min-height: 100vh; 
-        background: #EAF0EA; 
-        color: #1E2B23; 
-    }
+        /* 📌 Smart Background - STRICTLY NO BLACK */
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #EAF0EA; 
+            color: #1E2B23; 
+        }
 
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    /* 📌 Main Container */
-    .main-card {
-        width: 100%;
-        max-width: 900px;
-        margin: 0;
-        background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
+        /* 📌 Main Container */
+        .main-card {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
 
-    /* 📌 Smart Back Button */
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.3s ease;
-    }
-    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+        /* 📌 Smart Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-    /* Checkbox Styling for Top Right */
-    .completed-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #D8DFD6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: #526E51;
-        margin: 0;
-        padding: 0;
-        border: none;
-    }
-    
-    .completed-checkbox label {
-        margin: 0;
-        color: #3F5A3E;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-    }
+        /* Checkbox Styling for Top Right */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-    #bitmapDisplayContainer {
-        text-align: right;
-    }
-    #bitmapDisplayContainer img {
-        max-height: 40px;
-        border-radius: 4px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        cursor: zoom-in;
-        transition: transform 0.2s;
-    }
-    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+        #bitmapDisplayContainer {
+            text-align: right;
+        }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    .card-header {
-        font-size: 16px;
-        margin-bottom: 5px;
-        font-weight: 700;
-        color: #2F4F38;
-        text-align: left;
-        position: relative;
-        padding-left: 12px;
-    }
-    .card-header::before {
-        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
-        background: #4A7C59; border-radius: 4px;
-    }
+        .card-header {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .card-header::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
 
-    /* 📌 Smart Sectioning */
-    .form-section {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 20px 15px 15px 15px;
-        margin-bottom: 5px;
-        position: relative;
-    }
-    
-    .section-badge {
-        position: absolute;
-        top: -12px;
-        left: 15px;
-        background: #4A7C59;
-        color: #FFF;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
-    }
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin-bottom: 12px;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
 
-    .form-group label {
-        font-size: 10px;
-        font-weight: 600;
-        color: #4A554A;
-        white-space: nowrap;
-    }
+        .form-group label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #4A554A;
+            white-space: nowrap;
+        }
 
-    /* 📌 Smart 3D Inputs */
-    input, select {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #D1DED1;
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 11px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
-    }
+        /* 📌 Smart 3D Inputs */
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #D1DED1;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        }
 
-    input:focus, select:focus {
-        border-color: #4A7C59;
-        outline: none;
-        background: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
+        input:focus, select:focus {
+            border-color: #4A7C59;
+            outline: none;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
 
-    /* 📌 Advanced Issue Grid (Updated with Mill Name column) */
-    .issue-grid-header {
-        display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
-        gap: 6px;
-        padding: 0 4px;
-        margin-bottom: 8px;
-    }
+        /* 📌 Advanced Issue Grid (Updated with Mill Name column) */
+        .issue-grid-header {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
+            gap: 6px;
+            padding: 0 4px;
+            margin-bottom: 8px;
+        }
 
-    .issue-grid-header div {
-        font-size: 10px;
-        font-weight: 700;
-        color: #4A7C59;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+        .issue-grid-header div {
+            font-size: 10px;
+            font-weight: 700;
+            color: #4A7C59;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .line-row {
-        display: grid;
-        grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    
-    .line-row input {
-        padding: 10px 6px;
-        font-size: 11px;
-        text-align: center;
-    }
+        .line-row {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .line-row input {
+            padding: 10px 6px;
+            font-size: 11px;
+            text-align: center;
+        }
 
-    .del-row-btn {
-        background: #FEE2E2;
-        color: #DC2626;
-        border: none;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-    .del-row-btn:hover { background: #FECACA; transform: scale(1.05); }
+        .del-row-btn {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .del-row-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    /* 📌 Premium Totals Box */
-    .totals-box {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        background: linear-gradient(135deg, #F4F7F4, #EAF0EA);
-        border: 1px dashed #4A7C59;
-        padding: 12px 15px;
-        border-radius: 12px;
-        margin-top: 10px;
-        margin-bottom: 5px;
-    }
-    .total-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 12px;
-        font-weight: 700;
-        color: #2F4F38;
-    }
-    .total-item span:last-child {
-        background: #FFFFFF;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid #D1DED1;
-        min-width: 80px;
-        text-align: center;
-        color: #10B981; 
-    }
+        /* 📌 Premium Totals Box */
+        .totals-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: linear-gradient(135deg, #F4F7F4, #EAF0EA);
+            border: 1px dashed #4A7C59;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #2F4F38;
+        }
+        .total-item span:last-child {
+            background: #FFFFFF;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #D1DED1;
+            min-width: 80px;
+            text-align: center;
+            color: #10B981; 
+        }
 
-    /* 📌 Smart Buttons */
-    .btn-main {
-        width: 100%;
-        padding: 14px;
-        margin: 10px 0 0 0;
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        background: linear-gradient(135deg, #4A7C59, #33593D);
-        box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
-    .btn-main:active { transform: translateY(1px); }
+        /* 📌 Smart Buttons */
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 0 0;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-main:active { transform: translateY(1px); }
 
-    .popup-trigger-btn {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-        color: white;
-        border: none;
-        padding: 14px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-        width: 100%;
-        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 5px;
-    }
-    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
-    .popup-trigger-btn:active { transform: translateY(1px); }
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        .popup-trigger-btn:active { transform: translateY(1px); }
 
-    /* 📌 Advanced Pop-up Modal Styling */
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
-    }
-    .overlay-modal.show { opacity: 1; }
-    
-    .modal-content {
-        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
-        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
-    }
-    .overlay-modal.show .modal-content { transform: scale(1); }
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
 
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-    }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-    /* 📌 Fullscreen Image Popup Modal */
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
 
-    /* 📌 Advanced Table Design with Horizontal Scroll */
-    .table-container {
-        width: 100%; border-radius: 10px; overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-        -webkit-overflow-scrolling: touch;
-    }
+        /* 📌 Advanced Table Design with Horizontal Scroll */
+        .table-container {
+            width: 100%; border-radius: 10px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
 
-    tfoot td {
-        background: #F4F7F4;
-        color: #2F4F38;
-        font-weight: 700;
-        border-top: 2px solid #D1DED1;
-        position: sticky; bottom: 0; z-index: 10;
-    }
-    
-    .action-btns { display: flex; gap: 6px; justify-content: center; }
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-    .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
-    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+        tfoot td {
+            background: #F4F7F4;
+            color: #2F4F38;
+            font-weight: 700;
+            border-top: 2px solid #D1DED1;
+            position: sticky; bottom: 0; z-index: 10;
+        }
+        
+        .action-btns { display: flex; gap: 6px; justify-content: center; }
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .edit-action-btn:hover { background: #475569; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
+        .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
 
-    /* Custom Checkbox Container */
-    .checkbox-container {
-        background: #F8FAF8; padding: 12px 15px; border-radius: 10px; 
-        margin-bottom: 12px; display: flex; align-items: center; 
-        justify-content: space-between; border: 1px dashed #A0AFA0;
-    }
+        /* Custom Checkbox Container */
+        .checkbox-container {
+            background: #F8FAF8; padding: 12px 15px; border-radius: 10px; 
+            margin-bottom: 12px; display: flex; align-items: center; 
+            justify-content: space-between; border: 1px dashed #A0AFA0;
+        }
 
-    /* Action buttons in modal */
-    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        /* Action buttons in modal */
+        .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
-</style>
+    </style>
 </head>
 <body>
 
@@ -425,7 +425,7 @@
         </div>
 
         <div style="margin-top: 10px; overflow-x: auto;">
-            <div style="min-width: 600px;"> <!-- Increased width to fit Mill Name -->
+            <div style="min-width: 600px;">
                 <div class="issue-grid-header">
                     <div>Count</div>
                     <div>Mill Name</div>
@@ -513,6 +513,9 @@ function openModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
+    if(modalId === 'issuedListModal') {
+        renderIssuedList(); // மோடல் திறக்கும்போது தற்போதைய டிசைன் மட்டும் தெரியும்படி ரெண்டர் செய்யும்
+    }
 }
 
 function closeModal(modalId) {
@@ -626,7 +629,6 @@ function parseYarnCount(countStr) {
     return parseFloat(str) || 0;
 }
 
-// 📌 NEW: Fetch Mill Name from Kora Outward logic
 function getMillNameFromKora(designNo, countStr) {
     let koraRecords = JSON.parse(localStorage.getItem('kora_outward_records')) || [];
     if(koraRecords.length === 0) return "";
@@ -647,6 +649,7 @@ function getMillNameFromKora(designNo, countStr) {
 
 function loadDesignItems() {
     loadBitmapImage();
+    renderIssuedList(); // டிசைன் மாறும்போது ரெஜிஸ்ட்ரியும் அதற்கேற்ப அப்டேட் ஆகும்
     let dNo = document.getElementById('designNumber').value;
     let container = document.getElementById('issueLinesContainer');
     container.innerHTML = '';
@@ -729,7 +732,6 @@ function loadDesignItems() {
     });
 
     let displayList = Array.from(combinedMap.values());
-
     let cleanSelectedDNoForFilter = (dNo || "").trim().toLowerCase();
     
     displayList.forEach(item => {
@@ -751,7 +753,7 @@ function loadDesignItems() {
 
     if(displayList.length > 0) {
         displayList.forEach(item => {
-            let autofillMill = getMillNameFromKora(dNo, item.count); // Fetch Mill Name
+            let autofillMill = getMillNameFromKora(dNo, item.count);
             let row = document.createElement('div');
             row.className = 'line-row';
             row.innerHTML = `
@@ -800,7 +802,7 @@ function updateTotals() {
     document.getElementById('sumIssWt').innerText = totalIss.toFixed(3);
 }
 
-// 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNumber').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -813,7 +815,6 @@ async function quickCompleteToggle() {
 
     let statusText = isCompleted ? 'completed' : 'running';
 
-    // 1. LocalStorage-il Dyeing Issue Records Save / Update
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let updated = false;
 
@@ -852,7 +853,6 @@ async function quickCompleteToggle() {
 
     localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
 
-    // 2. Design List Page Sync (design_specs Update)
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) {
         designSpecs[dNo] = {};
@@ -860,7 +860,6 @@ async function quickCompleteToggle() {
     designSpecs[dNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    // 3. Save to Firebase Cloud Instant Sync
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('dyeing_issue_records', records);
@@ -874,7 +873,7 @@ async function quickCompleteToggle() {
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveIssueEntries
+// 📌 FIREBASE SYNC: saveIssueEntries with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveIssueEntries() {
     let dateVal = document.getElementById('issueDate').value;
     let dNo = document.getElementById('designNumber').value;
@@ -885,31 +884,41 @@ async function saveIssueEntries() {
         return;
     }
 
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let cleanDNo = dNo.replace('#', '').trim().toLowerCase();
+
+    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
+    if(editingIssueId === null) {
+        let alreadyExists = records.some(r => {
+            let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+            return rDno === cleanDNo;
+        });
+
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; // Cancel save action if user clicks Cancel
+            }
+            // If confirmed, filter out old records of this design to prevent duplicate entries
+            records = records.filter(r => {
+                let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+                return rDno !== cleanDNo;
+            });
+        }
+    }
+
     let container = document.getElementById('issueLinesContainer');
     let rows = container.querySelectorAll('.line-row');
     
     if(rows.length === 0) {
-        let row = document.createElement('div');
-        row.className = 'line-row';
-        row.innerHTML = `
-            <input type="text" class="inp-count" value="20/s" placeholder="Count">
-            <input type="text" class="inp-mill" value="" placeholder="Mill Name">
-            <input type="text" class="inp-color" value="General" placeholder="Colour">
-            <input type="number" class="inp-ordwt" value="0.000" step="0.001">
-            <input type="number" class="inp-isswt" value="1.000" step="0.001" oninput="updateTotals()">
-            <input type="text" class="inp-unit" value="Main Unit" placeholder="Dyeing Unit">
-            <input type="hidden" class="inp-type" value="Combined">
-            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
-        `;
-        container.appendChild(row);
-        rows = container.querySelectorAll('.line-row');
+        alert("Please add at least one yarn item row.");
+        return;
     }
 
     let btn = document.getElementById('saveIssueBtnTxt');
     let origText = btn.innerText;
     btn.innerText = "⏳ Saving to Cloud...";
 
-    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let savedCount = 0;
     
     if(editingIssueId) {
@@ -918,7 +927,7 @@ async function saveIssueEntries() {
            let row = rows[0]; 
            records[rowIndex].date = dateVal;
            records[rowIndex].designNo = dNo;
-           records[rowIndex].millName = row.querySelector('.inp-mill').value.trim(); // Saving Mill Name
+           records[rowIndex].millName = row.querySelector('.inp-mill').value.trim();
            records[rowIndex].issueWt = parseFloat(row.querySelector('.inp-isswt').value).toFixed(3) || "0.000";
            records[rowIndex].unit = row.querySelector('.inp-unit').value.trim();
            records[rowIndex].status = isCompleted ? "completed" : "running";
@@ -928,7 +937,7 @@ async function saveIssueEntries() {
     } else {
         rows.forEach(row => {
             let count = row.querySelector('.inp-count').value.trim();
-            let mill = row.querySelector('.inp-mill').value.trim(); // Extracting Mill Name
+            let mill = row.querySelector('.inp-mill').value.trim();
             let color = row.querySelector('.inp-color').value.trim();
             let ordWt = parseFloat(row.querySelector('.inp-ordwt').value) || 0;
             let issWt = parseFloat(row.querySelector('.inp-isswt').value) || 0;
@@ -967,7 +976,7 @@ async function saveIssueEntries() {
             await window.firebaseSave('design_specs', designSpecs);
         }
 
-        alert("Dyeing Order Issues Saved Successfully! ✅☁️");
+        alert("Dyeing Order Issues Saved to Cloud Successfully! ✅☁️");
         
         document.getElementById('issueLinesContainer').innerHTML = '';
         document.getElementById('designNumber').value = '';
@@ -1059,15 +1068,23 @@ async function deleteIssuedRecord(id) {
     renderIssuedList();
 }
 
+// 🔥 FIXED: renderIssuedList now filters by currently selected design number
 function renderIssuedList() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let selectedDesign = document.getElementById('designNumber').value.trim();
+
+    // மேலே செலக்ட் செய்துள்ள டிசைன் மட்டும் தெரியும்படி ஃபில்டர் செய்கிறோம்
+    if(selectedDesign) {
+        records = records.filter(r => (r.designNo || r.designNumber || "").trim().toLowerCase() === selectedDesign.toLowerCase());
+    }
+
     let tbody = document.getElementById('issuedListBody');
     let tfoot = document.getElementById('issuedListFoot');
     tbody.innerHTML = '';
     tfoot.innerHTML = '';
 
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued for this design yet.</td></tr>`;
         return;
     }
 
@@ -1096,7 +1113,7 @@ function renderIssuedList() {
                 <td><b>${record.designNo}</b></td>
                 <td>${record.yarnType || 'Combined'}</td>
                 <td>${record.count}</td>
-                <td>${record.millName || '-'}</td> <!-- Display Mill Name -->
+                <td>${record.millName || '-'}</td>
                 <td>${record.color}</td>
                 <td>${oWt.toFixed(3)}</td>
                 <td style="color:#10B981; font-weight:bold;">${iWt.toFixed(3)}</td>
@@ -1166,7 +1183,6 @@ function renderIssuedList() {
         let origText = btn ? btn.innerText : "✅ Save Dyeing Order Issue";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        // Added 'kora_outward_records' to load from Firebase to ensure Mill Name autofill works globally
         let collections = ['dyeing_issue_records', 'design_masters_data', 'design_specs', 'pre_design_numbers', 'kora_outward_records'];
         
         for(let col of collections) {

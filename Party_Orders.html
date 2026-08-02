@@ -474,7 +474,7 @@
             }
         }
 
-        // 📌 FIXED: Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+        // 📌 Completed Checkbox Quick Toggle with Alert Pop-up
         async function quickCompleteToggle() {
             let designNo = document.getElementById('designNumber').value;
             let isCompleted = document.getElementById('orderStatusToggle').checked;
@@ -487,7 +487,6 @@
 
             let statusText = isCompleted ? 'completed' : 'running';
 
-            // 1. LocalStorage-il Party Orders Save / Update
             let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
             let index = orders.findIndex(x => (x.designNumber === designNo || x.designNo === designNo));
 
@@ -515,7 +514,6 @@
             }
             localStorage.setItem('party_orders_data', JSON.stringify(orders));
 
-            // 2. Design List Page Sync (design_specs Update)
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             if(!designSpecs[designNo]) {
                 designSpecs[designNo] = {};
@@ -523,7 +521,6 @@
             designSpecs[designNo].status = statusText;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-            // 3. Save to Firebase Cloud Instant Sync
             try {
                 if (window.firebaseSave) {
                     await window.firebaseSave('party_orders_data', orders);
@@ -537,15 +534,39 @@
             alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
         }
 
-        // 📌 FIREBASE SYNC: savePartyOrder
+        // 📌 FIREBASE SYNC: savePartyOrder with Re-entry Confirmation Popup & Double Entry Prevention
         async function savePartyOrder(e) {
             e.preventDefault();
+            
+            let designNo = document.getElementById('designNumber').value;
+            let cleanDesign = designNo ? designNo.replace('#', '').trim().toLowerCase() : '';
+
+            // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
+            if(editingId === null && cleanDesign) {
+                let alreadyExists = partyOrders.some(x => {
+                    let d = x.designNumber || x.designNo || '';
+                    return d.replace('#', '').trim().toLowerCase() === cleanDesign;
+                });
+
+                if(alreadyExists) {
+                    let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே பார்ட்டி ஆர்டர் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+                    if(!confirmReEntry) {
+                        return; // Cancel save action if user clicks Cancel
+                    }
+                    // If confirmed, filter out old records of this design to prevent duplicate entries
+                    partyOrders = partyOrders.filter(x => {
+                        let d = x.designNumber || x.designNo || '';
+                        return d.replace('#', '').trim().toLowerCase() !== cleanDesign;
+                    });
+                }
+            }
+
             const orderData = {
                 id: editingId !== null ? editingId : Date.now(),
                 date: document.getElementById('orderDate').value,
                 partyName: document.getElementById('partyName').value.trim(),
                 poNo: document.getElementById('poNumber').value.trim(),
-                designNumber: document.getElementById('designNumber').value,
+                designNumber: designNo,
                 warpCount: document.getElementById('warpCount').value.trim(),
                 weftCount: document.getElementById('weftCount').value.trim(),
                 reed: document.getElementById('reed').value.trim(),
@@ -574,7 +595,6 @@
                 alert("Party Order saved to Cloud successfully! ✅☁️");
             }
 
-            let designNo = orderData.designNumber;
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             if(!designSpecs[designNo]) designSpecs[designNo] = {};
             designSpecs[designNo].status = orderData.status;

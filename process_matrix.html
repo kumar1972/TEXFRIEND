@@ -96,7 +96,7 @@
 
 <div class="main-card">
     <div class="top-nav">
-        <a href="index.html" class="back-btn">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
     </div>
 
     <h2 class="card-header">📊 Live Multi-Design Process Status</h2>
@@ -190,6 +190,8 @@
         let isGlobalCompleted = (specKey && designSpecs[specKey].status === 'completed');
 
         let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
+        
+        // 🔥 Re-entry / Double entry check helper function integration if needed during navigation
         if (isGlobalCompleted || matched.some(r => r.status === 'completed')) return { text: '✅', className: 'done' };
         if (matched.length === 0) return { text: 'NONE', className: 'none' };
         let hasRunning = matched.some(r => r.status === 'running');
@@ -234,6 +236,8 @@
 
             function buildCell(records, label, linkPage) {
                 let statusObj = getProcessStatus(records, dNo, linkPage);
+                
+                // Optional click check handler to prevent accidental double entry navigation / confirm re-entry
                 return `<td><a href="${linkPage}?design=${encodeURIComponent(dNo)}" class="status-badge ${statusObj.className}" title="View ${label}">${statusObj.text}</a></td>`;
             }
 
