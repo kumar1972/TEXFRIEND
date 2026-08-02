@@ -548,10 +548,9 @@ function loadBitmapImage() {
     }
 }
 
-// 🔥 STRICTLY LOAD DESIGN DROPDOWN FROM DESIGN MASTERS ONLY
+// 🔥 STRICTLY LOAD DESIGN DROPDOWN FROM DESIGN MASTERS ONLY (Ignoring old cache)
 function loadDesignDropdowns() {
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-
     let select = document.getElementById('designNumber');
     let html = '<option value="">Select Design No</option>';
     
