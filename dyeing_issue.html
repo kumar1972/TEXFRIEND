@@ -514,7 +514,7 @@ function openModal(modalId) {
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
     if(modalId === 'issuedListModal') {
-        renderIssuedList(); // மோடல் திறக்கும்போது தற்போதைய டிசைன் மட்டும் தெரியும்படி ரெண்டர் செய்யும்
+        renderIssuedList(); 
     }
 }
 
@@ -536,41 +536,43 @@ window.closeFullscreenImage = function() {
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = designMasters.find(d => d.name === activeDesign) || {};
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
+    if (activeDesign && foundMaster.bitmap) {
+        let b64 = foundMaster.bitmap;
         bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     } else {
         bitmapContainer.innerHTML = '';
     }
 }
 
+// 🔥 STRICTLY LOAD DESIGN DROPDOWN FROM DESIGN MASTERS ONLY
 function loadDesignDropdowns() {
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-
-    let allDesigns = new Set();
-    preDesignList.forEach(d => allDesigns.add(d));
-    designMasters.forEach(d => allDesigns.add(d.name));
-    Object.keys(designSpecs).forEach(d => allDesigns.add(d));
 
     let select = document.getElementById('designNumber');
     let html = '<option value="">Select Design No</option>';
     
-    [...allDesigns].forEach(function(d) {
-        if(d) html += '<option value="' + d + '">' + d + '</option>';
-    });
+    if (designMasters.length > 0) {
+        designMasters.forEach(function(d) {
+            if(d && d.name) {
+                html += '<option value="' + d.name + '">' + d.name + '</option>';
+            }
+        });
+    }
+    
     select.innerHTML = html;
+    document.getElementById('bitmapDisplayContainer').innerHTML = '';
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && allDesigns.has(activeDesign)) {
-        select.value = activeDesign;
-        loadDesignItems();
-    } else {
-        loadBitmapImage();
+    if(activeDesign) {
+        let match = designMasters.find(d => d.name === activeDesign);
+        if(match) {
+            select.value = activeDesign;
+            loadDesignItems();
+        }
     }
 }
 
@@ -649,7 +651,7 @@ function getMillNameFromKora(designNo, countStr) {
 
 function loadDesignItems() {
     loadBitmapImage();
-    renderIssuedList(); // டிசைன் மாறும்போது ரெஜிஸ்ட்ரியும் அதற்கேற்ப அப்டேட் ஆகும்
+    renderIssuedList(); 
     let dNo = document.getElementById('designNumber').value;
     let container = document.getElementById('issueLinesContainer');
     container.innerHTML = '';
@@ -887,7 +889,6 @@ async function saveIssueEntries() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let cleanDNo = dNo.replace('#', '').trim().toLowerCase();
 
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
     if(editingIssueId === null) {
         let alreadyExists = records.some(r => {
             let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
@@ -897,9 +898,8 @@ async function saveIssueEntries() {
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
             if(!confirmReEntry) {
-                return; // Cancel save action if user clicks Cancel
+                return; 
             }
-            // If confirmed, filter out old records of this design to prevent duplicate entries
             records = records.filter(r => {
                 let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
                 return rDno !== cleanDNo;
@@ -1068,12 +1068,10 @@ async function deleteIssuedRecord(id) {
     renderIssuedList();
 }
 
-// 🔥 FIXED: renderIssuedList now filters by currently selected design number
 function renderIssuedList() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let selectedDesign = document.getElementById('designNumber').value.trim();
 
-    // மேலே செலக்ட் செய்துள்ள டிசைன் மட்டும் தெரியும்படி ஃபில்டர் செய்கிறோம்
     if(selectedDesign) {
         records = records.filter(r => (r.designNo || r.designNumber || "").trim().toLowerCase() === selectedDesign.toLowerCase());
     }
