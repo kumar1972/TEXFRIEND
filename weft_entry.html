@@ -10,12 +10,12 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-        /* 📌 Smart Background - STRICTLY NO BLACK */
+        /* 📌 Smart Background */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
             background: #EAF0EA; 
-            color: #1E2B23; /* Deep Dark Green */
+            color: #1E2B23; 
         }
 
         body { 
@@ -40,161 +40,68 @@
             gap: 15px;
         }
 
-        .top-nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 5px; 
-        }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 
-        /* 📌 Smart Back Button */
         .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            color: #FFFFFF;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 11px;
-            background: #1A2421; 
-            padding: 8px 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+            text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+            padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
         }
         .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-        /* Checkbox Styling */
         .completed-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: #D8DFD6;
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(82, 110, 81, 0.4);
+            display: flex; align-items: center; gap: 6px; background: #D8DFD6;
+            padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        .completed-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: #526E51;
-            margin: 0;
-            padding: 0;
-            border: none;
-        }
-        
-        .completed-checkbox label {
-            margin: 0;
-            color: #3F5A3E;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-        }
+        .completed-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; }
+        .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
 
         .page-title {
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: 700;
-            color: #2F4F38;
-            text-align: left;
-            position: relative;
-            padding-left: 12px;
+            font-size: 16px; font-weight: 700; color: #2F4F38; text-align: left;
+            position: relative; padding-left: 12px; margin-bottom: 5px;
         }
         .page-title::before {
             content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
             background: #4A7C59; border-radius: 4px;
         }
 
-        /* 📌 Smart Sectioning */
         .form-section {
-            background: #F8FAF8;
-            border: 1px solid #E2E8E2;
-            border-radius: 14px;
-            padding: 20px 15px 15px 15px;
-            margin-bottom: 5px;
-            position: relative;
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+            padding: 20px 15px 15px 15px; margin-bottom: 5px; position: relative;
         }
         
         .section-badge {
-            position: absolute;
-            top: -12px;
-            left: 15px;
-            background: #4A7C59;
-            color: #FFF;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
+            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
+            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
         }
         .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
         .section-badge.amber { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25); }
 
+        .compact-top-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;
+            background: #FFFFFF; padding: 12px; border-radius: 10px; border: 1px dashed #D1DED1; margin-top: 5px;
+        }
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-        /* 📌 Smart 3D Inputs */
         input, select {
-            width: 100%; padding: 10px 12px; border-radius: 8px;
-            border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
-            font-size: 11px; font-weight: 600; transition: all 0.3s ease;
-            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
+            background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; transition: all 0.3s ease;
         }
-        input:focus, select:focus {
-            border-color: #4A7C59; outline: none; background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-        }
-        input::placeholder { color: #A0AFA0; font-weight: 400; }
+        input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
-        .compact-top-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-            background: #FFFFFF;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px dashed #D1DED1;
-            margin-top: 5px;
-        }
-
-        /* 📌 Pattern Grids */
-        .header-grid {
-            display: grid;
-            grid-template-columns: 30px 1fr 1.2fr 1fr 35px;
-            gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
-            color: #2F4F38; text-align: center; text-transform: uppercase;
-        }
-        .row-grid {
-            display: grid;
-            grid-template-columns: 30px 1fr 1.2fr 1fr 35px;
-            gap: 6px; margin-bottom: 8px; align-items: center;
-        }
-
-        .header-grid-range {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 35px;
-            gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
-            color: #2F4F38; text-align: center; text-transform: uppercase;
-        }
-        .row-grid-range {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 35px;
-            gap: 6px; margin-bottom: 8px; align-items: center;
-        }
-
+        .header-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+        .row-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
+        .header-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+        .row-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
         .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 4px; font-size: 11px; }
 
-        .line-no {
-            font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center;
-            background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1;
-        }
+        .line-no { font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center; background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1; }
 
-        .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
+        .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
         .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s ease; }
         .btn-del-small:hover { background: #FECACA; transform: scale(1.05); }
 
@@ -204,84 +111,47 @@
             border: 1px solid #D1DED1; display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* 📌 Smart Action Buttons */
         .action-btns-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        
-        .btn-main {
-            width: 100%; padding: 14px; border: none; border-radius: 10px;
-            color: white; font-weight: 700; font-size: 12px; cursor: pointer;
-            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
+        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-main:hover { transform: translateY(-2px); }
-        .btn-main:active { transform: translateY(1px); }
-
         .btn-preview { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
         .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
         .btn-list { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25); }
 
-        /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
-        .overlay-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
-            z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
-        }
+        .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px); z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease; }
         .overlay-modal.show { opacity: 1; }
-        
-        .modal-content {
-            background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-            display: flex; flex-direction: column; box-shadow: none;
-            overflow: hidden; transform: scale(1);
-        }
-
-        .modal-header {
-            padding: 15px 20px; background: #F4F7F4; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-            flex-shrink: 0;
-        }
+        .modal-content { background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0; display: flex; flex-direction: column; overflow: hidden; transform: scale(1); }
+        .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0; }
         .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
-        
         .modal-actions { display: flex; gap: 8px; }
-        
+        .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .close-btn {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
-            transition: all 0.2s ease;
-        }
-        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-        /* 📌 Advanced Table Design with Horizontal Scroll */
-        .table-container {
-            width: 100%; border-radius: 10px; overflow-x: auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #F8FAF8; }
+        .table-container { width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; color: #1E2B23; }
         
         .action-cell { display: flex; gap: 4px; justify-content: center; }
-        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
-        .edit-action-btn:hover { background: #475569; }
-        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-        .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
-
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; }
         .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
         .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
+        /* 🔥 CLEAN PRINT & ALWAYS TWO COLUMNS SETTINGS */
         @media print {
+            @page { size: A4 portrait; margin: 5mm 8mm; }
             body * { visibility: hidden; }
             .overlay-modal, .overlay-modal * { visibility: visible; }
-            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
+            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; height: auto; padding: 0; z-index: 99999; background: #FFFFFF; }
+            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; width: 100% !important; }
             .no-print { display: none !important; }
-            .modal-body { padding: 0; background: #FFFFFF; }
+            .modal-body { padding: 0 !important; background: #FFFFFF; width: 100% !important; }
+            
+            table { font-size: 11px !important; width: 100%; border-collapse: collapse; }
+            th, td { padding: 3px 6px !important; line-height: 1.2; border-left: none !important; border-right: none !important; }
+            .print-flex-row { display: flex !important; flex-wrap: nowrap !important; gap: 20px !important; align-items: flex-start !important; justify-content: space-between !important; }
+            .print-col-box { flex: 1; min-width: 0; background: #FFF; width: 48%; }
         }
     </style>
 </head>
@@ -298,83 +168,47 @@
 
     <h2 class="page-title">🧶 Weft Pattern Entry</h2>
 
-    <!-- 📌 Section 1: Weft Specs -->
     <div class="form-section" style="margin-top: 5px;">
         <div class="section-badge">Weft Specs</div>
-        
         <div class="form-group" style="margin-bottom: 15px;">
             <label>Select Design Number</label>
-            <select id="designNo" onchange="loadWeftDesignData()">
-                <option value="">Select Design No</option>
-            </select>
+            <select id="designNo" onchange="loadWeftDesignData()"><option value="">Select Design No</option></select>
         </div>
-
         <div class="compact-top-grid">
-            <div class="form-group">
-                <label>Weft Width</label>
-                <input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()">
-            </div>
-            <div class="form-group">
-                <label>Weft Count</label>
-                <input type="text" id="infoWeftCount" placeholder="Count">
-            </div>
-            <div class="form-group">
-                <label>Pick</label>
-                <input type="text" id="infoPick" placeholder="Pick" oninput="calculateWeftValues()">
-            </div>
-            <div class="form-group">
-                <label>Weave</label>
-                <input type="text" id="infoWeave" placeholder="Weave">
-            </div>
+            <div class="form-group"><label>Weft Width</label><input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()"></div>
+            <div class="form-group"><label>Weft Count</label><input type="text" id="infoWeftCount" placeholder="Count"></div>
+            <div class="form-group"><label>Pick</label><input type="text" id="infoPick" placeholder="Pick" oninput="calculateWeftValues()"></div>
+            <div class="form-group"><label>Weave</label><input type="text" id="infoWeave" placeholder="Weave"></div>
         </div>
     </div>
 
-    <!-- 📌 Section 2: Weft Thread Pattern -->
     <div class="form-section">
         <div class="section-badge blue">Weft Thread Pattern</div>
         <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Picks to add new line)</div>
-        
         <div style="overflow-x: auto;">
             <div style="min-width: 400px;">
-                <div class="header-grid">
-                    <div>#</div>
-                    <div>Count</div>
-                    <div>Colour</div>
-                    <div>Picks</div>
-                    <div></div>
-                </div>
+                <div class="header-grid"><div>#</div><div>Count</div><div>Colour</div><div>Picks</div><div></div></div>
                 <div id="weftLinesContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- 📌 Section 3: Pattern Repeats -->
     <div class="form-section">
         <div class="section-badge amber">Pattern Repeats (Set)</div>
-        <div style="text-align: right; margin-bottom: 5px;">
-            <button class="btn-add-small" onclick="addWeftRange()">➕ Add Set</button>
-        </div>
-        
+        <div style="text-align: right; margin-bottom: 5px;"><button class="btn-add-small" onclick="addWeftRange()">➕ Add Set</button></div>
         <div style="overflow-x: auto;">
             <div style="min-width: 350px;">
-                <div class="header-grid-range">
-                    <div>Start Line</div>
-                    <div>End Line</div>
-                    <div>Set (Times)</div>
-                    <div></div>
-                </div>
+                <div class="header-grid-range"><div>Start Line</div><div>End Line</div><div>Set (Times)</div><div></div></div>
                 <div id="weftRangesContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- Calculations Display -->
     <div class="calc-box">
         <span>Total Pattern Picks: <span id="displayTotalPicks" style="color:#D97706; font-weight:800;">0</span></span>
         <span id="displayTotalCalc" style="color:#10B981; font-weight:800;">Total Pick: 0</span>
     </div>
 
-    <!-- Action Buttons -->
     <div class="action-btns-row">
         <button class="btn-main btn-preview" onclick="previewWeftPattern()">👁️ Preview</button>
         <button class="btn-main btn-save" onclick="saveWeftDesign()" id="saveBtnTxt">💾 Save</button>
@@ -382,7 +216,7 @@
     </div>
 </div>
 
-<!-- 📌 Full Screen Preview Modal -->
+<!-- Modals -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -392,55 +226,21 @@
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent">
-            <!-- Preview Content injects here -->
-        </div>
+        <div class="modal-body" id="previewContent"></div>
     </div>
 </div>
 
-<!-- 📌 Saved Patterns Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content" style="max-width:600px; height:90vh; margin:auto; border-radius:16px;">
-        <div class="modal-header">
-            <h3>📋 Saved Weft Patterns</h3>
-            <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Design No</th>
-                            <th>Total Lines</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="savedPatternsBody">
-                        <!-- Data here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div class="modal-header"><h3>📋 Saved Weft Patterns</h3><button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button></div>
+        <div class="modal-body"><div class="table-container"><table><thead><tr><th>Design No</th><th>Total Lines</th><th>Status</th><th>Action</th></tr></thead><tbody id="savedPatternsBody"></tbody></table></div></div>
     </div>
 </div>
 
 <script>
-function openModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-}
-
-function closeModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
-}
-
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
+function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
+function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
+function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -452,29 +252,17 @@ function loadDesignDropdown() {
 
 function loadWeftDesignData() {
     let dNo = document.getElementById('designNo').value;
-    let linesContainer = document.getElementById('weftLinesContainer');
-    let rangesContainer = document.getElementById('weftRangesContainer');
+    document.getElementById('weftLinesContainer').innerHTML = ''; document.getElementById('weftRangesContainer').innerHTML = '';
     let saveBtn = document.getElementById('saveBtnTxt');
     
-    linesContainer.innerHTML = '';
-    rangesContainer.innerHTML = '';
-    
-    document.getElementById('infoWeftWidth').value = '';
-    document.getElementById('infoWeftCount').value = '';
-    document.getElementById('infoPick').value = '';
-    document.getElementById('infoWeave').value = '';
-    document.getElementById('displayTotalPicks').innerText = '0';
-    document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
+    document.getElementById('infoWeftWidth').value = ''; document.getElementById('infoWeftCount').value = '';
+    document.getElementById('infoPick').value = ''; document.getElementById('infoWeave').value = '';
+    document.getElementById('displayTotalPicks').innerText = '0'; document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
     document.getElementById('top_completed_status').checked = false;
 
-    if(!dNo) {
-        saveBtn.innerText = "💾 Save";
-        addWeftLine();
-        return;
-    }
+    if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
 
     let cleanDNo = cleanDesignName(dNo);
-
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
@@ -483,19 +271,11 @@ function loadWeftDesignData() {
     let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
 
     let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
-
-    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) {
-        document.getElementById('top_completed_status').checked = true;
-    } else {
-        document.getElementById('top_completed_status').checked = false;
-    }
+    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) { document.getElementById('top_completed_status').checked = true; }
 
     let autoWeftWidth = '';
-    if (found && found.width) {
-        autoWeftWidth = (parseFloat(found.width) + 3).toFixed(2);
-    } else if (sp.width || sp.baseWidth) {
-        autoWeftWidth = (parseFloat(sp.width || sp.baseWidth) + 3).toFixed(2);
-    }
+    if (found && found.width) { autoWeftWidth = (parseFloat(found.width) + 3).toFixed(2); } 
+    else if (sp.width || sp.baseWidth) { autoWeftWidth = (parseFloat(sp.width || sp.baseWidth) + 3).toFixed(2); }
 
     let basePick = parseFloat(sp.pick || sp.basePick) || 0;
     let autoPick = basePick > 0 ? basePick - 4 : '';
@@ -507,32 +287,25 @@ function loadWeftDesignData() {
         document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
         document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
 
-        if(found.weftLines && found.weftLines.length > 0) {
-            found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
-        } else {
-            addWeftLine();
-        }
-
-        if(found.weftRanges && found.weftRanges.length > 0) {
-            found.weftRanges.forEach(r => addWeftRange(r.start, r.end, r.set));
-        }
+        if(found.weftLines && found.weftLines.length > 0) { found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks)); } 
+        else { loadDefaultRow(); }
+        if(found.weftRanges && found.weftRanges.length > 0) { found.weftRanges.forEach(r => addWeftRange(r.start, r.end, r.set)); }
     } else {
         saveBtn.innerText = "💾 Save";
         document.getElementById('infoWeftWidth').value = autoWeftWidth;
         document.getElementById('infoWeftCount').value = sp.weft || sp.count1 || '';
         document.getElementById('infoPick').value = autoPick;
         document.getElementById('infoWeave').value = sp.weave || '';
-        addWeftLine();
+        loadDefaultRow();
     }
-    
-    updateLineNumbers();
-    calculateWeftValues();
+    updateLineNumbers(); calculateWeftValues();
 }
+
+function loadDefaultRow() { document.getElementById('weftLinesContainer').innerHTML = ''; addWeftLine(); }
 
 function addWeftLine(count = '', color = '', picks = '') {
     let container = document.getElementById('weftLinesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid line-item';
+    let row = document.createElement('div'); row.className = 'row-grid line-item';
     row.innerHTML = `
         <div class="line-no"></div>
         <input type="text" class="inp-count" placeholder="Count" value="${count}">
@@ -542,14 +315,12 @@ function addWeftLine(count = '', color = '', picks = '') {
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
         <button class="btn-del-small" onclick="this.parentElement.remove(); updateLineNumbers(); calculateWeftValues();">×</button>
     `;
-    container.appendChild(row);
-    updateLineNumbers();
+    container.appendChild(row); updateLineNumbers();
 }
 
 function addWeftRange(start = '', end = '', set = '') {
     let container = document.getElementById('weftRangesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid-range range-item';
+    let row = document.createElement('div'); row.className = 'row-grid-range range-item';
     row.innerHTML = `
         <input type="number" class="inp-start" placeholder="Start" value="${start}" oninput="calculateWeftValues()">
         <input type="number" class="inp-end" placeholder="End" value="${end}" oninput="calculateWeftValues()">
@@ -557,227 +328,119 @@ function addWeftRange(start = '', end = '', set = '') {
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftRange(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-start'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
         <button class="btn-del-small" onclick="this.parentElement.remove(); calculateWeftValues();">×</button>
     `;
-    container.appendChild(row);
-    calculateWeftValues();
+    container.appendChild(row); calculateWeftValues();
 }
 
-function updateLineNumbers() {
-    let lines = document.querySelectorAll('.line-item .line-no');
-    lines.forEach((elem, idx) => {
-        elem.innerText = idx + 1;
-    });
-}
+function updateLineNumbers() { document.querySelectorAll('.line-item .line-no').forEach((elem, idx) => { elem.innerText = idx + 1; }); }
 
 function calculateWeftValues() {
     let wWidth = parseFloat(document.getElementById('infoWeftWidth').value) || 0;
     let pick = parseFloat(document.getElementById('infoPick').value) || 0;
-    
-    let totalPickCalc = wWidth * pick;
-    document.getElementById('displayTotalCalc').innerText = `Total Pick: ${wWidth} x ${pick} = ${totalPickCalc.toFixed(2)}`;
+    document.getElementById('displayTotalCalc').innerText = `Total Pick: ${wWidth} x ${pick} = ${(wWidth * pick).toFixed(2)}`;
 
-    let lines = [];
-    document.querySelectorAll('.line-item').forEach(row => {
-        lines.push(parseFloat(row.querySelector('.inp-picks').value) || 0);
-    });
-
-    let ranges = [];
-    document.querySelectorAll('.range-item').forEach(row => {
-        let s = parseInt(row.querySelector('.inp-start').value) || 0;
-        let e = parseInt(row.querySelector('.inp-end').value) || 0;
+    let lines = []; document.querySelectorAll('.line-item').forEach(row => { lines.push(parseFloat(row.querySelector('.inp-picks').value) || 0); });
+    let ranges = []; document.querySelectorAll('.range-item').forEach(row => {
+        let s = parseInt(row.querySelector('.inp-start').value) || 0; let e = parseInt(row.querySelector('.inp-end').value) || 0;
         let set = parseInt(row.querySelector('.inp-set').value) || 0;
         if(s && e && set) ranges.push({start: s, end: e, set: set});
     });
 
-    let totalPatternPicks = 0;
-    let i = 0;
+    let totalPatternPicks = 0; let i = 0;
     while (i < lines.length) {
-        let currentLineNum = i + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
-        
+        let currentLineNum = i + 1; let range = ranges.find(r => r.start === currentLineNum);
         if (range && range.end >= range.start) {
-            let blockPicks = 0;
-            for (let j = range.start; j <= range.end; j++) {
-                if (lines[j - 1] !== undefined) {
-                    blockPicks += lines[j - 1];
-                }
-            }
-            totalPatternPicks += blockPicks * range.set;
-            i = range.end;
-        } else {
-            totalPatternPicks += lines[i] || 0;
-            i++;
-        }
+            let blockPicks = 0; for (let j = range.start; j <= range.end; j++) { if (lines[j - 1] !== undefined) blockPicks += lines[j - 1]; }
+            totalPatternPicks += blockPicks * range.set; i = range.end;
+        } else { totalPatternPicks += lines[i] || 0; i++; }
     }
-
     document.getElementById('displayTotalPicks').innerText = totalPatternPicks;
 }
 
-// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNo').value;
+    if(!dNo) { alert("Mudhala Design Number select pannunga bro"); document.getElementById('top_completed_status').checked = false; return; }
+
     let isCompleted = document.getElementById('top_completed_status').checked;
-
-    if(!dNo) {
-        alert("Mudhala Design Number select pannunga bro");
-        document.getElementById('top_completed_status').checked = false;
-        return;
-    }
-
     let statusText = isCompleted ? 'completed' : 'running';
-
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
 
-    if(idx > -1) {
-        masters[idx].status = statusText;
-    } else {
-        masters.push({
-            name: dNo,
-            status: statusText,
-            weftLines: [],
-            weftRanges: []
-        });
-    }
+    if(idx > -1) { masters[idx].status = statusText; } 
+    else { masters.push({ name: dNo, status: statusText, weftLines: [], weftRanges: [] }); }
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
-
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) {
-        designSpecs[dNo] = {};
-    }
-    designSpecs[dNo].status = statusText;
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-    try {
-        if (window.firebaseSave) {
-            await window.firebaseSave('design_masters_data', masters);
-            await window.firebaseSave('design_specs', designSpecs);
-        }
-    } catch(e) {
-        console.error("Firebase Sync Error: ", e);
-    }
-
-    renderSavedList();
-    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
-}
-
-// 📌 FIREBASE SYNC: saveWeftDesign with Re-entry Confirmation Popup & Double Entry Prevention
-async function saveWeftDesign() {
-    let dNo = document.getElementById('designNo').value;
-    if(!dNo) {
-        alert("Please select a Design Number!");
-        return;
-    }
-
-    let cleanDNo = cleanDesignName(dNo);
-    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
-    let alreadyExists = masters.some(m => cleanDesignName(m.name) === cleanDNo && m.weftLines && m.weftLines.length > 0);
-    if(alreadyExists) {
-        let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே வெப்ட் பேட்டர்ன் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-        if(!confirmReEntry) {
-            return; // Cancel save action if user clicks Cancel
-        }
-        // If confirmed, filter out old records of this design to prevent duplicate entries
-        masters = masters.filter(m => cleanDesignName(m.name) !== cleanDNo);
-    }
-
-    let saveBtn = document.getElementById('saveBtnTxt');
-    let originalText = saveBtn.innerText;
-    saveBtn.innerText = "⏳ Saving to Cloud...";
-
-    let wWidth = document.getElementById('infoWeftWidth').value.trim();
-    let wCount = document.getElementById('infoWeftCount').value.trim();
-    let pick = document.getElementById('infoPick').value.trim();
-    let weave = document.getElementById('infoWeave').value.trim();
-    let isCompleted = document.getElementById('top_completed_status').checked;
-
-    let lines = [];
-    document.querySelectorAll('.line-item').forEach(row => {
-        let count = row.querySelector('.inp-count').value.trim();
-        let color = row.querySelector('.inp-color').value.trim();
-        let picks = row.querySelector('.inp-picks').value.trim();
-        if(count || color || picks) {
-            lines.push({ count: count, color: color, picks: parseFloat(picks) || 0 });
-        }
-    });
-
-    let ranges = [];
-    document.querySelectorAll('.range-item').forEach(row => {
-        let start = row.querySelector('.inp-start').value.trim();
-        let end = row.querySelector('.inp-end').value.trim();
-        let set = row.querySelector('.inp-set').value.trim();
-        if(start && end && set) {
-            ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
-        }
-    });
-
-    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
-    
-    let patternData = {
-        name: dNo, 
-        weftWidth: wWidth, 
-        weftCount: wCount, 
-        weftPick: pick, 
-        weaveType: weave, 
-        weftLines: lines, 
-        weftRanges: ranges,
-        status: isCompleted ? 'completed' : 'running'
-    };
-
-    if(idx === -1) {
-        masters.push(patternData);
-    } else {
-        masters[idx] = Object.assign({}, masters[idx], patternData);
-    }
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    designSpecs[dNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    localStorage.setItem('design_masters_data', JSON.stringify(masters));
-
-    if (window.firebaseSave) {
-        await window.firebaseSave('design_masters_data', masters);
-        await window.firebaseSave('design_specs', designSpecs);
-    }
-
-    saveBtn.innerText = originalText;
-    alert("Weft Pattern Saved to Cloud Successfully! ✅☁️");
+    try { if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); } } catch(e) {}
+    renderSavedList(); alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: toggleStatus
+async function saveWeftDesign() {
+    let dNo = document.getElementById('designNo').value;
+    if(!dNo) { alert("Please select a Design Number!"); return; }
+
+    let cleanDNo = cleanDesignName(dNo);
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+
+    if(masters.some(m => cleanDesignName(m.name) === cleanDNo && m.weftLines && m.weftLines.length > 0)) {
+        if(!confirm("இந்த டிசைனுக்கு ஏற்கனவே வெப்ட் பேட்டர்ன் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?")) return;
+        masters = masters.filter(m => cleanDesignName(m.name) !== cleanDNo);
+    }
+
+    let saveBtn = document.getElementById('saveBtnTxt'); let originalText = saveBtn.innerText; saveBtn.innerText = "⏳ Saving...";
+
+    let lines = []; document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim(); let color = row.querySelector('.inp-color').value.trim();
+        let picks = row.querySelector('.inp-picks').value.trim();
+        if(count || color || picks) lines.push({ count: count, color: color, picks: parseFloat(picks) || 0 });
+    });
+
+    let ranges = []; document.querySelectorAll('.range-item').forEach(row => {
+        let start = row.querySelector('.inp-start').value.trim(); let end = row.querySelector('.inp-end').value.trim();
+        let set = row.querySelector('.inp-set').value.trim();
+        if(start && end && set) ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
+    });
+
+    let patternData = {
+        name: dNo, weftWidth: document.getElementById('infoWeftWidth').value.trim(), weftCount: document.getElementById('infoWeftCount').value.trim(), 
+        weftPick: document.getElementById('infoPick').value.trim(), weaveType: document.getElementById('infoWeave').value.trim(), 
+        weftLines: lines, weftRanges: ranges, status: document.getElementById('top_completed_status').checked ? 'completed' : 'running'
+    };
+
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+    if(idx === -1) masters.push(patternData); else masters[idx] = Object.assign({}, masters[idx], patternData);
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    if(!designSpecs[dNo]) designSpecs[dNo] = {};
+    designSpecs[dNo].status = document.getElementById('top_completed_status').checked ? 'completed' : 'running';
+    
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+    localStorage.setItem('design_masters_data', JSON.stringify(masters));
+
+    if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+    saveBtn.innerText = originalText; alert("Weft Pattern Saved to Cloud Successfully! ✅☁️");
+}
+
 async function toggleStatus(dNo, newStatus) {
-    let msg = newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?";
-    if(confirm(msg)) {
-        let cleanDNo = cleanDesignName(dNo);
+    if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
-        
+        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
         if(index > -1) {
-            masters[index].status = newStatus;
-            localStorage.setItem('design_masters_data', JSON.stringify(masters));
-            
+            masters[index].status = newStatus; localStorage.setItem('design_masters_data', JSON.stringify(masters));
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             if(!designSpecs[dNo]) designSpecs[dNo] = {};
-            designSpecs[dNo].status = newStatus;
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            if(window.firebaseSave) {
-                await window.firebaseSave('design_masters_data', masters);
-                await window.firebaseSave('design_specs', designSpecs);
-            }
+            designSpecs[dNo].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
             renderSavedList();
         }
     }
 }
 
-function openSavedModal() {
-    renderSavedList();
-    openModal('savedListModal');
-}
+function openSavedModal() { renderSavedList(); openModal('savedListModal'); }
 
 function renderSavedList() {
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
@@ -864,16 +527,22 @@ function previewWeftPattern() {
         </div>
     `;
 
-    let tbodyHtml = '';
+    let col1Html = ''; 
+    let col2Html = ''; 
+    let currentLinesInCol1 = 0;
+    const MAX_LINES_COL1 = 25; 
+    
     let totalPicksPattern = 0;
     let i = 0;
-    
-    let tdStyle = "padding:10px; border-bottom:1px dashed #D1DED1; border-right:1px dotted #A0AFA0; text-align:center; color:#1E2B23;";
-    let tdStyleLast = "padding:10px; border-bottom:1px dashed #D1DED1; vertical-align:middle; color:#1E2B23; text-align:left;";
+    let tdStyle = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:center; color:#1E2B23; font-size:11px;";
+    let tdStyleColor = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:left; color:#1E2B23; font-size:11px; white-space:nowrap;";
+    let tdStyleLast = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; vertical-align:middle; color:#1E2B23; text-align:left; font-size:11px;";
 
     while (i < lines.length) {
         let currentLineNum = i + 1;
         let range = ranges.find(r => r.start === currentLineNum);
+        let blockHtml = '';
+        let blockLineCount = 0;
         
         if (range && range.end >= range.start) {
             let blockLines = [];
@@ -894,20 +563,21 @@ function previewWeftPattern() {
             blockLines.forEach((item, index) => {
                 let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
                 
-                tbodyHtml += `<tr>
+                blockHtml += `<tr>
                     <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                     <td style="${tdStyle}">${item.count || '-'}</td>
-                    <td style="${tdStyle}">${colorTamil}</td>
-                    <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>`;
+                    <td style="${tdStyleColor}">${colorTamil}</td>
+                    <td style="${tdStyle} font-weight:bold;">${item.picks}</td>`;
                 
                 if (index === 0) {
-                    tbodyHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
-                        <span style="font-size:18px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalPicks}</span></b>
+                    blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
+                        <span style="font-size:14px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalPicks}</span></b>
                     </td>`;
                 }
-                tbodyHtml += `</tr>`;
+                blockHtml += `</tr>`;
             });
             i = range.end; 
+            blockLineCount = blockLines.length;
         } else {
             let item = Object.assign({}, lines[i]);
             item.lineNo = i + 1;
@@ -915,40 +585,73 @@ function previewWeftPattern() {
             
             let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
             
-            tbodyHtml += `<tr>
+            blockHtml += `<tr>
                 <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                 <td style="${tdStyle}">${item.count || '-'}</td>
-                <td style="${tdStyle}">${colorTamil}</td>
-                <td style="${tdStyle} font-weight:bold; text-align:center;">${item.picks}</td>
-                <td style="padding:10px; border-bottom:1px dashed #D1DED1;"></td>
+                <td style="${tdStyleColor}">${colorTamil}</td>
+                <td style="${tdStyle} font-weight:bold;">${item.picks}</td>
+                <td style="${tdStyleLast}"></td>
             </tr>`;
             i++;
+            blockLineCount = 1;
+        }
+
+        if (currentLinesInCol1 < MAX_LINES_COL1) {
+            col1Html += blockHtml;
+            currentLinesInCol1 += blockLineCount;
+        } else {
+            col2Html += blockHtml;
         }
     }
-
-    let html = headerHtml;
-    html += '<div class="table-container" style="border:1px solid #D1DED1;"><table style="width:100%; border-collapse:collapse; font-size:12px; background:#FFF;">';
-    html += `<tr style="background:#EAF0EA; border-bottom:2px solid #A0AFA0;">
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">#</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Count</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Colour</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Picks</th>
-                <th style="padding:12px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:11px;">Set</th>
-             </tr>`;
-    html += tbodyHtml;
     
-    html += `<tr style="font-weight:bold; font-size:13px; background:#F8FAF8; border-top:2px solid #A0AFA0;">
-        <td colspan="3" style="padding:12px; text-align:right; border-right:1px dotted #A0AFA0; color:#2F4F38;">Total Pattern Picks:</td>
-        <td colspan="2" style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; color:#10B981;">${totalPicksPattern}</td>
-    </tr>`;
+    let html = headerHtml;
+
+    // 🔥 Adjusted Widths: Reduced Colour to 25%, Increased Set to 35%
+    let tableHeader = `
+        <tr style="background:#EAF0EA;">
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:10%;">No</th>
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Count</th>
+            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:25%;">Colour</th>
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Picks</th>
+            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
+        </tr>
+    `;
+
+    html += '<div class="print-flex-row" style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; width: 100%;">';
+    
+    // Column 1
+    html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            ${tableHeader}
+            ${col1Html}
+        </table>
+    </div>`;
+
+    // Column 2
+    html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">`;
+    if (col2Html !== '') {
+        html += `<table style="width:100%; border-collapse:collapse; font-size:11px;">
+            ${tableHeader}
+            ${col2Html}
+        </table>`;
+    }
+    html += `</div></div>`;
+
+    // Totals Section
+    html += `<div style="margin-top: 15px; border-top: 2px solid #4A7C59; padding-top: 5px; page-break-inside: avoid;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; background:#FFF;">
+            <tr style="font-weight:bold; font-size:12px; background:#F8FAF8; border-bottom: 1px dashed #A0AFA0;">
+                <td style="padding:8px; text-align:right; color:#2F4F38; width: 60%;">Total Pattern Picks:</td>
+                <td style="padding:8px; font-weight:bold; text-align:left; padding-left:15px; color:#10B981;">${totalPicksPattern}</td>
+            </tr>`;
 
     let pickNum = parseFloat(pick) || 0;
     let wWidthNum = parseFloat(wWidth) || 0;
     if (pickNum > 0 && wWidthNum > 0) {
         let overallCalc = wWidthNum * pickNum;
-        html += `<tr style="font-weight:700; font-size:14px; background:#FFFFFF; color:#2F4F38; border-top:1px solid #A0AFA0;">
-            <td colspan="5" style="padding:15px; text-align:center;">
-                Weft Width ${wWidthNum} X Pick ${pickNum} = <span style="font-size:16px; color:#1E2B23;">${overallCalc.toFixed(2)} Total Pick</span>
+        html += `<tr style="font-weight:700; font-size:12px; background:#FFFFFF; color:#2F4F38;">
+            <td colspan="2" style="padding:10px; text-align:center;">
+                Weft Width ${wWidthNum} X Pick ${pickNum} = <span style="font-size:13px; color:#1E2B23;">${overallCalc.toFixed(2)} Total Pick</span>
             </td>
         </tr>`;
     }
@@ -1019,7 +722,7 @@ function previewWeftPattern() {
         
         loadDesignDropdown();
         if(!document.getElementById('designNo').value) {
-            addWeftLine(); 
+            loadDefaultRow(); 
         }
     });
 </script>

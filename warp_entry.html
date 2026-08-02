@@ -10,12 +10,12 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Background - STRICTLY NO BLACK */
+    /* 📌 Smart Background */
     html, body { 
         width: 100%; 
         min-height: 100vh; 
         background: #EAF0EA; 
-        color: #1E2B23; /* Deep Dark Green */
+        color: #1E2B23; 
     }
 
     body { 
@@ -40,266 +40,120 @@
         gap: 15px;
     }
 
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 
-    /* 📌 Smart Back Button */
     .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+        padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         transition: all 0.3s ease;
     }
     .back-btn:hover { background: #0F1713; transform: translateY(-2px); }
 
     #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
     #bitmapDisplayContainer img {
-        max-height: 45px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        cursor: zoom-in;
-        transition: transform 0.3s;
+        max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
     }
     #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    /* Checkbox Styling */
     .completed-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #D8DFD6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
+        display: flex; align-items: center; gap: 6px; background: #D8DFD6;
+        padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    
-    .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: #526E51;
-        margin: 0;
-        padding: 0;
-        border: none;
-    }
-    
-    .completed-checkbox label {
-        margin: 0;
-        color: #3F5A3E;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-    }
+    .completed-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; }
+    .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
 
     .page-title {
-        font-size: 16px;
-        margin-bottom: 5px;
-        font-weight: 700;
-        color: #2F4F38;
-        text-align: left;
-        position: relative;
-        padding-left: 12px;
+        font-size: 16px; font-weight: 700; color: #2F4F38; text-align: left;
+        position: relative; padding-left: 12px; margin-bottom: 5px;
     }
     .page-title::before {
         content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
         background: #4A7C59; border-radius: 4px;
     }
 
-    /* 📌 Smart Sectioning */
     .form-section {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 22px 15px 15px 15px;
-        margin-bottom: 5px;
-        position: relative;
+        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+        padding: 22px 15px 15px 15px; margin-bottom: 5px; position: relative;
     }
     
     .section-badge {
-        position: absolute;
-        top: -12px;
-        left: 15px;
-        background: #4A7C59;
-        color: #FFF;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
+        font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
+        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
     }
     .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
     .section-badge.amber { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25); }
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 12px;
-        margin-bottom: 12px;
-    }
-
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 12px; }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-    /* 📌 Smart 3D Inputs */
     input, select {
-        width: 100%; padding: 10px 12px; border-radius: 8px;
-        border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
-        font-size: 11px; font-weight: 600; transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
+        background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; transition: all 0.3s ease;
     }
-    input:focus, select:focus {
-        border-color: #4A7C59; outline: none; background: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
-    input::placeholder { color: #A0AFA0; font-weight: 400; }
+    input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
-    /* 📌 Fixed Pattern Grids */
-    .header-grid {
-        display: grid;
-        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 4px; padding: 5px 0; font-size: 9px; font-weight: 700;
-        color: #2F4F38; text-align: center; text-transform: uppercase;
-    }
-    .row-grid {
-        display: grid;
-        grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px;
-        gap: 4px; margin-bottom: 8px; align-items: center;
-    }
-
-    .header-grid-range {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 35px;
-        gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700;
-        color: #2F4F38; text-align: center; text-transform: uppercase;
-    }
-    .row-grid-range {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 35px;
-        gap: 6px; margin-bottom: 8px; align-items: center;
-    }
-
+    .header-grid { display: grid; grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px; gap: 4px; padding: 5px 0; font-size: 9px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+    .row-grid { display: grid; grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 35px; gap: 4px; margin-bottom: 8px; align-items: center; }
+    .header-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+    .row-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
     .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 2px; font-size: 11px; }
 
-    .line-no {
-        font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center;
-        background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1;
-    }
+    .line-no { font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center; background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1; }
 
-    .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
+    .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
     .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s ease; }
     .btn-del-small:hover { background: #FECACA; transform: scale(1.05); }
 
-    /* 📌 Smart Action Buttons */
     .action-btns-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-    
-    .btn-main {
-        width: 100%; padding: 14px; border: none; border-radius: 10px;
-        color: white; font-weight: 700; font-size: 12px; cursor: pointer;
-        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
+    .btn-main { width: 100%; padding: 14px; border: none; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-main:hover { transform: translateY(-2px); }
-    .btn-main:active { transform: translateY(1px); }
-
     .btn-preview { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
     .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
     .btn-list { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25); }
 
-    /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
-        z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
-    }
+    .overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px); z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease; }
     .overlay-modal.show { opacity: 1; }
-    
-    .modal-content {
-        background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-        display: flex; flex-direction: column; box-shadow: none;
-        overflow: hidden; transform: scale(1);
-    }
-
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-        flex-shrink: 0;
-    }
+    .modal-content { background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0; display: flex; flex-direction: column; overflow: hidden; transform: scale(1); }
+    .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0; }
     .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; }
-    
     .modal-actions { display: flex; gap: 8px; }
-    
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
+    .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
     .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-    /* 📌 Fullscreen Image Popup Modal */
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+    .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column; }
+    .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
+    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    /* 📌 Advanced Table Design with Horizontal Scroll */
-    .table-container {
-        width: 100%; border-radius: 10px; overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
+    .table-container { width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; white-space: nowrap; }
+    th, td { padding: 10px 12px; text-align: center; color: #1E2B23; }
     
     .action-cell { display: flex; gap: 4px; justify-content: center; }
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; margin-right: 4px; }
-    .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
-
+    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; }
+    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; }
     .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
     .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
+    /* 🔥 CLEAN PRINT & ALWAYS TWO COLUMNS SETTINGS */
     @media print {
+        @page { size: A4 portrait; margin: 8mm; }
         body * { visibility: hidden; }
         .overlay-modal, .overlay-modal * { visibility: visible; }
-        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
+        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; height: auto; padding: 0; z-index: 99999; background: #FFFFFF; }
+        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; width: 100% !important; }
         .no-print { display: none !important; }
-        .modal-body { padding: 0; background: #FFFFFF; }
+        .modal-body { padding: 0 !important; background: #FFFFFF; width: 100% !important; }
+        
+        table { font-size: 11px !important; width: 100%; border-collapse: collapse; }
+        th, td { padding: 4px 6px !important; line-height: 1.2; border-left: none !important; border-right: none !important; }
+        .print-flex-row { display: flex !important; flex-wrap: nowrap !important; gap: 20px !important; align-items: flex-start !important; justify-content: space-between !important; }
+        .print-col-box { flex: 1; min-width: 0; background: #FFF; width: 48%; }
     }
 </style>
 </head>
@@ -318,102 +172,48 @@
 
     <h2 class="page-title">📐 Warp Pattern Entry</h2>
 
-    <!-- 📌 Section 1: Design Specs -->
     <div class="form-section" style="margin-top: 5px;">
         <div class="section-badge">General Specs</div>
-        
         <div class="form-group" style="margin-bottom: 15px;">
             <label>Design Number</label>
-            <select id="designNo" onchange="loadDesignData()">
-                <option value="">Select Design No</option>
-            </select>
+            <select id="designNo" onchange="loadDesignData()"><option value="">Select Design No</option></select>
         </div>
-
         <div class="form-grid">
-            <div class="form-group">
-                <label>Order Mtrs</label>
-                <input type="number" id="infoOrderMtr" placeholder="Mtrs" step="0.01" oninput="calculateTopBeam()">
-            </div>
-            <div class="form-group">
-                <label>Top Beam Mtrs</label>
-                <input type="text" id="infoTopBeam" placeholder="e.g. 130 or +30%" onblur="calculateTopBeam()" onchange="calculateTopBeam()">
-            </div>
-            <div class="form-group">
-                <label>Fabric Type</label>
-                <select id="infoType">
-                    <option value="Plain">Plain</option>
-                    <option value="Twill">Twill</option>
-                    <option value="Dobby">Dobby</option>
-                    <option value="Seersucker">Seersucker</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Order Mtrs</label><input type="number" id="infoOrderMtr" placeholder="Mtrs" step="0.01" oninput="calculateTopBeam()"></div>
+            <div class="form-group"><label>Top Beam Mtrs</label><input type="text" id="infoTopBeam" placeholder="e.g. 130 or +30%" onblur="calculateTopBeam()" onchange="calculateTopBeam()"></div>
+            <div class="form-group"><label>Fabric Type</label><select id="infoType"><option value="Plain">Plain</option><option value="Twill">Twill</option><option value="Dobby">Dobby</option><option value="Seersucker">Seersucker</option></select></div>
         </div>
-
         <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); background: #FFFFFF; padding: 12px; border-radius: 10px; border: 1px dashed #D1DED1; margin-top: 5px;">
-            <div class="form-group">
-                <label>Count 1</label>
-                <input type="text" id="infoCount1" placeholder="C1">
-            </div>
-            <div class="form-group">
-                <label>Count 2</label>
-                <input type="text" id="infoCount2" placeholder="C2">
-            </div>
-            <div class="form-group">
-                <label>O.Reed</label>
-                <input type="text" id="infoReed" placeholder="Reed" oninput="calculateOnloomWidth()">
-            </div>
-            <div class="form-group">
-                <label>O.Pick</label>
-                <input type="text" id="infoPick" placeholder="Pick">
-            </div>
-            <div class="form-group">
-                <label>O.Width</label>
-                <input type="text" id="infoWidth" placeholder="Width">
-            </div>
+            <div class="form-group"><label>Count 1</label><input type="text" id="infoCount1" placeholder="C1"></div>
+            <div class="form-group"><label>Count 2</label><input type="text" id="infoCount2" placeholder="C2"></div>
+            <div class="form-group"><label>O.Reed</label><input type="text" id="infoReed" placeholder="Reed" oninput="calculateOnloomWidth()"></div>
+            <div class="form-group"><label>O.Pick</label><input type="text" id="infoPick" placeholder="Pick"></div>
+            <div class="form-group"><label>O.Width</label><input type="text" id="infoWidth" placeholder="Width"></div>
         </div>
     </div>
 
-    <!-- 📌 Section 2: Thread Pattern -->
     <div class="form-section">
         <div class="section-badge blue">Warp Thread Pattern</div>
         <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Ends to add new line)</div>
-        
         <div style="overflow-x: auto;">
             <div style="min-width: 450px;">
-                <div class="header-grid">
-                    <div>#</div>
-                    <div>Count</div>
-                    <div>Colour</div>
-                    <div>Beam</div>
-                    <div>Ends</div>
-                    <div></div>
-                </div>
+                <div class="header-grid"><div>#</div><div>Count</div><div>Colour</div><div>Beam</div><div>Ends</div><div></div></div>
                 <div id="warpLinesContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- 📌 Section 3: Pattern Repeats -->
     <div class="form-section">
         <div class="section-badge amber">Pattern Repeats (Groups)</div>
-        <div style="text-align: right; margin-bottom: 5px;">
-            <button class="btn-add-small" onclick="addWarpRange()">➕ Add Range</button>
-        </div>
-        
+        <div style="text-align: right; margin-bottom: 5px;"><button class="btn-add-small" onclick="addWarpRange()">➕ Add Range</button></div>
         <div style="overflow-x: auto;">
             <div style="min-width: 350px;">
-                <div class="header-grid-range">
-                    <div>Start Line</div>
-                    <div>End Line</div>
-                    <div>X (Times)</div>
-                    <div></div>
-                </div>
+                <div class="header-grid-range"><div>Start Line</div><div>End Line</div><div>X (Times)</div><div></div></div>
                 <div id="warpRangesContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- 📌 Action Buttons -->
     <div class="action-btns-row">
         <button class="btn-main btn-preview" onclick="previewPattern()">👁️ Preview</button>
         <button class="btn-main btn-save" onclick="saveWarpDesign()" id="saveBtnTxt">💾 Save</button>
@@ -421,7 +221,7 @@
     </div>
 </div>
 
-<!-- 📌 Full Screen Print Preview Modal -->
+<!-- Modals -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -431,96 +231,43 @@
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent">
-            <!-- Generated HTML goes here -->
-        </div>
+        <div class="modal-body" id="previewContent"></div>
     </div>
 </div>
 
-<!-- 📌 Saved List Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content" style="max-width:600px; height:90vh; margin:auto; border-radius:16px;">
-        <div class="modal-header">
-            <h3>📋 Saved Warp Patterns</h3>
-            <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Design No</th>
-                            <th>Total Lines</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="savedPatternsBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div class="modal-header"><h3>📋 Saved Warp Patterns</h3><button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button></div>
+        <div class="modal-body"><div class="table-container"><table><thead><tr><th>Design No</th><th>Total Lines</th><th>Status</th><th>Action</th></tr></thead><tbody id="savedPatternsBody"></tbody></table></div></div>
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
-<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
-    <button class="close-fullscreen">Close ✕</button>
-    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
-</div>
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()"><button class="close-fullscreen">Close ✕</button><img id="fullscreenImg" src="" alt="Fullscreen Preview"></div>
 
 <script>
 let currentBaseSpecs = {};
 
-function openModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-}
-
-function closeModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
-}
-
-// 📌 Fullscreen Image Popup Controls
-window.openFullscreenImage = function(src) {
-    if(!src || src === '' || src === 'null') return;
-    document.getElementById('fullscreenImg').src = src;
-    document.getElementById('fullscreenModal').style.display = 'flex';
-}
-window.closeFullscreenImage = function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-}
+function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
+function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
+window.openFullscreenImage = function(src) { if(!src || src === '' || src === 'null') return; document.getElementById('fullscreenImg').src = src; document.getElementById('fullscreenModal').style.display = 'flex'; }
+window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-    
     let imgHtml = '';
     if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
         let b64 = designSpecs[activeDesign].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
-    
     let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-    
-    let wasChecked = false;
-    let cb = document.getElementById('top_completed_status');
-    if(cb) wasChecked = cb.checked;
-    
+    let cb = document.getElementById('top_completed_status'); let wasChecked = cb ? cb.checked : false;
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
-    
-    if(wasChecked) {
-        document.getElementById('top_completed_status').checked = true;
-    }
+    if(wasChecked) document.getElementById('top_completed_status').checked = true;
 }
 
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
+function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -528,27 +275,16 @@ function loadDesignDropdown() {
     let html = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { html += '<option value="' + d + '">' + d + '</option>'; });
     select.innerHTML = html;
-
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && preDesignList.includes(activeDesign)) {
-        select.value = activeDesign;
-        loadDesignData();
-    } else {
-        loadBitmapImage();
-    }
+    if(activeDesign && preDesignList.includes(activeDesign)) { select.value = activeDesign; loadDesignData(); } else { loadBitmapImage(); }
 }
 
 function calculateOnloomWidth() {
     let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
     let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
     let onloomReed = parseFloat(document.getElementById('infoReed').value) || 0;
-
-    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) {
-        let calcWidth = (baseReed * baseWidth) / onloomReed;
-        document.getElementById('infoWidth').value = calcWidth.toFixed(2);
-    } else if (baseWidth > 0) {
-        document.getElementById('infoWidth').value = baseWidth.toFixed(2);
-    }
+    if (baseWidth > 0 && baseReed > 0 && onloomReed > 0) { document.getElementById('infoWidth').value = ((baseReed * baseWidth) / onloomReed).toFixed(2); } 
+    else if (baseWidth > 0) { document.getElementById('infoWidth').value = baseWidth.toFixed(2); }
 }
 
 function loadDesignData() {
@@ -556,62 +292,35 @@ function loadDesignData() {
     loadBitmapImage();
     if(dNo) localStorage.setItem('selected_design_number', dNo);
 
-    let linesContainer = document.getElementById('warpLinesContainer');
-    let rangesContainer = document.getElementById('warpRangesContainer');
+    document.getElementById('warpLinesContainer').innerHTML = '';
+    document.getElementById('warpRangesContainer').innerHTML = '';
     let saveBtn = document.getElementById('saveBtnTxt');
     
-    linesContainer.innerHTML = '';
-    rangesContainer.innerHTML = '';
-    
-    document.getElementById('infoCount1').value = '';
-    document.getElementById('infoCount2').value = '';
-    document.getElementById('infoOrderMtr').value = '';
-    document.getElementById('infoTopBeam').value = '';
-    document.getElementById('infoType').value = 'Plain';
-    document.getElementById('infoReed').value = '';
-    document.getElementById('infoPick').value = '';
-    document.getElementById('infoWidth').value = '';
-    if(document.getElementById('top_completed_status')) {
-        document.getElementById('top_completed_status').checked = false;
-    }
+    document.getElementById('infoCount1').value = ''; document.getElementById('infoCount2').value = '';
+    document.getElementById('infoOrderMtr').value = ''; document.getElementById('infoTopBeam').value = '';
+    document.getElementById('infoType').value = 'Plain'; document.getElementById('infoReed').value = '';
+    document.getElementById('infoPick').value = ''; document.getElementById('infoWidth').value = '';
+    if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status').checked = false;
 
-    if(!dNo) {
-        saveBtn.innerText = "💾 Save";
-        addWarpLine();
-        return;
-    }
+    if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
 
     let cleanDNo = cleanDesignName(dNo);
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     currentBaseSpecs = specKey ? specs[specKey] : {};
 
     let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
     let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
-    let baseWidth = parseFloat(currentBaseSpecs.width || currentBaseSpecs.baseWidth) || 0;
-
-    let autoReed = baseReed > 0 ? (baseReed - 8) : '';
-    let autoPick = basePick > 0 ? (basePick - 4) : '';
+    let autoReed = baseReed > 0 ? (baseReed - 8) : ''; let autoPick = basePick > 0 ? (basePick - 4) : '';
 
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let designOrders = orders.filter(o => cleanDesignName(o.designNo || o.designNumber) === cleanDNo);
-    let totalOrderMtr = designOrders.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
+    let totalOrderMtr = orders.filter(o => cleanDesignName(o.designNo || o.designNumber) === cleanDNo).reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
-
     let specStatus = (currentBaseSpecs && currentBaseSpecs.status) ? currentBaseSpecs.status.toLowerCase() : '';
 
-    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) {
-        if(document.getElementById('top_completed_status')) {
-            document.getElementById('top_completed_status').checked = true;
-        }
-    } else {
-        if(document.getElementById('top_completed_status')) {
-            document.getElementById('top_completed_status').checked = false;
-        }
-    }
+    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) { document.getElementById('top_completed_status').checked = true; }
 
     if (found) {
         saveBtn.innerText = "✏️ Update"; 
@@ -620,54 +329,39 @@ function loadDesignData() {
         document.getElementById('infoOrderMtr').value = found.orderMtr || (totalOrderMtr > 0 ? totalOrderMtr : '');
         document.getElementById('infoTopBeam').value = found.topBeam || '';
         document.getElementById('infoType').value = found.type || 'Plain';
-        
         document.getElementById('infoReed').value = found.reed || autoReed;
         document.getElementById('infoPick').value = found.pick || autoPick;
 
-        if(found.warpLines && found.warpLines.length > 0) {
-            found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends));
-        } else {
-            addWarpLine();
-        }
-        
-        if(found.warpRanges) {
-            found.warpRanges.forEach(r => addWarpRange(r.start, r.end, r.set));
-        }
+        if(found.warpLines && found.warpLines.length > 0) { found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends)); } 
+        else { loadDefaultRow(); }
+        if(found.warpRanges) { found.warpRanges.forEach(r => addWarpRange(r.start, r.end, r.set)); }
     } else {
         saveBtn.innerText = "💾 Save";
         document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         document.getElementById('infoOrderMtr').value = totalOrderMtr > 0 ? totalOrderMtr : '';
-        
-        document.getElementById('infoReed').value = autoReed;
-        document.getElementById('infoPick').value = autoPick;
-        addWarpLine();
+        document.getElementById('infoReed').value = autoReed; document.getElementById('infoPick').value = autoPick;
+        loadDefaultRow();
     }
-    
-    calculateOnloomWidth();
-    updateLineNumbers();
+    calculateOnloomWidth(); updateLineNumbers();
 }
+
+function loadDefaultRow() { document.getElementById('warpLinesContainer').innerHTML = ''; addWarpLine(); }
 
 function calculateTopBeam() {
     let orderMtr = parseFloat(document.getElementById('infoOrderMtr').value) || 0;
-    let topBeamInput = document.getElementById('infoTopBeam');
-    let topBeamStr = topBeamInput.value.trim();
-
+    let topBeamInput = document.getElementById('infoTopBeam'); let topBeamStr = topBeamInput.value.trim();
     if (orderMtr > 0 && topBeamStr) {
-        let cleanStr = topBeamStr.replace('+', '').replace('%', '').trim();
-        let val = parseFloat(cleanStr) || 0;
-
+        let val = parseFloat(topBeamStr.replace('+', '').replace('%', '').trim()) || 0;
         if (topBeamStr.includes('%') || (val > 0 && val < 50 && !topBeamStr.includes('.'))) {
-            let calculated = orderMtr + (orderMtr * val / 100);
-            topBeamInput.value = calculated.toFixed(2);
+            topBeamInput.value = (orderMtr + (orderMtr * val / 100)).toFixed(2);
         }
     }
 }
 
 function addWarpLine(count = '', color = '', beam = 'Ground', ends = '') {
     let container = document.getElementById('warpLinesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid line-item';
+    let row = document.createElement('div'); row.className = 'row-grid line-item';
     row.innerHTML = `
         <div class="line-no"></div>
         <input type="text" class="inp-count" placeholder="Count" value="${count}">
@@ -680,14 +374,12 @@ function addWarpLine(count = '', color = '', beam = 'Ground', ends = '') {
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWarpLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
         <button class="btn-del-small" onclick="this.parentElement.remove(); updateLineNumbers();">×</button>
     `;
-    container.appendChild(row);
-    updateLineNumbers();
+    container.appendChild(row); updateLineNumbers();
 }
 
 function addWarpRange(start = '', end = '', set = '') {
     let container = document.getElementById('warpRangesContainer');
-    let row = document.createElement('div');
-    row.className = 'row-grid-range range-item';
+    let row = document.createElement('div'); row.className = 'row-grid-range range-item';
     row.innerHTML = `
         <input type="number" class="inp-start" placeholder="Start" value="${start}">
         <input type="number" class="inp-end" placeholder="End" value="${end}">
@@ -698,68 +390,33 @@ function addWarpRange(start = '', end = '', set = '') {
     container.appendChild(row);
 }
 
-function updateLineNumbers() {
-    let lines = document.querySelectorAll('.line-item .line-no');
-    lines.forEach((elem, idx) => {
-        elem.innerText = idx + 1;
-    });
-}
+function updateLineNumbers() { document.querySelectorAll('.line-item .line-no').forEach((elem, idx) => { elem.innerText = idx + 1; }); }
 
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNo').value;
-    let cb = document.getElementById('top_completed_status');
-    let isCompleted = cb ? cb.checked : false;
-
-    if(!dNo) {
-        alert("Mudhala Design Number select pannunga bro");
-        if(cb) cb.checked = false;
-        return;
-    }
-
+    if(!dNo) { alert("Mudhala Design Number select pannunga bro"); document.getElementById('top_completed_status').checked = false; return; }
+    let isCompleted = document.getElementById('top_completed_status').checked;
     let statusText = isCompleted ? 'completed' : 'running';
-
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
 
-    if(idx > -1) {
-        masters[idx].status = statusText;
-    } else {
-        masters.push({
-            name: dNo,
-            status: statusText,
-            warpLines: [],
-            warpRanges: []
-        });
-    }
+    if(idx > -1) { masters[idx].status = statusText; } 
+    else { masters.push({ name: dNo, status: statusText, warpLines: [], warpRanges: [] }); }
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) {
-        designSpecs[dNo] = {};
-    }
+    if(!designSpecs[dNo]) designSpecs[dNo] = {};
     designSpecs[dNo].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    try {
-        if (window.firebaseSave) {
-            await window.firebaseSave('design_masters_data', masters);
-            await window.firebaseSave('design_specs', designSpecs);
-        }
-    } catch(e) {
-        console.error("Firebase Sync Error: ", e);
-    }
-
-    renderSavedList();
-    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+    try { if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); } } catch(e) {}
+    renderSavedList(); alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
 window.saveWarpDesign = async function() {
     let dNo = document.getElementById('designNo').value;
-    if(!dNo) {
-        alert("Please select a Design Number!");
-        return;
-    }
+    if(!dNo) { alert("Please select a Design Number!"); return; }
 
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
@@ -768,38 +425,21 @@ window.saveWarpDesign = async function() {
         let alreadyExists = masters.some(m => cleanDesignName(m.name) === cleanDNo && m.warpLines && m.warpLines.length > 0);
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே வார்ப் பேட்டர்ன் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) {
-                return; 
-            }
+            if(!confirmReEntry) return; 
             masters = masters.filter(m => cleanDesignName(m.name) !== cleanDNo);
         }
     }
 
-    calculateTopBeam();
-    calculateOnloomWidth();
+    calculateTopBeam(); calculateOnloomWidth();
 
-    let count1 = document.getElementById('infoCount1').value.trim();
-    let count2 = document.getElementById('infoCount2').value.trim();
-    let orderMtr = document.getElementById('infoOrderMtr').value.trim();
-    let topBeam = document.getElementById('infoTopBeam').value.trim();
-    let type = document.getElementById('infoType').value;
-    let reed = document.getElementById('infoReed').value.trim();
-    let pick = document.getElementById('infoPick').value.trim();
-    let width = document.getElementById('infoWidth').value.trim();
-    
-    let isCompleted = false;
-    let cb = document.getElementById('top_completed_status');
-    if(cb) isCompleted = cb.checked;
-
+    let isCompleted = document.getElementById('top_completed_status').checked;
     let lines = [];
     document.querySelectorAll('.line-item').forEach(row => {
         let count = row.querySelector('.inp-count').value.trim();
         let color = row.querySelector('.inp-color').value.trim();
         let beam = row.querySelector('.inp-beam').value;
         let ends = row.querySelector('.inp-ends').value.trim();
-        if(count || color || ends) {
-            lines.push({ count: count, color: color, beam: beam, ends: ends });
-        }
+        if(count || color || ends) { lines.push({ count: count, color: color, beam: beam, ends: ends }); }
     });
 
     let ranges = [];
@@ -807,141 +447,77 @@ window.saveWarpDesign = async function() {
         let start = row.querySelector('.inp-start').value.trim();
         let end = row.querySelector('.inp-end').value.trim();
         let set = row.querySelector('.inp-set').value.trim();
-        if(start && end && set) {
-            ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
-        }
+        if(start && end && set) ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
     });
 
-    let saveBtn = document.getElementById('saveBtnTxt');
-    let originalText = saveBtn.innerText;
-    saveBtn.innerText = "⏳ Saving to Cloud...";
-
-    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+    let saveBtn = document.getElementById('saveBtnTxt'); let originalText = saveBtn.innerText; saveBtn.innerText = "⏳ Saving to Cloud...";
     
     let patternData = { 
-        name: dNo, 
-        count1: count1, 
-        count2: count2, 
-        orderMtr: orderMtr,
-        topBeam: topBeam,
-        type: type,
-        reed: reed, 
-        pick: pick, 
-        width: width, 
-        warpLines: lines, 
-        warpRanges: ranges,
-        status: isCompleted ? 'completed' : 'running'
+        name: dNo, count1: document.getElementById('infoCount1').value.trim(), count2: document.getElementById('infoCount2').value.trim(), 
+        orderMtr: document.getElementById('infoOrderMtr').value.trim(), topBeam: document.getElementById('infoTopBeam').value.trim(),
+        type: document.getElementById('infoType').value, reed: document.getElementById('infoReed').value.trim(), 
+        pick: document.getElementById('infoPick').value.trim(), width: document.getElementById('infoWidth').value.trim(), 
+        warpLines: lines, warpRanges: ranges, status: isCompleted ? 'completed' : 'running'
     };
 
-    if(idx === -1) {
-        masters.push(patternData);
-    } else {
-        masters[idx] = Object.assign({}, masters[idx], patternData);
-    }
+    let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+    if(idx === -1) masters.push(patternData); else masters[idx] = Object.assign({}, masters[idx], patternData);
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) designSpecs[dNo] = {};
     designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
-    if(window.firebaseSave) {
-        await window.firebaseSave('design_masters_data', masters);
-        await window.firebaseSave('design_specs', designSpecs);
-    }
-
-    saveBtn.innerText = originalText;
-    alert("Warp Pattern Saved to Cloud Successfully! ✅☁️");
+    if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+    saveBtn.innerText = originalText; alert("Warp Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
 async function toggleStatus(dNo, newStatus) {
-    let msg = newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?";
-    if(confirm(msg)) {
-        let cleanDNo = cleanDesignName(dNo);
+    if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
-        
+        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
         if(index > -1) {
-            masters[index].status = newStatus;
-            localStorage.setItem('design_masters_data', JSON.stringify(masters));
-            
+            masters[index].status = newStatus; localStorage.setItem('design_masters_data', JSON.stringify(masters));
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             if(!designSpecs[dNo]) designSpecs[dNo] = {};
-            designSpecs[dNo].status = newStatus;
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            if(window.firebaseSave) {
-                await window.firebaseSave('design_masters_data', masters);
-                await window.firebaseSave('design_specs', designSpecs);
-            }
+            designSpecs[dNo].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
             renderSavedList();
         }
     }
 }
 
-function openSavedModal() {
-    renderSavedList();
-    openModal('savedListModal');
-}
+function openSavedModal() { renderSavedList(); openModal('savedListModal'); }
 
 function renderSavedList() {
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let tbody = document.getElementById('savedPatternsBody');
-    tbody.innerHTML = '';
-
+    let tbody = document.getElementById('savedPatternsBody'); tbody.innerHTML = '';
     let hasData = false;
     masters.forEach(m => {
         if (m.warpLines && m.warpLines.length > 0) {
-            hasData = true;
-            if(!m.status) m.status = "running";
+            hasData = true; if(!m.status) m.status = "running";
             let statusColor = m.status === 'running' ? '#D97706' : '#526E51';
-            let statusBtn = m.status === 'running' 
-                ? `<button class="action-complete" onclick="toggleStatus('${m.name}', 'completed')">Complete</button>` 
-                : `<button class="action-running" onclick="toggleStatus('${m.name}', 'running')">Running</button>`;
-
-            tbody.innerHTML += `
-                <tr>
-                    <td><b>${m.name}</b></td>
-                    <td>${m.warpLines.length} Lines</td>
-                    <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${m.status}</td>
-                    <td>
-                        <div class="action-cell">
-                            ${statusBtn}
-                            <button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            let statusBtn = m.status === 'running' ? `<button class="action-complete" onclick="toggleStatus('${m.name}', 'completed')">Complete</button>` : `<button class="action-running" onclick="toggleStatus('${m.name}', 'running')">Running</button>`;
+            tbody.innerHTML += `<tr><td><b>${m.name}</b></td><td>${m.warpLines.length} Lines</td><td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${m.status}</td><td><div class="action-cell">${statusBtn}<button class="edit-action-btn" onclick="editDesignPattern('${m.name}')">✏️ Edit</button></div></td></tr>`;
         }
     });
-
-    if(!hasData) {
-        tbody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#D97706;">No Warp Patterns saved yet.</td></tr>`;
-    }
+    if(!hasData) tbody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#D97706;">No Warp Patterns saved yet.</td></tr>`;
 }
 
-function editDesignPattern(dNo) {
-    closeModal('savedListModal');
-    document.getElementById('designNo').value = dNo;
-    loadDesignData();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+function editDesignPattern(dNo) { closeModal('savedListModal'); document.getElementById('designNo').value = dNo; loadDesignData(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
 function previewPattern() {
-    calculateTopBeam();
-    calculateOnloomWidth();
+    calculateTopBeam(); calculateOnloomWidth();
     let dNo = document.getElementById('designNo').value;
-    
     let lines = [];
     document.querySelectorAll('.line-item').forEach(row => {
         let count = row.querySelector('.inp-count').value.trim();
         let color = row.querySelector('.inp-color').value.trim();
         let beam = row.querySelector('.inp-beam').value;
         let ends = parseFloat(row.querySelector('.inp-ends').value) || 0;
-        if(count || color || ends) {
-            lines.push({ count: count, color: color, beam: beam, ends: ends });
-        }
+        if(count || color || ends) lines.push({ count: count, color: color, beam: beam, ends: ends });
     });
 
     let ranges = [];
@@ -952,272 +528,197 @@ function previewPattern() {
         if(start && end && set) ranges.push({ start, end, set });
     });
 
-    if(lines.length === 0) {
-        alert("No pattern to preview! Please add lines.");
-        return;
-    }
+    if(lines.length === 0) { alert("No pattern to preview! Please add lines."); return; }
 
-    let cleanDNo = cleanDesignName(dNo);
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    let sp = specKey ? specs[specKey] : {};
+    let sp = Object.keys(JSON.parse(localStorage.getItem('design_specs')) || {}).find(k => cleanDesignName(k) === cleanDesignName(dNo)) ? JSON.parse(localStorage.getItem('design_specs'))[Object.keys(JSON.parse(localStorage.getItem('design_specs')) || {}).find(k => cleanDesignName(k) === cleanDesignName(dNo))] : {};
     let baseReed = parseFloat(sp.reed || sp.baseReed) || 0;
     let baseWidth = parseFloat(sp.width || sp.baseWidth) || 0;
     let baseTotalEnds = Math.round(baseReed * baseWidth);
 
-    let c1 = document.getElementById('infoCount1').value || '-';
-    let c2 = document.getElementById('infoCount2').value || '-';
-    let orderMtr = document.getElementById('infoOrderMtr').value || '-';
-    let topBeam = document.getElementById('infoTopBeam').value || '-';
-    let type = document.getElementById('infoType').value || 'Plain';
-    let reed = document.getElementById('infoReed').value || '-';
-    let pick = document.getElementById('infoPick').value || '-';
-    let width = document.getElementById('infoWidth').value || '-';
-
     let headerHtml = `
-        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F4F7F4; border:1px solid #4A7C59; padding:12px; border-radius:10px; margin-bottom:15px; font-size:12px; font-weight:700; color:#1E2B23;">
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; background:#F4F7F4; border:1px solid #4A7C59; padding:8px 12px; border-radius:6px; margin-bottom:8px; font-size:11px; font-weight:700; color:#1E2B23;">
             <span style="margin-right:8px;">Design: <span style="color:#4A7C59;">${dNo || '-'}</span></span>
-            <span style="margin-right:8px;">Counts: ${c1}, ${c2}</span>
-            <span style="margin-right:8px;">Order Mtr: ${orderMtr}</span>
-            <span style="margin-right:8px;">Top Beam: ${topBeam}</span>
-            <span style="margin-right:8px;">Type: ${type}</span>
-            <span style="margin-right:8px;">Reed: ${reed}</span>
-            <span style="margin-right:8px;">Pick: ${pick}</span>
-            <span>Width: ${width}"</span>
+            <span style="margin-right:8px;">Counts: ${document.getElementById('infoCount1').value || '-'}, ${document.getElementById('infoCount2').value || '-'}</span>
+            <span style="margin-right:8px;">Order Mtr: ${document.getElementById('infoOrderMtr').value || '-'}</span>
+            <span style="margin-right:8px;">Top Beam: ${document.getElementById('infoTopBeam').value || '-'}</span>
+            <span style="margin-right:8px;">Type: ${document.getElementById('infoType').value || 'Plain'}</span>
+            <span style="margin-right:8px;">Reed: ${document.getElementById('infoReed').value || '-'}</span>
+            <span style="margin-right:8px;">Pick: ${document.getElementById('infoPick').value || '-'}</span>
+            <span>Width: ${document.getElementById('infoWidth').value || '-'}</span>
         </div>
     `;
 
-    let flatPattern = [];
-    let idxFlat = 0;
-    while (idxFlat < lines.length) {
-        let currentLineNum = idxFlat + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
-        if (range && range.end >= range.start) {
-            for(let rep = 0; rep < range.set; rep++) {
-                for(let j = range.start; j <= range.end; j++) {
-                    if(lines[j-1]) {
-                        flatPattern.push({
-                            lineNo: j,
-                            count: lines[j-1].count || '-', 
-                            color: lines[j-1].color || '-',
-                            ends: parseFloat(lines[j-1].ends) || 0, 
-                            beam: lines[j-1].beam
-                        });
-                    }
-                }
-            }
-            idxFlat = range.end;
-        } else {
-            flatPattern.push({
-                lineNo: idxFlat + 1,
-                count: lines[idxFlat].count || '-', 
-                color: lines[idxFlat].color || '-',
-                ends: parseFloat(lines[idxFlat].ends) || 0, 
-                beam: lines[idxFlat].beam
-            });
-            idxFlat++;
-        }
-    }
-
-    let tbodyHtml = '';
-    let groundTotal = 0;
-    let topTotal = 0;
-    let grandTotalPattern = 0;
-    let i = 0;
+    // 📌 CLEAN GRID & ALWAYS TWO COLUMNS SIDE-BY-SIDE
+    let col1Html = ''; 
+    let col2Html = ''; 
+    let currentLinesInCol1 = 0;
+    const MAX_LINES_COL1 = 25; // 25 lines limit for the first column
     
-    let tdStyle = "padding:10px; border-bottom:1px dashed #D1DED1; border-right:1px dotted #A0AFA0; text-align:center; color:#1E2B23;";
-    let tdStyleLast = "padding:10px; border-bottom:1px dashed #D1DED1; vertical-align:middle; color:#1E2B23; text-align:left;";
+    let groundTotal = 0; let topTotal = 0; let flatPattern = []; 
+
+    let i = 0;
+    let tdStyle = "padding:4px 6px; text-align:center; color:#1E2B23; font-size:11px; border-bottom: 1px dashed #A0AFA0;";
+    let tdStyleColor = "padding:4px 6px; text-align:left; color:#1E2B23; font-size:11px; white-space:nowrap; border-bottom: 1px dashed #A0AFA0;";
+    let tdStyleLast = "padding:4px 6px; vertical-align:middle; color:#1E2B23; text-align:left; font-size:11px; border-bottom: 1px dashed #A0AFA0;";
 
     while (i < lines.length) {
         let currentLineNum = i + 1;
         let range = ranges.find(r => r.start === currentLineNum);
+        let blockHtml = ''; let blockLineCount = 0;
         
         if (range && range.end >= range.start) {
-            let blockLines = [];
-            let blockGroundEnds = 0;
-            let blockTopEnds = 0;
-            
+            let blockLines = []; let blockGroundEnds = 0; let blockTopEnds = 0;
             for (let j = range.start; j <= range.end; j++) {
                 if (lines[j - 1]) {
-                    let lineItem = Object.assign({}, lines[j - 1]);
-                    lineItem.lineNo = j;
-                    blockLines.push(lineItem);
-                    if(lines[j - 1].beam === 'Top Beam') {
-                        blockTopEnds += lines[j-1].ends;
-                    } else {
-                        blockGroundEnds += lines[j-1].ends;
-                    }
+                    let lineItem = Object.assign({}, lines[j - 1]); lineItem.lineNo = j; blockLines.push(lineItem);
+                    if(lines[j - 1].beam === 'Top Beam') blockTopEnds += lines[j-1].ends; else blockGroundEnds += lines[j-1].ends;
+                    for(let rep=0; rep < range.set; rep++){ flatPattern.push({ lineNo: j, count: lineItem.count || '-', color: lineItem.color || '-', ends: parseFloat(lineItem.ends) || 0, beam: lineItem.beam }); }
                 }
             }
             
             let blockTotalEnds = (blockGroundEnds + blockTopEnds) * range.set;
-            groundTotal += blockGroundEnds * range.set;
-            topTotal += blockTopEnds * range.set;
+            groundTotal += blockGroundEnds * range.set; topTotal += blockTopEnds * range.set;
 
             blockLines.forEach((item, index) => {
-                let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 20px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 20px; color: #2F4F38;">${item.ends}</span>`;
+                let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 15px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 15px; color: #2F4F38;">${item.ends}</span>`;
                 let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
                 
-                tbodyHtml += `<tr>
+                blockHtml += `<tr>
                     <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                     <td style="${tdStyle}">${item.count || '-'}</td>
-                    <td style="${tdStyle}">${colorTamil}</td>
-                    <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>`;
+                    <td style="${tdStyleColor}">${colorTamil}</td>
+                    <td style="${tdStyle} font-weight:bold;">${endsDisplay}</td>`;
                 
-                if (index === 0) {
-                    tbodyHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
-                        <span style="font-size:18px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalEnds}</span></b>
-                    </td>`;
-                }
-                tbodyHtml += `</tr>`;
+                if (index === 0) { blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}"><span style="font-size:14px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalEnds}</span></b></td>`; }
+                blockHtml += `</tr>`;
             });
-            i = range.end; 
+            i = range.end; blockLineCount = blockLines.length;
         } else {
-            let item = Object.assign({}, lines[i]);
-            item.lineNo = i + 1;
-
-            if(item.beam === 'Top Beam') {
-                topTotal += item.ends;
-            } else {
-                groundTotal += item.ends;
-            }
+            let item = Object.assign({}, lines[i]); item.lineNo = i + 1;
+            if(item.beam === 'Top Beam') topTotal += item.ends; else groundTotal += item.ends;
+            flatPattern.push({ lineNo: item.lineNo, count: item.count || '-', color: item.color || '-', ends: parseFloat(item.ends) || 0, beam: item.beam });
             
-            let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 20px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 20px; color: #2F4F38;">${item.ends}</span>`;
+            let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 15px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 15px; color: #2F4F38;">${item.ends}</span>`;
             let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
             
-            tbodyHtml += `<tr>
+            blockHtml += `<tr>
                 <td style="${tdStyle} font-weight:700; color:#4A554A;">${item.lineNo}</td>
                 <td style="${tdStyle}">${item.count || '-'}</td>
-                <td style="${tdStyle}">${colorTamil}</td>
-                <td style="${tdStyle} font-weight:bold; text-align:center;">${endsDisplay}</td>
-                <td style="padding:10px; border-bottom:1px dashed #D1DED1;"></td>
+                <td style="${tdStyleColor}">${colorTamil}</td>
+                <td style="${tdStyle} font-weight:bold;">${endsDisplay}</td>
+                <td style="${tdStyleLast}"></td>
             </tr>`;
-            i++;
+            i++; blockLineCount = 1;
+        }
+
+        if (currentLinesInCol1 < MAX_LINES_COL1) {
+            col1Html += blockHtml;
+            currentLinesInCol1 += blockLineCount;
+        } else {
+            col2Html += blockHtml;
         }
     }
 
-    grandTotalPattern = groundTotal + topTotal;
-    let finalTotalDisplay = topTotal > 0 ? `<span style="color:#3F5A3E;">${groundTotal} <span style="font-size:10px;">(Grnd)</span></span> + <span style="color:#D97706;">${topTotal} <span style="font-size:10px;">(Top)</span></span> = ${grandTotalPattern}` : `${grandTotalPattern}`;
+    let finalTotalDisplay = topTotal > 0 ? `<span style="color:#3F5A3E;">${groundTotal} <span style="font-size:9px;">(Grnd)</span></span> + <span style="color:#D97706;">${topTotal} <span style="font-size:9px;">(Top)</span></span> = ${groundTotal + topTotal}` : `${groundTotal + topTotal}`;
 
     let html = headerHtml;
-    html += '<div class="table-container" style="border:1px solid #D1DED1;"><table style="width:100%; border-collapse:collapse; font-size:12px; background:#FFF;">';
-    html += `<tr style="background:#EAF0EA; border-bottom:2px solid #A0AFA0;">
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">#</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Count</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; color:#2F4F38; text-transform:uppercase; font-size:11px;">Colour / Beam</th>
-                <th style="padding:12px; text-align:center; border-right:1px dotted #A0AFA0; line-height:1.3; color:#2F4F38; text-transform:uppercase; font-size:11px;">Ends<br><span style="font-size:9px; color:#4A554A; font-weight:600;">Ground &nbsp;&nbsp;|&nbsp;&nbsp; Top</span></th>
-                <th style="padding:12px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:11px;">Set</th>
-             </tr>`;
-    html += tbodyHtml;
-    
-    html += `<tr style="font-weight:bold; font-size:13px; background:#F8FAF8; border-top:2px solid #A0AFA0;">
-        <td colspan="4" style="padding:12px; text-align:right; border-right:1px dotted #A0AFA0; color:#2F4F38;">Total Pattern Ends:</td>
-        <td style="padding:12px; font-weight:bold; text-align:left; padding-left:15px; white-space:nowrap; color:#1E2B23;">${finalTotalDisplay}</td>
-    </tr>`;
 
+    // 🔥 Adjusted Widths: Reduced Colour to 25%, Increased Set to 35%
+    let tableHeader = `
+        <tr style="background:#EAF0EA;">
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:10%;">No</th>
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Count</th>
+            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:25%;">Colour</th>
+            <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; line-height:1.2; width:15%;">Ends<br><span style="font-size:7px; color:#4A554A;">Grnd|Top</span></th>
+            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
+        </tr>
+    `;
+
+    // 📌 Flex Layout to align 2 columns side-by-side ALWAYS
+    html += '<div class="print-flex-row" style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; width: 100%;">';
+    
+    // Column 1 (Max 25 Rows)
+    html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            ${tableHeader}
+            ${col1Html}
+        </table>
+    </div>`;
+
+    // Column 2 (Rows 26+ or Empty space to keep width 50%)
+    html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">`;
+    if (col2Html !== '') {
+        html += `<table style="width:100%; border-collapse:collapse; font-size:11px;">
+            ${tableHeader}
+            ${col2Html}
+        </table>`;
+    }
+    html += `</div>`;
+    html += `</div>`;
+
+    // Totals Section
+    html += `<div style="margin-top: 15px; border-top: 2px solid #4A7C59; padding-top: 5px; page-break-inside: avoid;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; background:#FFF;">
+            <tr style="font-weight:bold; font-size:12px; background:#F8FAF8; border-bottom: 1px dashed #A0AFA0;">
+                <td style="padding:8px; text-align:right; color:#2F4F38; width:60%;">Total Pattern Ends:</td>
+                <td style="padding:8px; font-weight:bold; text-align:left; padding-left:15px; white-space:nowrap; color:#1E2B23;">${finalTotalDisplay}</td>
+            </tr>`;
+
+    let grandTotalPattern = groundTotal + topTotal;
     if (baseReed > 0 && baseWidth > 0 && grandTotalPattern > 0) {
         let repeats = Math.floor(baseTotalEnds / grandTotalPattern);
         let remEnds = baseTotalEnds % grandTotalPattern;
 
         let countTotals = {};
-        flatPattern.forEach(item => {
-            let c = item.count;
-            countTotals[c] = (countTotals[c] || 0) + (item.ends * repeats);
-        });
+        flatPattern.forEach(item => { countTotals[item.count] = (countTotals[item.count] || 0) + (item.ends * repeats); });
 
         let endsToDistribute = remEnds;
         for (let item of flatPattern) {
             if (endsToDistribute <= 0) break;
-            let c = item.count;
             let take = Math.min(item.ends, endsToDistribute);
-            countTotals[c] = (countTotals[c] || 0) + take;
+            countTotals[item.count] = (countTotals[item.count] || 0) + take;
             endsToDistribute -= take;
         }
 
-        html += `<tr style="font-weight:700; font-size:14px; background:#FFFFFF; color:#2F4F38; border-top:1px solid #A0AFA0;">
-            <td colspan="5" style="padding:15px; text-align:center;">
-                ${repeats} Set + ${remEnds} Ends = <span style="size:16px; color:#1E2B23;">${baseTotalEnds}</span> Total Ends
+        html += `<tr style="font-weight:700; font-size:12px; background:#FFFFFF; color:#2F4F38; border-bottom: 1px dashed #A0AFA0;">
+            <td colspan="2" style="padding:10px; text-align:center;">
+                ${repeats} Set + ${remEnds} Ends = <span style="font-size:13px; color:#1E2B23;">${baseTotalEnds}</span> Total Ends
             </td>
         </tr>`;
 
         let breakdownHtml = Object.keys(countTotals).map(c => `<span style="color:#1E2B23;"><b>${c}</b>: ${countTotals[c]} Ends</span>`).join(' &nbsp;&nbsp;|&nbsp;&nbsp; ');
-        html += `<tr style="font-size:13px; background:#EAF0EA; border-top:1px solid #A0AFA0;">
-            <td colspan="5" style="padding:15px; text-align:center;">
+        html += `<tr style="font-size:11px; background:#EAF0EA;">
+            <td colspan="2" style="padding:10px; text-align:center;">
                 <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;">Count Wise Total:</span> ${breakdownHtml}
             </td>
         </tr>`;
     }
 
     html += '</table></div>';
-
     document.getElementById('previewContent').innerHTML = html;
     openModal('previewModal');
 }
 </script>
 
-<!-- Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-        authDomain: "texfriend.firebaseapp.com",
-        projectId: "texfriend",
-        storageBucket: "texfriend.appspot.com",
-        messagingSenderId: "331673079578",
-        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-        measurementId: "G-2NP13ZTKCN"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM", authDomain: "texfriend.firebaseapp.com", projectId: "texfriend", storageBucket: "texfriend.appspot.com", messagingSenderId: "331673079578", appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3", measurementId: "G-2NP13ZTKCN" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    window.firebaseSave = async function(key, data) { try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) {} }
+    window.firebaseLoad = async function(key) { try { const docSnap = await getDoc(doc(db, "texfriend_erp", key)); if (docSnap.exists()) return JSON.parse(docSnap.data().content); } catch (e) {} return null; }
 
-    window.firebaseSave = async function(key, data) {
-        try {
-            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-        } catch (e) {
-            console.error("Firebase Save Error: ", e);
-        }
-    }
-
-    window.firebaseLoad = async function(key) {
-        try {
-            const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-            if (docSnap.exists()) {
-                return JSON.parse(docSnap.data().content);
-            }
-        } catch (e) {
-            console.error("Firebase Load Error: ", e);
-        }
-        return null;
-    }
-
-    // Sync Data on Load
     window.addEventListener('load', async function() {
-        let saveBtn = document.getElementById('saveBtnTxt');
-        if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
-
-        let masters = await window.firebaseLoad('design_masters_data');
-        if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
-
-        let preDesigns = await window.firebaseLoad('pre_design_numbers');
-        if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
-
-        let specs = await window.firebaseLoad('design_masters_data'); 
-        let designSpecs = await window.firebaseLoad('design_specs');
-        if (designSpecs) localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-        let orders = await window.firebaseLoad('party_orders_data');
-        if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
+        let saveBtn = document.getElementById('saveBtnTxt'); if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
+        let masters = await window.firebaseLoad('design_masters_data'); if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
+        let preDesigns = await window.firebaseLoad('pre_design_numbers'); if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
+        let specs = await window.firebaseLoad('design_specs'); if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
+        let orders = await window.firebaseLoad('party_orders_data'); if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
 
         if(saveBtn) saveBtn.innerText = "💾 Save";
-        
-        loadDesignDropdown();
-        if(!document.getElementById('designNo').value) {
-            addWarpLine(); 
-        }
-        loadBitmapImage();
+        loadDesignDropdown(); if(!document.getElementById('designNo').value) loadDefaultRow(); loadBitmapImage();
     });
 </script>
 </body>
