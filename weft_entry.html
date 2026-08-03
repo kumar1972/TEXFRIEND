@@ -238,6 +238,28 @@
 </div>
 
 <script>
+// 🔒 Universal Permission Checker Function for Weft Entry Page
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['weft_entry.html'] === false || permissions['weft_entry'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 🔒 Page Access Check on Load
+    if (!checkUserPermission()) {
+        authorizationAlert();
+        window.location.href = "dashboard.html";
+        return;
+    }
+    loadDesignDropdown();
+});
+
 function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
 function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
 function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
@@ -248,6 +270,12 @@ function loadDesignDropdown() {
     let html = '<option value="">Select Design No</option>';
     preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
     select.innerHTML = html;
+    
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && preDesignList.includes(activeDesign)) {
+        select.value = activeDesign;
+        loadWeftDesignData();
+    }
 }
 
 function loadWeftDesignData() {
@@ -263,33 +291,48 @@ function loadWeftDesignData() {
     if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
 
     let cleanDNo = cleanDesignName(dNo);
+    
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
+    let foundMaster = masters.find(m => cleanDesignName(m.name) === cleanDNo) || {};
 
     let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
-    if(specStatus === 'completed' || (found && found.status && found.status.toLowerCase() === 'completed')) { document.getElementById('top_completed_status').checked = true; }
+    if(specStatus === 'completed' || (foundMaster && foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) { 
+        document.getElementById('top_completed_status').checked = true; 
+    }
 
+    // 🔥 Base Reed மற்றும் Base Width மதிப்புகளைத் துல்லியமாக எடுக்கிறோம்
+    let baseReed = parseFloat(sp.reed || sp.baseReed || foundMaster.reed || foundMaster.baseReed || 64) || 0;
+    let baseWidth = parseFloat(sp.width || sp.baseWidth || foundMaster.width || foundMaster.baseWidth || 0) || 0;
+    
+    // 🔥 நீங்கள் சொன்ன ஃபார்முலாப்படி கணக்கீடு: ((Base Reed * Base Width) / (Base Reed - 8)) + 3
     let autoWeftWidth = '';
-    if (found && found.width) { autoWeftWidth = (parseFloat(found.width) + 3).toFixed(2); } 
-    else if (sp.width || sp.baseWidth) { autoWeftWidth = (parseFloat(sp.width || sp.baseWidth) + 3).toFixed(2); }
+    if (baseReed > 8 && baseWidth > 0) {
+        let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
+        autoWeftWidth = calculatedWidth.toFixed(2);
+    } else if (baseWidth > 0) {
+        autoWeftWidth = (baseWidth + 3).toFixed(2);
+    }
 
-    let basePick = parseFloat(sp.pick || sp.basePick) || 0;
+    let basePick = parseFloat(sp.pick || sp.basePick || foundMaster.pick || foundMaster.basePick) || 0;
     let autoPick = basePick > 0 ? basePick - 4 : '';
 
-    if (found) {
+    if (foundMaster && foundMaster.weftLines && foundMaster.weftLines.length > 0) {
         saveBtn.innerText = "✏️ Update"; 
-        document.getElementById('infoWeftWidth').value = found.weftWidth || autoWeftWidth || '';
-        document.getElementById('infoWeftCount').value = found.weftCount || sp.weft || sp.count1 || '';
-        document.getElementById('infoPick').value = found.weftPick || found.pick || autoPick;
-        document.getElementById('infoWeave').value = found.weaveType || found.weave || sp.weave || '';
+        
+        // 🔥 பழைய சேவ் ஆன weftWidth-ஐத் தவிர்க்க, எப்போதும் autoWeftWidth-க்கு முன்னுரிமை தருகிறோம்!
+        let finalWeftWidth = autoWeftWidth || foundMaster.weftWidth;
+        document.getElementById('infoWeftWidth').value = finalWeftWidth;
+        
+        document.getElementById('infoWeftCount').value = foundMaster.weftCount || sp.weft || sp.count1 || '';
+        document.getElementById('infoPick').value = foundMaster.weftPick || foundMaster.pick || autoPick;
+        document.getElementById('infoWeave').value = foundMaster.weaveType || foundMaster.weave || sp.weave || '';
 
-        if(found.weftLines && found.weftLines.length > 0) { found.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks)); } 
-        else { loadDefaultRow(); }
-        if(found.weftRanges && found.weftRanges.length > 0) { found.weftRanges.forEach(r => addWeftRange(r.start, r.end, r.set)); }
+        foundMaster.weftLines.forEach(l => addWeftLine(l.count, l.color, l.picks));
+        if(foundMaster.weftRanges) { foundMaster.weftRanges.forEach(r => addWeftRange(r.start, r.end, r.set)); }
     } else {
         saveBtn.innerText = "💾 Save";
         document.getElementById('infoWeftWidth').value = autoWeftWidth;
@@ -357,6 +400,14 @@ function calculateWeftValues() {
 }
 
 async function quickCompleteToggle() {
+    // 🔒 Permission Check for Quick Complete Toggle
+    if (!checkUserPermission()) {
+        authorizationAlert();
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = !cb.checked;
+        return;
+    }
+
     let dNo = document.getElementById('designNo').value;
     if(!dNo) { alert("Mudhala Design Number select pannunga bro"); document.getElementById('top_completed_status').checked = false; return; }
 
@@ -380,16 +431,17 @@ async function quickCompleteToggle() {
 }
 
 async function saveWeftDesign() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        authorizationAlert();
+        return;
+    }
+
     let dNo = document.getElementById('designNo').value;
     if(!dNo) { alert("Please select a Design Number!"); return; }
 
     let cleanDNo = cleanDesignName(dNo);
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-
-    if(masters.some(m => cleanDesignName(m.name) === cleanDNo && m.weftLines && m.weftLines.length > 0)) {
-        if(!confirm("இந்த டிசைனுக்கு ஏற்கனவே வெப்ட் பேட்டர்ன் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?")) return;
-        masters = masters.filter(m => cleanDesignName(m.name) !== cleanDNo);
-    }
 
     let saveBtn = document.getElementById('saveBtnTxt'); let originalText = saveBtn.innerText; saveBtn.innerText = "⏳ Saving...";
 
@@ -405,14 +457,27 @@ async function saveWeftDesign() {
         if(start && end && set) ranges.push({ start: parseInt(start), end: parseInt(end), set: parseInt(set) });
     });
 
-    let patternData = {
-        name: dNo, weftWidth: document.getElementById('infoWeftWidth').value.trim(), weftCount: document.getElementById('infoWeftCount').value.trim(), 
-        weftPick: document.getElementById('infoPick').value.trim(), weaveType: document.getElementById('infoWeave').value.trim(), 
-        weftLines: lines, weftRanges: ranges, status: document.getElementById('top_completed_status').checked ? 'completed' : 'running'
-    };
-
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
-    if(idx === -1) masters.push(patternData); else masters[idx] = Object.assign({}, masters[idx], patternData);
+    if(idx === -1) {
+        masters.push({
+            name: dNo,
+            weftWidth: document.getElementById('infoWeftWidth').value.trim(), 
+            weftCount: document.getElementById('infoWeftCount').value.trim(), 
+            weftPick: document.getElementById('infoPick').value.trim(), 
+            weaveType: document.getElementById('infoWeave').value.trim(), 
+            weftLines: lines, 
+            weftRanges: ranges, 
+            status: document.getElementById('top_completed_status').checked ? 'completed' : 'running'
+        });
+    } else {
+        masters[idx].weftWidth = document.getElementById('infoWeftWidth').value.trim();
+        masters[idx].weftCount = document.getElementById('infoWeftCount').value.trim();
+        masters[idx].weftPick = document.getElementById('infoPick').value.trim();
+        masters[idx].weaveType = document.getElementById('infoWeave').value.trim();
+        masters[idx].weftLines = lines;
+        masters[idx].weftRanges = ranges;
+        masters[idx].status = document.getElementById('top_completed_status').checked ? 'completed' : 'running';
+    }
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     if(!designSpecs[dNo]) designSpecs[dNo] = {};
@@ -426,6 +491,12 @@ async function saveWeftDesign() {
 }
 
 async function toggleStatus(dNo, newStatus) {
+    // 🔒 Permission Check for Toggle Status
+    if (!checkUserPermission()) {
+        authorizationAlert();
+        return;
+    }
+
     if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
@@ -479,6 +550,12 @@ function renderSavedList() {
 }
 
 function editDesignPattern(dNo) {
+    // 🔒 Permission Check for Edit
+    if (!checkUserPermission()) {
+        authorizationAlert();
+        return;
+    }
+
     closeModal('savedListModal');
     document.getElementById('designNo').value = dNo;
     loadWeftDesignData();
@@ -606,7 +683,6 @@ function previewWeftPattern() {
     
     let html = headerHtml;
 
-    // 🔥 Adjusted Widths: Reduced Colour to 25%, Increased Set to 35%
     let tableHeader = `
         <tr style="background:#EAF0EA;">
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:10%;">No</th>
@@ -619,7 +695,6 @@ function previewWeftPattern() {
 
     html += '<div class="print-flex-row" style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; width: 100%;">';
     
-    // Column 1
     html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
             ${tableHeader}
@@ -627,7 +702,6 @@ function previewWeftPattern() {
         </table>
     </div>`;
 
-    // Column 2
     html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">`;
     if (col2Html !== '') {
         html += `<table style="width:100%; border-collapse:collapse; font-size:11px;">
@@ -637,7 +711,6 @@ function previewWeftPattern() {
     }
     html += `</div></div>`;
 
-    // Totals Section
     html += `<div style="margin-top: 15px; border-top: 2px solid #4A7C59; padding-top: 5px; page-break-inside: avoid;">
         <table style="width:100%; border-collapse:collapse; font-size:11px; background:#FFF;">
             <tr style="font-weight:bold; font-size:12px; background:#F8FAF8; border-bottom: 1px dashed #A0AFA0;">
@@ -660,6 +733,10 @@ function previewWeftPattern() {
 
     document.getElementById('previewContent').innerHTML = html;
     openModal('previewModal');
+}
+
+function authorizationAlert() {
+    alert("Access Denied! You do not have permission to access this page. ❌");
 }
 </script>
 
@@ -701,8 +778,14 @@ function previewWeftPattern() {
         return null;
     }
 
-    // Sync Data on Load
     window.addEventListener('load', async function() {
+        // 🔒 Page Access Check on Load
+        if (!typeof checkUserPermission === 'function' || !checkUserPermission()) {
+            alert("Access Denied! You do not have permission to access this page. ❌");
+            window.location.href = "dashboard.html";
+            return;
+        }
+
         let saveBtn = document.getElementById('saveBtnTxt');
         if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
 
