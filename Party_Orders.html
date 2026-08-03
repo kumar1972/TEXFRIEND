@@ -405,6 +405,28 @@
         let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let editingId = null;
         
+        // 🔒 Universal Permission Checker Function for Party Orders Page
+        function checkUserPermission() {
+            let userRole = localStorage.getItem('user_role');
+            if (userRole !== 'Administrator' && userRole !== 'Admin') {
+                let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+                // settings.html-ல் உள்ள சரியான கீ பெயர் 'party_orders.html' அல்லது 'party_orders' என இருக்கலாம்
+                if (permissions['party_orders.html'] === false || permissions['party_orders'] === false || permissions['party_orders.html'] === false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 🔒 Page Access Check on Load
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to access this page. ❌");
+                window.location.href = "dashboard.html";
+                return;
+            }
+        });
+
         function openModal(modalId) {
             let modal = document.getElementById(modalId);
             modal.style.display = 'flex';
@@ -476,6 +498,14 @@
 
         // 📌 Completed Checkbox Quick Toggle with Alert Pop-up
         async function quickCompleteToggle() {
+            // 🔒 Permission Check for Quick Complete Toggle
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to modify status on this page. ❌");
+                let toggle = document.getElementById('orderStatusToggle');
+                if(toggle) toggle.checked = !toggle.checked;
+                return;
+            }
+
             let designNo = document.getElementById('designNumber').value;
             let isCompleted = document.getElementById('orderStatusToggle').checked;
 
@@ -537,6 +567,12 @@
         // 📌 FIREBASE SYNC: savePartyOrder with Re-entry Confirmation Popup & Double Entry Prevention
         async function savePartyOrder(e) {
             e.preventDefault();
+            
+            // 🔒 Absolute Guard: Block saving immediately if permission is false
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to save party orders on this page. ❌");
+                return;
+            }
             
             let designNo = document.getElementById('designNumber').value;
             let cleanDesign = designNo ? designNo.replace('#', '').trim().toLowerCase() : '';
@@ -624,6 +660,12 @@
         }
 
         function editOrder(id) {
+            // 🔒 Permission Check for Edit
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to edit entries. ❌");
+                return;
+            }
+
             closeModal('savedOrdersModal');
             let item = partyOrders.find(x => x.id === id);
             if(!item) return;
@@ -680,6 +722,12 @@
         }
 
         async function toggleStatus(id, newStatus) {
+            // 🔒 Permission Check for Toggle Status
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to change status. ❌");
+                return;
+            }
+
             let msg = newStatus === 'completed' ? "Indha order-ai Completed-aga maatranuma?" : "Indha order-ai Running-ku maatranuma?";
             if(confirm(msg)) {
                 partyOrders = partyOrders.map(x => x.id === id ? {...x, status: newStatus} : x);
@@ -706,6 +754,12 @@
         }
 
         async function deleteOrder(id) {
+            // 🔒 Permission Check for Delete
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to delete entries. ❌");
+                return;
+            }
+
             if(confirm("Indha order-ai delete pannanuma?")){
                 partyOrders = partyOrders.filter(x => x.id !== id);
                 localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
@@ -758,6 +812,13 @@
         }
 
         window.addEventListener('load', async function() {
+            // 🔒 Page Access Check on Load
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to access this page. ❌");
+                window.location.href = "dashboard.html";
+                return;
+            }
+
             let btn = document.getElementById('saveBtn');
             let origText = btn ? btn.innerText : "✅ Save Order Details";
             if(btn) btn.innerText = "⏳ Syncing Cloud...";

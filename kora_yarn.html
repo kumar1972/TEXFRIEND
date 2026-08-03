@@ -432,7 +432,27 @@
 let editingInwardId = null;
 let editingIssueId = null;
 
+// 🔒 Universal Permission Checker Function for Kora Yarn Page
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        // settings.html-ல் உள்ள சரியான கீ பெயர் 'kora_yarn.html' அல்லது 'kora' என இருக்கலாம், இங்கேயும் செக் செய்கிறோம்
+        if (permissions['kora_yarn.html'] === false || permissions['kora_yarn'] === false || permissions['kora'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // 🔒 Page Access Check on Load
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     document.getElementById('inwardDate').valueAsDate = new Date();
     document.getElementById('issueDate').valueAsDate = new Date();
     loadDesignDropdown();
@@ -522,6 +542,14 @@ function onDesignSelect(val) {
 
 // 📌 Completed Checkbox Quick Toggle
 async function quickCompleteToggle() {
+    // 🔒 Permission Check for Quick Complete Toggle
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to modify status on this page. ❌");
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = !cb.checked;
+        return;
+    }
+
     let dNo = document.getElementById('designNo').value;
     let cb = document.getElementById('top_completed_status');
     let isCompleted = cb ? cb.checked : false;
@@ -587,6 +615,12 @@ async function quickCompleteToggle() {
 
 // 1. SAVE INWARD STOCK with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveInward() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to save inward stock on this page. ❌");
+        return;
+    }
+
     let dateVal = document.getElementById('inwardDate').value;
     let supplier = document.getElementById('supplierName').value.trim();
     let count = document.getElementById('inwardCount').value.trim();
@@ -670,6 +704,12 @@ async function saveInward() {
 
 // 2. SAVE OUTWARD ISSUE with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveIssue() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to add kora issue on this page. ❌");
+        return;
+    }
+
     let dateVal = document.getElementById('issueDate').value;
     let dyeingName = document.getElementById('dyeingName').value.trim();
     let issueMillName = document.getElementById('issueMillName').value.trim(); 
@@ -767,6 +807,12 @@ async function saveIssue() {
 
 // 📌 FIREBASE SYNC: toggleStatus for Inward
 async function toggleInwardStatus(id, newStatus) {
+    // 🔒 Permission Check for Toggle Inward Status
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to change status. ❌");
+        return;
+    }
+
     let msg = newStatus === 'completed' ? "Change this stock to Completed?" : "Change this stock to Running?";
     if(confirm(msg)) {
         let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
@@ -785,6 +831,12 @@ async function toggleInwardStatus(id, newStatus) {
 
 // 📌 FIREBASE SYNC: toggleStatus for Issue
 async function toggleIssueStatus(id, newStatus) {
+    // 🔒 Permission Check for Toggle Issue Status
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to change status. ❌");
+        return;
+    }
+
     let msg = newStatus === 'completed' ? "Change this issue to Completed?" : "Change this issue to Running?";
     if(confirm(msg)) {
         let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
@@ -886,6 +938,12 @@ function refreshAllTables() {
 
 // 4. EDIT & DELETE FUNCTIONS
 function editInward(id) {
+    // 🔒 Permission Check for Edit Inward
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to edit entries. ❌");
+        return;
+    }
+
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let rec = records.find(r => r.id == id);
     if(rec) {
@@ -904,6 +962,12 @@ function editInward(id) {
 }
 
 async function deleteInward(id) {
+    // 🔒 Permission Check for Delete Inward
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to delete entries. ❌");
+        return;
+    }
+
     if(!confirm("Are you sure you want to delete this Inward record?")) return;
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     records = records.filter(r => r.id != id);
@@ -917,6 +981,12 @@ async function deleteInward(id) {
 }
 
 function editIssue(id) {
+    // 🔒 Permission Check for Edit Issue
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to edit entries. ❌");
+        return;
+    }
+
     let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let rec = records.find(r => r.id == id);
     if(rec) {
@@ -939,6 +1009,12 @@ function editIssue(id) {
 }
 
 async function deleteIssue(id) {
+    // 🔒 Permission Check for Delete Issue
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to delete entries. ❌");
+        return;
+    }
+
     if(!confirm("Are you sure you want to delete this Issue record?")) return;
     let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     records = records.filter(r => r.id != id);
