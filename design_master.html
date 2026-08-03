@@ -226,7 +226,27 @@
     let designList = [];
     let tempBitmapData = "";
 
+    // 🔒 Universal Permission Checker Function
+    function checkUserPermission() {
+        let userRole = localStorage.getItem('user_role');
+        // Administrator அல்லது Admin தவிர மற்றவர்களுக்கு மட்டும் பெர்மிஷன் செக் செய்யும்
+        if (userRole !== 'Administrator' && userRole !== 'Admin') {
+            let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+            // settings.html-ல் உள்ள கீ வடிவமைப்புப்படி செக் செய்கிறது
+            if (permissions['design_master'] === false) {
+                return false; // பெர்மிஷன் இல்லை
+            }
+        }
+        return true; // பெர்மிஷன் உண்டு
+    }
+
     window.onload = async function() {
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to access this page. ❌");
+            window.location.href = "dashboard.html";
+            return;
+        }
+
         designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
         loadDesignDropdown();
 
@@ -284,6 +304,12 @@
     }
 
     window.addDesign = async function() {
+        // 🔒 Absolute Guard: Block saving immediately if permission is false
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to save entries on this page. ❌");
+            return;
+        }
+
         let designNo = document.getElementById('newDesign').value.trim();
         if(!designNo) { alert("Design Number type pannu"); return; }
 
@@ -331,6 +357,12 @@
     }
 
     window.updateDesign = async function() {
+        // 🔒 Absolute Guard: Block updating immediately if permission is false
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to update entries on this page. ❌");
+            return;
+        }
+
         let designNo = document.getElementById('designSelect').value;
         if(!designNo) { alert("Select Design!"); return; }
         
@@ -360,6 +392,12 @@
     }
 
     window.deleteDesign = async function() {
+        // 🔒 Absolute Guard: Block deleting immediately if permission is false
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to delete entries on this page. ❌");
+            return;
+        }
+
         let designNo = document.getElementById('designSelect').value;
         if(!designNo) return;
         

@@ -503,7 +503,26 @@
 <script>
 let editingIssueId = null;
 
+// 🔒 Universal Permission Checker Function for Dyeing Issue
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['dyeing_issue'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // 🔒 Page Access Check on Load
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     document.getElementById('issueDate').valueAsDate = new Date();
     loadDesignDropdowns();
     renderIssuedList();
@@ -826,6 +845,13 @@ function updateTotals() {
 
 // 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
+    // 🔒 Permission Check for Quick Complete Toggle
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to modify status on this page. ❌");
+        document.getElementById('top_completed_status').checked = !document.getElementById('top_completed_status').checked;
+        return;
+    }
+
     let dNo = document.getElementById('designNumber').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
 
@@ -897,6 +923,12 @@ async function quickCompleteToggle() {
 
 // 📌 FIREBASE SYNC: saveIssueEntries with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveIssueEntries() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to save entries on this page. ❌");
+        return;
+    }
+
     let dateVal = document.getElementById('issueDate').value;
     let dNo = document.getElementById('designNumber').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -1011,6 +1043,12 @@ async function saveIssueEntries() {
 
 // 📌 EDIT RECORD FUNCTION
 async function editIssuedRecord(id) {
+    // 🔒 Permission Check for Edit
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to edit entries. ❌");
+        return;
+    }
+
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let rec = records.find(r => r.id == id);
     if (!rec) return;
@@ -1045,6 +1083,12 @@ async function editIssuedRecord(id) {
 
 // 📌 FIREBASE SYNC: toggleStatus
 async function toggleStatus(id, newStatus) {
+    // 🔒 Permission Check for Toggle Status
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to change status. ❌");
+        return;
+    }
+
     let msg = newStatus === 'completed' ? "Change this issue to Completed?" : "Change this issue to Running?";
     if(confirm(msg)) {
         let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
@@ -1074,6 +1118,12 @@ async function toggleStatus(id, newStatus) {
 
 // 📌 FIREBASE SYNC: deleteIssuedRecord
 async function deleteIssuedRecord(id) {
+    // 🔒 Permission Check for Delete
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to delete entries. ❌");
+        return;
+    }
+
     if(!confirm("Are you sure you want to delete this record?")) return;
     
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
