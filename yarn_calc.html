@@ -123,38 +123,79 @@
         gap: 6px;
     }
 
+    /* 📌 மேலே Print நீக்கப்பட்டு GSM மற்றும் Preview மட்டும் இருக்கும்படி அமைப்பு */
     .header-btns {
         display: flex;
-        gap: 8px;
+        gap: 6px;
     }
+    .top-action-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        color: white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        transition: all 0.2s ease;
+    }
+    .top-action-badge.gsm-badge { background: linear-gradient(135deg, #F59E0B, #D97706); cursor: default; }
+    .top-action-badge.preview-badge { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+    .top-action-badge:hover:not(.gsm-badge) { transform: translateY(-2px); }
 
-    /* 📌 Premium Action Buttons */
-    .preview-btn { 
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8); 
-        color: white; border: none; padding: 8px 14px; border-radius: 8px; 
-        font-size: 11px; font-weight: 700; cursor: pointer; 
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25); transition: all 0.3s ease; 
+    /* 📌 கீழே கொடுக்கப்பட்டுள்ள Save Button Styling */
+    .bottom-save-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
-    .print-btn { 
-        background: linear-gradient(135deg, #10B981, #059669); 
-        color: white; border: none; padding: 8px 14px; border-radius: 8px; 
-        font-size: 11px; font-weight: 700; cursor: pointer; 
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); transition: all 0.3s ease; 
+    .bottom-save-btn {
+        background: linear-gradient(135deg, #4A7C59, #2F4F38);
+        color: white;
+        border: none;
+        padding: 14px 35px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(74, 124, 89, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.5px;
     }
-    .preview-btn:hover, .print-btn:hover { transform: translateY(-2px); }
+    .bottom-save-btn:hover {
+        background: linear-gradient(135deg, #3F5A3E, #1E2B23);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(74, 124, 89, 0.4);
+    }
 
     /* 📌 Smart Form Sections */
-    .top-form-row, .top-form-row-2 {
+    .top-form-row-single {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 12px;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+    }
+
+    .top-form-row, .top-form-row-2, .top-form-row-3 {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
         background: #F8FAF8;
         border: 1px solid #E2E8E2;
         border-radius: 12px;
         padding: 15px;
     }
-    .top-form-row { margin-bottom: 2px; }
-    .top-form-row-2 { margin-bottom: 10px; }
+    .top-form-row { margin-bottom: 8px; }
+    .top-form-row-2 { margin-bottom: 10px; grid-template-columns: repeat(3, 1fr); }
+    .top-form-row-3 { margin-bottom: 10px; grid-template-columns: repeat(3, 1fr); }
 
     .form-group label {
         display: block;
@@ -327,27 +368,33 @@
         </div>
     </div>
 
+    <!-- 📌 மேலே Print நீக்கப்பட்டு GSM மற்றும் Preview மட்டும் வைக்கப்பட்டுள்ளது -->
     <div class="header-bar">
-        <h3 id="pageHeaderTitle">🧵 Yarn Calculation <span id="displayGsmBadge" style="background: #D97706; color: white; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-left: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">GSM: 0</span></h3>
+        <h3 id="pageHeaderTitle">🧵 Yarn Calculation</h3>
         <div class="header-btns">
-            <button class="preview-btn" onclick="previewReport()">👁️ Preview</button>
-            <button class="print-btn" onclick="printReport()">🖨️ Print</button>
+            <div class="top-action-badge gsm-badge" id="displayGsmBadge">GSM: 0</div>
+            <button class="top-action-badge preview-badge" onclick="previewReport()">👁️ Preview</button>
         </div>
     </div>
 
-    <div class="top-form-row">
+    <!-- 📌 Design Number தனியாக ஒரு ரோ (Row) -->
+    <div class="top-form-row-single">
         <div class="form-group">
             <label>Design Number</label>
             <select id="designNumber" onchange="loadInitialData()">
                 <option value="">Select</option>
             </select>
         </div>
+    </div>
+
+    <!-- 📌 Finish Reed மற்றும் Finish Pick -->
+    <div class="top-form-row">
         <div class="form-group">
-            <label>Reed</label>
+            <label>finish Reed</label>
             <input type="number" id="calcReed" oninput="loadYarnData()" placeholder="Reed">
         </div>
         <div class="form-group">
-            <label>Pick</label>
+            <label>finish Pick</label>
             <input type="number" id="calcPick" oninput="loadYarnData()" placeholder="Pick">
         </div>
     </div>
@@ -409,17 +456,19 @@
 
     <!-- WEFT SEPARATE SECTION -->
     <h3 class="section-title" style="margin-top: 10px;">🧶 WEFT YARN CALCULATION</h3>
-    <div class="top-form-row-2" style="margin-bottom: 8px;">
+    
+    <div class="top-form-row-3">
         <div class="form-group">
             <label>Crimp %</label>
-            <input type="number" id="crimpPercentage" value="6" placeholder="%" oninput="calculateWeftMtrs(); loadYarnData();">
+            <input type="number" id="crimpPercentage" value="" placeholder="%" oninput="calculateWeftMtrs(); loadYarnData();">
         </div>
         <div class="form-group">
             <label>Weft Mtrs</label>
             <input type="number" id="weftLengthMeters" value="100" readonly style="background:#F4F7F4; color:#4A7C59; border-color:#D1DED1; cursor:not-allowed;">
         </div>
         <div class="form-group">
-            <!-- Empty spacing for layout alignment -->
+            <label>Onloom Pick Less</label>
+            <input type="number" id="onloomPickLess" value="" placeholder="Enter Less Picks" oninput="loadYarnData()">
         </div>
     </div>
 
@@ -439,9 +488,14 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 📌 கீழே கொடுக்கப்பட்டுள்ள Save Button -->
+    <div class="bottom-save-container">
+        <button class="bottom-save-btn" onclick="saveCalculationData()">💾 Save Calculation</button>
+    </div>
 </div>
 
-<!-- 📌 Full Screen Print Preview Modal -->
+<!-- 📌 Full Screen Print Preview Modal (Inside Preview, Print Option Available) -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -464,6 +518,27 @@
 </div>
 
 <script>
+// 🔒 Universal Permission Checker Function for Yarn Calculation Page
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['yarn_calculation.html'] === false || permissions['yarn_calculation'] === false || permissions['calculation'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 🔒 Page Access Check on Load
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+});
+
 function openModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
@@ -478,6 +553,18 @@ function closeModal(modalId) {
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+function getSharedVal(o1, o2, keys) {
+    for(let k of keys) {
+        let lk = String(k).toLowerCase().trim();
+        if(o2) { let mk = Object.keys(o2).find(x => String(x).toLowerCase().trim()===lk); if(mk && o2[mk] !== '') return o2[mk]; }
+    }
+    for(let k of keys) {
+        let lk = String(k).toLowerCase().trim();
+        if(o1) { let mk = Object.keys(o1).find(x => String(x).toLowerCase().trim()===lk); if(mk && o1[mk] !== '') return o1[mk]; }
+    }
+    return '';
 }
 
 // 📌 Fullscreen Image Popup Controls
@@ -533,10 +620,6 @@ window.calculatedYarnData = {
     weftTotals: { p: 0, t: 0, w: 0 }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    initDropdown();
-});
-
 function initDropdown() {
     var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     var select = document.getElementById('designNumber');
@@ -558,7 +641,8 @@ function initDropdown() {
 
 function calculateWeftMtrs() {
     let warpOrder = parseFloat(document.getElementById('lengthMeters').value) || 0;
-    let crimp = parseFloat(document.getElementById('crimpPercentage').value) || 0;
+    let crimpVal = document.getElementById('crimpPercentage').value.trim();
+    let crimp = crimpVal === '' ? 0 : parseFloat(crimpVal) || 0;
     
     let weftMtrs = warpOrder - (warpOrder * (crimp / 100));
     document.getElementById('weftLengthMeters').value = weftMtrs > 0 ? weftMtrs.toFixed(2) : '';
@@ -570,12 +654,16 @@ function loadInitialData() {
     if(dName) localStorage.setItem('selected_design_number', dName);
 
     if(!dName) {
+        document.getElementById('calcReed').value = '';
+        document.getElementById('calcPick').value = '';
         document.getElementById('warpGroundTableBody').innerHTML = '';
         document.getElementById('warpTopTableBody').innerHTML = '';
         document.getElementById('weftTableBody').innerHTML = '';
         document.getElementById('topBeamWrapper').style.display = 'none';
         document.getElementById('baseCounts').value = '';
         document.getElementById('topLengthMeters').value = '';
+        document.getElementById('onloomPickLess').value = '';
+        document.getElementById('crimpPercentage').value = '';
         let cb = document.getElementById('top_completed_status');
         if(cb) cb.checked = false;
         
@@ -585,8 +673,10 @@ function loadInitialData() {
     }
 
     let cleanDNo = cleanDesignName(dName);
+    
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
@@ -601,38 +691,44 @@ function loadInitialData() {
         if(cb) cb.checked = false;
     }
 
-    let uiReed = foundMaster.reed || sp.reed || sp.baseReed || 52;
-    let uiPick = foundMaster.pick || sp.pick || sp.basePick || 56;
+    let finalReed = getSharedVal(foundMaster, sp, ['reed', 'basereed', 'reedonloom', 'finishreed']) || 64;
+    let finalPick = getSharedVal(foundMaster, sp, ['pick', 'basepick', 'pickonloom', 'finishpick']) || 48;
 
-    document.getElementById('calcReed').value = uiReed;
-    document.getElementById('calcPick').value = uiPick;
+    document.getElementById('calcReed').value = finalReed;
+    document.getElementById('calcPick').value = finalPick;
 
-    let c1 = foundMaster.count1 || sp.warp || '';
-    let c2 = foundMaster.count2 || sp.warp2 || '';
+    let c1 = getSharedVal(foundMaster, sp, ['warp1', 'warp 1', 'warp 1 (grnd)', 'count1', 'warp', 'warp count']);
+    let c2 = getSharedVal(foundMaster, sp, ['warp2', 'warp 2', 'warp 2 (top)', 'count2', 'top count']);
+    let c3 = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']);
+    
     let countsArr = [];
     if (c1) countsArr.push(c1);
     if (c2) countsArr.push(c2);
+    if (c3) countsArr.push(c3);
+    
     let uniqueCounts = [...new Set(countsArr)].join(', ');
     document.getElementById('baseCounts').value = uniqueCounts || '20';
     
-    let defaultMtr = 100;
-    if (foundMaster.orderMtr) {
-        document.getElementById('lengthMeters').value = foundMaster.orderMtr;
-        defaultMtr = parseFloat(foundMaster.orderMtr) || 100;
-    }
+    let defaultMtrRaw = getSharedVal(foundMaster, sp, ['ordermtr', 'order mtr', 'warp dyeing order']);
+    let defaultMtr = parseFloat(defaultMtrRaw) || 100;
+    document.getElementById('lengthMeters').value = defaultMtr;
 
-    let hasTopBeamLines = foundMaster.warpLines && foundMaster.warpLines.some(l => l.beam === 'Top Beam');
+    let savedPickLess = getSharedVal(foundMaster, sp, ['onloompickless', 'pickless']);
+    document.getElementById('onloomPickLess').value = savedPickLess !== undefined && savedPickLess !== '' ? savedPickLess : '';
+
+    let savedCrimp = getSharedVal(foundMaster, sp, ['crimppercentage', 'crimp']);
+    document.getElementById('crimpPercentage').value = savedCrimp !== undefined && savedCrimp !== '' ? savedCrimp : '';
+
+    let hasTopBeamLines = (foundMaster.warpLines && foundMaster.warpLines.some(l => l.beam === 'Top Beam')) || 
+                          (sp.warpLines && sp.warpLines.some(l => l.beam === 'Top Beam'));
+    
     if (hasTopBeamLines) {
-        if (foundMaster.topBeam) {
-            let rawTop = String(foundMaster.topBeam);
-            if (rawTop.includes('%')) {
-                let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
-                document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
-            } else {
-                document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
-            }
+        let rawTop = String(getSharedVal(foundMaster, sp, ['topbeam', 'top beam']));
+        if (rawTop.includes('%')) {
+            let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
+            document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
         } else {
-            document.getElementById('topLengthMeters').value = defaultMtr;
+            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
         }
     } else {
         document.getElementById('topLengthMeters').value = ''; 
@@ -642,8 +738,50 @@ function loadInitialData() {
     loadYarnData();
 }
 
+// 📌 Save Calculation Data Function
+async function saveCalculationData() {
+    let dName = document.getElementById('designNumber').value;
+    if(!dName) {
+        alert("Mudhala Design Number select pannunga bro");
+        return;
+    }
+
+    let cleanDNo = cleanDesignName(dName);
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+
+    designSpecs[specKey].reed = document.getElementById('calcReed').value;
+    designSpecs[specKey].pick = document.getElementById('calcPick').value;
+    designSpecs[specKey].orderMtr = document.getElementById('lengthMeters').value;
+    designSpecs[specKey].topLengthMtr = document.getElementById('topLengthMeters').value;
+    designSpecs[specKey].crimpPercentage = document.getElementById('crimpPercentage').value;
+    designSpecs[specKey].onloomPickLess = document.getElementById('onloomPickLess').value;
+    designSpecs[specKey].calculatedData = window.calculatedYarnData;
+
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+    } catch(e) {
+        console.error("Firebase Save Error: ", e);
+    }
+
+    alert(`Design ${dName} Calculation Saved Successfully! ✅`);
+}
+
 // 📌 Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
 async function quickCompleteToggle() {
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to modify status on this page. ❌");
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = !cb.checked;
+        return;
+    }
+
     let dName = document.getElementById('designNumber').value;
     let cb = document.getElementById('top_completed_status');
     let isCompleted = cb ? cb.checked : false;
@@ -783,9 +921,13 @@ function loadYarnData() {
         weftTotals: { p: 0, t: 0, w: 0 }
     };
 
-    let baseWidth = parseFloat(foundMaster.width || sp.width || sp.baseWidth) || 66.92;
+    let baseWidthRaw = getSharedVal(foundMaster, sp, ['width', 'basewidth', 'width (inch)', 'width inch']);
+    let baseWidth = parseFloat(baseWidthRaw) || 66.92;
     let totalWarpEnds = Math.round(uiReed * baseWidth);
-    let warpData = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultCountText);
+    
+    let warpLinesData = foundMaster.warpLines || sp.warpLines || [];
+    let warpRangesData = foundMaster.warpRanges || sp.warpRanges || [];
+    let warpData = resolvePattern(warpLinesData, warpRangesData, 'warp', defaultCountText);
 
     if (warpData.totalPatternVal > 0) {
         let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
@@ -848,13 +990,32 @@ function loadYarnData() {
         document.getElementById('topBeamWrapper').style.display = 'none';
     }
 
-    let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (baseWidth + 3);
-    let totalFabricPick = weftWidth * uiPick;
+    let baseReed = parseFloat(uiReed) || 64;
     
-    let weftCountFallbackText = foundMaster.weftCount || sp.weft || '40';
+    let autoWeftWidth = '';
+    if (baseReed > 8 && baseWidth > 0) {
+        let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
+        autoWeftWidth = calculatedWidth.toFixed(2);
+    } else if (baseWidth > 0) {
+        autoWeftWidth = (baseWidth + 3).toFixed(2);
+    }
+
+    let weftWidthRaw = getSharedVal(foundMaster, sp, ['weftwidth', 'weft width']);
+    let weftWidth = parseFloat(autoWeftWidth) || parseFloat(weftWidthRaw) || (baseWidth + 3);
+    
+    let pickLessVal = document.getElementById('onloomPickLess').value.trim();
+    let pickLess = pickLessVal === '' ? 0 : parseFloat(pickLessVal) || 0;
+    let netPick = uiPick - pickLess;
+    if (netPick < 0) netPick = 0;
+
+    let totalFabricPick = weftWidth * netPick;
+    
+    let weftCountFallbackText = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']) || '40';
     let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
     
-    let weftData = resolvePattern(foundMaster.weftLines || [], foundMaster.weftRanges || [], 'weft', weftCountFallbackText);
+    let weftLinesData = foundMaster.warpLines || sp.warpLines || [];
+    let weftRangesData = foundMaster.warpRanges || sp.warpRanges || [];
+    let weftData = resolvePattern(foundMaster.weftLines || sp.weftLines || [], foundMaster.weftRanges || sp.weftRanges || [], 'weft', weftCountFallbackText);
 
     if (weftData.totalPatternVal > 0) {
         weftData.summary.forEach(obj => {
@@ -883,12 +1044,14 @@ function loadYarnData() {
     }
     document.getElementById('weftTableBody').innerHTML = wfHtml;
 
+    // 🔥 தனித்தனி நூல்களின் எடைகளைக் கூட்டி துல்லியமான மொத்த எடையைப் பெற்று ஸ்டாண்டர்ட் ஃபார்முலா மூலம் GSM கணக்கிடுதல்
     let totalWeightKg = (gt ? gt.w : 0) + (tt ? tt.w : 0) + (wft ? wft.w : 0);
-    let fabricAreaSqMtrs = lengthM * (baseWidth * 0.0254); 
-    let gsmValue = 0;
     
-    if (fabricAreaSqMtrs > 0) {
-        gsmValue = Math.round((totalWeightKg * 1000) / fabricAreaSqMtrs);
+    let fabricWidthInches = baseWidth; 
+    let gsmValue = 0;
+    if (lengthM > 0 && fabricWidthInches > 0 && totalWeightKg > 0) {
+        gsmValue = Math.round((((totalWeightKg * 1000) / (lengthM * (fabricWidthInches * 0.0254))) * 1.06));
+
     }
     
     let gsmBadge = document.getElementById('displayGsmBadge');
@@ -920,6 +1083,7 @@ function previewReport() {
     let length = document.getElementById('lengthMeters').value || '-';
     let topLength = document.getElementById('topLengthMeters').value || '-';
     let weftLength = document.getElementById('weftLengthMeters').value || '-';
+    let pickLess = document.getElementById('onloomPickLess').value || '0';
     
     let d = window.calculatedYarnData;
     
@@ -938,7 +1102,7 @@ function previewReport() {
         <div style="text-align: center; margin-bottom: 20px;">
             <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
             <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
-                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} <br> 
+                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} (Less: ${pickLess}) <br> 
                 <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts &nbsp;|&nbsp; <b style="color:#D97706;">GSM: ${d.gsm || 0}</b>
             </p>
         </div>
@@ -1042,6 +1206,13 @@ function printReport() {
 
     // Sync Data on Load
     window.addEventListener('load', async function() {
+        // 🔒 Page Access Check on Load
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to access this page. ❌");
+            window.location.href = "dashboard.html";
+            return;
+        }
+
         let headerTxt = document.getElementById('pageHeaderTitle');
         let origText = headerTxt.innerHTML;
         headerTxt.innerHTML = "Syncing ☁️...";
