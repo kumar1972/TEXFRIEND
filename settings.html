@@ -123,6 +123,59 @@
             border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
 
+        /* 📌 Checkbox Group Styling */
+        .checkbox-group-container {
+            background: #FFFFFF;
+            border: 1px solid #D1DED1;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1E2B23;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #EF4444;
+            cursor: pointer;
+        }
+
+        /* 📌 Users Table Styling */
+        .users-table-container {
+            margin-top: 15px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #D1DED1;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: center;
+        }
+        .users-table th, .users-table td {
+            padding: 10px;
+            border-bottom: 1px solid #E2E8E2;
+            color: #1E2B23;
+        }
+        .users-table th {
+            background: #EAF0EA;
+            color: #2F4F38;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
         /* 📌 Premium File Input Styling */
         input[type="file"] {
             padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; cursor: pointer;
@@ -143,8 +196,8 @@
 
         /* 📌 Smart Code Editor (For JSON) */
         #advancedJsonEditor {
-            background: #1A2421; /* Very dark green */
-            color: #A7F3D0; /* Mint green text for coder feel */
+            background: #1A2421; 
+            color: #A7F3D0; 
             font-family: 'Courier New', Courier, monospace;
             font-size: 11px; padding: 15px; border-radius: 10px;
             border: 1px solid #064E3B; height: 120px;
@@ -182,6 +235,76 @@
     </div>
 
     <h2 class="page-title">ERP Master Settings</h2>
+
+    <!-- 📌 Section: User Access Control (All 20 Pages) -->
+    <div class="form-section" style="border-left: 4px solid #EF4444;">
+        <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
+        <div class="form-group">
+            <label style="color: #2F4F38; font-size: 12px; margin-bottom: 5px;">Select which pages the 'User' is allowed to access:</label>
+            <div class="checkbox-group-container" style="max-height: 280px; overflow-y: auto;">
+                <label class="checkbox-item"><input type="checkbox" id="perm_dashboard" checked> dashboard.html (Dashboard)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_design_list" checked> design_list.html (Design List)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_design_master" checked> design_master.html (Design Master)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_despatch" checked> Despatch.html (Despatch)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_dyeing_issue" checked> dyeing_issue.html (Dyeing Issue)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_dyeing_receive" checked> dyeing_receive.html (Dyeing Receive)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_index" checked> index.html (Index / Login)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_invoice" checked> invoice.html (Invoice / Bill)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_kora_yarn" checked> kora_yarn.html (Kora Yarn)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_party_orders" checked> Party_Orders.html (Party Orders)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_process_matrix" checked> process_matrix.html (Process Matrix)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_report" checked> report.html (Report)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_settings" checked> settings.html (Settings)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_warp_entry" checked> warp_entry.html (Warp Entry)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_warping" checked> warping.html (Warping)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_washing" checked> washing.html (Washing)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_weaving" checked> weaving.html (Weaving)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_weft_entry" checked> weft_entry.html (Weft Entry)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_yarn_calc" checked> yarn_calc.html (Yarn Calculation)</label>
+            </div>
+        </div>
+        <button class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
+    </div>
+
+    <!-- 📌 Section: User Management (Add New User & List) -->
+    <div class="form-section" style="border-left: 4px solid #3B82F6;">
+        <div class="section-badge blue">👤 User Management</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="newUsername" placeholder="Enter Username...">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="newPassword" placeholder="Enter Password...">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Role / Permissions Level</label>
+            <select id="newUserRole">
+                <option value="Standard User">Standard User</option>
+                <option value="Administrator">Administrator</option>
+            </select>
+        </div>
+        <button class="btn-action btn-info" style="width: 100%; margin-top: 10px;" onclick="addNewUserAccount()">Create New User Account</button>
+        
+        <!-- Saved Users Table List -->
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Dynamic users list -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <!-- 📌 Section 1: General Settings -->
     <div class="form-section">
@@ -293,7 +416,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 1. Local Storage மட்டும் அழிக்க
     window.resetLocalStorageOnly = function() {
         if(confirm("⚠️ WARNING: This will clear local cache on this device only. Cloud data remains safe. Continue?")) {
             localStorage.clear();
@@ -302,7 +424,6 @@
         }
     }
 
-    // 2. Cloud (Firebase) டேட்டா மட்டும் அழிக்க
     window.resetCloudDataOnly = async function() {
         if(confirm("⚠️ CRITICAL WARNING: This will permanently format/reset all Design and Party data on the Cloud Server! Are you absolutely sure?")) {
             try {
@@ -340,6 +461,8 @@ window.onload = function() {
 
     loadDesignDropdownInSettings();
     loadPartyDropdown();
+    loadUserPermissions();
+    renderUsersTable();
 }
 
 function loadDesignDropdownInSettings() {
@@ -463,6 +586,97 @@ function deletePartyMaster() {
     }
 }
 
+// User Access Control Functions
+function updateUserPermissions() {
+    let permissions = {
+        dashboard: document.getElementById('perm_dashboard').checked,
+        design_list: document.getElementById('perm_design_list').checked,
+        design_master: document.getElementById('perm_design_master').checked,
+        despatch: document.getElementById('perm_despatch').checked,
+        dyeing_issue: document.getElementById('perm_dyeing_issue').checked,
+        dyeing_receive: document.getElementById('perm_dyeing_receive').checked,
+        index: document.getElementById('perm_index').checked,
+        invoice: document.getElementById('perm_invoice').checked,
+        kora_yarn: document.getElementById('perm_kora_yarn').checked,
+        party_orders: document.getElementById('perm_party_orders').checked,
+        process_matrix: document.getElementById('perm_process_matrix').checked,
+        report: document.getElementById('perm_report').checked,
+        settings: document.getElementById('perm_settings').checked,
+        warp_entry: document.getElementById('perm_warp_entry').checked,
+        warping: document.getElementById('perm_warping').checked,
+        washing: document.getElementById('perm_washing').checked,
+        weaving: document.getElementById('perm_weaving').checked,
+        weft_entry: document.getElementById('perm_weft_entry').checked,
+        yarn_calc: document.getElementById('perm_yarn_calc').checked
+    };
+    localStorage.setItem('user_permissions', JSON.stringify(permissions));
+    alert("All Pages User Permissions Updated Successfully! ✅");
+}
+
+function loadUserPermissions() {
+    let saved = localStorage.getItem('user_permissions');
+    if(saved) {
+        try {
+            let p = JSON.parse(saved);
+            Object.keys(p).forEach(key => {
+                let el = document.getElementById('perm_' + key);
+                if(el) el.checked = p[key];
+            });
+        } catch(e) {}
+    }
+}
+
+function addNewUserAccount() {
+    let uName = document.getElementById('newUsername').value.trim();
+    let uPass = document.getElementById('newPassword').value.trim();
+    let uRole = document.getElementById('newUserRole').value;
+
+    if(!uName || !uPass) {
+        alert("Please enter both Username and Password!");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('erp_system_users') || '[]');
+    users.push({ id: Date.now(), username: uName, password: uPass, role: uRole });
+    localStorage.setItem('erp_system_users', JSON.stringify(users));
+
+    document.getElementById('newUsername').value = '';
+    document.getElementById('newPassword').value = '';
+    renderUsersTable();
+    alert("New User Account Created Successfully! ✅");
+}
+
+function deleteUserAccount(id) {
+    if(confirm("Are you sure you want to delete this user?")) {
+        let users = JSON.parse(localStorage.getItem('erp_system_users') || '[]');
+        users = users.filter(u => u.id != id);
+        localStorage.setItem('erp_system_users', JSON.stringify(users));
+        renderUsersTable();
+    }
+}
+
+function renderUsersTable() {
+    let users = JSON.parse(localStorage.getItem('erp_system_users') || '[]');
+    let tbody = document.getElementById('usersTableBody');
+    tbody.innerHTML = '';
+
+    if(users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color: #A0AFA0; padding: 12px;">No users created yet.</td></tr>`;
+        return;
+    }
+
+    users.forEach(u => {
+        tbody.innerHTML += `
+            <tr>
+                <td><b>${u.username}</b></td>
+                <td>${u.password}</td>
+                <td><span style="color:${u.role === 'Administrator' ? '#EF4444' : '#3B82F6'}; font-weight:700;">${u.role}</span></td>
+                <td><button class="btn-action btn-danger" style="padding: 4px 8px; font-size: 9px; margin: 0 auto;" onclick="deleteUserAccount(${u.id})">Delete</button></td>
+            </tr>
+        `;
+    });
+}
+
 function saveSettings() {
     let heading = document.getElementById('set_heading').value.trim() || "TEXFRIEND ERP";
     localStorage.setItem('app_heading_name', heading);
@@ -507,7 +721,6 @@ function backupAllData() {
     }
 }
 
-// Advanced Changes Editor Functions
 function loadStorageDataToEditor() {
     let allData = {};
     for (let i = 0; i < localStorage.length; i++) {

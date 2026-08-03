@@ -192,7 +192,7 @@
     }
     .grid-header-bot {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr 35px;
         gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
     }
 
@@ -208,7 +208,7 @@
     }
     .line-row-bot {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr;
+        grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1.2fr 35px;
         gap: 6px; align-items: center; margin-bottom: 8px;
     }
 
@@ -427,7 +427,7 @@
 
     <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) -->
     <div class="form-section" id="sectionBottom">
-        <div class="section-badge blue">2. Washing Received & Shrinkage</div>
+        <div class="section-badge blue">2. Washing Received & Shrinkage / Reprocessing</div>
         
         <div class="form-row" style="grid-template-columns: 1fr 1.5fr;">
             <div class="form-group">
@@ -443,13 +443,14 @@
         </div>
 
         <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
-            <div style="min-width: 500px;">
+            <div style="min-width: 600px;">
                 <div class="grid-header-bot">
                     <div>Slip No</div>
                     <div>Pieces</div>
                     <div>Sent Mtr</div>
                     <div>Process</div>
                     <div>Rcvd Mtr</div>
+                    <div></div>
                 </div>
                 <div id="botLinesContainer"></div>
             </div>
@@ -674,6 +675,21 @@ function addNewTopRow(btn) {
     container.insertBefore(row, btn.parentElement.nextSibling);
 }
 
+function addNewBottomRow(btn) {
+    let container = document.getElementById('botLinesContainer');
+    let row = document.createElement('div');
+    row.className = 'line-row-bot';
+    row.innerHTML = `
+        <input type="text" class="b-slip" placeholder="Slip">
+        <input type="number" class="b-piece" placeholder="0">
+        <input type="number" class="b-mtr" placeholder="0" step="0.01">
+        <input type="text" class="b-process" value="Reprocessing" placeholder="Process">
+        <input type="number" class="b-received" placeholder="Rcvd Mtr" step="0.01">
+        <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    container.appendChild(row);
+}
+
 async function quickCompleteToggle() {
     let dNo = document.getElementById('topDesignNo').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -863,6 +879,7 @@ function loadBottomData() {
             <input type="text" class="b-mtr" value="${item.mtr}" readonly>
             <input type="text" class="b-process" value="${item.process}" readonly>
             <input type="number" class="b-received" placeholder="Rcvd Mtr" step="0.01">
+            <button class="add-btn" onclick="addNewBottomRow(this)" title="Add Reprocessing Row">+</button>
         `;
         container.appendChild(row);
     });
@@ -890,22 +907,39 @@ async function saveBottomEntry() {
     let savedCount = 0;
 
     rows.forEach(row => {
-        let rcvMtr = parseFloat(row.querySelector('.b-received').value);
         let recId = row.getAttribute('data-id');
+        let rcvMtr = parseFloat(row.querySelector('.b-received').value);
         
-        if(rcvMtr > 0) {
-            let issueIndex = issues.findIndex(r => r.id == recId);
-            if(issueIndex !== -1) {
-                let issMtr = parseFloat(issues[issueIndex].mtr);
-                
+        // If it's a dynamically added reprocessing row (doesn't have data-id or is extra)
+        if (!recId) {
+            let slip = row.querySelector('.b-slip').value.trim();
+            let piece = parseInt(row.querySelector('.b-piece').value) || 0;
+            let sentMtr = parseFloat(row.querySelector('.b-mtr').value) || 0;
+            let process = row.querySelector('.b-process').value.trim() || 'Reprocessing';
+
+            if(rcvMtr > 0) {
+                // Create dummy issue entry for reprocessing
+                let newIssueId = Date.now() + Math.random();
+                issues.push({
+                    id: newIssueId,
+                    date: dateVal,
+                    unit: uName,
+                    designNo: dNo,
+                    slip: slip || 'REP-01',
+                    piece: piece,
+                    mtr: sentMtr.toFixed(2),
+                    process: process,
+                    status: 'running'
+                });
+
                 let shrinkPerc = 0;
-                if(issMtr > 0 && rcvMtr <= issMtr) {
-                    shrinkPerc = ((issMtr - rcvMtr) / issMtr) * 100;
+                if(sentMtr > 0 && rcvMtr <= sentMtr) {
+                    shrinkPerc = ((sentMtr - rcvMtr) / sentMtr) * 100;
                 }
 
                 receives.push({
                     id: Date.now() + Math.random(),
-                    issueId: recId,
+                    issueId: newIssueId,
                     botDate: dateVal,
                     designNo: dNo,
                     unit: uName,
@@ -913,6 +947,29 @@ async function saveBottomEntry() {
                     shrinkagePerc: shrinkPerc.toFixed(2) + "%"
                 });
                 savedCount++;
+            }
+        } else {
+            if(rcvMtr > 0) {
+                let issueIndex = issues.findIndex(r => r.id == recId);
+                if(issueIndex !== -1) {
+                    let issMtr = parseFloat(issues[issueIndex].mtr);
+                    
+                    let shrinkPerc = 0;
+                    if(issMtr > 0 && rcvMtr <= issMtr) {
+                        shrinkPerc = ((issMtr - rcvMtr) / issMtr) * 100;
+                    }
+
+                    receives.push({
+                        id: Date.now() + Math.random(),
+                        issueId: recId,
+                        botDate: dateVal,
+                        designNo: dNo,
+                        unit: uName,
+                        receivedMtr: rcvMtr.toFixed(2),
+                        shrinkagePerc: shrinkPerc.toFixed(2) + "%"
+                    });
+                    savedCount++;
+                }
             }
         }
     });
@@ -1154,7 +1211,7 @@ function openPreview() {
         rows.forEach(tr => {
             let cells = tr.querySelectorAll('td');
             html += `<tr style="border-bottom:1px dashed #E2E8E2;">`;
-            cells.querySelectorAll('td').forEach((td, idx) => { // Fixed querySelectorAll syntax for td loop
+            cells.forEach((td, idx) => {
                 if(idx < cells.length - 1) { 
                     html += `<td style="border:1px solid #E2E8E2; padding:10px;">${td.innerHTML}</td>`;
                 }
@@ -1229,7 +1286,7 @@ function printReport() {
             if (data) localStorage.setItem(col, JSON.stringify(data));
         }
 
-        if(btn) btn.innerText = origTest;
+        if(btn) btn.innerText = origText;
         
         loadDesignDropdowns();
         renderTable();

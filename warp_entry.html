@@ -247,6 +247,19 @@
 <script>
 let currentBaseSpecs = {};
 
+// 🔒 Universal Permission Checker Function for Warp Entry
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        // settings.html-ல் உள்ள கீ பெயருக்கு ஏற்ப செக் செய்கிறது
+        if (permissions['warp_entry'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
 function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
 window.openFullscreenImage = function(src) { if(!src || src === '' || src === 'null') return; document.getElementById('fullscreenImg').src = src; document.getElementById('fullscreenModal').style.display = 'flex'; }
@@ -393,6 +406,13 @@ function addWarpRange(start = '', end = '', set = '') {
 function updateLineNumbers() { document.querySelectorAll('.line-item .line-no').forEach((elem, idx) => { elem.innerText = idx + 1; }); }
 
 async function quickCompleteToggle() {
+    // 🔒 Permission Check for Quick Complete Toggle
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to modify status on this page. ❌");
+        document.getElementById('top_completed_status').checked = !document.getElementById('top_completed_status').checked;
+        return;
+    }
+
     let dNo = document.getElementById('designNo').value;
     if(!dNo) { alert("Mudhala Design Number select pannunga bro"); document.getElementById('top_completed_status').checked = false; return; }
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -415,6 +435,12 @@ async function quickCompleteToggle() {
 }
 
 window.saveWarpDesign = async function() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to save entries on this page. ❌");
+        return;
+    }
+
     let dNo = document.getElementById('designNo').value;
     if(!dNo) { alert("Please select a Design Number!"); return; }
 
@@ -475,6 +501,12 @@ window.saveWarpDesign = async function() {
 }
 
 async function toggleStatus(dNo, newStatus) {
+    // 🔒 Permission Check for Toggle Status
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to change status. ❌");
+        return;
+    }
+
     if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
@@ -548,11 +580,10 @@ function previewPattern() {
         </div>
     `;
 
-    // 📌 CLEAN GRID & ALWAYS TWO COLUMNS SIDE-BY-SIDE
     let col1Html = ''; 
     let col2Html = ''; 
     let currentLinesInCol1 = 0;
-    const MAX_LINES_COL1 = 25; // 25 lines limit for the first column
+    const MAX_LINES_COL1 = 25;
     
     let groundTotal = 0; let topTotal = 0; let flatPattern = []; 
 
@@ -623,7 +654,6 @@ function previewPattern() {
 
     let html = headerHtml;
 
-    // 🔥 Adjusted Widths: Reduced Colour to 25%, Increased Set to 35%
     let tableHeader = `
         <tr style="background:#EAF0EA;">
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:10%;">No</th>
@@ -634,10 +664,8 @@ function previewPattern() {
         </tr>
     `;
 
-    // 📌 Flex Layout to align 2 columns side-by-side ALWAYS
     html += '<div class="print-flex-row" style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; width: 100%;">';
     
-    // Column 1 (Max 25 Rows)
     html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
             ${tableHeader}
@@ -645,7 +673,6 @@ function previewPattern() {
         </table>
     </div>`;
 
-    // Column 2 (Rows 26+ or Empty space to keep width 50%)
     html += `<div class="print-col-box" style="flex: 1; width: 48%; background:#FFF;">`;
     if (col2Html !== '') {
         html += `<table style="width:100%; border-collapse:collapse; font-size:11px;">
@@ -656,7 +683,6 @@ function previewPattern() {
     html += `</div>`;
     html += `</div>`;
 
-    // Totals Section
     html += `<div style="margin-top: 15px; border-top: 2px solid #4A7C59; padding-top: 5px; page-break-inside: avoid;">
         <table style="width:100%; border-collapse:collapse; font-size:11px; background:#FFF;">
             <tr style="font-weight:bold; font-size:12px; background:#F8FAF8; border-bottom: 1px dashed #A0AFA0;">
@@ -711,6 +737,13 @@ function previewPattern() {
     window.firebaseLoad = async function(key) { try { const docSnap = await getDoc(doc(db, "texfriend_erp", key)); if (docSnap.exists()) return JSON.parse(docSnap.data().content); } catch (e) {} return null; }
 
     window.addEventListener('load', async function() {
+        // 🔒 Page Access Check on Load
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to access this page. ❌");
+            window.location.href = "dashboard.html";
+            return;
+        }
+
         let saveBtn = document.getElementById('saveBtnTxt'); if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
         let masters = await window.firebaseLoad('design_masters_data'); if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
         let preDesigns = await window.firebaseLoad('pre_design_numbers'); if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
