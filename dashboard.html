@@ -6,184 +6,316 @@
     <title>Dashboard - TEXFRIEND ERP Pro</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        html, body { width: 100%; min-height: 100vh; background: #090D16; color: #F8FAFC; }
-        body { padding: 14px; display: flex; flex-direction: column; align-items: center; }
+        html, body { width: 100%; min-height: 100vh; background: #030712; color: #F8FAFC; overflow-x: hidden; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
         
-        /* 📌 Grand Top Header */
+        /* 📌 Cyberpunk Glowing Top Header - HEIGHT & PADDING INCREASED FOR 70PX LOGO */
         .top-header-container { 
             width: 100%; max-width: 1100px; display: flex; justify-content: space-between; 
-            align-items: center; padding: 12px 18px; 
-            background: linear-gradient(135deg, #1E293B, #0F172A); 
-            color: white; border-radius: 16px; margin-bottom: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); 
-            border: 1px solid rgba(56, 189, 248, 0.2);
+            align-items: center; 
+            padding: 20px 25px; /* 👈 Padding increased to give breathing room */
+            min-height: 110px;  /* 👈 Minimum height set to comfortably fit the logo */
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
+            border-radius: 20px; margin-bottom: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15); 
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            position: relative; z-index: 50;
         }
-        .top-header-container h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin: 0; background: linear-gradient(135deg, #38BDF8, #818CF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* 🌟 Animated Glowing Text for TEXFRIEND PRO */
+        .top-header-container h3 { 
+            flex: 1; /* Pushes Logo to Center */
+            display: flex; align-items: center; justify-content: flex-start; /* Perfect vertical center */
+            font-size: 30px; /* Balanced font size */
+            font-weight: 900; 
+            letter-spacing: 1.2px; 
+            margin: 0; 
+            line-height: 1.2;
+            background: linear-gradient(135deg, #D97706, #F59E0B, #EC4899, #8B5CF6, #D97706); 
+            background-size: 300% 300%;
+            animation: textNeonGlow 4s ease infinite;
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            text-transform: uppercase; 
+            filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+        }
+
+        @keyframes textNeonGlow {
+            0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.7)); }
+            50% { background-position: 100% 50%; filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.9)); }
+            100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.7)); }
+        }
         
-        .header-right-actions { display: flex; align-items: center; gap: 8px; }
-        .live-clock-box { text-align: right; background: rgba(56,189,248,0.08); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.15); }
-        .live-clock { font-size: 11px; font-weight: 700; color: #38BDF8; }
-        .live-date { font-size: 9px; font-weight: 500; color: #94A3B8; }
+        /* Centered Logo in Top Header */
+        #companyLogoContainer { 
+            flex: 0 0 auto; /* Prevents flex from squeezing the logo */
+            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+        }
+        #companyLogoContainer img {
+            height: 70px; 
+            width: 70px;  
+            border-radius: 12px; border: 2px solid #38BDF8;
+            object-fit: cover; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); transition: transform 0.3s;
+        }
+        #companyLogoContainer img:hover { transform: scale(1.1) rotate(5deg); }
+        .logo-placeholder { 
+            height: 70px; 
+            width: 70px;  
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; background: rgba(56, 189, 248, 0.08); border-radius: 12px; 
+            border: 2px dashed #38BDF8; color: #38BDF8; font-weight: 800; text-align: center; 
+            box-shadow: 0 0 15px rgba(56,189,248,0.2); 
+        }
+
+        .header-right-actions { 
+            flex: 1; /* Balances the left flex:1 so logo is perfectly centered */
+            display: flex; align-items: center; justify-content: flex-end; gap: 10px; 
+        }
+        .live-clock-box { text-align: right; background: rgba(56,189,248,0.08); padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(56,189,248,0.3); }
+        .live-clock { font-size: 11.5px; font-weight: 800; color: #38BDF8; letter-spacing: 0.5px; }
+        .live-date { font-size: 9px; font-weight: 600; color: #94A3B8; }
+
+        /* Profile Dropdown Wrapper Fix */
+        .profile-dropdown-wrapper { position: relative; display: inline-block; }
 
         .dropdown-btn { 
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); 
-            color: white; font-size: 16px; padding: 6px 10px; border-radius: 10px; 
-            cursor: pointer; transition: all 0.3s ease; 
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(236, 72, 153, 0.2)); 
+            border: 1.5px solid #38BDF8; 
+            color: white; font-size: 16px; padding: 8px 14px; border-radius: 12px; 
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            display: flex; align-items: center; justify-content: center;
         }
-        .dropdown-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
+        .dropdown-btn:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(56, 189, 248, 0.6); }
 
+        /* Absolute Dropdown Menu Fixed to show clearly above everything */
         .dropdown-menu { 
-            position: absolute; right: 0; top: 50px; background: #1E293B; color: #F8FAFC; 
-            border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); 
-            width: 230px; z-index: 10000; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); 
+            position: absolute; right: 0; top: calc(100% + 10px); background: #0F172A; color: #F8FAFC; 
+            border-radius: 16px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
+            width: 240px; z-index: 999999; overflow: hidden; border: 2px solid #38BDF8; 
+            display: none;
         }
         .dropdown-menu a { 
-            display: block; padding: 12px 18px; text-decoration: none; color: #CBD5E1; 
+            display: block; padding: 13px 18px; text-decoration: none; color: #CBD5E1; 
             font-size: 12px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.2s ease; 
         }
-        .dropdown-menu a:hover { background: rgba(56, 189, 248, 0.1); color: #38BDF8; padding-left: 22px; }
+        .dropdown-menu a:hover { background: rgba(56, 189, 248, 0.2); color: #38BDF8; padding-left: 24px; }
         .dropdown-menu a:last-child { border-bottom: none; color: #F87171; }
-        .dropdown-menu a:last-child:hover { background: rgba(248, 113, 113, 0.1); color: #EF4444; }
-        .user-info-box { padding: 14px 18px; background: #0F172A; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; font-weight: 600; color: #94A3B8; line-height: 1.6; }
+        .dropdown-menu a:last-child:hover { background: rgba(248, 113, 113, 0.2); color: #EF4444; }
+        .user-info-box { padding: 14px 18px; background: #030712; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; font-weight: 600; color: #94A3B8; line-height: 1.6; }
 
-        /* 📌 Main Grand Container */
+        /* 📌 Main Futuristic Glass Container */
         .container { 
-            width: 100%; max-width: 1100px; margin: 0; background: #121A2B; 
-            padding: 20px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); 
-            border: 1px solid rgba(255, 255, 255, 0.08); flex: 1; display: flex; 
-            flex-direction: column; gap: 16px; position: relative; 
+            width: 100%; max-width: 1100px; margin: 0; background: rgba(11, 17, 32, 0.9); 
+            backdrop-filter: blur(20px);
+            padding: 22px; border-radius: 28px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(56, 189, 248, 0.05); 
+            border: 2px solid rgba(56, 189, 248, 0.35); 
+            flex: 1; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 10;
         }
-        
-        .header-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 0; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        
-        #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
-        #companyLogoContainer img {
-            height: 50px; width: 50px; border-radius: 12px; border: 2px solid #38BDF8;
-            object-fit: cover; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3); transition: transform 0.3s;
-        }
-        #companyLogoContainer img:hover { transform: scale(1.08); }
-        .logo-placeholder { font-size: 11px; background: rgba(56, 189, 248, 0.05); padding: 12px 10px; border-radius: 10px; border: 2px dashed #38BDF8; color: #38BDF8; font-weight: 700; text-align: center; }
 
-        h1 { color: #F8FAFC; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin: 0; }
-
-        /* 📌 Quick Search Bar Feature */
+        /* 📌 Cyber Search Bar */
+        .search-bar-wrapper { position: relative; width: 100%; }
         .search-bar-box {
-            display: flex; gap: 8px; background: #1E293B; padding: 8px 12px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.08); align-items: center;
+            display: flex; gap: 10px; background: #0F172A; padding: 10px 14px; border-radius: 16px;
+            border: 2px solid #38BDF8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.05); align-items: center;
         }
         .search-bar-box input {
-            flex: 1; background: transparent; border: none; color: #FFF; font-size: 12px; outline: none; font-weight: 500;
+            flex: 1; background: transparent; border: none; color: #FFF; font-size: 12.5px; outline: none; font-weight: 600;
         }
         .search-bar-box input::placeholder { color: #64748B; }
         .search-bar-box button {
-            background: #38BDF8; color: #0F172A; border: none; padding: 6px 14px; border-radius: 8px;
-            font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s;
+            background: linear-gradient(135deg, #38BDF8, #0284C7); color: #0F172A; border: none; padding: 8px 18px; border-radius: 12px;
+            font-weight: 900; font-size: 11.5px; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 15px rgba(56,189,248,0.4);
         }
-        .search-bar-box button:hover { background: #0ea5e9; }
+        .search-bar-box button:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(56,189,248,0.8); }
 
-        /* 📌 Quick Stats Banner */
+        .search-suggestions-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%; background: #0F172A;
+            border: 2px solid #38BDF8; border-radius: 14px; margin-top: 6px;
+            max-height: 180px; overflow-y: auto; z-index: 999; display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+        }
+        .search-suggestion-item {
+            padding: 11px 16px; font-size: 11.5px; color: #CBD5E1; cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;
+        }
+        .search-suggestion-item:hover { background: rgba(56, 189, 248, 0.25); color: #38BDF8; padding-left: 20px; }
+
+        /* 📌 3D Neon Stats Banner */
         .stats-banner {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #1E293B;
-            padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); text-align: center;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; background: #0F172A;
+            padding: 14px; border-radius: 18px; border: 2px solid rgba(255,255,255,0.08); 
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.7); text-align: center;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            padding: 12px; border-radius: 14px; border: 1.5px solid rgba(56,189,248,0.25);
+            position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        .stat-box:hover { transform: translateY(-3px); border-color: #38BDF8; box-shadow: 0 0 20px rgba(56,189,248,0.3); }
+        .stat-box::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #38BDF8, #EC4899);
         }
         .stat-box span { display: block; }
-        .stat-title { font-size: 10px; color: #94A3B8; font-weight: 600; text-transform: uppercase; }
-        .stat-value { font-size: 14px; color: #38BDF8; font-weight: 800; margin-top: 2px; }
+        .stat-title { font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+        .stat-value { font-size: 16px; color: #38BDF8; font-weight: 900; margin-top: 4px; text-shadow: 0 0 10px rgba(56,189,248,0.4); }
         
-        /* 📌 Grand Master Setup Button with Neon Glow */
+        /* 📌 Grand Master Setup Button with Hyper Neon Pulse */
         .master-setup-btn {
-            background: linear-gradient(135deg, #06B6D4, #3B82F6);
-            color: white; padding: 16px; border-radius: 16px;
-            text-decoration: none; font-weight: 700; font-size: 14px;
-            display: flex; justify-content: center; align-items: center; gap: 12px;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
-            transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.25); width: 100%;
+            background: linear-gradient(135deg, #0284C7, #06B6D4, #8B5CF6, #EC4899);
+            background-size: 300% 300%;
+            animation: neonGradient 6s ease infinite;
+            color: white; padding: 18px; border-radius: 20px;
+            text-decoration: none; font-weight: 900; font-size: 13.5px;
+            display: flex; justify-content: center; align-items: center; gap: 14px;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease; border: 2px solid rgba(255, 255, 255, 0.5); width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .master-setup-btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(6, 182, 212, 0.6); filter: brightness(1.1); }
+        @keyframes neonGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .master-setup-btn:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 0 45px rgba(236, 72, 153, 0.7), inset 0 0 25px rgba(255, 255, 255, 0.5); filter: brightness(1.2); }
 
-        /* 📌 Modern Menu Grid */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2px; }
+        /* 📌 Ultra Modern 3D Glass Menu Grid with Dual Borders */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 2px; }
         .menu-btn { 
-            color: #FFFFFF; padding: 18px 10px; border-radius: 16px; text-decoration: none; 
-            font-weight: 700; text-align: center; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; gap: 8px; font-size: 12px; 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 1px solid rgba(255, 255, 255, 0.08); position: relative; overflow: hidden;
+            color: #FFFFFF; padding: 22px 12px; border-radius: 20px; text-decoration: none; 
+            font-weight: 900; text-align: center; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; gap: 10px; font-size: 12px; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 2px solid rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;
         }
+        
         .menu-btn::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent); opacity: 0; transition: opacity 0.3s;
+            content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border-radius: 17px; border: 1.5px solid rgba(255, 255, 255, 0.25); pointer-events: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); opacity: 0.9;
         }
-        .menu-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.25); }
-        .menu-btn:hover::before { opacity: 1; }
-        .menu-btn .tab-icon { font-size: 26px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+        .menu-btn:hover { 
+            transform: translateY(-6px) scale(1.03); 
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 255, 255, 0.25); 
+            border-color: #FFFFFF; 
+        }
+        .menu-btn .tab-icon { font-size: 30px; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8)); transition: transform 0.3s; }
+        .menu-btn:hover .tab-icon { transform: scale(1.15) rotate(5deg); }
 
-        /* Grand Theme Gradients */
-        .btn-theme-1 { background: linear-gradient(135deg, #2563EB, #1D4ED8); } 
-        .btn-theme-2 { background: linear-gradient(135deg, #0D9488, #0F766E); } 
-        .btn-theme-3 { background: linear-gradient(135deg, #7C3AED, #6D28D9); } 
-        .btn-theme-4 { background: linear-gradient(135deg, #D97706, #B45309); } 
+        /* 🌟 Cyberpunk Double-Tone Gradients for 12 Menu Buttons */
+        .btn-theme-1 { background: linear-gradient(135deg, #1E3A8A, #2563EB); border-color: #60A5FA; box-shadow: 0 10px 25px rgba(37,99,235,0.4); } 
+        .btn-theme-2 { background: linear-gradient(135deg, #064E3B, #059669); border-color: #34D399; box-shadow: 0 10px 25px rgba(5,150,105,0.4); } 
+        .btn-theme-3 { background: linear-gradient(135deg, #4C1D95, #7C3AED); border-color: #A78BFA; box-shadow: 0 10px 25px rgba(124,58,237,0.4); } 
+        .btn-theme-4 { background: linear-gradient(135deg, #7C2D12, #EA580C); border-color: #FB923C; box-shadow: 0 10px 25px rgba(234,88,12,0.4); } 
+        .btn-theme-5 { background: linear-gradient(135deg, #831843, #DB2777); border-color: #F472B6; box-shadow: 0 10px 25px rgba(219,39,119,0.4); }
+        .btn-theme-6 { background: linear-gradient(135deg, #134E4A, #0D9488); border-color: #2DD4BF; box-shadow: 0 10px 25px rgba(13,148,136,0.4); }
+        .btn-theme-7 { background: linear-gradient(135deg, #312E81, #4F46E5); border-color: #818CF8; box-shadow: 0 10px 25px rgba(79,70,229,0.4); }
+        .btn-theme-8 { background: linear-gradient(135deg, #713F12, #CA8A04); border-color: #FACC15; box-shadow: 0 10px 25px rgba(202,138,4,0.4); }
+        .btn-theme-9 { background: linear-gradient(135deg, #881337, #E11D48); border-color: #FB7185; box-shadow: 0 10px 25px rgba(225,29,72,0.4); }
+        .btn-theme-10 { background: linear-gradient(135deg, #14532D, #16A34A); border-color: #4ADE80; box-shadow: 0 10px 25px rgba(22,163,74,0.4); }
+        .btn-theme-11 { background: linear-gradient(135deg, #3B0764, #9333EA); border-color: #C084FC; box-shadow: 0 10px 25px rgba(147,51,234,0.4); }
+        .btn-theme-12 { background: linear-gradient(135deg, #0C4A6E, #0284C7); border-color: #38BDF8; box-shadow: 0 10px 25px rgba(2,132,199,0.4); }
 
-        .menu-grid .full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 14px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #334155, #1E293B); }
-        .menu-grid .full-span .tab-icon { font-size: 22px; }
+        .menu-grid .full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 16px; padding: 20px; font-size: 13.5px; background: linear-gradient(135deg, #1E293B, #0F172A); border: 2px solid #38BDF8; box-shadow: 0 12px 30px rgba(56,189,248,0.3); }
+        .menu-grid .full-span .tab-icon { font-size: 26px; }
         
-        .menu-grid .btn-m-all { background: linear-gradient(135deg, #CA8A04, #A16207); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 14px; padding: 18px; font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(202, 138, 4, 0.3); border: 1px solid rgba(255,255,255,0.15); }
-        .menu-grid .btn-m-all .tab-icon { font-size: 22px; }
+        /* 🌟 Total Saved Designs List - Super Glowing Animated Neon Button */
+        .menu-grid .btn-m-all { 
+            background: linear-gradient(135deg, #78350F, #D97706, #F59E0B, #EC4899, #8B5CF6);
+            background-size: 300% 300%;
+            animation: totalSavedGlow 4s ease infinite;
+            grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 16px; 
+            padding: 20px; font-size: 13.5px; border-radius: 20px; 
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4); 
+            border: 2.5px solid #FCD34D; 
+        }
+        @keyframes totalSavedGlow {
+            0% { background-position: 0% 50%; box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), inset 0 0 15px rgba(255,255,255,0.3); }
+            50% { background-position: 100% 50%; box-shadow: 0 0 50px rgba(236, 72, 153, 0.8), inset 0 0 25px rgba(255,255,255,0.6); border-color: #F472B6; }
+            100% { background-position: 0% 50%; box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), inset 0 0 15px rgba(255,255,255,0.3); }
+        }
+        .menu-grid .btn-m-all .tab-icon { font-size: 26px; filter: drop-shadow(0 0 10px #FFF); }
         
-        .menu-grid .btn-matrix { background: linear-gradient(135deg, #4F46E5, #4338CA); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 14px; padding: 18px; font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); border: 1px solid rgba(255,255,255,0.15); margin-bottom: 2px;}
-        .menu-grid .btn-matrix .tab-icon { font-size: 22px; }
+        /* 🌟 Live Multi-Design Process Status Matrix - Perfectly Matched Size & Padding */
+        .menu-grid .btn-matrix { 
+            background: linear-gradient(135deg, #1E293B, #0F172A); 
+            grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 16px; 
+            padding: 20px; font-size: 13.5px; border-radius: 20px; 
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3); 
+            border: 2px solid #38BDF8; 
+            margin-bottom: 2px;
+        }
+        .menu-grid .btn-matrix .tab-icon { font-size: 26px; }
 
-        /* 📌 Delayed Party Orders Section */
+        /* 📌 Delayed Party Orders Cyber Alert Section */
         .delayed-orders-section {
-            margin-top: 10px;
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 16px;
-            padding: 16px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.25), rgba(69, 10, 10, 0.4));
+            border: 2px solid #EF4444;
+            outline: 2px dashed rgba(239, 68, 68, 0.6);
+            outline-offset: 4px;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 20px 45px rgba(239, 68, 68, 0.3);
+            animation: pulseAlert 3s infinite;
+        }
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 20px rgba(239,68,68,0.2); }
+            50% { box-shadow: 0 0 40px rgba(239,68,68,0.5); }
+            100% { box-shadow: 0 0 20px rgba(239,68,68,0.2); }
         }
         .delayed-orders-section h3 {
             color: #F87171;
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
         .delayed-table-container {
             width: 100%;
-            border-radius: 10px;
+            border-radius: 14px;
             overflow-x: auto;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            background: #090D16;
+            border: 1.5px solid rgba(239, 68, 68, 0.5);
+            background: #030712;
         }
         .delayed-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 11.5px;
             text-align: center;
             white-space: nowrap;
         }
         .delayed-table th, .delayed-table td {
-            padding: 9px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 11px 14px;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
             color: #FCA5A5;
         }
         .delayed-table th {
-            background: rgba(239, 68, 68, 0.15);
+            background: rgba(239, 68, 68, 0.3);
             color: #F87171;
-            font-weight: 700;
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 10px;
+            font-size: 10.5px;
+            letter-spacing: 0.8px;
         }
         .delayed-table tr:last-child td { border-bottom: none; }
-        .red-alert-text { color: #F87171; font-weight: 800; }
+        .red-alert-text { color: #F87171; font-weight: 900; text-shadow: 0 0 8px rgba(239,68,68,0.5); }
 
+        /* Mobile View Adjustments */
         @media (max-width: 768px) {
+            .top-header-container { flex-wrap: wrap; justify-content: center; gap: 15px; padding: 18px; }
+            .top-header-container h3 { flex: 1 1 100%; text-align: center; margin-bottom: 5px; justify-content: center; }
+            #companyLogoContainer { flex: 1 1 100%; justify-content: center; margin-bottom: 5px; }
+            .header-right-actions { flex: 1 1 100%; justify-content: center; }
+            
             .menu-grid { grid-template-columns: repeat(2, 1fr); }
             .menu-grid .full-span, .menu-grid .btn-m-all, .menu-grid .btn-matrix { grid-column: span 2; }
             .stats-banner { grid-template-columns: repeat(1, 1fr); }
@@ -194,17 +326,23 @@
 
     <!-- Top Header with 12hr Live Clock & User Menu -->
     <div class="top-header-container">
-        <h3>TEXFRIEND ERP Pro</h3>
+        <h3>TEXFRIEND PRO</h3>
+        
+        <!-- Uploaded Logo Container Moved to Top Bar -->
+        <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
+        <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
+
         <div class="header-right-actions">
             <div class="live-clock-box">
                 <div id="liveClock" class="live-clock">12:00:00 AM</div>
                 <div id="liveDate" class="live-date">01 Jan 2026</div>
             </div>
-            <div style="position: relative;">
-                <button onclick="toggleMenu()" class="dropdown-btn">👨‍💼</button>
+            <!-- Profile Dropdown Fixed Wrapper -->
+            <div class="profile-dropdown-wrapper">
+                <button onclick="toggleMenu(event)" class="dropdown-btn">👨‍💼</button>
 
                 <!-- Dropdown Menu Options with Live User Info -->
-                <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
+                <div id="dropdownMenu" class="dropdown-menu">
                     <div id="userInfoBox" class="user-info-box">
                         <!-- Live User Name dynamically shows here -->
                     </div>
@@ -249,9 +387,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
     }, 1000);
 });
 
-function toggleMenu() {
+function toggleMenu(event) {
+    event.stopPropagation();
     let menu = document.getElementById('dropdownMenu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
 }
 
 function quickSearchDesign() {
@@ -281,27 +420,30 @@ function clearCacheData() {
 }
 
 window.onclick = function(event) {
-    if (!event.target.matches('button') && !event.target.closest('#dropdownMenu')) {
+    if (!event.target.closest('.profile-dropdown-wrapper')) {
         let dropdown = document.getElementById('dropdownMenu');
-        if (dropdown && dropdown.style.display === 'block') {
+        if (dropdown) {
             dropdown.style.display = 'none';
+        }
+    }
+    if (!event.target.closest('.search-bar-wrapper')) {
+        let suggBox = document.getElementById('searchSuggestions');
+        if (suggBox) {
+            suggBox.style.display = 'none';
         }
     }
 }
 </script>
 
     <div class="container">
-        <div class="header-bar">
-            <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
-            <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
-            <h1 id="appHeading">TEXFRIEND ERP</h1>
-        </div>
-
-        <!-- 📌 Quick Search Bar Feature -->
-        <div class="search-bar-box">
-            <span style="font-size: 14px;">🔍</span>
-            <input type="text" id="quickSearchInput" placeholder="Quick Search Design No / Party Name...">
-            <button onclick="quickSearchDesign()">Go Print</button>
+        <!-- 📌 Quick Search Bar Feature with Live Auto-Suggest -->
+        <div class="search-bar-wrapper">
+            <div class="search-bar-box">
+                <span style="font-size: 15px;">🔍</span>
+                <input type="text" id="quickSearchInput" placeholder="Quick Search Design No / Party Name..." oninput="handleSearchInput(this.value)">
+                <button onclick="quickSearchDesign()">Go Print</button>
+            </div>
+            <div id="searchSuggestions" class="search-suggestions-dropdown"></div>
         </div>
 
         <!-- 📌 Quick Live Statistics Widget Banner -->
@@ -322,7 +464,7 @@ window.onclick = function(event) {
 
         <!-- 📌 Link to New Design Master Page -->
         <a href="design_master.html" class="master-setup-btn">
-            <span style="font-size: 22px;">🎨</span> Create / Edit Design Master Setup
+            <span style="font-size: 24px;">🎨</span> Create / Edit Design Master Setup
         </a>
 
         <div class="menu-grid">
@@ -330,16 +472,16 @@ window.onclick = function(event) {
             <a href="warp_entry.html" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</a>
             <a href="weft_entry.html" class="menu-btn btn-theme-3"><span class="tab-icon">🧶</span> 2.1 Weft Entry</a>
             <a href="kora_yarn.html" class="menu-btn btn-theme-4"><span class="tab-icon">🧵</span> 3. Kora</a>
-            <a href="dyeing_issue.html" class="menu-btn btn-theme-2"><span class="tab-icon">🧶</span> 4. Dyeing Issue</a>
-            <a href="dyeing_receive.html" class="menu-btn btn-theme-1"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</a>
-            <a href="warping.html" class="menu-btn btn-theme-3"><span class="tab-icon">📏</span> 5. Warping</a>
-            <a href="weaving.html" class="menu-btn btn-theme-4"><span class="tab-icon">🏭</span> 6. Weaving</a>
-            <a href="washing.html" class="menu-btn btn-theme-1"><span class="tab-icon">🌊</span> 7. Washing</a>
-            <a href="Despatch.html" class="menu-btn btn-theme-2"><span class="tab-icon">📦</span> 8. Despatch</a>
-            <a href="report.html" class="menu-btn btn-theme-3"><span class="tab-icon">📊</span> 9. Report</a>
-            <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
+            <a href="dyeing_issue.html" class="menu-btn btn-theme-5"><span class="tab-icon">🧶</span> 4. Dyeing Issue</a>
+            <a href="dyeing_receive.html" class="menu-btn btn-theme-6"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</a>
+            <a href="warping.html" class="menu-btn btn-theme-7"><span class="tab-icon">📏</span> 5. Warping</a>
+            <a href="weaving.html" class="menu-btn btn-theme-8"><span class="tab-icon">🏭</span> 6. Weaving</a>
+            <a href="washing.html" class="menu-btn btn-theme-9"><span class="tab-icon">🌊</span> 7. Washing</a>
+            <a href="Despatch.html" class="menu-btn btn-theme-10"><span class="tab-icon">📦</span> 8. Despatch</a>
+            <a href="report.html" class="menu-btn btn-theme-11"><span class="tab-icon">📊</span> 9. Report</a>
+            <a href="invoice.html" class="menu-btn btn-theme-12"><span class="tab-icon">📄</span> Invoice / Bill</a>
             
-            <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
+            <a href="yarn_calc.html" class="menu-btn btn-theme-8 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
             <a href="design_sheet_print.html" class="menu-btn btn-theme-2 full-span"><span class="tab-icon">📋</span> Design Sheet Print</a>
 
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all">
@@ -404,7 +546,6 @@ window.onclick = function(event) {
         }
 
         window.onload = async function() {
-            document.getElementById('appHeading').innerText = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
             let localLogo = localStorage.getItem('company_logo') || '';
             let logoContainer = document.getElementById('companyLogoContainer');
             if (localLogo) {
@@ -414,12 +555,6 @@ window.onclick = function(event) {
             }
 
             try {
-                let heading = await firebaseLoad('app_heading_name');
-                if(heading) {
-                    document.getElementById('appHeading').innerText = heading;
-                    localStorage.setItem('app_heading_name', heading);
-                }
-
                 let logoData = await firebaseLoad('company_logo');
                 if (logoData) {
                     logoContainer.innerHTML = `<img src="${logoData}" alt="Logo">`;
@@ -428,7 +563,10 @@ window.onclick = function(event) {
 
                 let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
                 let cloudDesigns = await firebaseLoad('pre_design_numbers');
-                if(cloudDesigns) preDesigns = cloudDesigns;
+                if(cloudDesigns) {
+                    preDesigns = cloudDesigns;
+                    localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
+                }
                 document.getElementById('statDesignsCount').innerText = preDesigns.length;
 
                 let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
@@ -446,6 +584,53 @@ window.onclick = function(event) {
                 let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                 checkAndDisplayDelayedOrders(partyOrders);
             }
+        }
+
+        // 📌 Live Search Auto-Suggest Handler
+        window.handleSearchInput = function(val) {
+            let suggBox = document.getElementById('searchSuggestions');
+            if(!val || val.trim() === '') {
+                suggBox.style.display = 'none';
+                return;
+            }
+
+            let term = val.trim().toLowerCase();
+            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+            let matches = new Set();
+            
+            // Match from pre_design_numbers
+            preDesigns.forEach(d => {
+                if(d.toLowerCase().includes(term)) matches.add(d);
+            });
+
+            // Match from party_orders_data
+            partyOrders.forEach(o => {
+                let dNo = o.designNo || o.designNumber || '';
+                let pName = o.partyName || o.name || '';
+                if(dNo.toLowerCase().includes(term)) matches.add(dNo);
+                if(pName.toLowerCase().includes(term)) matches.add(pName);
+            });
+
+            let matchArr = Array.from(matches).slice(0, 5); // Limit to 5 suggestions
+
+            if(matchArr.length > 0) {
+                let html = '';
+                matchArr.forEach(m => {
+                    html += `<div class="search-suggestion-item" onclick="selectSuggestion('${m}')">📌 ${m}</div>`;
+                });
+                suggBox.innerHTML = html;
+                suggBox.style.display = 'block';
+            } else {
+                suggBox.style.display = 'none';
+            }
+        }
+
+        window.selectSuggestion = function(val) {
+            document.getElementById('quickSearchInput').value = val;
+            document.getElementById('searchSuggestions').style.display = 'none';
+            quickSearchDesign();
         }
 
         function checkAndDisplayDelayedOrders(orders) {
@@ -492,7 +677,7 @@ window.onclick = function(event) {
 
         window.uploadQuickLogo = async function(input) {
             if (input.files && input.files[0]) {
-                compressImage(input.files[0], 300, 300, 0.7, async function(compressedB64) {
+                compressImage(input.files[0], 500, 500, 0.9, async function(compressedB64) {
                     localStorage.setItem('company_logo', compressedB64);
                     document.getElementById('companyLogoContainer').innerHTML = `<img src="${compressedB64}" alt="Logo">`;
                     await firebaseSave('company_logo', compressedB64);
