@@ -304,11 +304,9 @@ function loadWeftDesignData() {
         document.getElementById('top_completed_status').checked = true; 
     }
 
-    // 🔥 Base Reed மற்றும் Base Width மதிப்புகளைத் துல்லியமாக எடுக்கிறோம்
     let baseReed = parseFloat(sp.reed || sp.baseReed || foundMaster.reed || foundMaster.baseReed || 64) || 0;
     let baseWidth = parseFloat(sp.width || sp.baseWidth || foundMaster.width || foundMaster.baseWidth || 0) || 0;
     
-    // 🔥 நீங்கள் சொன்ன ஃபார்முலாப்படி கணக்கீடு: ((Base Reed * Base Width) / (Base Reed - 8)) + 3
     let autoWeftWidth = '';
     if (baseReed > 8 && baseWidth > 0) {
         let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
@@ -323,7 +321,6 @@ function loadWeftDesignData() {
     if (foundMaster && foundMaster.weftLines && foundMaster.weftLines.length > 0) {
         saveBtn.innerText = "✏️ Update"; 
         
-        // 🔥 பழைய சேவ் ஆன weftWidth-ஐத் தவிர்க்க, எப்போதும் autoWeftWidth-க்கு முன்னுரிமை தருகிறோம்!
         let finalWeftWidth = autoWeftWidth || foundMaster.weftWidth;
         document.getElementById('infoWeftWidth').value = finalWeftWidth;
         
@@ -400,7 +397,6 @@ function calculateWeftValues() {
 }
 
 async function quickCompleteToggle() {
-    // 🔒 Permission Check for Quick Complete Toggle
     if (!checkUserPermission()) {
         authorizationAlert();
         let cb = document.getElementById('top_completed_status');
@@ -431,7 +427,6 @@ async function quickCompleteToggle() {
 }
 
 async function saveWeftDesign() {
-    // 🔒 Absolute Guard: Block saving immediately if permission is false
     if (!checkUserPermission()) {
         authorizationAlert();
         return;
@@ -491,7 +486,6 @@ async function saveWeftDesign() {
 }
 
 async function toggleStatus(dNo, newStatus) {
-    // 🔒 Permission Check for Toggle Status
     if (!checkUserPermission()) {
         authorizationAlert();
         return;
@@ -550,7 +544,6 @@ function renderSavedList() {
 }
 
 function editDesignPattern(dNo) {
-    // 🔒 Permission Check for Edit
     if (!checkUserPermission()) {
         authorizationAlert();
         return;
@@ -566,13 +559,13 @@ function previewWeftPattern() {
     calculateWeftValues();
     let dNo = document.getElementById('designNo').value;
     
-    let lines = [];
+    let weftLines = [];
     document.querySelectorAll('.line-item').forEach(row => {
         let count = row.querySelector('.inp-count').value.trim();
         let color = row.querySelector('.inp-color').value.trim();
         let picks = parseFloat(row.querySelector('.inp-picks').value) || 0;
         if(count || color || picks) {
-            lines.push({ count: count, color: color, picks: picks });
+            weftLines.push({ count: count, color: color, picks: picks });
         }
     });
 
@@ -584,7 +577,7 @@ function previewWeftPattern() {
         if(start && end && set) ranges.push({ start, end, set });
     });
 
-    if(lines.length === 0) {
+    if(weftLines.length === 0) {
         alert("No pattern to preview! Please add lines.");
         return;
     }
@@ -607,35 +600,44 @@ function previewWeftPattern() {
     let col1Html = ''; 
     let col2Html = ''; 
     let currentLinesInCol1 = 0;
-    const MAX_LINES_COL1 = 25; 
+    const MAX_LINES_COL1 = 35; 
     
     let totalPicksPattern = 0;
     let i = 0;
     let tdStyle = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:center; color:#1E2B23; font-size:11px;";
     let tdStyleColor = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:left; color:#1E2B23; font-size:11px; white-space:nowrap;";
-    let tdStyleLast = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; vertical-align:middle; color:#1E2B23; text-align:left; font-size:11px;";
+    
+    // 🔥 Weft-க்கும் Set பகுதி இடது பக்கத்தில் தெரிய மற்றும் Bold ஆக இருக்க ஸ்டைல் மாற்றம் செய்யப்பட்டுள்ளது
+    let tdStyleLast = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; vertical-align:middle; color:#1E2B23; text-align:left; padding-left:10px; font-size:16px;";
 
-    while (i < lines.length) {
-        let currentLineNum = i + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
+    while (i < weftLines.length) {
+        let start = i + 1;
+        let range = ranges.find(r => r.start === start);
         let blockHtml = '';
         let blockLineCount = 0;
         
         if (range && range.end >= range.start) {
+            let end = range.end;
+            let set = range.set;
             let blockLines = [];
             let blockPicks = 0;
             
-            for (let j = range.start; j <= range.end; j++) {
-                if (lines[j - 1]) {
-                    let lineItem = Object.assign({}, lines[j - 1]);
-                    lineItem.lineNo = j;
+            for (let j = start - 1; j < end; j++) {
+                if (weftLines[j]) {
+                    let lineItem = Object.assign({}, weftLines[j]);
+                    lineItem.lineNo = j + 1;
                     blockLines.push(lineItem);
-                    blockPicks += lines[j-1].picks;
+                    blockPicks += parseInt(weftLines[j]?.picks) || 0;
                 }
             }
             
-            let blockTotalPicks = blockPicks * range.set;
-            totalPicksPattern += blockTotalPicks;
+            let total = 0;
+            for (let j = start - 1; j < end; j++) {
+                total += parseInt(weftLines[j]?.picks) || 0;
+            }
+            total = total * set;
+
+            totalPicksPattern += total;
 
             blockLines.forEach((item, index) => {
                 let colorTamil = typeof translateColorToTamil === 'function' ? translateColorToTamil(item.color) : item.color;
@@ -648,15 +650,19 @@ function previewWeftPattern() {
                 
                 if (index === 0) {
                     blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
-                        <span style="font-size:14px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalPicks}</span></b>
+                        <div style="display:flex; align-items:center; justify-content:flex-start; gap:4px; font-weight:700;">
+                           <span style="font-size: ${blockLines.length * 18}px; font-weight: 300; line-height: 0.5; display: inline-block;">}</span>
+
+                           <span>X ${set} = <span style="color:#D97706">${total}</span></span>
+                        </div>
                     </td>`;
                 }
                 blockHtml += `</tr>`;
             });
-            i = range.end; 
+            i = end; 
             blockLineCount = blockLines.length;
         } else {
-            let item = Object.assign({}, lines[i]);
+            let item = Object.assign({}, weftLines[i]);
             item.lineNo = i + 1;
             totalPicksPattern += item.picks;
             
@@ -689,7 +695,7 @@ function previewWeftPattern() {
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Count</th>
             <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:25%;">Colour</th>
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Picks</th>
-            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
+            <th style="padding:6px; text-align:left; padding-left:10px; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
         </tr>
     `;
 
@@ -779,7 +785,6 @@ function authorizationAlert() {
     }
 
     window.addEventListener('load', async function() {
-        // 🔒 Page Access Check on Load
         if (!typeof checkUserPermission === 'function' || !checkUserPermission()) {
             alert("Access Denied! You do not have permission to access this page. ❌");
             window.location.href = "dashboard.html";

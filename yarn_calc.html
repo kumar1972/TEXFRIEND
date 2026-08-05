@@ -3,353 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Yarn Calculation - TEXFRIEND</title>
+<title>Yarn Calculation & Costing - TEXFRIEND</title>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Premium Background */
     html, body { 
-        width: 100%;
-        min-height: 100vh;
-        background: #EAF0EA; 
-        color: #1E2B23; 
+        width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; 
     }
+    body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
 
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    /* 📌 Main Premium Container */
     .main-card {
-        width: 100%;
-        max-width: 900px;
-        margin: 0;
-        background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
+        width: 100%; max-width: 900px; margin: 0; background: #FFFFFF;
+        border: 1px solid rgba(82, 110, 81, 0.15); border-radius: 20px;
+        padding: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+        display: flex; flex-direction: column; gap: 15px;
     }
 
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 
-    /* 📌 Smart Back Button */
     .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+        padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         transition: all 0.3s ease;
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
     #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
     #bitmapDisplayContainer img {
-        max-height: 45px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        cursor: zoom-in;
-        transition: transform 0.3s;
+        max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
     }
     #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    /* Checkbox Styling */
     .completed-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #D8DFD6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
+        display: flex; align-items: center; gap: 6px; background: #D8DFD6;
+        padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    
     .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: #526E51;
-        margin: 0;
-        padding: 0;
-        border: none;
+        width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; padding: 0; border: none;
     }
-    
-    .completed-checkbox label {
-        margin: 0;
-        color: #3F5A3E;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-    }
+    .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
 
     .header-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #EAF0EA;
-        padding-bottom: 12px;
-        margin-bottom: 5px;
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 2px solid #EAF0EA; padding-bottom: 12px; margin-bottom: 5px;
     }
-
     .header-bar h3 {
-        font-size: 16px;
-        color: #2F4F38;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        font-size: 16px; color: #2F4F38; font-weight: 700; margin: 0;
+        display: flex; align-items: center; gap: 6px;
     }
 
-    /* 📌 மேலே Print நீக்கப்பட்டு GSM மற்றும் Preview மட்டும் இருக்கும்படி அமைப்பு */
-    .header-btns {
-        display: flex;
-        gap: 6px;
-    }
+    .header-btns { display: flex; gap: 6px; }
     .top-action-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-        border: none;
-        color: white;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-        transition: all 0.2s ease;
+        display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px;
+        border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; color: white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.12); transition: all 0.2s ease;
     }
     .top-action-badge.gsm-badge { background: linear-gradient(135deg, #F59E0B, #D97706); cursor: default; }
     .top-action-badge.preview-badge { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+    .top-action-badge.costing-preview-badge { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
     .top-action-badge:hover:not(.gsm-badge) { transform: translateY(-2px); }
 
-    /* 📌 கீழே கொடுக்கப்பட்டுள்ள Save Button Styling */
-    .bottom-save-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 15px;
-        margin-bottom: 5px;
+    .section-save-container { display: flex; justify-content: flex-end; margin-top: 12px; }
+    .section-save-btn {
+        background: linear-gradient(135deg, #4A7C59, #2F4F38); color: white; border: none;
+        padding: 10px 24px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
     }
-    .bottom-save-btn {
-        background: linear-gradient(135deg, #4A7C59, #2F4F38);
-        color: white;
-        border: none;
-        padding: 14px 35px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(74, 124, 89, 0.3);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        letter-spacing: 0.5px;
-    }
-    .bottom-save-btn:hover {
-        background: linear-gradient(135deg, #3F5A3E, #1E2B23);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(74, 124, 89, 0.4);
-    }
+    .section-save-btn:hover { background: linear-gradient(135deg, #3F5A3E, #1E2B23); transform: translateY(-2px); }
 
-    /* 📌 Smart Form Sections */
     .top-form-row-single {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 12px;
-        padding: 12px 15px;
-        margin-bottom: 8px;
+        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 12px 15px; margin-bottom: 8px;
     }
-
-    .top-form-row, .top-form-row-2, .top-form-row-3 {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 12px;
-        padding: 15px;
+    .top-form-row, .top-form-row-2, .top-form-row-3, .costing-grid {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 15px;
     }
-    .top-form-row { margin-bottom: 8px; }
-    .top-form-row-2 { margin-bottom: 10px; grid-template-columns: repeat(3, 1fr); }
-    .top-form-row-3 { margin-bottom: 10px; grid-template-columns: repeat(3, 1fr); }
+    .top-form-row-2 { grid-template-columns: repeat(3, 1fr); }
+    .top-form-row-3 { grid-template-columns: repeat(3, 1fr); }
+    .costing-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
     .form-group label {
-        display: block;
-        font-size: 10px;
-        font-weight: 600;
-        color: #4A554A;
-        margin-bottom: 6px;
-        white-space: nowrap;
+        display: block; font-size: 10px; font-weight: 600; color: #4A554A; margin-bottom: 6px; white-space: nowrap;
     }
-
-    /* 📌 Smart 3D Inputs */
     input, select {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #D1DED1;
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 11px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
+        background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600;
+        transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
     }
-
     input:focus, select:focus {
-        border-color: #4A7C59;
-        outline: none;
-        background: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        border-color: #4A7C59; outline: none; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
-
     input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-    /* 📌 Section Titles */
     h3.section-title {
-        font-size: 11px;
-        color: #FFFFFF;
-        background: #4A7C59;
-        padding: 6px 14px;
-        border-radius: 12px;
-        display: inline-block;
-        margin-bottom: 5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
-        border: none;
-        width: max-content;
+        font-size: 11px; color: #FFFFFF; background: #4A7C59; padding: 6px 14px;
+        border-radius: 12px; display: inline-block; margin: 10px 0 5px 0; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); border: none; width: max-content;
     }
 
-    /* 📌 Advanced Table Design */
     .table-container {
-        width: 100%;
-        border-radius: 10px;
-        overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        border: 1px solid #E2E8E2;
-        background: #FFFFFF;
-        -webkit-overflow-scrolling: touch;
-        margin-bottom: 10px;
+        width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        border: 1px solid #E2E8E2; background: #FFFFFF; -webkit-overflow-scrolling: touch; margin-bottom: 10px;
     }
-
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: 11px;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    th, td {
-        padding: 10px 12px;
-        text-align: center;
-        border-bottom: 1px solid #E2E8E2;
-        color: #1E2B23;
-    }
-
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
     th {
-        background: #EAF0EA;
-        color: #2F4F38;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 10px;
-        letter-spacing: 0.5px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        border-bottom: 2px solid #D1DED1;
+        background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase;
+        font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #D1DED1;
     }
-
     tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: #F8FAF8; }
+    .total-row td { background: #F4F7F4; color: #2F4F38; font-weight: 700; border-top: 2px solid #D1DED1; }
 
-    .total-row td {
-        background: #F4F7F4;
-        color: #2F4F38;
-        font-weight: 700;
-        border-top: 2px solid #D1DED1;
+    .result-box {
+        background: #EAF0EA; border: 1px solid #4A7C59; border-radius: 12px;
+        padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px;
+    }
+    .result-title { font-size: 12px; font-weight: 700; color: #2F4F38; text-transform: uppercase; border-bottom: 1px dashed #4A7C59; padding-bottom: 5px; }
+    .result-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #1E2B23; }
+    .result-value { color: #D97706; font-weight: 700; }
+    .final-profit { color: #059669; font-size: 14px; font-weight: 800; }
+
+    .form-section-box {
+        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+        padding: 25px 15px 15px 15px; margin-top: 15px; position: relative;
+    }
+    .section-badge-top {
+        position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
+        font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
+        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); z-index: 2;
+    }
+    .section-badge-bottom {
+        position: absolute; top: -12px; left: 15px; background: #1E2B23; color: #FFF;
+        font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
+        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(30, 43, 35, 0.25); z-index: 2;
     }
 
-    /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
     .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
         z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
     }
     .overlay-modal.show { opacity: 1; }
-    
     .modal-content {
         background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-        display: flex; flex-direction: column; box-shadow: none;
-        overflow: hidden; transform: scale(1);
+        display: flex; flex-direction: column; box-shadow: none; overflow: hidden;
     }
-
     .modal-header {
         padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-        flex-shrink: 0;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0;
     }
-    .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
+    .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; }
     .modal-actions { display: flex; gap: 8px; }
-    
     .print-btn-modal { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
+    .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-    /* 📌 Fullscreen Image Popup Modal */
     .fullscreen-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
     }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+    .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
+    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
     @media print {
         body * { visibility: hidden; }
         .overlay-modal, .overlay-modal * { visibility: visible; }
         .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
+        .modal-content { height: auto !important; overflow: visible !important; }
         .no-print { display: none !important; }
         .modal-body { padding: 0; background: #FFFFFF; }
     }
@@ -368,74 +193,56 @@
         </div>
     </div>
 
-    <!-- 📌 மேலே Print நீக்கப்பட்டு GSM மற்றும் Preview மட்டும் வைக்கப்பட்டுள்ளது -->
     <div class="header-bar">
-        <h3 id="pageHeaderTitle">🧵 Yarn Calculation</h3>
+        <h3>🧵 Yarn Calculation & Costing</h3>
         <div class="header-btns">
             <div class="top-action-badge gsm-badge" id="displayGsmBadge">GSM: 0</div>
-            <button class="top-action-badge preview-badge" onclick="previewReport()">👁️ Preview</button>
+            <button class="top-action-badge preview-badge" onclick="previewYarnReport()">👁️ Yarn Preview</button>
+            <button class="top-action-badge costing-preview-badge" onclick="previewCostingReport()">👁️ Costing Preview</button>
         </div>
     </div>
 
-    <!-- 📌 Design Number தனியாக ஒரு ரோ (Row) -->
-    <div class="top-form-row-single">
-        <div class="form-group">
-            <label>Design Number</label>
-            <select id="designNumber" onchange="loadInitialData()">
-                <option value="">Select</option>
-            </select>
+    <!-- 1. YARN CALCULATION DETAILS (TOP SECTION) -->
+    <div class="form-section-box">
+        <div class="section-badge-top">1. Yarn Calculation Details (Top)</div>
+        
+        <div class="top-form-row-single" style="margin-bottom: 10px;">
+            <div class="form-group">
+                <label>Design Number</label>
+                <select id="designNumber" onchange="loadInitialData()">
+                    <option value="">Select</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <!-- 📌 Finish Reed மற்றும் Finish Pick -->
-    <div class="top-form-row">
-        <div class="form-group">
-            <label>finish Reed</label>
-            <input type="number" id="calcReed" oninput="loadYarnData()" placeholder="Reed">
+        <div class="top-form-row">
+            <div class="form-group">
+                <label>Finish Reed</label>
+                <input type="number" id="calcReed" oninput="loadYarnData()" placeholder="Reed">
+            </div>
+            <div class="form-group">
+                <label>Finish Pick</label>
+                <input type="number" id="calcPick" oninput="loadYarnData()" placeholder="Pick">
+            </div>
         </div>
-        <div class="form-group">
-            <label>finish Pick</label>
-            <input type="number" id="calcPick" oninput="loadYarnData()" placeholder="Pick">
-        </div>
-    </div>
 
-    <div class="top-form-row-2">
-        <div class="form-group">
-            <label>Base Counts</label>
-            <input type="text" id="baseCounts" placeholder="e.g., 2/60, 2/40" oninput="loadYarnData()">
+        <div class="top-form-row-2">
+            <div class="form-group">
+                <label>Base Counts</label>
+                <input type="text" id="baseCounts" placeholder="e.g., 2/60, 2/40" oninput="loadYarnData()">
+            </div>
+            <div class="form-group">
+                <label>Warp Dyeing Order (Mtrs)</label>
+                <input type="number" id="lengthMeters" placeholder="Enter Mtrs" oninput="calculateWeftMtrs(); loadYarnData();">
+            </div>
+            <div class="form-group">
+                <label>Top Beam Mtrs</label>
+                <input type="number" id="topLengthMeters" placeholder="Top Beam Mtrs" oninput="loadYarnData()">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Warp Dyeing Order (Mtrs)</label>
-            <input type="number" id="lengthMeters" value="100" oninput="calculateWeftMtrs(); loadYarnData();">
-        </div>
-        <div class="form-group">
-            <label>Top Beam Mtrs</label>
-            <input type="number" id="topLengthMeters" placeholder="Top Beam Mtrs" oninput="loadYarnData()">
-        </div>
-    </div>
 
-    <!-- GROUND BEAM SECTION -->
-    <h3 class="section-title" style="margin-top: 10px;">🧵 WARP YARN - GROUND BEAM</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Count</th>
-                    <th>Colour</th>
-                    <th>Ends</th>
-                    <th>Total</th>
-                    <th>Weight (Kg)</th>
-                </tr>
-            </thead>
-            <tbody id="warpGroundTableBody">
-                <!-- Ground Warp Data -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- TOP BEAM SECTION -->
-    <div id="topBeamWrapper" style="display: none;">
-        <h3 class="section-title" style="margin-top: 10px;">🧵 WARP YARN - TOP BEAM</h3>
+        <!-- GROUND BEAM SECTION -->
+        <h3 class="section-title">🧵 WARP YARN - GROUND BEAM</h3>
         <div class="table-container">
             <table>
                 <thead>
@@ -447,78 +254,211 @@
                         <th>Weight (Kg)</th>
                     </tr>
                 </thead>
-                <tbody id="warpTopTableBody">
-                    <!-- Top Warp Data -->
-                </tbody>
+                <tbody id="warpGroundTableBody"></tbody>
             </table>
         </div>
+
+        <!-- TOP BEAM SECTION -->
+        <div id="topBeamWrapper" style="display: none;">
+            <h3 class="section-title">🧵 WARP YARN - TOP BEAM</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Count</th>
+                            <th>Colour</th>
+                            <th>Ends</th>
+                            <th>Total</th>
+                            <th>Weight (Kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="warpTopTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- WEFT SECTION -->
+        <h3 class="section-title">🧶 WEFT YARN CALCULATION</h3>
+        
+        <div class="top-form-row-3">
+            <div class="form-group">
+                <label>Crimp %</label>
+                <input type="number" id="crimpPercentage" placeholder="%" oninput="calculateWeftMtrs(); loadYarnData();">
+            </div>
+            <div class="form-group">
+                <label>Weft Mtrs</label>
+                <input type="number" id="weftLengthMeters" readonly style="background:#F4F7F4; color:#4A7C59; border-color:#D1DED1; cursor:not-allowed;">
+            </div>
+            <div class="form-group">
+                <label>Onloom Pick Less</label>
+                <input type="number" id="onloomPickLess" placeholder="Enter Less Picks" oninput="loadYarnData()">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Count</th>
+                        <th>Colour</th>
+                        <th>Picks</th>
+                        <th>Total</th>
+                        <th>Weight (Kg)</th>
+                    </tr>
+                </thead>
+                <tbody id="weftTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section-save-container">
+            <button class="section-save-btn" onclick="saveCalculationData()">💾 Save Calculation</button>
+        </div>
     </div>
 
-    <!-- WEFT SEPARATE SECTION -->
-    <h3 class="section-title" style="margin-top: 10px;">🧶 WEFT YARN CALCULATION</h3>
-    
-    <div class="top-form-row-3">
-        <div class="form-group">
-            <label>Crimp %</label>
-            <input type="number" id="crimpPercentage" value="" placeholder="%" oninput="calculateWeftMtrs(); loadYarnData();">
+    <!-- 2. PRODUCTION COSTING & PRICING (BOTTOM SECTION) -->
+    <div class="form-section-box">
+        <div class="section-badge-bottom">2. Production Costing & Pricing (Bottom)</div>
+        
+        <!-- 1. Kora Cost Entry per Count Table -->
+        <h3 class="section-title">1. Kora Cost Entry (Per Count)</h3>
+        <div class="table-container" style="margin-bottom: 15px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Count</th>
+                        <th>Total Weight (Kg)</th>
+                        <th>Kora Rate / Kg (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="countCostEntryBody"></tbody>
+            </table>
         </div>
-        <div class="form-group">
-            <label>Weft Mtrs</label>
-            <input type="number" id="weftLengthMeters" value="100" readonly style="background:#F4F7F4; color:#4A7C59; border-color:#D1DED1; cursor:not-allowed;">
-        </div>
-        <div class="form-group">
-            <label>Onloom Pick Less</label>
-            <input type="number" id="onloomPickLess" value="" placeholder="Enter Less Picks" oninput="loadYarnData()">
-        </div>
-    </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Count</th>
-                    <th>Colour</th>
-                    <th>Picks</th>
-                    <th>Total</th>
-                    <th>Weight (Kg)</th>
-                </tr>
-            </thead>
-            <tbody id="weftTableBody">
-                <!-- Weft Data -->
-            </tbody>
-        </table>
-    </div>
+        <!-- 2. Dyeing Rate Entry per Color Table -->
+        <h3 class="section-title">2. Dyeing Rate Entry (Per Color)</h3>
+        <div class="table-container" style="margin-bottom: 15px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Beam / Type</th>
+                        <th>Colour Name</th>
+                        <th>Weight (Kg)</th>
+                        <th>Dyeing Rate / Kg (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="colorDyeEntryBody"></tbody>
+            </table>
+        </div>
 
-    <!-- 📌 கீழே கொடுக்கப்பட்டுள்ள Save Button -->
-    <div class="bottom-save-container">
-        <button class="bottom-save-btn" onclick="saveCalculationData()">💾 Save Calculation</button>
+        <div class="costing-grid">
+            <div class="form-group">
+                <label>3. Warp Crimp %</label>
+                <input type="number" id="warpCrimp" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>5. Dyeing Shortage % (Default 5%)</label>
+                <input type="number" id="dyeingShortagePct" value="5" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>6. Warping Wages (₹)</label>
+                <input type="number" id="warpingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>7. Sizing Wages (₹)</label>
+                <input type="number" id="sizingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>8. Weaving Pick Rate per Pick (₹)</label>
+                <input type="number" id="weavingPickRate" placeholder="₹" step="0.01" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>9. Washing Wages (₹)</label>
+                <input type="number" id="washingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>10. Washing Shortages %</label>
+                <input type="number" id="washingShortagePct" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()">
+            </div>
+            <div class="form-group">
+                <label>12. Profit Margin %</label>
+                <input type="number" id="profitMargin" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()">
+            </div>
+        </div>
+
+        <div class="result-box">
+            <div class="result-title">📊 1 மீட்டர் துணிக்கான அடக்க விலை அறிக்கை (Summary)</div>
+            <div class="result-row">
+                <span>1. Kora Cost / Mtr:</span>
+                <span class="result-value" id="resKoraCost">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>2. Warp Dyeing Cost / Mtr:</span>
+                <span class="result-value" id="resWarpDyeing">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>3. Warp Crimp Amount / Mtr:</span>
+                <span class="result-value" id="resWarpCrimpAmt">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>4. Weft Dyeing Cost / Mtr:</span>
+                <span class="result-value" id="resWeftDyeing">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>5. Dyeing Shortage (5% on 1+2+3+4 Total):</span>
+                <span class="result-value" id="resDyeingShortage">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>6 & 7. Warping & Sizing Wages / Mtr:</span>
+                <span class="result-value" id="resWarpingSizing">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>8. Weaving Cost (Pick x Rate) / Mtr:</span>
+                <span class="result-value" id="resWeavingCost">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>9 & 10. Washing Wages & Shortages / Mtr:</span>
+                <span class="result-value" id="resWashingTotal">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span><b>11. Total Production Cost / Mtr (Above All):</b></span>
+                <span class="result-value" id="resTotalCost" style="color: #1E2B23; font-weight: 800;">₹0.00</span>
+            </div>
+            <div class="result-row">
+                <span>12. Profit Amount (% Added):</span>
+                <span class="result-value" id="resProfitAmount">₹0.00</span>
+            </div>
+            <div class="result-row" style="border-top: 1px dashed #4A7C30; padding-top: 8px; margin-top: 4px;">
+                <span><b>13. Cost for 1 Mtr (Final Selling Rate):</b></span>
+                <span class="final-profit" id="resSellingRate">₹0.00</span>
+            </div>
+        </div>
+
+        <div class="section-save-container">
+            <button class="section-save-btn" onclick="saveCostingData()">💾 Save Costing</button>
+        </div>
     </div>
 </div>
 
-<!-- 📌 Full Screen Print Preview Modal (Inside Preview, Print Option Available) -->
+<!-- Print Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
-            <h3>👁️ Yarn Calculation Full Screen Preview</h3>
+            <h3 id="modalTitle">👁️ Report Preview</h3>
             <div class="modal-actions">
                 <button class="print-btn-modal" onclick="window.print()">🖨️ Print</button>
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent">
-            <!-- Content here -->
-        </div>
+        <div class="modal-body" id="previewContent"></div>
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
 <script>
-// 🔒 Universal Permission Checker Function for Yarn Calculation Page
 function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
@@ -531,7 +471,6 @@ function checkUserPermission() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 🔒 Page Access Check on Load
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to access this page. ❌");
         window.location.href = "dashboard.html";
@@ -567,7 +506,6 @@ function getSharedVal(o1, o2, keys) {
     return '';
 }
 
-// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
@@ -589,16 +527,12 @@ function loadBitmapImage() {
     }
     
     let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-    
     let wasChecked = false;
     let cb = document.getElementById('top_completed_status');
     if(cb) wasChecked = cb.checked;
     
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
-    
-    if(wasChecked) {
-        document.getElementById('top_completed_status').checked = true;
-    }
+    if(wasChecked) document.getElementById('top_completed_status').checked = true;
 }
 
 function translateColorToTamil(colorName) {
@@ -673,16 +607,13 @@ function loadInitialData() {
     }
 
     let cleanDNo = cleanDesignName(dName);
-    
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
-    
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
     let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
-
     if(specStatus === 'completed' || (foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) {
         let cb = document.getElementById('top_completed_status');
         if(cb) cb.checked = true;
@@ -707,10 +638,10 @@ function loadInitialData() {
     if (c3) countsArr.push(c3);
     
     let uniqueCounts = [...new Set(countsArr)].join(', ');
-    document.getElementById('baseCounts').value = uniqueCounts || '20';
+    document.getElementById('baseCounts').value = uniqueCounts || '';
     
     let defaultMtrRaw = getSharedVal(foundMaster, sp, ['ordermtr', 'order mtr', 'warp dyeing order']);
-    let defaultMtr = parseFloat(defaultMtrRaw) || 100;
+    let defaultMtr = parseFloat(defaultMtrRaw) || '';
     document.getElementById('lengthMeters').value = defaultMtr;
 
     let savedPickLess = getSharedVal(foundMaster, sp, ['onloompickless', 'pickless']);
@@ -726,25 +657,43 @@ function loadInitialData() {
         let rawTop = String(getSharedVal(foundMaster, sp, ['topbeam', 'top beam']));
         if (rawTop.includes('%')) {
             let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
-            document.getElementById('topLengthMeters').value = (defaultMtr + (defaultMtr * pct / 100)).toFixed(2);
+            let dm = parseFloat(defaultMtr) || 0;
+            document.getElementById('topLengthMeters').value = dm ? (dm + (dm * pct / 100)).toFixed(2) : '';
         } else {
-            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || defaultMtr;
+            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || '';
         }
     } else {
         document.getElementById('topLengthMeters').value = ''; 
+    }
+
+    if (specs[specKey] && specs[specKey].costingData) {
+        let cd = specs[specKey].costingData;
+        if(cd.warpCrimp) document.getElementById('warpCrimp').value = cd.warpCrimp;
+        if(cd.dyeingShortagePct) document.getElementById('dyeingShortagePct').value = cd.dyeingShortagePct;
+        if(cd.warpingWages) document.getElementById('warpingWages').value = cd.warpingWages;
+        if(cd.sizingWages) document.getElementById('sizingWages').value = cd.sizingWages;
+        if(cd.weavingPickRate) document.getElementById('weavingPickRate').value = cd.weavingPickRate;
+        if(cd.washingWages) document.getElementById('washingWages').value = cd.washingWages;
+        if(cd.washingShortagePct) document.getElementById('washingShortagePct').value = cd.washingShortagePct;
+        if(cd.profitMargin) document.getElementById('profitMargin').value = cd.profitMargin;
+    } else {
+        // Clear all costing inputs if no saved data
+        document.getElementById('warpCrimp').value = '';
+        document.getElementById('warpingWages').value = '';
+        document.getElementById('sizingWages').value = '';
+        document.getElementById('weavingPickRate').value = '';
+        document.getElementById('washingWages').value = '';
+        document.getElementById('washingShortagePct').value = '';
+        document.getElementById('profitMargin').value = '';
     }
 
     calculateWeftMtrs();
     loadYarnData();
 }
 
-// 📌 Save Calculation Data Function
 async function saveCalculationData() {
     let dName = document.getElementById('designNumber').value;
-    if(!dName) {
-        alert("Mudhala Design Number select pannunga bro");
-        return;
-    }
+    if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
 
     let cleanDNo = cleanDesignName(dName);
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -761,19 +710,52 @@ async function saveCalculationData() {
     designSpecs[specKey].calculatedData = window.calculatedYarnData;
 
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-    try {
-        if (window.firebaseSave) {
-            await window.firebaseSave('design_specs', designSpecs);
-        }
-    } catch(e) {
-        console.error("Firebase Save Error: ", e);
-    }
-
+    if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
     alert(`Design ${dName} Calculation Saved Successfully! ✅`);
 }
 
-// 📌 Completed Checkbox Quick Toggle with Alert Pop-up & Design List Sync
+async function saveCostingData() {
+    let dName = document.getElementById('designNumber').value;
+    if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
+
+    let cleanDNo = cleanDesignName(dName);
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+
+    let countRates = {};
+    document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
+        let count = row.getAttribute('data-count');
+        let koraRate = row.querySelector('.entry-kora-rate').value;
+        countRates[count] = koraRate;
+    });
+
+    let dyeingRates = {};
+    document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
+        let color = row.querySelector('.entry-color').value;
+        let dyeRate = row.querySelector('.entry-dye-rate').value;
+        dyeingRates[color] = dyeRate;
+    });
+
+    designSpecs[specKey].countRates = countRates;
+    designSpecs[specKey].dyeingRates = dyeingRates;
+    designSpecs[specKey].costingData = {
+        warpCrimp: document.getElementById('warpCrimp').value,
+        dyeingShortagePct: document.getElementById('dyeingShortagePct').value,
+        warpingWages: document.getElementById('warpingWages').value,
+        sizingWages: document.getElementById('sizingWages').value,
+        weavingPickRate: document.getElementById('weavingPickRate').value,
+        washingWages: document.getElementById('washingWages').value,
+        washingShortagePct: document.getElementById('washingShortagePct').value,
+        profitMargin: document.getElementById('profitMargin').value
+    };
+
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+    if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+    alert(`Design ${dName} Costing Saved Successfully! ✅`);
+}
+
 async function quickCompleteToggle() {
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to modify status on this page. ❌");
@@ -785,45 +767,25 @@ async function quickCompleteToggle() {
     let dName = document.getElementById('designNumber').value;
     let cb = document.getElementById('top_completed_status');
     let isCompleted = cb ? cb.checked : false;
-
-    if(!dName) {
-        alert("Mudhala Design Number select pannunga bro");
-        if(cb) cb.checked = false;
-        return;
-    }
+    if(!dName) { alert("Mudhala Design Number select pannunga bro"); if(cb) cb.checked = false; return; }
 
     let statusText = isCompleted ? 'completed' : 'running';
     let cleanDNo = cleanDesignName(dName);
 
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = designMastersList.findIndex(d => cleanDesignName(d.name) === cleanDNo);
-
-    if(idx > -1) {
-        designMastersList[idx].status = statusText;
-    } else {
-        designMastersList.push({
-            name: dName,
-            status: statusText
-        });
-    }
+    if(idx > -1) { designMastersList[idx].status = statusText; } else { designMastersList.push({ name: dName, status: statusText }); }
     localStorage.setItem('design_masters_data', JSON.stringify(designMastersList));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dName]) {
-        designSpecs[dName] = {};
-    }
+    if(!designSpecs[dName]) designSpecs[dName] = {};
     designSpecs[dName].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    try {
-        if (window.firebaseSave) {
-            await window.firebaseSave('design_masters_data', designMastersList);
-            await window.firebaseSave('design_specs', designSpecs);
-        }
-    } catch(e) {
-        console.error("Firebase Sync Error: ", e);
+    if (window.firebaseSave) {
+        await window.firebaseSave('design_masters_data', designMastersList);
+        await window.firebaseSave('design_specs', designSpecs);
     }
-
     alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
@@ -991,7 +953,6 @@ function loadYarnData() {
     }
 
     let baseReed = parseFloat(uiReed) || 64;
-    
     let autoWeftWidth = '';
     if (baseReed > 8 && baseWidth > 0) {
         let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
@@ -1009,12 +970,9 @@ function loadYarnData() {
     if (netPick < 0) netPick = 0;
 
     let totalFabricPick = weftWidth * netPick;
-    
     let weftCountFallbackText = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']) || '40';
     let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
     
-    let weftLinesData = foundMaster.warpLines || sp.warpLines || [];
-    let weftRangesData = foundMaster.warpRanges || sp.warpRanges || [];
     let weftData = resolvePattern(foundMaster.weftLines || sp.weftLines || [], foundMaster.weftRanges || sp.weftRanges || [], 'weft', weftCountFallbackText);
 
     if (weftData.totalPatternVal > 0) {
@@ -1044,39 +1002,173 @@ function loadYarnData() {
     }
     document.getElementById('weftTableBody').innerHTML = wfHtml;
 
-    // 🔥 தனித்தனி நூல்களின் எடைகளைக் கூட்டி துல்லியமான மொத்த எடையைப் பெற்று ஸ்டாண்டர்ட் ஃபார்முலா மூலம் GSM கணக்கிடுதல்
     let totalWeightKg = (gt ? gt.w : 0) + (tt ? tt.w : 0) + (wft ? wft.w : 0);
-    
     let fabricWidthInches = baseWidth; 
     let gsmValue = 0;
     if (lengthM > 0 && fabricWidthInches > 0 && totalWeightKg > 0) {
         gsmValue = Math.round((((totalWeightKg * 1000) / (lengthM * (fabricWidthInches * 0.0254))) * 1.06));
-
     }
     
     let gsmBadge = document.getElementById('displayGsmBadge');
     if (gsmBadge) gsmBadge.innerText = "GSM: " + gsmValue;
-    
     window.calculatedYarnData.gsm = gsmValue; 
+
+    populateCostingTable();
+}
+
+function populateCostingTable() {
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let dName = document.getElementById('designNumber').value;
+    let sp = designSpecs[dName] || {};
+    let savedCountRates = sp.countRates || {};
+    let savedDyeRates = sp.dyeingRates || {};
+
+    let countCostEntryBody = document.getElementById('countCostEntryBody');
+    countCostEntryBody.innerHTML = '';
+
+    let colorDyeEntryBody = document.getElementById('colorDyeEntryBody');
+    colorDyeEntryBody.innerHTML = '';
+
+    let countWeightMap = {};
+    let allItems = [];
+
+    if (window.calculatedYarnData.ground) window.calculatedYarnData.ground.forEach(r => allItems.push({ type: 'Warp (Ground)', ...r }));
+    if (window.calculatedYarnData.top) window.calculatedYarnData.top.forEach(r => allItems.push({ type: 'Warp (Top)', ...r }));
+    if (window.calculatedYarnData.weft) window.calculatedYarnData.weft.forEach(r => allItems.push({ type: 'Weft', ...r }));
+
+    allItems.forEach(item => {
+        let cnt = item.count || '20';
+        countWeightMap[cnt] = (countWeightMap[cnt] || 0) + (item.weight || 0);
+
+        let dyeVal = savedDyeRates[item.color] !== undefined ? savedDyeRates[item.color] : '';
+        colorDyeEntryBody.innerHTML += `
+            <tr data-color="${item.color}">
+                <td style="font-weight:700; color:#4A7C59;">${item.type}</td>
+                <td><input type="text" value="${item.color}" class="entry-color" style="text-align:center; font-weight:700;" readonly></td>
+                <td><span class="entry-weight">${(item.weight || 0).toFixed(3)} kg</span></td>
+                <td><input type="number" value="${dyeVal}" placeholder="Rate" class="entry-dye-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
+            </tr>
+        `;
+    });
+
+    for(let cnt in countWeightMap) {
+        let koraVal = savedCountRates[cnt] !== undefined ? savedCountRates[cnt] : '';
+        countCostEntryBody.innerHTML += `
+            <tr data-count="${cnt}" data-weight="${countWeightMap[cnt]}">
+                <td style="font-weight:700; color:#2F4F38;">${cnt}</td>
+                <td><span class="entry-count-weight">${countWeightMap[cnt].toFixed(3)} kg</span></td>
+                <td><input type="number" value="${koraVal}" placeholder="Rate" class="entry-kora-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
+            </tr>
+        `;
+    }
+
+    calculateCostingBreakdown();
+}
+
+function calculateCostingBreakdown() {
+    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 100;
+    if (lengthM <= 0) lengthM = 100;
+
+    let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
+
+    let totalKoraCostPerMtr = 0;
+    document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
+        let weightKg = parseFloat(row.getAttribute('data-weight')) || 0;
+        let koraRateKg = parseFloat(row.querySelector('.entry-kora-rate').value) || 0;
+        let koraCostTotal = weightKg * koraRateKg;
+        totalKoraCostPerMtr += (koraCostTotal / lengthM);
+    });
+
+    let totalWarpDyeingCostPerMtr = 0;
+    let totalWeftDyeingCostPerMtr = 0;
+
+    document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
+        let color = row.querySelector('.entry-color').value;
+        let dyeRateKg = parseFloat(row.querySelector('.entry-dye-rate').value) || 0;
+        let weightKg = 0;
+
+        if (window.calculatedYarnData.ground) {
+            let found = window.calculatedYarnData.ground.find(x => x.color === color);
+            if (found) weightKg += found.weight;
+        }
+        if (window.calculatedYarnData.top) {
+            let found = window.calculatedYarnData.top.find(x => x.color === color);
+            if (found) weightKg += found.weight;
+        }
+        if (window.calculatedYarnData.weft) {
+            let found = window.calculatedYarnData.weft.find(x => x.color === color);
+            if (found) weightKg += found.weight;
+        }
+
+        let dyeCostTotal = weightKg * dyeRateKg;
+        let dyeCostPerMtr = dyeCostTotal / lengthM;
+
+        let isWarp = false;
+        if (window.calculatedYarnData.ground && window.calculatedYarnData.ground.some(x => x.color === color)) isWarp = true;
+        if (window.calculatedYarnData.top && window.calculatedYarnData.top.some(x => x.color === color)) isWarp = true;
+
+        if (isWarp) {
+            totalWarpDyeingCostPerMtr += dyeCostPerMtr;
+        } else {
+            totalWeftDyeingCostPerMtr += dyeCostPerMtr;
+        }
+    });
+
+    let warpDyeingCostPerMtr = totalWarpDyeingCostPerMtr;
+    let warpCrimpPct = parseFloat(document.getElementById('warpCrimp').value) || 0;
+    let warpCrimpAmount = warpDyeingCostPerMtr * (warpCrimpPct / 100);
+
+    let weftDyeingCostPerMtr = totalWeftDyeingCostPerMtr;
+
+    let sum1_4 = totalKoraCostPerMtr + warpDyeingCostPerMtr + warpCrimpAmount + weftDyeingCostPerMtr;
+    let dyeingShortagePct = parseFloat(document.getElementById('dyeingShortagePct').value) || 5;
+    let dyeingShortageAmount = sum1_4 * (dyeingShortagePct / 100);
+
+    let warpingWages = parseFloat(document.getElementById('warpingWages').value) || 0;
+    let sizingWages = parseFloat(document.getElementById('sizingWages').value) || 0;
+    let warpingSizingTotal = warpingWages + sizingWages;
+
+    let weavingPickRate = parseFloat(document.getElementById('weavingPickRate').value) || 0;
+    let weavingCostPerMtr = uiPick * weavingPickRate;
+
+    let washingWages = parseFloat(document.getElementById('washingWages').value) || 0;
+    let washingShortagePct = parseFloat(document.getElementById('washingShortagePct').value) || 0;
+    let washingShortageAmount = washingWages * (washingShortagePct / 100);
+    let washingTotalPerMtr = washingWages + washingShortageAmount;
+
+    let totalProductionCost = sum1_4 + dyeingShortageAmount + warpingSizingTotal + weavingCostPerMtr + washingTotalPerMtr;
+
+    let profitMarginPct = parseFloat(document.getElementById('profitMargin').value) || 0;
+    let profitAmount = totalProductionCost * (profitMarginPct / 100);
+    let finalSellingRate = totalProductionCost + profitAmount;
+
+    document.getElementById('resKoraCost').innerText = "₹" + totalKoraCostPerMtr.toFixed(2);
+    document.getElementById('resWarpDyeing').innerText = "₹" + warpDyeingCostPerMtr.toFixed(2);
+    document.getElementById('resWarpCrimpAmt').innerText = "₹" + warpCrimpAmount.toFixed(2);
+    document.getElementById('resWeftDyeing').innerText = "₹" + weftDyeingCostPerMtr.toFixed(2);
+    document.getElementById('resDyeingShortage').innerText = "₹" + dyeingShortageAmount.toFixed(2);
+    document.getElementById('resWarpingSizing').innerText = "₹" + warpingSizingTotal.toFixed(2);
+    document.getElementById('resWeavingCost').innerText = "₹" + weavingCostPerMtr.toFixed(2);
+    document.getElementById('resWashingTotal').innerText = "₹" + washingTotalPerMtr.toFixed(2);
+    document.getElementById('resTotalCost').innerText = "₹" + totalProductionCost.toFixed(2);
+    document.getElementById('resProfitAmount').innerText = "₹" + profitAmount.toFixed(2);
+    document.getElementById('resSellingRate').innerText = "₹" + finalSellingRate.toFixed(2);
 }
 
 function generatePrintTableHtml(dataArray, totals, isWeft) {
     if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
-    
     let html = '';
     dataArray.forEach(r => {
         let colorDisplay = translateColorToTamil(r.color);
         let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
         html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
     });
-    
     let tTot = isWeft ? totals.t.toFixed(2) : totals.t;
     html += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${totals.p}</td><td>${tTot}</td><td>${totals.w.toFixed(3)} kg</td></tr>`;
-    
     return html;
 }
 
-function previewReport() {
+function previewYarnReport() {
     let designNo = document.getElementById('designNumber').value || '-';
     let reed = document.getElementById('calcReed').value || '-';
     let pick = document.getElementById('calcPick').value || '-';
@@ -1084,9 +1176,7 @@ function previewReport() {
     let topLength = document.getElementById('topLengthMeters').value || '-';
     let weftLength = document.getElementById('weftLengthMeters').value || '-';
     let pickLess = document.getElementById('onloomPickLess').value || '0';
-    
     let d = window.calculatedYarnData;
-    
     let topBeamHeaderInfo = topLength ? `&nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts` : '';
 
     let html = `
@@ -1098,7 +1188,6 @@ function previewReport() {
             .print-tbl td:last-child { border-right: none; }
             .print-tbl .total-row td { border-top: 2px solid #000; border-bottom: none; border-right: none; font-weight: bold; }
         </style>
-        
         <div style="text-align: center; margin-bottom: 20px;">
             <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
             <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
@@ -1111,13 +1200,7 @@ function previewReport() {
     html += `
         <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - GROUND BEAM</h3>
         <table class="print-tbl">
-            <thead><tr>
-                <th>Count</th>
-                <th>Colour</th>
-                <th>Ends</th>
-                <th>Total</th>
-                <th>Weight (Kg)</th>
-            </tr></thead>
+            <thead><tr><th>Count</th><th>Colour</th><th>Ends</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
             <tbody>${generatePrintTableHtml(d.ground, d.groundTotals, false)}</tbody>
         </table>
     `;
@@ -1126,13 +1209,7 @@ function previewReport() {
         html += `
             <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - TOP BEAM</h3>
             <table class="print-tbl">
-                <thead><tr>
-                    <th>Count</th>
-                    <th>Colour</th>
-                    <th>Ends</th>
-                    <th>Total</th>
-                    <th>Weight (Kg)</th>
-                </tr></thead>
+                <thead><tr><th>Count</th><th>Colour</th><th>Ends</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
                 <tbody>${generatePrintTableHtml(d.top, d.topTotals, false)}</tbody>
             </table>
         `;
@@ -1141,32 +1218,62 @@ function previewReport() {
     html += `
         <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧶 WEFT YARN CALCULATION</h3>
         <table class="print-tbl">
-            <thead><tr>
-                <th>Count</th>
-                <th>Colour</th>
-                <th>Picks</th>
-                <th>Total</th>
-                <th>Weight (Kg)</th>
-            </tr></thead>
+            <thead><tr><th>Count</th><th>Colour</th><th>Picks</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
             <tbody>${generatePrintTableHtml(d.weft, d.weftTotals, true)}</tbody>
         </table>
     `;
 
+    document.getElementById('modalTitle').innerText = "👁️ Yarn Calculation Report Preview";
     document.getElementById('previewContent').innerHTML = html;
     openModal('previewModal');
 }
 
-function printReport() {
-    if(document.getElementById('previewModal').style.display !== 'flex') {
-        previewReport();
-    }
-    setTimeout(() => {
-        window.print();
-    }, 300);
+function previewCostingReport() {
+    let designNo = document.getElementById('designNumber').value || '-';
+    let koraCost = document.getElementById('resKoraCost').innerText;
+    let warpDye = document.getElementById('resWarpDyeing').innerText;
+    let warpCrimpAmt = document.getElementById('resWarpCrimpAmt').innerText;
+    let weftDye = document.getElementById('resWeftDyeing').innerText;
+    let dyeShortage = document.getElementById('resDyeingShortage').innerText;
+    let warpSiz = document.getElementById('resWarpingSizing').innerText;
+    let weaving = document.getElementById('resWeavingCost').innerText;
+    let washing = document.getElementById('resWashingTotal').innerText;
+    let totalCost = document.getElementById('resTotalCost').innerText;
+    let profit = document.getElementById('resProfitAmount').innerText;
+    let finalRate = document.getElementById('resSellingRate').innerText;
+
+    let html = `
+        <style>
+            .cost-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; border: 1px solid #999; margin-bottom: 20px; }
+            .cost-tbl td { padding: 10px 12px; color: #000; border-bottom: 1px dashed #999; }
+            .cost-tbl tr:last-child td { border-bottom: none; font-weight: bold; background: #f2f2f2; }
+        </style>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Production Costing & Pricing Report</h2>
+            <p style="font-family: sans-serif; font-size: 13px; margin-top: 0;"><b>Design No:</b> ${designNo}</p>
+        </div>
+        <table class="cost-tbl">
+            <tr><td>1. Kora Cost / Mtr</td><td style="text-align:right;">${koraCost}</td></tr>
+            <tr><td>2. Warp Dyeing Cost / Mtr</td><td style="text-align:right;">${warpDye}</td></tr>
+            <tr><td>3. Warp Crimp Amount / Mtr</td><td style="text-align:right;">${warpCrimpAmt}</td></tr>
+            <tr><td>4. Weft Dyeing Cost / Mtr</td><td style="text-align:right;">${weftDye}</td></tr>
+            <tr><td>5. Dyeing Shortage Amount / Mtr</td><td style="text-align:right;">${dyeShortage}</td></tr>
+            <tr><td>6 & 7. Warping & Sizing Wages / Mtr</td><td style="text-align:right;">${warpSiz}</td></tr>
+            <tr><td>8. Weaving Cost (Pick x Rate) / Mtr</td><td style="text-align:right;">${weaving}</td></tr>
+            <tr><td>9 & 10. Washing Wages & Shortages / Mtr</td><td style="text-align:right;">${washing}</td></tr>
+            <tr><td><b>11. Total Production Cost / Mtr</b></td><td style="text-align:right; font-weight:bold;">${totalCost}</td></tr>
+            <tr><td>12. Profit Amount (% Added)</td><td style="text-align:right;">${profit}</td></tr>
+            <tr><td><b>13. Cost for 1 Mtr (Final Selling Rate)</b></td><td style="text-align:right; color:#059669; font-size:15px; font-weight:bold;">${finalRate}</td></tr>
+        </table>
+    `;
+
+    document.getElementById('modalTitle').innerText = "👁️ Production Costing Report Preview";
+    document.getElementById('previewContent').innerHTML = html;
+    openModal('previewModal');
 }
 </script>
 
-<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
+<!-- Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1185,46 +1292,30 @@ function printReport() {
     const db = getFirestore(app);
 
     window.firebaseSave = async function(key, data) {
-        try {
-            await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
-        } catch (e) {
-            console.error("Firebase Save Error: ", e);
-        }
+        try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) { console.error("Firebase Save Error: ", e); }
     }
 
     window.firebaseLoad = async function(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
-            if (docSnap.exists()) {
-                return JSON.parse(docSnap.data().content);
-            }
-        } catch (e) {
-            console.error("Firebase Load Error: ", e);
-        }
+            if (docSnap.exists()) { return JSON.parse(docSnap.data().content); }
+        } catch (e) { console.error("Firebase Load Error: ", e); }
         return null;
     }
 
-    // Sync Data on Load
     window.addEventListener('load', async function() {
-        // 🔒 Page Access Check on Load
         if (!checkUserPermission()) {
             alert("Access Denied! You do not have permission to access this page. ❌");
             window.location.href = "dashboard.html";
             return;
         }
 
-        let headerTxt = document.getElementById('pageHeaderTitle');
-        let origText = headerTxt.innerHTML;
-        headerTxt.innerHTML = "Syncing ☁️...";
-
         let collections = ['pre_design_numbers', 'design_masters_data', 'design_specs'];
-        
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
         }
 
-        headerTxt.innerHTML = origText;
         initDropdown(); 
         loadBitmapImage();
     });

@@ -140,7 +140,6 @@
     .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
     .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
-    /* 🔥 CLEAN PRINT & ALWAYS TWO COLUMNS SETTINGS */
     @media print {
         @page { size: A4 portrait; margin: 8mm; }
         body * { visibility: hidden; }
@@ -247,12 +246,10 @@
 <script>
 let currentBaseSpecs = {};
 
-// 🔒 Universal Permission Checker Function for Warp Entry
 function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        // settings.html-ல் உள்ள கீ பெயருக்கு ஏற்ப செக் செய்கிறது
         if (permissions['warp_entry'] === false) {
             return false;
         }
@@ -406,7 +403,6 @@ function addWarpRange(start = '', end = '', set = '') {
 function updateLineNumbers() { document.querySelectorAll('.line-item .line-no').forEach((elem, idx) => { elem.innerText = idx + 1; }); }
 
 async function quickCompleteToggle() {
-    // 🔒 Permission Check for Quick Complete Toggle
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to modify status on this page. ❌");
         document.getElementById('top_completed_status').checked = !document.getElementById('top_completed_status').checked;
@@ -435,7 +431,6 @@ async function quickCompleteToggle() {
 }
 
 window.saveWarpDesign = async function() {
-    // 🔒 Absolute Guard: Block saving immediately if permission is false
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to save entries on this page. ❌");
         return;
@@ -501,7 +496,6 @@ window.saveWarpDesign = async function() {
 }
 
 async function toggleStatus(dNo, newStatus) {
-    // 🔒 Permission Check for Toggle Status
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to change status. ❌");
         return;
@@ -543,13 +537,13 @@ function editDesignPattern(dNo) { closeModal('savedListModal'); document.getElem
 function previewPattern() {
     calculateTopBeam(); calculateOnloomWidth();
     let dNo = document.getElementById('designNo').value;
-    let lines = [];
+    let warpLines = [];
     document.querySelectorAll('.line-item').forEach(row => {
         let count = row.querySelector('.inp-count').value.trim();
         let color = row.querySelector('.inp-color').value.trim();
         let beam = row.querySelector('.inp-beam').value;
         let ends = parseFloat(row.querySelector('.inp-ends').value) || 0;
-        if(count || color || ends) lines.push({ count: count, color: color, beam: beam, ends: ends });
+        if(count || color || ends) warpLines.push({ count: count, color: color, beam: beam, ends: ends });
     });
 
     let ranges = [];
@@ -560,7 +554,7 @@ function previewPattern() {
         if(start && end && set) ranges.push({ start, end, set });
     });
 
-    if(lines.length === 0) { alert("No pattern to preview! Please add lines."); return; }
+    if(warpLines.length === 0) { alert("No pattern to preview! Please add lines."); return; }
 
     let sp = Object.keys(JSON.parse(localStorage.getItem('design_specs')) || {}).find(k => cleanDesignName(k) === cleanDesignName(dNo)) ? JSON.parse(localStorage.getItem('design_specs'))[Object.keys(JSON.parse(localStorage.getItem('design_specs')) || {}).find(k => cleanDesignName(k) === cleanDesignName(dNo))] : {};
     let baseReed = parseFloat(sp.reed || sp.baseReed) || 0;
@@ -583,32 +577,40 @@ function previewPattern() {
     let col1Html = ''; 
     let col2Html = ''; 
     let currentLinesInCol1 = 0;
-    const MAX_LINES_COL1 = 25;
+    const MAX_LINES_COL1 = 35;
     
     let groundTotal = 0; let topTotal = 0; let flatPattern = []; 
 
     let i = 0;
     let tdStyle = "padding:4px 6px; text-align:center; color:#1E2B23; font-size:11px; border-bottom: 1px dashed #A0AFA0;";
     let tdStyleColor = "padding:4px 6px; text-align:left; color:#1E2B23; font-size:11px; white-space:nowrap; border-bottom: 1px dashed #A0AFA0;";
-    let tdStyleLast = "padding:4px 6px; vertical-align:middle; color:#1E2B23; text-align:left; font-size:11px; border-bottom: 1px dashed #A0AFA0;";
+    let tdStyleLast = "padding:4px 6px; vertical-align:middle; color:#1E2B23; text-align:left; padding-left:10px; font-size:11px; border-bottom: 1px dashed #A0AFA0;";
 
-    while (i < lines.length) {
-        let currentLineNum = i + 1;
-        let range = ranges.find(r => r.start === currentLineNum);
+    while (i < warpLines.length) {
+        let start = i + 1;
+        let range = ranges.find(r => r.start === start);
         let blockHtml = ''; let blockLineCount = 0;
         
         if (range && range.end >= range.start) {
+            let end = range.end;
+            let set = range.set;
             let blockLines = []; let blockGroundEnds = 0; let blockTopEnds = 0;
-            for (let j = range.start; j <= range.end; j++) {
-                if (lines[j - 1]) {
-                    let lineItem = Object.assign({}, lines[j - 1]); lineItem.lineNo = j; blockLines.push(lineItem);
-                    if(lines[j - 1].beam === 'Top Beam') blockTopEnds += lines[j-1].ends; else blockGroundEnds += lines[j-1].ends;
-                    for(let rep=0; rep < range.set; rep++){ flatPattern.push({ lineNo: j, count: lineItem.count || '-', color: lineItem.color || '-', ends: parseFloat(lineItem.ends) || 0, beam: lineItem.beam }); }
+            
+            for (let j = start - 1; j < end; j++) {
+                if (warpLines[j]) {
+                    let lineItem = Object.assign({}, warpLines[j]); lineItem.lineNo = j + 1; blockLines.push(lineItem);
+                    if(warpLines[j].beam === 'Top Beam') blockTopEnds += parseInt(warpLines[j]?.ends) || 0; else blockGroundEnds += parseInt(warpLines[j]?.ends) || 0;
+                    for(let rep=0; rep < set; rep++){ flatPattern.push({ lineNo: j + 1, count: lineItem.count || '-', color: lineItem.color || '-', ends: parseFloat(lineItem.ends) || 0, beam: lineItem.beam }); }
                 }
             }
             
-            let blockTotalEnds = (blockGroundEnds + blockTopEnds) * range.set;
-            groundTotal += blockGroundEnds * range.set; topTotal += blockTopEnds * range.set;
+            let total = 0;
+            for(let j = start - 1; j < end; j++){
+                total += parseInt(warpLines[j]?.ends) || 0
+            }
+            total = total * set;
+
+            groundTotal += blockGroundEnds * set; topTotal += blockTopEnds * set;
 
             blockLines.forEach((item, index) => {
                 let endsDisplay = item.beam === 'Top Beam' ? `<span style="display:inline-block; padding-left: 15px; color: #D97706;" title="Top Beam">${item.ends}</span>` : `<span style="display:inline-block; padding-right: 15px; color: #2F4F38;">${item.ends}</span>`;
@@ -620,12 +622,20 @@ function previewPattern() {
                     <td style="${tdStyleColor}">${colorTamil}</td>
                     <td style="${tdStyle} font-weight:bold;">${endsDisplay}</td>`;
                 
-                if (index === 0) { blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}"><span style="font-size:14px; font-weight:300;">}</span> <b>X ${range.set} = <span style="color:#D97706">${blockTotalEnds}</span></b></td>`; }
+                if (index === 0) { 
+                    blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
+                      <div style="display:flex; align-items:center; justify-content:flex-start; gap:4px; font-weight:700; font-size:16px;">
+                         <span style="font-size: ${blockLines.length * 18}px; font-weight: 300; line-height: 0.5; display: inline-block;">}</span>
+
+                         <span>X ${set} = <span style="color:#D97706">${total}</span></span>
+                      </div>
+                    </td>`; 
+                }
                 blockHtml += `</tr>`;
             });
-            i = range.end; blockLineCount = blockLines.length;
+            i = end; blockLineCount = blockLines.length;
         } else {
-            let item = Object.assign({}, lines[i]); item.lineNo = i + 1;
+            let item = Object.assign({}, warpLines[i]); item.lineNo = i + 1;
             if(item.beam === 'Top Beam') topTotal += item.ends; else groundTotal += item.ends;
             flatPattern.push({ lineNo: item.lineNo, count: item.count || '-', color: item.color || '-', ends: parseFloat(item.ends) || 0, beam: item.beam });
             
@@ -660,7 +670,7 @@ function previewPattern() {
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:15%;">Count</th>
             <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:25%;">Colour</th>
             <th style="padding:6px; text-align:center; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; line-height:1.2; width:15%;">Ends<br><span style="font-size:7px; color:#4A554A;">Grnd|Top</span></th>
-            <th style="padding:6px; text-align:left; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
+            <th style="padding:6px; text-align:left; padding-left:10px; color:#2F4F38; text-transform:uppercase; font-size:10px; border-bottom:2px solid #4A7C59; width:35%;">Set</th>
         </tr>
     `;
 
@@ -737,9 +747,8 @@ function previewPattern() {
     window.firebaseLoad = async function(key) { try { const docSnap = await getDoc(doc(db, "texfriend_erp", key)); if (docSnap.exists()) return JSON.parse(docSnap.data().content); } catch (e) {} return null; }
 
     window.addEventListener('load', async function() {
-        // 🔒 Page Access Check on Load
         if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to access this page. ❌");
+            authorizationAlert();
             window.location.href = "dashboard.html";
             return;
         }
