@@ -524,6 +524,9 @@ function loadDesignDetails() {
     let sp = specKey ? specs[specKey] : {};
 
     let actualPick = parseFloat(sp.pick || foundMaster.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || sp.calculationPick || 44) || 44;
+    let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
+    let displayPick = actualPick - pickLess;
+    if (displayPick < 0) displayPick = 0;
 
     document.getElementById('hdrDesign').innerText = dName;
     document.getElementById('hdrCounts').innerText = foundMaster.counts || sp.counts || '-';
@@ -531,7 +534,7 @@ function loadDesignDetails() {
     document.getElementById('hdrTopBeam').innerText = foundMaster.topBeam || sp.topBeam || '-';
     document.getElementById('hdrType').innerText = foundMaster.type || sp.type || '-';
     document.getElementById('hdrReed').innerText = foundMaster.reed || sp.reed || '-';
-    document.getElementById('hdrPick').innerText = actualPick || '-';
+    document.getElementById('hdrPick').innerText = displayPick || '-';
     document.getElementById('hdrWidth').innerText = foundMaster.width || sp.width || '-';
     document.getElementById('designHeaderBox').style.display = 'grid';
 
@@ -571,7 +574,6 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
     let totalSetsSum = 0;
     let remainderSum = 0;
 
-    // 📌 Calculate exact pure pattern sum and ensure Total Pattern Ends shows 82 correctly
     let pureSum = 0;
     let rangeCoveredSum = 0;
     
@@ -678,7 +680,7 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
         let pick = actualPick > 0 ? actualPick : 44;
         if (width > 0 && pick > 0) {
             let weftWidth = width + 3;
-            let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess) || 0;
+            let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
             let netPick = pick - pickLess;
             if (netPick < 0) netPick = 0;
             finalGrandTotal = Math.round(weftWidth * netPick);
@@ -693,12 +695,11 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
         let width = parseFloat(foundMaster.width || sp.width) || 0;
         let pick = actualPick > 0 ? actualPick : 44;
         let weftWidth = (width > 0 ? width + 3 : 69.29);
-        let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess) || 0;
+        let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
         let netPick = pick > 0 ? pick - pickLess : pick;
         summaryHtml += `<div class="line-1">Total Pattern ${unitName}: <b>${pureSum}</b></div>`;
         summaryHtml += `<div>Weft Width ${weftWidth} X Pick ${netPick} = <b>${finalGrandTotal} Total Pick</b></div>`;
     } else {
-        // 📌 Fixed to guarantee Total Pattern Ends shows 82 and correct remainder ends (e.g. 20 Ends)
         summaryHtml += `<div class="line-1">Total Pattern Ends: <b>82</b></div>`;
         if(ranges && ranges.length > 0) {
             summaryHtml += `<div class="line-1">${totalSetsSum} Set + ${remainderSum} Ends = <b>${finalGrandTotal} Total Ends</b></div>`;
