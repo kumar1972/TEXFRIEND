@@ -3,123 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Index - Kora ERP Pro</title>
+    <title>Dashboard - TEXFRIEND ERP Pro</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        /* 📌 Premium Smart Background */
-        html, body { width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; }
-        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        html, body { width: 100%; min-height: 100vh; background: #090D16; color: #F8FAFC; }
+        body { padding: 14px; display: flex; flex-direction: column; align-items: center; }
         
-        /* 📌 Premium Top Header */
+        /* 📌 Grand Top Header */
         .top-header-container { 
             width: 100%; max-width: 1100px; display: flex; justify-content: space-between; 
             align-items: center; padding: 12px 18px; 
-            background: linear-gradient(135deg, #4A7C59, #2F4F38); 
-            color: white; border-radius: 14px; margin-bottom: 15px;
-            box-shadow: 0 6px 15px rgba(47, 79, 56, 0.2); 
+            background: linear-gradient(135deg, #1E293B, #0F172A); 
+            color: white; border-radius: 16px; margin-bottom: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); 
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
-        .top-header-container h3 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
+        .top-header-container h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin: 0; background: linear-gradient(135deg, #38BDF8, #818CF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        .header-right-actions { display: flex; align-items: center; gap: 8px; }
+        .live-clock-box { text-align: right; background: rgba(56,189,248,0.08); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.15); }
+        .live-clock { font-size: 11px; font-weight: 700; color: #38BDF8; }
+        .live-date { font-size: 9px; font-weight: 500; color: #94A3B8; }
+
         .dropdown-btn { 
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); 
-            color: white; font-size: 20px; padding: 6px 10px; border-radius: 8px; 
-            cursor: pointer; line-height: 1; transition: all 0.3s ease; 
-            box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); 
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); 
+            color: white; font-size: 16px; padding: 6px 10px; border-radius: 10px; 
+            cursor: pointer; transition: all 0.3s ease; 
         }
-        .dropdown-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .dropdown-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
 
         .dropdown-menu { 
-            position: absolute; right: 0; top: 45px; background: #FFFFFF; color: #1E2B23; 
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(30, 43, 35, 0.15); 
-            width: 220px; z-index: 10000; overflow: hidden; border: 1px solid #D1DED1; 
+            position: absolute; right: 0; top: 50px; background: #1E293B; color: #F8FAFC; 
+            border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); 
+            width: 230px; z-index: 10000; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); 
         }
         .dropdown-menu a { 
-            display: block; padding: 12px 15px; text-decoration: none; color: #2F4F38; 
-            font-size: 12px; font-weight: 600; border-bottom: 1px solid #E2E8E2; transition: background 0.2s ease; 
+            display: block; padding: 12px 18px; text-decoration: none; color: #CBD5E1; 
+            font-size: 12px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.2s ease; 
         }
-        .dropdown-menu a:hover { background: #F4F7F4; color: #4A7C59; }
-        .dropdown-menu a:last-child { border-bottom: none; color: #DC2626; }
-        .dropdown-menu a:last-child:hover { background: #FEF2F2; }
-        .user-info-box { padding: 12px 15px; background: #F4F7F4; border-bottom: 1px solid #D1DED1; font-size: 11px; font-weight: 700; color: #2F4F38; line-height: 1.6; }
+        .dropdown-menu a:hover { background: rgba(56, 189, 248, 0.1); color: #38BDF8; padding-left: 22px; }
+        .dropdown-menu a:last-child { border-bottom: none; color: #F87171; }
+        .dropdown-menu a:last-child:hover { background: rgba(248, 113, 113, 0.1); color: #EF4444; }
+        .user-info-box { padding: 14px 18px; background: #0F172A; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; font-weight: 600; color: #94A3B8; line-height: 1.6; }
 
-        /* 📌 Main Container */
+        /* 📌 Main Grand Container */
         .container { 
-            width: 100%; max-width: 1100px; margin: 0; background: #FFFFFF; 
-            padding: 20px; border-radius: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06); 
-            border: 1px solid rgba(82, 110, 81, 0.15); flex: 1; display: flex; 
+            width: 100%; max-width: 1100px; margin: 0; background: #121A2B; 
+            padding: 20px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); 
+            border: 1px solid rgba(255, 255, 255, 0.08); flex: 1; display: flex; 
             flex-direction: column; gap: 16px; position: relative; 
         }
         
-        .header-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; padding-bottom: 15px; border-bottom: 2px solid #EAF0EA; }
+        .header-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 0; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         
         #companyLogoContainer { display: flex; align-items: center; cursor: pointer; }
         #companyLogoContainer img {
-            height: 50px; width: 50px; border-radius: 12px; border: 2px solid #4A7C59;
-            object-fit: cover; box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); transition: transform 0.3s;
+            height: 50px; width: 50px; border-radius: 12px; border: 2px solid #38BDF8;
+            object-fit: cover; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3); transition: transform 0.3s;
         }
-        #companyLogoContainer img:hover { transform: scale(1.05); }
-        .logo-placeholder { font-size: 10px; background: #F4F7F4; padding: 12px 8px; border-radius: 10px; border: 2px dashed #4A7C59; color: #4A7C59; font-weight: 700; text-align: center; }
+        #companyLogoContainer img:hover { transform: scale(1.08); }
+        .logo-placeholder { font-size: 11px; background: rgba(56, 189, 248, 0.05); padding: 12px 10px; border-radius: 10px; border: 2px dashed #38BDF8; color: #38BDF8; font-weight: 700; text-align: center; }
 
-        h1 { color: #2F4F38; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin:0; text-shadow: none; }
+        h1 { color: #F8FAFC; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; flex: 1; margin: 0; }
+
+        /* 📌 Quick Search Bar Feature */
+        .search-bar-box {
+            display: flex; gap: 8px; background: #1E293B; padding: 8px 12px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08); align-items: center;
+        }
+        .search-bar-box input {
+            flex: 1; background: transparent; border: none; color: #FFF; font-size: 12px; outline: none; font-weight: 500;
+        }
+        .search-bar-box input::placeholder { color: #64748B; }
+        .search-bar-box button {
+            background: #38BDF8; color: #0F172A; border: none; padding: 6px 14px; border-radius: 8px;
+            font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s;
+        }
+        .search-bar-box button:hover { background: #0ea5e9; }
+
+        /* 📌 Quick Stats Banner */
+        .stats-banner {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #1E293B;
+            padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); text-align: center;
+        }
+        .stat-box span { display: block; }
+        .stat-title { font-size: 10px; color: #94A3B8; font-weight: 600; text-transform: uppercase; }
+        .stat-value { font-size: 14px; color: #38BDF8; font-weight: 800; margin-top: 2px; }
         
-        /* 📌 Top Prominent Setup Button */
+        /* 📌 Grand Master Setup Button with Neon Glow */
         .master-setup-btn {
-            background: linear-gradient(135deg, #10B981, #059669);
-            color: white; padding: 18px; border-radius: 14px;
-            text-decoration: none; font-weight: 700; font-size: 16px;
+            background: linear-gradient(135deg, #06B6D4, #3B82F6);
+            color: white; padding: 16px; border-radius: 16px;
+            text-decoration: none; font-weight: 700; font-size: 14px;
             display: flex; justify-content: center; align-items: center; gap: 12px;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
-            transition: all 0.3s ease; border: none; width: 100%;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+            transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.25); width: 100%;
         }
-        .master-setup-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.35); }
+        .master-setup-btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(6, 182, 212, 0.6); filter: brightness(1.1); }
 
-        /* 📌 Menu Grid */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
-        .menu-btn { color: #FFFFFF; padding: 16px 8px; border-radius: 14px; text-decoration: none; font-weight: 700; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 11px; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.1); transition: all 0.3s ease; border: none; }
-        .menu-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(30, 43, 35, 0.15); }
-        .menu-btn .tab-icon { font-size: 26px; }
+        /* 📌 Modern Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2px; }
+        .menu-btn { 
+            color: #FFFFFF; padding: 18px 10px; border-radius: 16px; text-decoration: none; 
+            font-weight: 700; text-align: center; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; gap: 8px; font-size: 12px; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid rgba(255, 255, 255, 0.08); position: relative; overflow: hidden;
+        }
+        .menu-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent); opacity: 0; transition: opacity 0.3s;
+        }
+        .menu-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.25); }
+        .menu-btn:hover::before { opacity: 1; }
+        .menu-btn .tab-icon { font-size: 26px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
-        .btn-theme-1 { background: linear-gradient(135deg, #3B82F6, #1E3A8A); } 
+        /* Grand Theme Gradients */
+        .btn-theme-1 { background: linear-gradient(135deg, #2563EB, #1D4ED8); } 
         .btn-theme-2 { background: linear-gradient(135deg, #0D9488, #0F766E); } 
-        .btn-theme-3 { background: linear-gradient(135deg, #6366F1, #4338CA); } 
+        .btn-theme-3 { background: linear-gradient(135deg, #7C3AED, #6D28D9); } 
         .btn-theme-4 { background: linear-gradient(135deg, #D97706, #B45309); } 
 
-        .menu-grid .full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 12px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #4A7C59, #2F4F38); }
-        .menu-grid .full-span .tab-icon { font-size: 24px; }
+        .menu-grid .full-span { grid-column: span 3; flex-direction: row; justify-content: center; gap: 14px; padding: 16px; font-size: 13px; background: linear-gradient(135deg, #334155, #1E293B); }
+        .menu-grid .full-span .tab-icon { font-size: 22px; }
         
-        .menu-grid .btn-m-all { background: linear-gradient(135deg, #EAB308, #D97706); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25); border: none; }
-        .menu-grid .btn-m-all .tab-icon { font-size: 24px; }
+        .menu-grid .btn-m-all { background: linear-gradient(135deg, #CA8A04, #A16207); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 14px; padding: 18px; font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(202, 138, 4, 0.3); border: 1px solid rgba(255,255,255,0.15); }
+        .menu-grid .btn-m-all .tab-icon { font-size: 22px; }
         
-        .menu-grid .btn-matrix { background: linear-gradient(135deg, #6366F1, #4338CA); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 12px; padding: 18px; font-size: 13px; border-radius: 14px; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25); border: none; margin-bottom: 5px;}
-        .menu-grid .btn-matrix .tab-icon { font-size: 24px; }
+        .menu-grid .btn-matrix { background: linear-gradient(135deg, #4F46E5, #4338CA); grid-column: span 3; text-align: center; justify-content: center; flex-direction: row; gap: 14px; padding: 18px; font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); border: 1px solid rgba(255,255,255,0.15); margin-bottom: 2px;}
+        .menu-grid .btn-matrix .tab-icon { font-size: 22px; }
 
-        /* 📌 Delayed Party Orders Section (Red Mark Alerts at End) */
+        /* 📌 Delayed Party Orders Section */
         .delayed-orders-section {
-            margin-top: 15px;
-            background: #FEF2F2;
-            border: 1px solid #FCA5A5;
-            border-radius: 14px;
-            padding: 15px;
+            margin-top: 10px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 16px;
         }
         .delayed-orders-section h3 {
-            color: #DC2626;
-            font-size: 13px;
+            color: #F87171;
+            font-size: 12px;
             font-weight: 700;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         .delayed-table-container {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow-x: auto;
-            border: 1px solid #FCA5A5;
-            background: #FFFFFF;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: #090D16;
         }
         .delayed-table {
             width: 100%;
@@ -130,39 +170,48 @@
         }
         .delayed-table th, .delayed-table td {
             padding: 9px 10px;
-            border-bottom: 1px solid #FEE2E2;
-            color: #7F1D1D;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #FCA5A5;
         }
         .delayed-table th {
-            background: #FEE2E2;
-            color: #991B1B;
+            background: rgba(239, 68, 68, 0.15);
+            color: #F87171;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 10px;
         }
         .delayed-table tr:last-child td { border-bottom: none; }
-        .red-alert-text {
-            color: #DC2626;
-            font-weight: 800;
+        .red-alert-text { color: #F87171; font-weight: 800; }
+
+        @media (max-width: 768px) {
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .menu-grid .full-span, .menu-grid .btn-m-all, .menu-grid .btn-matrix { grid-column: span 2; }
+            .stats-banner { grid-template-columns: repeat(1, 1fr); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Header with Live User Menu -->
+    <!-- Top Header with 12hr Live Clock & User Menu -->
     <div class="top-header-container">
-        <h3>TEXFRIEND ERP Dashboard</h3>
-        <div style="position: relative;">
-            <button onclick="toggleMenu()" class="dropdown-btn">👨‍💼</button>
+        <h3>TEXFRIEND ERP Pro</h3>
+        <div class="header-right-actions">
+            <div class="live-clock-box">
+                <div id="liveClock" class="live-clock">12:00:00 AM</div>
+                <div id="liveDate" class="live-date">01 Jan 2026</div>
+            </div>
+            <div style="position: relative;">
+                <button onclick="toggleMenu()" class="dropdown-btn">👨‍💼</button>
 
-            <!-- Dropdown Menu Options with Live User Info -->
-            <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
-                <div id="userInfoBox" class="user-info-box">
-                    <!-- Live User Name dynamically shows here -->
+                <!-- Dropdown Menu Options with Live User Info -->
+                <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
+                    <div id="userInfoBox" class="user-info-box">
+                        <!-- Live User Name dynamically shows here -->
+                    </div>
+                    <a href="settings.html">⚙️ Settings</a>
+                    <a href="#" onclick="clearCacheData()">🔄 Clear Cache</a>
+                    <a href="#" onclick="logoutUser()">🚪 Log Out</a>
                 </div>
-                <a href="settings.html">⚙️ Settings</a>
-                <a href="#" onclick="clearCacheData()">🔄 Clear Cache</a>
-                <a href="#" onclick="logoutUser()">🚪 Log Out</a>
             </div>
         </div>
     </div>
@@ -173,13 +222,46 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let username = localStorage.getItem('erp_logged_user') || 'Unknown';
     let box = document.getElementById('userInfoBox');
     if(box) {
-        box.innerHTML = `🟢 Role: <span style="color:#2563EB;">${role}</span><br>👤 Name: <span style="color:#059669;">${username}</span>`;
+        box.innerHTML = `🟢 Role: <span style="color:#38BDF8;">${role}</span><br>👤 Name: <span style="color:#34D399;">${username}</span>`;
     }
+
+    // Live 12-Hour Clock Timer & Date
+    setInterval(() => {
+        let now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        let timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+        let clockEl = document.getElementById('liveClock');
+        if(clockEl) clockEl.innerText = timeString;
+
+        let options = { day: '2-digit', month: 'short', year: 'numeric' };
+        let dateString = now.toLocaleDateString('en-GB', options);
+        let dateEl = document.getElementById('liveDate');
+        if(dateEl) dateEl.innerText = dateString;
+    }, 1000);
 });
 
 function toggleMenu() {
     let menu = document.getElementById('dropdownMenu');
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+function quickSearchDesign() {
+    let query = document.getElementById('quickSearchInput').value.trim();
+    if(!query) {
+        alert("Please enter a design number or party name to search!");
+        return;
+    }
+    localStorage.setItem('selected_design_number', query);
+    window.location.href = "design_sheet_print.html";
 }
 
 function logoutUser() {
@@ -212,13 +294,35 @@ window.onclick = function(event) {
         <div class="header-bar">
             <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
             <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
-            
             <h1 id="appHeading">TEXFRIEND ERP</h1>
+        </div>
+
+        <!-- 📌 Quick Search Bar Feature -->
+        <div class="search-bar-box">
+            <span style="font-size: 14px;">🔍</span>
+            <input type="text" id="quickSearchInput" placeholder="Quick Search Design No / Party Name...">
+            <button onclick="quickSearchDesign()">Go Print</button>
+        </div>
+
+        <!-- 📌 Quick Live Statistics Widget Banner -->
+        <div class="stats-banner">
+            <div class="stat-box">
+                <span class="stat-title">Saved Designs</span>
+                <span class="stat-value" id="statDesignsCount">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-title">Active Orders</span>
+                <span class="stat-value" id="statOrdersCount">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-title">Delayed Alerts</span>
+                <span class="stat-value" id="statDelayedCount" style="color: #F87171;">0</span>
+            </div>
         </div>
 
         <!-- 📌 Link to New Design Master Page -->
         <a href="design_master.html" class="master-setup-btn">
-            <span style="font-size: 24px;">🎨</span> Create / Edit Design Master Setup
+            <span style="font-size: 22px;">🎨</span> Create / Edit Design Master Setup
         </a>
 
         <div class="menu-grid">
@@ -236,21 +340,18 @@ window.onclick = function(event) {
             <a href="invoice.html" class="menu-btn btn-theme-1"><span class="tab-icon">📄</span> Invoice / Bill</a>
             
             <a href="yarn_calc.html" class="menu-btn btn-theme-4 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
-
-            <!-- 📌 Added Design Sheet Print Tab Here -->
             <a href="design_sheet_print.html" class="menu-btn btn-theme-2 full-span"><span class="tab-icon">📋</span> Design Sheet Print</a>
 
             <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all">
                 <span class="tab-icon">✨</span> Total Saved Designs List ✨
             </a>
                 
-            <!-- 📌 Link to New Matrix Page -->
             <a href="process_matrix.html" class="menu-btn btn-matrix">
                 <span class="tab-icon">📊</span> Live Multi-Design Process Status Matrix
             </a>
         </div>
 
-        <!-- 📌 Delayed Party Orders Section (Dashboard End) -->
+        <!-- 📌 Delayed Party Orders Section -->
         <div id="delayedOrdersSection" class="delayed-orders-section" style="display: none;">
             <h3>⚠️ Delayed Party Orders (Delivery Date Passed)</h3>
             <div class="delayed-table-container">
@@ -264,9 +365,7 @@ window.onclick = function(event) {
                             <th>Delivery Date</th>
                         </tr>
                     </thead>
-                    <tbody id="delayedOrdersBody">
-                        <!-- Delayed orders populate here in red mark -->
-                    </tbody>
+                    <tbody id="delayedOrdersBody"></tbody>
                 </table>
             </div>
         </div>
@@ -327,13 +426,18 @@ window.onclick = function(event) {
                     localStorage.setItem('company_logo', logoData);
                 }
 
-                // Load party orders data from localStorage or firebase if synced
+                let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+                let cloudDesigns = await firebaseLoad('pre_design_numbers');
+                if(cloudDesigns) preDesigns = cloudDesigns;
+                document.getElementById('statDesignsCount').innerText = preDesigns.length;
+
                 let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                 let cloudOrders = await firebaseLoad('party_orders_data');
                 if (cloudOrders) {
                     partyOrders = cloudOrders;
                     localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
                 }
+                document.getElementById('statOrdersCount').innerText = partyOrders.length;
 
                 checkAndDisplayDelayedOrders(partyOrders);
 
@@ -357,6 +461,8 @@ window.onclick = function(event) {
                 delDate.setHours(0, 0, 0, 0);
                 return delDate < today;
             });
+
+            document.getElementById('statDelayedCount').innerText = delayedList.length;
 
             if (delayedList.length > 0) {
                 let section = document.getElementById('delayedOrdersSection');
