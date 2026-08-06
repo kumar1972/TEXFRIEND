@@ -130,6 +130,7 @@
         font-size: 9px;
         color: #4A554A;
         font-weight: 500;
+        white-space: pre-line; /* முகவரியில் உள்ள புதிய வரிகள் சரியாக வர */
     }
 
     .design-info-box {
@@ -316,11 +317,10 @@
         <button class="print-btn no-print" onclick="window.print()">🖨️ பிரிண்ட் செய்க</button>
     </div>
 
-    <!-- Company Header -->
+    <!-- Company Header (Settings-ல் இருந்து அட்ரஸ் இங்கே வரும்) -->
     <div class="company-header">
-        <h1>BRG TEXTILES</h1>
-        <p>Trichy Main Road, Plot No - 32, GR,Nagar,Seelanaickenpatti 
-        Salem - 636201</p>
+        <h1 id="printCompName">TEXFRIEND</h1>
+        <p id="printCompAddr">-</p>
     </div>
 
     <div class="top-form-row-single no-print">
@@ -396,7 +396,34 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDropdown();
+    loadCompanySettings(); // Settings அட்ரûஸ லோட் செய்ய
 });
+
+// Settings-ல் சேமிக்கப்பட்ட முகவரியை பிரிண்ட் பக்கத்தில் கொண்டு வர
+function loadCompanySettings() {
+    // Settings பக்கத்தில் சேமிக்கப்படும் சரியான கீ (Key) 'company_full_address' ஆகும்
+    let savedAddr = localStorage.getItem('company_full_address') || 
+                    localStorage.getItem('set_comp_addr') || 
+                    localStorage.getItem('company_address');
+
+    if (savedAddr && savedAddr.trim() !== '') {
+        // அட்ரஸில் உள்ள புதிய வரிகளை (Line breaks) சரியாக பிரிண்ட் பக்கத்தில் காட்ட
+        document.getElementById('printCompAddr').innerHTML = savedAddr.replace(/\n/g, '<br>');
+    } else {
+        document.getElementById('printCompAddr').innerText = "முகவரி கிடைக்கவில்லை";
+    }
+
+    // கம்பெனி பெயர் சரியாக வர
+    let savedCompName = localStorage.getItem('app_heading_name') || 
+                        localStorage.getItem('company_name') || 'TEXFRIEND';
+    
+    if(document.getElementById('printCompName')) {
+        document.getElementById('printCompName').innerText = savedCompName;
+    }
+}
+
+
+
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
