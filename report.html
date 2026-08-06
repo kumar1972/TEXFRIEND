@@ -284,11 +284,11 @@
 
     .modal-header {
         padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
+        justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
     }
     .modal-header h3 { margin: 0; font-size: 15px; color: #2F4F38; font-weight: 800; text-transform: uppercase; }
     .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
         border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
         transition: all 0.2s ease;
     }
@@ -335,10 +335,9 @@
             max-width: 100%;
             border-collapse: collapse;
             page-break-inside: auto;
-            table-layout: fixed; /* Ensures column widths are strictly controlled */
+            table-layout: fixed;
         }
         
-        /* Shrink the first column (Mill / Count Summary) to fit portrait */
         table th:first-child, 
         table td:first-child {
             width: 38% !important;
@@ -346,7 +345,6 @@
             word-break: break-word;
         }
         
-        /* Allocate remaining space evenly for numeric columns */
         table th:not(:first-child), 
         table td:not(:first-child) {
             width: 20% !important;
@@ -427,8 +425,6 @@
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
-            <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Download Excel</button>
-            <button class="action-btn print-btn" onclick="window.print()">🖨️ Print Report</button>
             <button class="close-btn" onclick="closePreviewModal()">Close ✕</button>
         </div>
         <div class="modal-body" id="previewContent"></div>
