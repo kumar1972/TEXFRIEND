@@ -296,13 +296,78 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
     
+    /* Strict Portrait Mode Print Styles with Condensed First Column */
     @media print {
+        @page {
+            size: A4 portrait;
+            margin: 6mm;
+        }
+        
         body * { visibility: hidden; }
+        body { background: #FFFFFF; margin: 0; padding: 0; }
+        
         .overlay-modal, .overlay-modal * { visibility: visible; }
-        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        .modal-content { box-shadow: none; border: none; border-radius: 0; }
+        
+        .overlay-modal { 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            padding: 0; 
+            z-index: 99999; 
+            background: #FFFFFF; 
+            display: block !important; 
+        }
+        
+        .modal-content, .modal-body { 
+            box-shadow: none; 
+            border: none; 
+            border-radius: 0; 
+            overflow: visible !important; 
+            height: auto !important;
+            padding: 0;
+        }
+        
         .no-print { display: none !important; }
-        .modal-body { padding: 0; }
+        
+        table {
+            width: 100% !important;
+            max-width: 100%;
+            border-collapse: collapse;
+            page-break-inside: auto;
+            table-layout: fixed; /* Ensures column widths are strictly controlled */
+        }
+        
+        /* Shrink the first column (Mill / Count Summary) to fit portrait */
+        table th:first-child, 
+        table td:first-child {
+            width: 38% !important;
+            text-align: left !important;
+            word-break: break-word;
+        }
+        
+        /* Allocate remaining space evenly for numeric columns */
+        table th:not(:first-child), 
+        table td:not(:first-child) {
+            width: 20% !important;
+        }
+        
+        tr { 
+            page-break-inside: avoid; 
+            page-break-after: auto; 
+        }
+        
+        th, td { 
+            white-space: normal !important; 
+            word-wrap: break-word;
+            padding: 4px 6px !important; 
+            font-size: 9px !important; 
+        }
+        
+        #printTableWrapper {
+            width: 100%;
+            overflow-x: hidden;
+        }
     }
 </style>
 </head>
