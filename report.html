@@ -768,8 +768,25 @@ function renderKoraStockTable() {
         </tr>`;
     });
 
-    body.innerHTML += `<tr style="background:#4A7C59; color:white; font-weight:bold;"><td colspan="4" style="text-align:center; padding:10px; text-transform:uppercase;">📊 Overall Count-Wise Summary (கவுண்ட் வாரியாக மொத்த இருப்பு)</td></tr>`;
+    // -------------------------------------------------------------------------
+    // 🌟 New Clean Dashboard Grid Layout (Without top table headers)
+    // -------------------------------------------------------------------------
+    body.innerHTML += `<tr><td colspan="4" style="padding: 15px 0 5px 0; background: #ffffff; border: none;"></td></tr>`;
+    body.innerHTML += `<tr><td colspan="4" style="background:#4A7C59; color:white; font-weight:bold; text-align:center; padding:14px; text-transform:uppercase; border-radius: 12px 12px 0 0; font-size:13px; letter-spacing:0.5px;">📊 Overall Count-Wise Summary Cards (கவுண்ட் வாரியான பாஸ் கார்டுகள்)</td></tr>`;
     
+    let wrapperTr = document.createElement('tr');
+    let wrapperTd = document.createElement('td');
+    wrapperTd.colSpan = 4;
+    wrapperTd.style.padding = "20px";
+    wrapperTd.style.background = "#F8FAF8";
+    wrapperTd.style.border = "1px solid #E2E8E2";
+    wrapperTd.style.borderRadius = "0 0 16px 16px";
+
+    let gridContainer = document.createElement('div');
+    gridContainer.style.display = "grid";
+    gridContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
+    gridContainer.style.gap = "18px";
+
     let sortedSummaryCounts = Array.from(countSummaryMap.keys()).sort();
     sortedSummaryCounts.forEach(cnt => {
         let data = countSummaryMap.get(cnt);
@@ -778,15 +795,43 @@ function renderKoraStockTable() {
         let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
 
         let millsArr = Array.from(data.mills).sort();
-        let millsStr = millsArr.length > 0 ? ` (${millsArr.join(', ')})` : '';
+        let millsStr = millsArr.length > 0 ? `<div style="font-size:11px; color:#556B2F; margin-top:4px; font-weight:600;">Mill: ${millsArr.join(', ')}</div>` : `<div style="font-size:11px; color:#888; margin-top:4px;">Mill: General</div>`;
 
-        body.innerHTML += `<tr style="background:#FAFCFA;">
-            <td style="text-align:left; padding-left:25px;"><b>Count: ${cnt}</b><span style="color:#64748B; font-size:10px; font-weight:600;">${millsStr}</span></td>
-            <td style="color:#10B981; font-weight:bold;">${data.inward.toFixed(3)}</td>
-            <td style="color:#D97706; font-weight:bold;">${data.issued.toFixed(3)}</td>
-            <td>${balDisplay}</td>
-        </tr>`;
+        let boxCard = document.createElement('div');
+        boxCard.style.background = "#FFFFFF";
+        boxCard.style.border = "1px solid #D1DED1";
+        boxCard.style.borderRadius = "14px";
+        boxCard.style.padding = "16px";
+        boxCard.style.boxShadow = "0 6px 15px rgba(30, 43, 35, 0.05)";
+        boxCard.style.display = "flex";
+        boxCard.style.flexDirection = "column";
+        boxCard.style.gap = "10px";
+        boxCard.style.transition = "transform 0.2s ease";
+
+        boxCard.innerHTML = `
+            <div style="border-bottom: 2px solid #EAF0EA; padding-bottom: 10px;">
+                <div style="font-size: 14px; font-weight: 800; color: #2F4F38; text-transform: uppercase;">COUNT: ${cnt}</div>
+                ${millsStr}
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: #4A554A; background: #F8FAF8; padding: 6px 10px; border-radius: 6px;">
+                <span>Inward Rcvd:</span>
+                <span style="color: #10B981; font-weight: bold;">${data.inward.toFixed(3)} Kg</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: #4A554A; background: #F8FAF8; padding: 6px 10px; border-radius: 6px;">
+                <span>Issued Out:</span>
+                <span style="color: #D97706; font-weight: bold;">${data.issued.toFixed(3)} Kg</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #2F4F38; margin-top: 2px; border-top: 1px dashed #D1DED1; padding-top: 10px;">
+                <span>Current Stock:</span>
+                <div>${balDisplay}</div>
+            </div>
+        `;
+        gridContainer.appendChild(boxCard);
     });
+
+    wrapperTd.appendChild(gridContainer);
+    wrapperTr.appendChild(wrapperTd);
+    body.appendChild(wrapperTr);
 
     let grandBalDisplay = grandBal >= 0 ? `<span class="badge-stock">${grandBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(grandBal).toFixed(3)} Kg</span>`;
     foot.innerHTML = `<tr>
