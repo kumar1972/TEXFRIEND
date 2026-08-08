@@ -168,7 +168,7 @@
         background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
     }
     .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
-    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
     @media print {
         body * { visibility: hidden; }
@@ -319,7 +319,6 @@
     <div class="form-section-box">
         <div class="section-badge-bottom">2. Production Costing & Pricing (Bottom)</div>
         
-        <!-- 1. Kora Cost Entry per Count Table -->
         <h3 class="section-title">1. Kora Cost Entry (Per Count)</h3>
         <div class="table-container" style="margin-bottom: 15px;">
             <table>
@@ -334,7 +333,6 @@
             </table>
         </div>
 
-        <!-- 2. Dyeing Rate Entry per Color Table -->
         <h3 class="section-title">2. Dyeing Rate Entry (Per Color)</h3>
         <div class="table-container" style="margin-bottom: 15px;">
             <table>
@@ -351,86 +349,20 @@
         </div>
 
         <div class="costing-grid">
-            <div class="form-group">
-                <label>3. Warp Crimp %</label>
-                <input type="number" id="warpCrimp" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>5. Dyeing Shortage % (Default 5%)</label>
-                <input type="number" id="dyeingShortagePct" value="5" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>6. Warping Wages (₹)</label>
-                <input type="number" id="warpingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>7. Sizing Wages (₹)</label>
-                <input type="number" id="sizingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>8. Weaving Pick Rate per Pick (₹)</label>
-                <input type="number" id="weavingPickRate" placeholder="₹" step="0.01" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>9. Washing Wages (₹)</label>
-                <input type="number" id="washingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>10. Washing Shortages %</label>
-                <input type="number" id="washingShortagePct" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()">
-            </div>
-            <div class="form-group">
-                <label>12. Profit Margin %</label>
-                <input type="number" id="profitMargin" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()">
-            </div>
+            <div class="form-group"><label>3. Warp Crimp %</label><input type="number" id="warpCrimp" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>5. Dyeing Shortage %</label><input type="number" id="dyeingShortagePct" value="5" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>6. Warping Wages (₹)</label><input type="number" id="warpingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>7. Sizing Wages (₹)</label><input type="number" id="sizingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>8. Weaving Pick Rate per Pick (₹)</label><input type="number" id="weavingPickRate" placeholder="₹" step="0.01" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>9. Washing Wages (₹)</label><input type="number" id="washingWages" placeholder="₹" step="0.25" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>10. Washing Shortages %</label><input type="number" id="washingShortagePct" placeholder="%" step="0.1" oninput="calculateCostingBreakdown()"></div>
+            <div class="form-group"><label>12. Profit Margin %</label><input type="number" id="profitMargin" placeholder="%" step="0.5" oninput="calculateCostingBreakdown()"></div>
         </div>
 
         <div class="result-box">
-            <div class="result-title">📊 1 மீட்டர் துணிக்கான அடக்க விலை அறிக்கை (Summary)</div>
-            <div class="result-row">
-                <span>1. Kora Cost / Mtr:</span>
-                <span class="result-value" id="resKoraCost">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>2. Warp Dyeing Cost / Mtr:</span>
-                <span class="result-value" id="resWarpDyeing">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>3. Warp Crimp Amount / Mtr:</span>
-                <span class="result-value" id="resWarpCrimpAmt">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>4. Weft Dyeing Cost / Mtr:</span>
-                <span class="result-value" id="resWeftDyeing">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>5. Dyeing Shortage (5% on 1+2+3+4 Total):</span>
-                <span class="result-value" id="resDyeingShortage">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>6 & 7. Warping & Sizing Wages / Mtr:</span>
-                <span class="result-value" id="resWarpingSizing">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>8. Weaving Cost (Pick x Rate) / Mtr:</span>
-                <span class="result-value" id="resWeavingCost">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>9 & 10. Washing Wages & Shortages / Mtr:</span>
-                <span class="result-value" id="resWashingTotal">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span><b>11. Total Production Cost / Mtr (Above All):</b></span>
-                <span class="result-value" id="resTotalCost" style="color: #1E2B23; font-weight: 800;">₹0.00</span>
-            </div>
-            <div class="result-row">
-                <span>12. Profit Amount (% Added):</span>
-                <span class="result-value" id="resProfitAmount">₹0.00</span>
-            </div>
-            <div class="result-row" style="border-top: 1px dashed #4A7C30; padding-top: 8px; margin-top: 4px;">
-                <span><b>13. Cost for 1 Mtr (Final Selling Rate):</b></span>
-                <span class="final-profit" id="resSellingRate">₹0.00</span>
-            </div>
+            <div class="result-title">📊 அடக்க விலை அறிக்கை</div>
+            <div class="result-row"><span>Total Production Cost / Mtr:</span><span class="result-value" id="resTotalCost">₹0.00</span></div>
+            <div class="result-row"><span>Final Selling Rate / Mtr:</span><span class="final-profit" id="resSellingRate">₹0.00</span></div>
         </div>
 
         <div class="section-save-container">
@@ -439,11 +371,11 @@
     </div>
 </div>
 
-<!-- Print Preview Modal -->
+<!-- Modals -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
-            <h3 id="modalTitle">👁️ Report Preview</h3>
+            <h3>👁️ Report Preview</h3>
             <div class="modal-actions">
                 <button class="print-btn-modal" onclick="window.print()">🖨️ Print</button>
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
@@ -453,827 +385,735 @@
     </div>
 </div>
 
-<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
-    <button class="close-fullscreen">Close ✕</button>
-    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
-</div>
-
 <script>
-function checkUserPermission() {
-    let userRole = localStorage.getItem('user_role');
-    if (userRole !== 'Administrator' && userRole !== 'Admin') {
-        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        if (permissions['yarn_calculation.html'] === false || permissions['yarn_calculation'] === false || permissions['calculation'] === false) {
-            return false;
+    function checkUserPermission() {
+        let userRole = localStorage.getItem('user_role');
+        if (userRole !== 'Administrator' && userRole !== 'Admin') {
+            let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+            return permissions['yarn_calculation'] !== false;
         }
+        return true;
     }
-    return true;
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (!checkUserPermission()) {
-        alert("Access Denied! You do not have permission to access this page. ❌");
-        window.location.href = "dashboard.html";
-        return;
-    }
-});
-
-function openModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-}
-
-function closeModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
-}
-
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
-
-function getSharedVal(o1, o2, keys) {
-    for(let k of keys) {
-        let lk = String(k).toLowerCase().trim();
-        if(o2) { let mk = Object.keys(o2).find(x => String(x).toLowerCase().trim()===lk); if(mk && o2[mk] !== '') return o2[mk]; }
-    }
-    for(let k of keys) {
-        let lk = String(k).toLowerCase().trim();
-        if(o1) { let mk = Object.keys(o1).find(x => String(x).toLowerCase().trim()===lk); if(mk && o1[mk] !== '') return o1[mk]; }
-    }
-    return '';
-}
-
-window.openFullscreenImage = function(src) {
-    if(!src || src === '' || src === 'null') return;
-    document.getElementById('fullscreenImg').src = src;
-    document.getElementById('fullscreenModal').style.display = 'flex';
-}
-window.closeFullscreenImage = function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-}
-
-function loadBitmapImage() {
-    let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-    
-    let imgHtml = '';
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
-        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+        setTimeout(() => document.getElementById(modalId).classList.add('show'), 10);
     }
     
-    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-    let wasChecked = false;
-    let cb = document.getElementById('top_completed_status');
-    if(cb) wasChecked = cb.checked;
-    
-    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
-    if(wasChecked) document.getElementById('top_completed_status').checked = true;
-}
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+        setTimeout(() => document.getElementById(modalId).style.display = 'none', 300);
+    }
 
-function translateColorToTamil(colorName) {
-    if (!colorName) return '-';
-    var c = colorName.trim().toLowerCase();
-    var map = {
-        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
-        'red': 'சிகப்பு', 'green': 'பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
-        'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'grey': 'சாம்பல்',
-        'gold': 'தங்கம்', 'pink': 'பிங்க்', 'navy': 'நேவி', 'maroon': 'மெரூன்'
-    };
-    return map[c] || colorName; 
-}
+    function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
-window.calculatedYarnData = {
-    ground: [], top: [], weft: [],
-    groundTotals: { p: 0, t: 0, w: 0 },
-    topTotals: { p: 0, t: 0, w: 0 },
-    weftTotals: { p: 0, t: 0, w: 0 }
-};
+    function getSharedVal(o1, o2, keys) {
+        for(let k of keys) {
+            let lk = String(k).toLowerCase().trim();
+            if(o2) { let mk = Object.keys(o2).find(x => String(x).toLowerCase().trim()===lk); if(mk && o2[mk] !== '') return o2[mk]; }
+        }
+        for(let k of keys) {
+            let lk = String(k).toLowerCase().trim();
+            if(o1) { let mk = Object.keys(o1).find(x => String(x).toLowerCase().trim()===lk); if(mk && o1[mk] !== '') return o1[mk]; }
+        }
+        return '';
+    }
 
-function initDropdown() {
-    var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-    var select = document.getElementById('designNumber');
-    var html = '<option value="">Select</option>';
-    
-    preDesignList.forEach(function(d) {
-        html += '<option value="' + d + '">' + d + '</option>';
-    });
-    select.innerHTML = html;
-
-    var activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && preDesignList.includes(activeDesign)) {
-        select.value = activeDesign;
-        loadInitialData();
-    } else {
+    function loadInitialData() {
+        let dName = document.getElementById('designNumber').value;
         loadBitmapImage();
-    }
-}
+        if(dName) localStorage.setItem('selected_design_number', dName);
 
-function calculateWeftMtrs() {
-    let warpOrder = parseFloat(document.getElementById('lengthMeters').value) || 0;
-    let crimpVal = document.getElementById('crimpPercentage').value.trim();
-    let crimp = crimpVal === '' ? 0 : parseFloat(crimpVal) || 0;
-    
-    let weftMtrs = warpOrder - (warpOrder * (crimp / 100));
-    document.getElementById('weftLengthMeters').value = weftMtrs > 0 ? weftMtrs.toFixed(2) : '';
-}
-
-function loadInitialData() {
-    let dName = document.getElementById('designNumber').value;
-    loadBitmapImage();
-    if(dName) localStorage.setItem('selected_design_number', dName);
-
-    if(!dName) {
-        document.getElementById('calcReed').value = '';
-        document.getElementById('calcPick').value = '';
         document.getElementById('warpGroundTableBody').innerHTML = '';
         document.getElementById('warpTopTableBody').innerHTML = '';
         document.getElementById('weftTableBody').innerHTML = '';
         document.getElementById('topBeamWrapper').style.display = 'none';
-        document.getElementById('baseCounts').value = '';
-        document.getElementById('topLengthMeters').value = '';
-        document.getElementById('onloomPickLess').value = '';
-        document.getElementById('crimpPercentage').value = '';
-        let cb = document.getElementById('top_completed_status');
-        if(cb) cb.checked = false;
+
+        if(!dName) { 
+            document.getElementById('calcReed').value = '';
+            document.getElementById('calcPick').value = '';
+            document.getElementById('lengthMeters').value = ''; 
+            document.getElementById('topLengthMeters').value = '';
+            document.getElementById('baseCounts').value = '';
+            document.getElementById('onloomPickLess').value = '';
+            document.getElementById('crimpPercentage').value = '';
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = false;
+            let gsmBadge = document.getElementById('displayGsmBadge');
+            if (gsmBadge) gsmBadge.innerText = "GSM: 0";
+            return; 
+        }
+
+        let cleanDNo = cleanDesignName(dName);
+        
+        let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo);
+        let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || 0) : 0;
+        
+        if (prodMtrVal > 0) {
+            let finalMtrWith5Pct = prodMtrVal + (prodMtrVal * 0.05);
+            document.getElementById('lengthMeters').value = finalMtrWith5Pct.toFixed(2);
+        } else {
+            document.getElementById('lengthMeters').value = '';
+        }
+
+        let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+        let sp = specKey ? specs[specKey] : {};
+
+        let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
+        if(specStatus === 'completed' || (foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) {
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = true;
+        } else {
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = false;
+        }
+
+        let finalReed = getSharedVal(foundMaster, sp, ['reed', 'basereed', 'reedonloom', 'finishreed']) || 64;
+        let finalPick = getSharedVal(foundMaster, sp, ['pick', 'basepick', 'pickonloom', 'finishpick']) || 48;
+
+        document.getElementById('calcReed').value = finalReed;
+        document.getElementById('calcPick').value = finalPick;
+
+        let c1 = getSharedVal(foundMaster, sp, ['warp1', 'warp 1', 'warp 1 (grnd)', 'count1', 'warp', 'warp count']);
+        let c2 = getSharedVal(foundMaster, sp, ['warp2', 'warp 2', 'warp 2 (top)', 'count2', 'top count']);
+        let c3 = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']);
+        
+        let countsArr = [];
+        if (c1) countsArr.push(c1);
+        if (c2) countsArr.push(c2);
+        if (c3) countsArr.push(c3);
+        
+        let uniqueCounts = [...new Set(countsArr)].join(', ');
+        document.getElementById('baseCounts').value = uniqueCounts || '';
+        
+        let savedPickLess = getSharedVal(foundMaster, sp, ['onloompickless', 'pickless']);
+        document.getElementById('onloomPickLess').value = savedPickLess !== undefined && savedPickLess !== '' ? savedPickLess : '';
+
+        let savedCrimp = getSharedVal(foundMaster, sp, ['crimppercentage', 'crimp']);
+        document.getElementById('crimpPercentage').value = savedCrimp !== undefined && savedCrimp !== '' ? savedCrimp : '';
+
+        let currentOrderMtr = parseFloat(document.getElementById('lengthMeters').value) || 0;
+
+        let rawTop = String(foundMaster.topBeam || sp.topBeam || getSharedVal(foundMaster, sp, ['topbeam', 'top beam', 'toplengthmtr']) || '').trim();
+        let savedTopMtr = parseFloat(foundMaster.topLengthMtr || sp.topLengthMtr || foundMaster.topBeam || sp.topBeam || 0);
+
+        if (savedTopMtr > 0) {
+            document.getElementById('topLengthMeters').value = savedTopMtr.toFixed(2);
+        } else if (rawTop !== '' && rawTop !== '0' && rawTop !== 'undefined' && rawTop !== 'null' && rawTop !== 'NaN') {
+            if (rawTop.includes('%')) {
+                let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
+                document.getElementById('topLengthMeters').value = currentOrderMtr ? (currentOrderMtr + (currentOrderMtr * pct / 100)).toFixed(2) : '';
+            } else if (parseFloat(rawTop) > 0) {
+                document.getElementById('topLengthMeters').value = parseFloat(rawTop).toFixed(2);
+            } else {
+                document.getElementById('topLengthMeters').value = '';
+            }
+        } else {
+            document.getElementById('topLengthMeters').value = '';
+        }
+
+        calculateWeftMtrs();
+        loadYarnData();
+    }
+
+    function initDropdown() {
+        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let select = document.getElementById('designNumber');
+        let html = '<option value="">Select</option>';
+        preDesignList.forEach(d => html += `<option value="${d}">${d}</option>`);
+        select.innerHTML = html;
+        let activeDesign = localStorage.getItem('selected_design_number');
+        if(activeDesign && preDesignList.includes(activeDesign)) { 
+            select.value = activeDesign; 
+            loadInitialData(); 
+        } else {
+            loadBitmapImage();
+        }
+    }
+
+    function calculateWeftMtrs() {
+        let warpOrder = parseFloat(document.getElementById('lengthMeters').value) || 0;
+        let crimpVal = document.getElementById('crimpPercentage').value.trim();
+        let crimp = crimpVal === '' ? 0 : parseFloat(crimpVal) || 0;
+        let weftMtrs = warpOrder - (warpOrder * (crimp / 100));
+        document.getElementById('weftLengthMeters').value = weftMtrs > 0 ? weftMtrs.toFixed(2) : '';
+    }
+
+    function loadYarnData() {
+        let dName = document.getElementById('designNumber').value;
+        if(!dName) return;
+
+        let cleanDNo = cleanDesignName(dName);
+        let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+        let sp = specKey ? specs[specKey] : {};
+
+        let uiReed = parseFloat(document.getElementById('calcReed').value) || 0;
+        let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
+        
+        let baseCountsInput = document.getElementById('baseCounts').value || '20';
+        let defaultCountText = baseCountsInput.split(',')[0].trim();
+        let defaultCountNum = getResultantCount(defaultCountText) || 20;
+
+        let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 0; 
+        let topLengthM = parseFloat(document.getElementById('topLengthMeters').value) || lengthM;
+        let weftLengthM = parseFloat(document.getElementById('weftLengthMeters').value) || lengthM;
+
+        window.calculatedYarnData = {
+            ground: [], top: [], weft: [],
+            groundTotals: { p: 0, t: 0, w: 0 },
+            topTotals: { p: 0, t: 0, w: 0 },
+            weftTotals: { p: 0, t: 0, w: 0 }
+        };
+
+        let baseWidthRaw = getSharedVal(foundMaster, sp, ['width', 'basewidth', 'width (inch)', 'width inch']);
+        let baseWidth = parseFloat(baseWidthRaw) || 66.92;
+        let totalWarpEnds = Math.round(uiReed * baseWidth);
+        
+        let warpLinesData = foundMaster.warpLines || sp.warpLines || [];
+        let warpRangesData = foundMaster.warpRanges || sp.warpRanges || [];
+        let warpData = resolvePattern(warpLinesData, warpRangesData, 'warp', defaultCountText);
+
+        if (warpData.totalPatternVal > 0) {
+            let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
+            let rem = totalWarpEnds % warpData.totalPatternVal;
+
+            warpData.summary.forEach(obj => obj.totalVal = obj.patternVal * repeats);
+            for(let i=0; i<rem; i++) {
+                let item = warpData.sequence[i];
+                let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color && o.beam === item.beam);
+                if(obj) obj.totalVal++;
+            }
+        }
+
+        warpData.summary.forEach(obj => {
+            let calcCount = getResultantCount(obj.count);
+            if (calcCount <= 0) calcCount = defaultCountNum;
+            
+            let currentLength = (obj.beam === 'Top Beam') ? topLengthM : lengthM;
+            let wgt = (obj.totalVal * currentLength) / (1693.33 * calcCount);
+            
+            let rowObj = { count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: obj.totalVal, weight: wgt };
+
+            if (obj.beam === 'Top Beam') {
+                window.calculatedYarnData.top.push(rowObj);
+                window.calculatedYarnData.topTotals.p += obj.patternVal;
+                window.calculatedYarnData.topTotals.t += obj.totalVal;
+                window.calculatedYarnData.topTotals.w += wgt;
+            } else {
+                window.calculatedYarnData.ground.push(rowObj);
+                window.calculatedYarnData.groundTotals.p += obj.patternVal;
+                window.calculatedYarnData.groundTotals.t += obj.totalVal;
+                window.calculatedYarnData.groundTotals.w += wgt;
+            }
+        });
+
+        let gHtml = '';
+        let gd = window.calculatedYarnData.ground;
+        let gt = window.calculatedYarnData.groundTotals;
+        if (gd.length > 0) {
+            gd.forEach(r => {
+                gHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+            });
+            gHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${gt.p}</td><td>${gt.t}</td><td>${gt.w.toFixed(3)} kg</td></tr>`;
+        } else {
+            gHtml = `<tr><td colspan="5">No Ground Beam Data Found</td></tr>`;
+        }
+        document.getElementById('warpGroundTableBody').innerHTML = gHtml;
+
+        let tHtml = '';
+        let td = window.calculatedYarnData.top;
+        let tt = window.calculatedYarnData.topTotals;
+        if (td.length > 0) {
+            document.getElementById('topBeamWrapper').style.display = 'block';
+            td.forEach(r => {
+                tHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+            });
+            tHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${tt.p}</td><td>${tt.t}</td><td>${tt.w.toFixed(3)} kg</td></tr>`;
+            document.getElementById('warpTopTableBody').innerHTML = tHtml;
+        } else {
+            document.getElementById('topBeamWrapper').style.display = 'none';
+        }
+
+        let baseReed = parseFloat(uiReed) || 64;
+        let autoWeftWidth = '';
+        if (baseReed > 8 && baseWidth > 0) {
+            let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
+            autoWeftWidth = calculatedWidth.toFixed(2);
+        } else if (baseWidth > 0) {
+            autoWeftWidth = (baseWidth + 3).toFixed(2);
+        }
+
+        let weftWidthRaw = getSharedVal(foundMaster, sp, ['weftwidth', 'weft width']);
+        let weftWidth = parseFloat(autoWeftWidth) || parseFloat(weftWidthRaw) || (baseWidth + 3);
+        
+        let pickLessVal = document.getElementById('onloomPickLess').value.trim();
+        let pickLess = pickLessVal === '' ? 0 : parseFloat(pickLessVal) || 0;
+        let netPick = uiPick - pickLess;
+        if (netPick < 0) netPick = 0;
+
+        let totalFabricPick = weftWidth * netPick;
+        let weftCountFallbackText = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']) || '40';
+        let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
+        
+        let weftData = resolvePattern(foundMaster.weftLines || sp.weftLines || [], foundMaster.weftRanges || sp.weftRanges || [], 'weft', weftCountFallbackText);
+
+        if (weftData.totalPatternVal > 0) {
+            weftData.summary.forEach(obj => {
+                let calcCount = getResultantCount(obj.count);
+                if (calcCount <= 0) calcCount = weftCountNumFallback;
+                let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
+                let wgt = (tPick * weftLengthM) / (1693.33 * calcCount);
+
+                window.calculatedYarnData.weft.push({ count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: tPick, weight: wgt });
+                window.calculatedYarnData.weftTotals.p += obj.patternVal;
+                window.calculatedYarnData.weftTotals.t += tPick;
+                window.calculatedYarnData.weftTotals.w += wgt;
+            });
+        }
+
+        let wfHtml = '';
+        let wfd = window.calculatedYarnData.weft;
+        let wft = window.calculatedYarnData.weftTotals;
+        if (wfd.length > 0) {
+            wfd.forEach(r => {
+                wfHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal.toFixed(2)}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+            });
+            wfHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${wft.p}</td><td>${wft.t.toFixed(2)}</td><td>${wft.w.toFixed(3)} kg</td></tr>`;
+        } else {
+            wfHtml = `<tr><td colspan="5">No Weft Data Found</td></tr>`;
+        }
+        document.getElementById('weftTableBody').innerHTML = wfHtml;
+
+        let totalWeightKg = (gt ? gt.w : 0) + (tt ? tt.w : 0) + (wft ? wft.w : 0);
+        let fabricWidthInches = baseWidth; 
+        let gsmValue = 0;
+        if (lengthM > 0 && fabricWidthInches > 0 && totalWeightKg > 0) {
+            gsmValue = Math.round((((totalWeightKg * 1000) / (lengthM * (fabricWidthInches * 0.0254))) * 1.06));
+        }
         
         let gsmBadge = document.getElementById('displayGsmBadge');
-        if (gsmBadge) gsmBadge.innerText = "GSM: 0";
-        return;
+        if (gsmBadge) gsmBadge.innerText = "GSM: " + gsmValue;
+        window.calculatedYarnData.gsm = gsmValue; 
+
+        populateCostingTable();
     }
 
-    let cleanDNo = cleanDesignName(dName);
-    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    let sp = specKey ? specs[specKey] : {};
-
-    let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
-    if(specStatus === 'completed' || (foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) {
-        let cb = document.getElementById('top_completed_status');
-        if(cb) cb.checked = true;
-    } else {
-        let cb = document.getElementById('top_completed_status');
-        if(cb) cb.checked = false;
-    }
-
-    let finalReed = getSharedVal(foundMaster, sp, ['reed', 'basereed', 'reedonloom', 'finishreed']) || 64;
-    let finalPick = getSharedVal(foundMaster, sp, ['pick', 'basepick', 'pickonloom', 'finishpick']) || 48;
-
-    document.getElementById('calcReed').value = finalReed;
-    document.getElementById('calcPick').value = finalPick;
-
-    let c1 = getSharedVal(foundMaster, sp, ['warp1', 'warp 1', 'warp 1 (grnd)', 'count1', 'warp', 'warp count']);
-    let c2 = getSharedVal(foundMaster, sp, ['warp2', 'warp 2', 'warp 2 (top)', 'count2', 'top count']);
-    let c3 = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']);
-    
-    let countsArr = [];
-    if (c1) countsArr.push(c1);
-    if (c2) countsArr.push(c2);
-    if (c3) countsArr.push(c3);
-    
-    let uniqueCounts = [...new Set(countsArr)].join(', ');
-    document.getElementById('baseCounts').value = uniqueCounts || '';
-    
-    let defaultMtrRaw = getSharedVal(foundMaster, sp, ['ordermtr', 'order mtr', 'warp dyeing order']);
-    let defaultMtr = parseFloat(defaultMtrRaw) || '';
-    document.getElementById('lengthMeters').value = defaultMtr;
-
-    let savedPickLess = getSharedVal(foundMaster, sp, ['onloompickless', 'pickless']);
-    document.getElementById('onloomPickLess').value = savedPickLess !== undefined && savedPickLess !== '' ? savedPickLess : '';
-
-    let savedCrimp = getSharedVal(foundMaster, sp, ['crimppercentage', 'crimp']);
-    document.getElementById('crimpPercentage').value = savedCrimp !== undefined && savedCrimp !== '' ? savedCrimp : '';
-
-    let hasTopBeamLines = (foundMaster.warpLines && foundMaster.warpLines.some(l => l.beam === 'Top Beam')) || 
-                          (sp.warpLines && sp.warpLines.some(l => l.beam === 'Top Beam'));
-    
-    if (hasTopBeamLines) {
-        let rawTop = String(getSharedVal(foundMaster, sp, ['topbeam', 'top beam']));
-        if (rawTop.includes('%')) {
-            let pct = parseFloat(rawTop.replace('%', '').replace('+', '')) || 0;
-            let dm = parseFloat(defaultMtr) || 0;
-            document.getElementById('topLengthMeters').value = dm ? (dm + (dm * pct / 100)).toFixed(2) : '';
-        } else {
-            document.getElementById('topLengthMeters').value = parseFloat(rawTop) || '';
-        }
-    } else {
-        document.getElementById('topLengthMeters').value = ''; 
-    }
-
-    if (specs[specKey] && specs[specKey].costingData) {
-        let cd = specs[specKey].costingData;
-        if(cd.warpCrimp) document.getElementById('warpCrimp').value = cd.warpCrimp;
-        if(cd.dyeingShortagePct) document.getElementById('dyeingShortagePct').value = cd.dyeingShortagePct;
-        if(cd.warpingWages) document.getElementById('warpingWages').value = cd.warpingWages;
-        if(cd.sizingWages) document.getElementById('sizingWages').value = cd.sizingWages;
-        if(cd.weavingPickRate) document.getElementById('weavingPickRate').value = cd.weavingPickRate;
-        if(cd.washingWages) document.getElementById('washingWages').value = cd.washingWages;
-        if(cd.washingShortagePct) document.getElementById('washingShortagePct').value = cd.washingShortagePct;
-        if(cd.profitMargin) document.getElementById('profitMargin').value = cd.profitMargin;
-    } else {
-        // Clear all costing inputs if no saved data
-        document.getElementById('warpCrimp').value = '';
-        document.getElementById('warpingWages').value = '';
-        document.getElementById('sizingWages').value = '';
-        document.getElementById('weavingPickRate').value = '';
-        document.getElementById('washingWages').value = '';
-        document.getElementById('washingShortagePct').value = '';
-        document.getElementById('profitMargin').value = '';
-    }
-
-    calculateWeftMtrs();
-    loadYarnData();
-}
-
-async function saveCalculationData() {
-    let dName = document.getElementById('designNumber').value;
-    if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
-
-    let cleanDNo = cleanDesignName(dName);
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
-    
-    if(!designSpecs[specKey]) designSpecs[specKey] = {};
-
-    designSpecs[specKey].reed = document.getElementById('calcReed').value;
-    designSpecs[specKey].pick = document.getElementById('calcPick').value;
-    designSpecs[specKey].orderMtr = document.getElementById('lengthMeters').value;
-    designSpecs[specKey].topLengthMtr = document.getElementById('topLengthMeters').value;
-    designSpecs[specKey].crimpPercentage = document.getElementById('crimpPercentage').value;
-    designSpecs[specKey].onloomPickLess = document.getElementById('onloomPickLess').value;
-    designSpecs[specKey].calculatedData = window.calculatedYarnData;
-
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-    if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
-    alert(`Design ${dName} Calculation Saved Successfully! ✅`);
-}
-
-async function saveCostingData() {
-    let dName = document.getElementById('designNumber').value;
-    if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
-
-    let cleanDNo = cleanDesignName(dName);
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
-    
-    if(!designSpecs[specKey]) designSpecs[specKey] = {};
-
-    let countRates = {};
-    document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
-        let count = row.getAttribute('data-count');
-        let koraRate = row.querySelector('.entry-kora-rate').value;
-        countRates[count] = koraRate;
-    });
-
-    let dyeingRates = {};
-    document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
-        let color = row.querySelector('.entry-color').value;
-        let dyeRate = row.querySelector('.entry-dye-rate').value;
-        dyeingRates[color] = dyeRate;
-    });
-
-    designSpecs[specKey].countRates = countRates;
-    designSpecs[specKey].dyeingRates = dyeingRates;
-    designSpecs[specKey].costingData = {
-        warpCrimp: document.getElementById('warpCrimp').value,
-        dyeingShortagePct: document.getElementById('dyeingShortagePct').value,
-        warpingWages: document.getElementById('warpingWages').value,
-        sizingWages: document.getElementById('sizingWages').value,
-        weavingPickRate: document.getElementById('weavingPickRate').value,
-        washingWages: document.getElementById('washingWages').value,
-        washingShortagePct: document.getElementById('washingShortagePct').value,
-        profitMargin: document.getElementById('profitMargin').value
-    };
-
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-    if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
-    alert(`Design ${dName} Costing Saved Successfully! ✅`);
-}
-
-async function quickCompleteToggle() {
-    if (!checkUserPermission()) {
-        alert("Access Denied! You do not have permission to modify status on this page. ❌");
-        let cb = document.getElementById('top_completed_status');
-        if(cb) cb.checked = !cb.checked;
-        return;
-    }
-
-    let dName = document.getElementById('designNumber').value;
-    let cb = document.getElementById('top_completed_status');
-    let isCompleted = cb ? cb.checked : false;
-    if(!dName) { alert("Mudhala Design Number select pannunga bro"); if(cb) cb.checked = false; return; }
-
-    let statusText = isCompleted ? 'completed' : 'running';
-    let cleanDNo = cleanDesignName(dName);
-
-    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let idx = designMastersList.findIndex(d => cleanDesignName(d.name) === cleanDNo);
-    if(idx > -1) { designMastersList[idx].status = statusText; } else { designMastersList.push({ name: dName, status: statusText }); }
-    localStorage.setItem('design_masters_data', JSON.stringify(designMastersList));
-
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dName]) designSpecs[dName] = {};
-    designSpecs[dName].status = statusText;
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-    if (window.firebaseSave) {
-        await window.firebaseSave('design_masters_data', designMastersList);
-        await window.firebaseSave('design_specs', designSpecs);
-    }
-    alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
-}
-
-function getResultantCount(countStr) {
-    if (!countStr) return 0;
-    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
-    if (str.includes('/')) {
-        let parts = str.split('/');
-        if (parts.length === 2) {
-            let ply = parseFloat(parts[0]) || 1;
-            let singleCount = parseFloat(parts[1]) || 1;
-            return singleCount / ply; 
-        }
-    }
-    return parseFloat(str) || 0;
-}
-
-function resolvePattern(lines, ranges, type, defaultCount) {
-    if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
-
-    let covered = new Array(lines.length).fill(false);
-    let orderedPattern = [];
-
-    if(ranges && ranges.length > 0) {
-        ranges.forEach(r => {
-            for(let s=0; s<r.set; s++) {
-                for(let j = r.start; j <= r.end; j++) {
-                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
-                }
+    function getResultantCount(countStr) {
+        if (!countStr) return 0;
+        let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+        if (str.includes('/')) {
+            let parts = str.split('/');
+            if (parts.length === 2) {
+                let ply = parseFloat(parts[0]) || 1;
+                let singleCount = parseFloat(parts[1]) || 1;
+                return singleCount / ply; 
             }
-            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
-        });
+        }
+        return parseFloat(str) || 0;
     }
-    lines.forEach((l, idx) => {
-        if(!covered[idx]) orderedPattern.push({...l});
-    });
 
-    let exactSequence = [];
-    orderedPattern.forEach(item => {
-        let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
-        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
-        let clr = item.color ? String(item.color).trim() : '-';
-        let bm = item.beam || 'Ground'; 
+    function resolvePattern(lines, ranges, type, defaultCount) {
+        if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
+        let covered = new Array(lines.length).fill(false);
+        let orderedPattern = [];
+
+        if(ranges && ranges.length > 0) {
+            ranges.forEach(r => {
+                for(let s=0; s<r.set; s++) {
+                    for(let j = r.start; j <= r.end; j++) {
+                        if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                    }
+                }
+                for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+            });
+        }
+        lines.forEach((l, idx) => {
+            if(!covered[idx]) orderedPattern.push({...l});
+        });
+
+        let exactSequence = [];
+        orderedPattern.forEach(item => {
+            let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+            let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+            let clr = item.color ? String(item.color).trim() : '-';
+            let bm = item.beam || 'Ground'; 
+            
+            for(let k=0; k<val; k++) {
+                exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+            }
+        });
+
+        let summaryMap = new Map();
+        let order = [];
+
+        exactSequence.forEach(item => {
+            let key = item.count + "||" + item.color + "||" + item.beam; 
+            if(!summaryMap.has(key)) {
+                summaryMap.set(key, { count: item.count, color: item.color, beam: item.beam, patternVal: 0, totalVal: 0 });
+                order.push(key);
+            }
+            summaryMap.get(key).patternVal++;
+        });
+
+        return {
+            sequence: exactSequence,
+            summary: order.map(k => summaryMap.get(k)),
+            totalPatternVal: exactSequence.length
+        };
+    }
+
+    // 📌 சேமிக்கும் (Save) பட்டன்கள் வேலை செய்வதற்கான பங்க்ஷன்கள்
+    async function saveCalculationData() {
+        let dName = document.getElementById('designNumber').value;
+        if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
+
+        let cleanDNo = cleanDesignName(dName);
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
         
-        for(let k=0; k<val; k++) {
-            exactSequence.push({ count: cDisplay, color: clr, beam: bm });
-        }
-    });
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
 
-    let summaryMap = new Map();
-    let order = [];
+        designSpecs[specKey].reed = document.getElementById('calcReed').value;
+        designSpecs[specKey].pick = document.getElementById('calcPick').value;
+        designSpecs[specKey].orderMtr = document.getElementById('lengthMeters').value;
+        designSpecs[specKey].topLengthMtr = document.getElementById('topLengthMeters').value;
+        designSpecs[specKey].crimpPercentage = document.getElementById('crimpPercentage').value;
+        designSpecs[specKey].onloomPickLess = document.getElementById('onloomPickLess').value;
+        designSpecs[specKey].calculatedData = window.calculatedYarnData;
 
-    exactSequence.forEach(item => {
-        let key = item.count + "||" + item.color + "||" + item.beam; 
-        if(!summaryMap.has(key)) {
-            summaryMap.set(key, { count: item.count, color: item.color, beam: item.beam, patternVal: 0, totalVal: 0 });
-            order.push(key);
-        }
-        summaryMap.get(key).patternVal++;
-    });
-
-    return {
-        sequence: exactSequence,
-        summary: order.map(k => summaryMap.get(k)),
-        totalPatternVal: exactSequence.length
-    };
-}
-
-function loadYarnData() {
-    let dName = document.getElementById('designNumber').value;
-    if(!dName) return;
-
-    let cleanDNo = cleanDesignName(dName);
-    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    let sp = specKey ? specs[specKey] : {};
-
-    let uiReed = parseFloat(document.getElementById('calcReed').value) || 0;
-    let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
-    
-    let baseCountsInput = document.getElementById('baseCounts').value || '20';
-    let defaultCountText = baseCountsInput.split(',')[0].trim();
-    let defaultCountNum = getResultantCount(defaultCountText) || 20;
-
-    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 0; 
-    let topLengthM = parseFloat(document.getElementById('topLengthMeters').value) || lengthM;
-    let weftLengthM = parseFloat(document.getElementById('weftLengthMeters').value) || lengthM;
-
-    window.calculatedYarnData = {
-        ground: [], top: [], weft: [],
-        groundTotals: { p: 0, t: 0, w: 0 },
-        topTotals: { p: 0, t: 0, w: 0 },
-        weftTotals: { p: 0, t: 0, w: 0 }
-    };
-
-    let baseWidthRaw = getSharedVal(foundMaster, sp, ['width', 'basewidth', 'width (inch)', 'width inch']);
-    let baseWidth = parseFloat(baseWidthRaw) || 66.92;
-    let totalWarpEnds = Math.round(uiReed * baseWidth);
-    
-    let warpLinesData = foundMaster.warpLines || sp.warpLines || [];
-    let warpRangesData = foundMaster.warpRanges || sp.warpRanges || [];
-    let warpData = resolvePattern(warpLinesData, warpRangesData, 'warp', defaultCountText);
-
-    if (warpData.totalPatternVal > 0) {
-        let repeats = Math.floor(totalWarpEnds / warpData.totalPatternVal);
-        let rem = totalWarpEnds % warpData.totalPatternVal;
-
-        warpData.summary.forEach(obj => obj.totalVal = obj.patternVal * repeats);
-        for(let i=0; i<rem; i++) {
-            let item = warpData.sequence[i];
-            let obj = warpData.summary.find(o => o.count === item.count && o.color === item.color && o.beam === item.beam);
-            if(obj) obj.totalVal++;
-        }
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+        alert(`Design ${dName} Calculation Saved Successfully! ✅`);
     }
 
-    warpData.summary.forEach(obj => {
-        let calcCount = getResultantCount(obj.count);
-        if (calcCount <= 0) calcCount = defaultCountNum;
+    async function saveCostingData() {
+        let dName = document.getElementById('designNumber').value;
+        if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
+
+        let cleanDNo = cleanDesignName(dName);
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
         
-        let currentLength = (obj.beam === 'Top Beam') ? topLengthM : lengthM;
-        let wgt = (obj.totalVal * currentLength) / (1693.33 * calcCount);
-        
-        let rowObj = { count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: obj.totalVal, weight: wgt };
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
 
-        if (obj.beam === 'Top Beam') {
-            window.calculatedYarnData.top.push(rowObj);
-            window.calculatedYarnData.topTotals.p += obj.patternVal;
-            window.calculatedYarnData.topTotals.t += obj.totalVal;
-            window.calculatedYarnData.topTotals.w += wgt;
-        } else {
-            window.calculatedYarnData.ground.push(rowObj);
-            window.calculatedYarnData.groundTotals.p += obj.patternVal;
-            window.calculatedYarnData.groundTotals.t += obj.totalVal;
-            window.calculatedYarnData.groundTotals.w += wgt;
-        }
-    });
-
-    let gHtml = '';
-    let gd = window.calculatedYarnData.ground;
-    let gt = window.calculatedYarnData.groundTotals;
-    if (gd.length > 0) {
-        gd.forEach(r => {
-            gHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        let countRates = {};
+        document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
+            let count = row.getAttribute('data-count');
+            let koraRate = row.querySelector('.entry-kora-rate').value;
+            countRates[count] = koraRate;
         });
-        gHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${gt.p}</td><td>${gt.t}</td><td>${gt.w.toFixed(3)} kg</td></tr>`;
-    } else {
-        gHtml = `<tr><td colspan="5">No Ground Beam Data Found</td></tr>`;
-    }
-    document.getElementById('warpGroundTableBody').innerHTML = gHtml;
 
-    let tHtml = '';
-    let td = window.calculatedYarnData.top;
-    let tt = window.calculatedYarnData.topTotals;
-    if (td.length > 0) {
-        document.getElementById('topBeamWrapper').style.display = 'block';
-        td.forEach(r => {
-            tHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        let dyeingRates = {};
+        document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
+            let color = row.querySelector('.entry-color').value;
+            let dyeRate = row.querySelector('.entry-dye-rate').value;
+            dyeingRates[color] = dyeRate;
         });
-        tHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${tt.p}</td><td>${tt.t}</td><td>${tt.w.toFixed(3)} kg</td></tr>`;
-        document.getElementById('warpTopTableBody').innerHTML = tHtml;
-    } else {
-        document.getElementById('topBeamWrapper').style.display = 'none';
+
+        designSpecs[specKey].countRates = countRates;
+        designSpecs[specKey].dyeingRates = dyeingRates;
+        designSpecs[specKey].costingData = {
+            warpCrimp: document.getElementById('warpCrimp').value,
+            dyeingShortagePct: document.getElementById('dyeingShortagePct').value,
+            warpingWages: document.getElementById('warpingWages').value,
+            sizingWages: document.getElementById('sizingWages').value,
+            weavingPickRate: document.getElementById('weavingPickRate').value,
+            washingWages: document.getElementById('washingWages').value,
+            washingShortagePct: document.getElementById('washingShortagePct').value,
+            profitMargin: document.getElementById('profitMargin').value
+        };
+
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+        alert(`Design ${dName} Costing Saved Successfully! ✅`);
     }
 
-    let baseReed = parseFloat(uiReed) || 64;
-    let autoWeftWidth = '';
-    if (baseReed > 8 && baseWidth > 0) {
-        let calculatedWidth = ((baseReed * baseWidth) / (baseReed - 8)) + 3;
-        autoWeftWidth = calculatedWidth.toFixed(2);
-    } else if (baseWidth > 0) {
-        autoWeftWidth = (baseWidth + 3).toFixed(2);
-    }
+    function populateCostingTable() {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let dName = document.getElementById('designNumber').value;
+        let sp = designSpecs[dName] || {};
+        let savedCountRates = sp.countRates || {};
+        let savedDyeRates = sp.dyeingRates || {};
 
-    let weftWidthRaw = getSharedVal(foundMaster, sp, ['weftwidth', 'weft width']);
-    let weftWidth = parseFloat(autoWeftWidth) || parseFloat(weftWidthRaw) || (baseWidth + 3);
-    
-    let pickLessVal = document.getElementById('onloomPickLess').value.trim();
-    let pickLess = pickLessVal === '' ? 0 : parseFloat(pickLessVal) || 0;
-    let netPick = uiPick - pickLess;
-    if (netPick < 0) netPick = 0;
+        let countCostEntryBody = document.getElementById('countCostEntryBody');
+        countCostEntryBody.innerHTML = '';
 
-    let totalFabricPick = weftWidth * netPick;
-    let weftCountFallbackText = getSharedVal(foundMaster, sp, ['weftcount', 'weft count', 'weft', 'count3']) || '40';
-    let weftCountNumFallback = getResultantCount(weftCountFallbackText) || defaultCountNum;
-    
-    let weftData = resolvePattern(foundMaster.weftLines || sp.weftLines || [], foundMaster.weftRanges || sp.weftRanges || [], 'weft', weftCountFallbackText);
+        let colorDyeEntryBody = document.getElementById('colorDyeEntryBody');
+        colorDyeEntryBody.innerHTML = '';
 
-    if (weftData.totalPatternVal > 0) {
-        weftData.summary.forEach(obj => {
-            let calcCount = getResultantCount(obj.count);
-            if (calcCount <= 0) calcCount = weftCountNumFallback;
-            let tPick = (obj.patternVal / weftData.totalPatternVal) * totalFabricPick;
-            let wgt = (tPick * weftLengthM) / (1693.33 * calcCount);
+        let countWeightMap = {};
+        let allItems = [];
 
-            window.calculatedYarnData.weft.push({ count: obj.count, color: obj.color, patternVal: obj.patternVal, totalVal: tPick, weight: wgt });
-            window.calculatedYarnData.weftTotals.p += obj.patternVal;
-            window.calculatedYarnData.weftTotals.t += tPick;
-            window.calculatedYarnData.weftTotals.w += wgt;
+        if (window.calculatedYarnData.ground) window.calculatedYarnData.ground.forEach(r => allItems.push({ type: 'Warp (Ground)', ...r }));
+        if (window.calculatedYarnData.top) window.calculatedYarnData.top.forEach(r => allItems.push({ type: 'Warp (Top)', ...r }));
+        if (window.calculatedYarnData.weft) window.calculatedYarnData.weft.forEach(r => allItems.push({ type: 'Weft', ...r }));
+
+        allItems.forEach(item => {
+            let cnt = item.count || '20';
+            countWeightMap[cnt] = (countWeightMap[cnt] || 0) + (item.weight || 0);
+
+            let dyeVal = savedDyeRates[item.color] !== undefined ? savedDyeRates[item.color] : '';
+            colorDyeEntryBody.innerHTML += `
+                <tr data-color="${item.color}">
+                    <td style="font-weight:700; color:#4A7C59;">${item.type}</td>
+                    <td><input type="text" value="${item.color}" class="entry-color" style="text-align:center; font-weight:700;" readonly></td>
+                    <td><span class="entry-weight">${(item.weight || 0).toFixed(3)} kg</span></td>
+                    <td><input type="number" value="${dyeVal}" placeholder="Rate" class="entry-dye-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
+                </tr>
+            `;
         });
+
+        for(let cnt in countWeightMap) {
+            let koraVal = savedCountRates[cnt] !== undefined ? savedCountRates[cnt] : '';
+            countCostEntryBody.innerHTML += `
+                <tr data-count="${cnt}" data-weight="${countWeightMap[cnt]}">
+                    <td style="font-weight:700; color:#2F4F38;">${cnt}</td>
+                    <td><span class="entry-count-weight">${countWeightMap[cnt].toFixed(3)} kg</span></td>
+                    <td><input type="number" value="${koraVal}" placeholder="Rate" class="entry-kora-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
+                </tr>
+            `;
+        }
+
+        calculateCostingBreakdown();
     }
 
-    let wfHtml = '';
-    let wfd = window.calculatedYarnData.weft;
-    let wft = window.calculatedYarnData.weftTotals;
-    if (wfd.length > 0) {
-        wfd.forEach(r => {
-            wfHtml += `<tr><td>${r.count}</td><td>${r.color}</td><td>${r.patternVal}</td><td>${r.totalVal.toFixed(2)}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+    function calculateCostingBreakdown() {
+        let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 100;
+        if (lengthM <= 0) lengthM = 100;
+
+        let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
+
+        let totalKoraCostPerMtr = 0;
+        document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
+            let weightKg = parseFloat(row.getAttribute('data-weight')) || 0;
+            let koraRateKg = parseFloat(row.querySelector('.entry-kora-rate').value) || 0;
+            let koraCostTotal = weightKg * koraRateKg;
+            totalKoraCostPerMtr += (koraCostTotal / lengthM);
         });
-        wfHtml += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${wft.p}</td><td>${wft.t.toFixed(2)}</td><td>${wft.w.toFixed(3)} kg</td></tr>`;
-    } else {
-        wfHtml = `<tr><td colspan="5">No Weft Data Found</td></tr>`;
+
+        let totalWarpDyeingCostPerMtr = 0;
+        let totalWeftDyeingCostPerMtr = 0;
+
+        document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
+            let color = row.querySelector('.entry-color').value;
+            let dyeRateKg = parseFloat(row.querySelector('.entry-dye-rate').value) || 0;
+            let weightKg = 0;
+
+            if (window.calculatedYarnData.ground) {
+                let found = window.calculatedYarnData.ground.find(x => x.color === color);
+                if (found) weightKg += found.weight;
+            }
+            if (window.calculatedYarnData.top) {
+                let found = window.calculatedYarnData.top.find(x => x.color === color);
+                if (found) weightKg += found.weight;
+            }
+            if (window.calculatedYarnData.weft) {
+                let found = window.calculatedYarnData.weft.find(x => x.color === color);
+                if (found) weightKg += found.weight;
+            }
+
+            let dyeCostTotal = weightKg * dyeRateKg;
+            let dyeCostPerMtr = dyeCostTotal / lengthM;
+
+            let isWarp = false;
+            if (window.calculatedYarnData.ground && window.calculatedYarnData.ground.some(x => x.color === color)) isWarp = true;
+            if (window.calculatedYarnData.top && window.calculatedYarnData.top.some(x => x.color === color)) isWarp = true;
+
+            if (isWarp) {
+                totalWarpDyeingCostPerMtr += dyeCostPerMtr;
+            } else {
+                totalWeftDyeingCostPerMtr += dyeCostPerMtr;
+            }
+        });
+
+        let warpDyeingCostPerMtr = totalWarpDyeingCostPerMtr;
+        let warpCrimpPct = parseFloat(document.getElementById('warpCrimp').value) || 0;
+        let warpCrimpAmount = warpDyeingCostPerMtr * (warpCrimpPct / 100);
+
+        let weftDyeingCostPerMtr = totalWeftDyeingCostPerMtr;
+
+        let sum1_4 = totalKoraCostPerMtr + warpDyeingCostPerMtr + warpCrimpAmount + weftDyeingCostPerMtr;
+        let dyeingShortagePct = parseFloat(document.getElementById('dyeingShortagePct').value) || 5;
+        let dyeingShortageAmount = sum1_4 * (dyeingShortagePct / 100);
+
+        let warpingWages = parseFloat(document.getElementById('warpingWages').value) || 0;
+        let sizingWages = parseFloat(document.getElementById('sizingWages').value) || 0;
+        let warpingSizingTotal = warpingWages + sizingWages;
+
+        let weavingPickRate = parseFloat(document.getElementById('weavingPickRate').value) || 0;
+        let weavingCostPerMtr = uiPick * weavingPickRate;
+
+        let washingWages = parseFloat(document.getElementById('washingWages').value) || 0;
+        let washingShortagePct = parseFloat(document.getElementById('washingShortagePct').value) || 0;
+        let washingShortageAmount = washingWages * (washingShortagePct / 100);
+        let washingTotalPerMtr = washingWages + washingShortageAmount;
+
+        let totalProductionCost = sum1_4 + dyeingShortageAmount + warpingSizingTotal + weavingCostPerMtr + washingTotalPerMtr;
+
+        let profitMarginPct = parseFloat(document.getElementById('profitMargin').value) || 0;
+        let profitAmount = totalProductionCost * (profitMarginPct / 100);
+        let finalSellingRate = totalProductionCost + profitAmount;
+
+        document.getElementById('resTotalCost').innerText = "₹" + totalProductionCost.toFixed(2);
+        document.getElementById('resSellingRate').innerText = "₹" + finalSellingRate.toFixed(2);
     }
-    document.getElementById('weftTableBody').innerHTML = wfHtml;
 
-    let totalWeightKg = (gt ? gt.w : 0) + (tt ? tt.w : 0) + (wft ? wft.w : 0);
-    let fabricWidthInches = baseWidth; 
-    let gsmValue = 0;
-    if (lengthM > 0 && fabricWidthInches > 0 && totalWeightKg > 0) {
-        gsmValue = Math.round((((totalWeightKg * 1000) / (lengthM * (fabricWidthInches * 0.0254))) * 1.06));
-    }
-    
-    let gsmBadge = document.getElementById('displayGsmBadge');
-    if (gsmBadge) gsmBadge.innerText = "GSM: " + gsmValue;
-    window.calculatedYarnData.gsm = gsmValue; 
-
-    populateCostingTable();
-}
-
-function populateCostingTable() {
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let dName = document.getElementById('designNumber').value;
-    let sp = designSpecs[dName] || {};
-    let savedCountRates = sp.countRates || {};
-    let savedDyeRates = sp.dyeingRates || {};
-
-    let countCostEntryBody = document.getElementById('countCostEntryBody');
-    countCostEntryBody.innerHTML = '';
-
-    let colorDyeEntryBody = document.getElementById('colorDyeEntryBody');
-    colorDyeEntryBody.innerHTML = '';
-
-    let countWeightMap = {};
-    let allItems = [];
-
-    if (window.calculatedYarnData.ground) window.calculatedYarnData.ground.forEach(r => allItems.push({ type: 'Warp (Ground)', ...r }));
-    if (window.calculatedYarnData.top) window.calculatedYarnData.top.forEach(r => allItems.push({ type: 'Warp (Top)', ...r }));
-    if (window.calculatedYarnData.weft) window.calculatedYarnData.weft.forEach(r => allItems.push({ type: 'Weft', ...r }));
-
-    allItems.forEach(item => {
-        let cnt = item.count || '20';
-        countWeightMap[cnt] = (countWeightMap[cnt] || 0) + (item.weight || 0);
-
-        let dyeVal = savedDyeRates[item.color] !== undefined ? savedDyeRates[item.color] : '';
-        colorDyeEntryBody.innerHTML += `
-            <tr data-color="${item.color}">
-                <td style="font-weight:700; color:#4A7C59;">${item.type}</td>
-                <td><input type="text" value="${item.color}" class="entry-color" style="text-align:center; font-weight:700;" readonly></td>
-                <td><span class="entry-weight">${(item.weight || 0).toFixed(3)} kg</span></td>
-                <td><input type="number" value="${dyeVal}" placeholder="Rate" class="entry-dye-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
-            </tr>
-        `;
-    });
-
-    for(let cnt in countWeightMap) {
-        let koraVal = savedCountRates[cnt] !== undefined ? savedCountRates[cnt] : '';
-        countCostEntryBody.innerHTML += `
-            <tr data-count="${cnt}" data-weight="${countWeightMap[cnt]}">
-                <td style="font-weight:700; color:#2F4F38;">${cnt}</td>
-                <td><span class="entry-count-weight">${countWeightMap[cnt].toFixed(3)} kg</span></td>
-                <td><input type="number" value="${koraVal}" placeholder="Rate" class="entry-kora-rate" style="text-align:center;" oninput="calculateCostingBreakdown()"></td>
-            </tr>
-        `;
+    function translateColorToTamil(colorName) {
+        if (!colorName) return '-';
+        var c = colorName.trim().toLowerCase();
+        var map = {
+            'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
+            'red': 'சிகப்பு', 'green': 'பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
+            'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வயோலெட்', 'grey': 'சாம்பல்',
+            'gold': 'தங்கம்', 'pink': 'பிங்க்', 'navy': 'நேவி', 'maroon': 'மெரூன்'
+        };
+        return map[c] || colorName; 
     }
 
-    calculateCostingBreakdown();
-}
+    function generatePrintTableHtml(dataArray, totals, isWeft) {
+        if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
+        let html = '';
+        dataArray.forEach(r => {
+            let colorDisplay = translateColorToTamil(r.color);
+            let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
+            html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
+        });
+        let tTot = isWeft ? totals.t.toFixed(2) : totals.t;
+        html += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${totals.p}</td><td>${tTot}</td><td>${totals.w.toFixed(3)} kg</td></tr>`;
+        return html;
+    }
 
-function calculateCostingBreakdown() {
-    let lengthM = parseFloat(document.getElementById('lengthMeters').value) || 100;
-    if (lengthM <= 0) lengthM = 100;
+    function previewYarnReport() {
+        let designNo = document.getElementById('designNumber').value || '-';
+        let reed = document.getElementById('calcReed').value || '-';
+        let pick = document.getElementById('calcPick').value || '-';
+        let length = document.getElementById('lengthMeters').value || '-';
+        let topLength = document.getElementById('topLengthMeters').value || '-';
+        let weftLength = document.getElementById('weftLengthMeters').value || '-';
+        let pickLess = document.getElementById('onloomPickLess').value || '0';
+        let d = window.calculatedYarnData;
+        let topBeamHeaderInfo = topLength ? `&nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts` : '';
 
-    let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
-
-    let totalKoraCostPerMtr = 0;
-    document.querySelectorAll('#countCostEntryBody tr').forEach(row => {
-        let weightKg = parseFloat(row.getAttribute('data-weight')) || 0;
-        let koraRateKg = parseFloat(row.querySelector('.entry-kora-rate').value) || 0;
-        let koraCostTotal = weightKg * koraRateKg;
-        totalKoraCostPerMtr += (koraCostTotal / lengthM);
-    });
-
-    let totalWarpDyeingCostPerMtr = 0;
-    let totalWeftDyeingCostPerMtr = 0;
-
-    document.querySelectorAll('#colorDyeEntryBody tr').forEach(row => {
-        let color = row.querySelector('.entry-color').value;
-        let dyeRateKg = parseFloat(row.querySelector('.entry-dye-rate').value) || 0;
-        let weightKg = 0;
-
-        if (window.calculatedYarnData.ground) {
-            let found = window.calculatedYarnData.ground.find(x => x.color === color);
-            if (found) weightKg += found.weight;
-        }
-        if (window.calculatedYarnData.top) {
-            let found = window.calculatedYarnData.top.find(x => x.color === color);
-            if (found) weightKg += found.weight;
-        }
-        if (window.calculatedYarnData.weft) {
-            let found = window.calculatedYarnData.weft.find(x => x.color === color);
-            if (found) weightKg += found.weight;
-        }
-
-        let dyeCostTotal = weightKg * dyeRateKg;
-        let dyeCostPerMtr = dyeCostTotal / lengthM;
-
-        let isWarp = false;
-        if (window.calculatedYarnData.ground && window.calculatedYarnData.ground.some(x => x.color === color)) isWarp = true;
-        if (window.calculatedYarnData.top && window.calculatedYarnData.top.some(x => x.color === color)) isWarp = true;
-
-        if (isWarp) {
-            totalWarpDyeingCostPerMtr += dyeCostPerMtr;
-        } else {
-            totalWeftDyeingCostPerMtr += dyeCostPerMtr;
-        }
-    });
-
-    let warpDyeingCostPerMtr = totalWarpDyeingCostPerMtr;
-    let warpCrimpPct = parseFloat(document.getElementById('warpCrimp').value) || 0;
-    let warpCrimpAmount = warpDyeingCostPerMtr * (warpCrimpPct / 100);
-
-    let weftDyeingCostPerMtr = totalWeftDyeingCostPerMtr;
-
-    let sum1_4 = totalKoraCostPerMtr + warpDyeingCostPerMtr + warpCrimpAmount + weftDyeingCostPerMtr;
-    let dyeingShortagePct = parseFloat(document.getElementById('dyeingShortagePct').value) || 5;
-    let dyeingShortageAmount = sum1_4 * (dyeingShortagePct / 100);
-
-    let warpingWages = parseFloat(document.getElementById('warpingWages').value) || 0;
-    let sizingWages = parseFloat(document.getElementById('sizingWages').value) || 0;
-    let warpingSizingTotal = warpingWages + sizingWages;
-
-    let weavingPickRate = parseFloat(document.getElementById('weavingPickRate').value) || 0;
-    let weavingCostPerMtr = uiPick * weavingPickRate;
-
-    let washingWages = parseFloat(document.getElementById('washingWages').value) || 0;
-    let washingShortagePct = parseFloat(document.getElementById('washingShortagePct').value) || 0;
-    let washingShortageAmount = washingWages * (washingShortagePct / 100);
-    let washingTotalPerMtr = washingWages + washingShortageAmount;
-
-    let totalProductionCost = sum1_4 + dyeingShortageAmount + warpingSizingTotal + weavingCostPerMtr + washingTotalPerMtr;
-
-    let profitMarginPct = parseFloat(document.getElementById('profitMargin').value) || 0;
-    let profitAmount = totalProductionCost * (profitMarginPct / 100);
-    let finalSellingRate = totalProductionCost + profitAmount;
-
-    document.getElementById('resKoraCost').innerText = "₹" + totalKoraCostPerMtr.toFixed(2);
-    document.getElementById('resWarpDyeing').innerText = "₹" + warpDyeingCostPerMtr.toFixed(2);
-    document.getElementById('resWarpCrimpAmt').innerText = "₹" + warpCrimpAmount.toFixed(2);
-    document.getElementById('resWeftDyeing').innerText = "₹" + weftDyeingCostPerMtr.toFixed(2);
-    document.getElementById('resDyeingShortage').innerText = "₹" + dyeingShortageAmount.toFixed(2);
-    document.getElementById('resWarpingSizing').innerText = "₹" + warpingSizingTotal.toFixed(2);
-    document.getElementById('resWeavingCost').innerText = "₹" + weavingCostPerMtr.toFixed(2);
-    document.getElementById('resWashingTotal').innerText = "₹" + washingTotalPerMtr.toFixed(2);
-    document.getElementById('resTotalCost').innerText = "₹" + totalProductionCost.toFixed(2);
-    document.getElementById('resProfitAmount').innerText = "₹" + profitAmount.toFixed(2);
-    document.getElementById('resSellingRate').innerText = "₹" + finalSellingRate.toFixed(2);
-}
-
-function generatePrintTableHtml(dataArray, totals, isWeft) {
-    if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
-    let html = '';
-    dataArray.forEach(r => {
-        let colorDisplay = translateColorToTamil(r.color);
-        let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
-        html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
-    });
-    let tTot = isWeft ? totals.t.toFixed(2) : totals.t;
-    html += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${totals.p}</td><td>${tTot}</td><td>${totals.w.toFixed(3)} kg</td></tr>`;
-    return html;
-}
-
-function previewYarnReport() {
-    let designNo = document.getElementById('designNumber').value || '-';
-    let reed = document.getElementById('calcReed').value || '-';
-    let pick = document.getElementById('calcPick').value || '-';
-    let length = document.getElementById('lengthMeters').value || '-';
-    let topLength = document.getElementById('topLengthMeters').value || '-';
-    let weftLength = document.getElementById('weftLengthMeters').value || '-';
-    let pickLess = document.getElementById('onloomPickLess').value || '0';
-    let d = window.calculatedYarnData;
-    let topBeamHeaderInfo = topLength ? `&nbsp;|&nbsp; <b>Top Beam Mtr:</b> ${topLength} Mts` : '';
-
-    let html = `
-        <style>
-            .print-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 12px; text-align: center; border: 1px solid #999; margin-bottom: 20px; }
-            .print-tbl th { background: #f2f2f2; font-weight: bold; color: #000; padding: 8px; border-bottom: 2px solid #666; border-right: 1px dotted #999; }
-            .print-tbl th:last-child { border-right: none; }
-            .print-tbl td { padding: 8px; color: #000; border-bottom: 1px dashed #999; border-right: 1px dotted #999; }
-            .print-tbl td:last-child { border-right: none; }
-            .print-tbl .total-row td { border-top: 2px solid #000; border-bottom: none; border-right: none; font-weight: bold; }
-        </style>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
-            <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
-                <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} (Less: ${pickLess}) <br> 
-                <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts &nbsp;|&nbsp; <b style="color:#D97706;">GSM: ${d.gsm || 0}</b>
-            </p>
-        </div>
-    `;
-
-    html += `
-        <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - GROUND BEAM</h3>
-        <table class="print-tbl">
-            <thead><tr><th>Count</th><th>Colour</th><th>Ends</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
-            <tbody>${generatePrintTableHtml(d.ground, d.groundTotals, false)}</tbody>
-        </table>
-    `;
-
-    if (d.top.length > 0) {
-        html += `
-            <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - TOP BEAM</h3>
+        let html = `
+            <style>
+                .print-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 12px; text-align: center; border: 1px solid #999; margin-bottom: 20px; }
+                .print-tbl th { background: #f2f2f2; font-weight: bold; color: #000; padding: 8px; border-bottom: 2px solid #666; border-right: 1px dotted #999; }
+                .print-tbl th:last-child { border-right: none; }
+                .print-tbl td { padding: 8px; color: #000; border-bottom: 1px dashed #999; border-right: 1px dotted #999; }
+                .print-tbl td:last-child { border-right: none; }
+                .print-tbl .total-row td { border-top: 2px solid #000; border-bottom: none; border-right: none; font-weight: bold; }
+            </style>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Yarn Calculation Report</h2>
+                <p style="font-family: sans-serif; font-size: 13px; margin-top: 0; line-height: 1.5;">
+                    <b>Design No:</b> ${designNo} &nbsp;|&nbsp; <b>Reed:</b> ${reed} &nbsp;|&nbsp; <b>Pick:</b> ${pick} (Less: ${pickLess}) <br> 
+                    <b>Warp Order:</b> ${length} Mts ${topBeamHeaderInfo} &nbsp;|&nbsp; <b>Weft Mtr:</b> ${weftLength} Mts &nbsp;|&nbsp; <b style="color:#D97706;">GSM: ${d.gsm || 0}</b>
+                </p>
+            </div>
+            <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - GROUND BEAM</h3>
             <table class="print-tbl">
                 <thead><tr><th>Count</th><th>Colour</th><th>Ends</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
-                <tbody>${generatePrintTableHtml(d.top, d.topTotals, false)}</tbody>
+                <tbody>${generatePrintTableHtml(d.ground, d.groundTotals, false)}</tbody>
             </table>
         `;
+
+        if (d.top.length > 0) {
+            html += `
+                <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧵 WARP YARN - TOP BEAM</h3>
+                <table class="print-tbl">
+                    <thead><tr><th>Count</th><th>Colour</th><th>Ends</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
+                    <tbody>${generatePrintTableHtml(d.top, d.topTotals, false)}</tbody>
+                </table>
+            `;
+        }
+
+        html += `
+            <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧶 WEFT YARN CALCULATION</h3>
+            <table class="print-tbl">
+                <thead><tr><th>Count</th><th>Colour</th><th>Picks</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
+                <tbody>${generatePrintTableHtml(d.weft, d.weftTotals, true)}</tbody>
+            </table>
+        `;
+
+        document.getElementById('previewContent').innerHTML = html;
+        openModal('previewModal');
     }
 
-    html += `
-        <h3 style="color: #000; font-family: sans-serif; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size:14px;">🧶 WEFT YARN CALCULATION</h3>
-        <table class="print-tbl">
-            <thead><tr><th>Count</th><th>Colour</th><th>Picks</th><th>Total</th><th>Weight (Kg)</th></tr></thead>
-            <tbody>${generatePrintTableHtml(d.weft, d.weftTotals, true)}</tbody>
-        </table>
-    `;
+    function previewCostingReport() {
+        let designNo = document.getElementById('designNumber').value || '-';
+        let totalCost = document.getElementById('resTotalCost').innerText;
+        let finalRate = document.getElementById('resSellingRate').innerText;
 
-    document.getElementById('modalTitle').innerText = "👁️ Yarn Calculation Report Preview";
-    document.getElementById('previewContent').innerHTML = html;
-    openModal('previewModal');
-}
+        let html = `
+            <style>
+                .cost-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; border: 1px solid #999; margin-bottom: 20px; }
+                .cost-tbl td { padding: 10px 12px; color: #000; border-bottom: 1px dashed #999; }
+                .cost-tbl tr:last-child td { border-bottom: none; font-weight: bold; background: #f2f2f2; }
+            </style>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Production Costing & Pricing Report</h2>
+                <p style="font-family: sans-serif; font-size: 13px; margin-top: 0;"><b>Design No:</b> ${designNo}</p>
+            </div>
+            <table class="cost-tbl">
+                <tr><td><b>Total Production Cost / Mtr</b></td><td style="text-align:right; font-weight:bold;">${totalCost}</td></tr>
+                <tr><td><b>Cost for 1 Mtr (Final Selling Rate)</b></td><td style="text-align:right; color:#059669; font-size:15px; font-weight:bold;">${finalRate}</td></tr>
+            </table>
+        `;
+        document.getElementById('previewContent').innerHTML = html;
+        openModal('previewModal');
+    }
 
-function previewCostingReport() {
-    let designNo = document.getElementById('designNumber').value || '-';
-    let koraCost = document.getElementById('resKoraCost').innerText;
-    let warpDye = document.getElementById('resWarpDyeing').innerText;
-    let warpCrimpAmt = document.getElementById('resWarpCrimpAmt').innerText;
-    let weftDye = document.getElementById('resWeftDyeing').innerText;
-    let dyeShortage = document.getElementById('resDyeingShortage').innerText;
-    let warpSiz = document.getElementById('resWarpingSizing').innerText;
-    let weaving = document.getElementById('resWeavingCost').innerText;
-    let washing = document.getElementById('resWashingTotal').innerText;
-    let totalCost = document.getElementById('resTotalCost').innerText;
-    let profit = document.getElementById('resProfitAmount').innerText;
-    let finalRate = document.getElementById('resSellingRate').innerText;
+    function quickCompleteToggle() {
+        let cb = document.getElementById('top_completed_status');
+        let isCompleted = cb ? cb.checked : false;
+        let dName = document.getElementById('designNumber').value;
+        if(!dName) { alert("Mudhala Design Number select pannunga bro"); if(cb) cb.checked = false; return; }
 
-    let html = `
-        <style>
-            .cost-tbl { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; border: 1px solid #999; margin-bottom: 20px; }
-            .cost-tbl td { padding: 10px 12px; color: #000; border-bottom: 1px dashed #999; }
-            .cost-tbl tr:last-child td { border-bottom: none; font-weight: bold; background: #f2f2f2; }
-        </style>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #000; font-family: sans-serif; margin-bottom: 5px;">Production Costing & Pricing Report</h2>
-            <p style="font-family: sans-serif; font-size: 13px; margin-top: 0;"><b>Design No:</b> ${designNo}</p>
-        </div>
-        <table class="cost-tbl">
-            <tr><td>1. Kora Cost / Mtr</td><td style="text-align:right;">${koraCost}</td></tr>
-            <tr><td>2. Warp Dyeing Cost / Mtr</td><td style="text-align:right;">${warpDye}</td></tr>
-            <tr><td>3. Warp Crimp Amount / Mtr</td><td style="text-align:right;">${warpCrimpAmt}</td></tr>
-            <tr><td>4. Weft Dyeing Cost / Mtr</td><td style="text-align:right;">${weftDye}</td></tr>
-            <tr><td>5. Dyeing Shortage Amount / Mtr</td><td style="text-align:right;">${dyeShortage}</td></tr>
-            <tr><td>6 & 7. Warping & Sizing Wages / Mtr</td><td style="text-align:right;">${warpSiz}</td></tr>
-            <tr><td>8. Weaving Cost (Pick x Rate) / Mtr</td><td style="text-align:right;">${weaving}</td></tr>
-            <tr><td>9 & 10. Washing Wages & Shortages / Mtr</td><td style="text-align:right;">${washing}</td></tr>
-            <tr><td><b>11. Total Production Cost / Mtr</b></td><td style="text-align:right; font-weight:bold;">${totalCost}</td></tr>
-            <tr><td>12. Profit Amount (% Added)</td><td style="text-align:right;">${profit}</td></tr>
-            <tr><td><b>13. Cost for 1 Mtr (Final Selling Rate)</b></td><td style="text-align:right; color:#059669; font-size:15px; font-weight:bold;">${finalRate}</td></tr>
-        </table>
-    `;
+        let statusText = isCompleted ? 'completed' : 'running';
+        let cleanDNo = cleanDesignName(dName);
 
-    document.getElementById('modalTitle').innerText = "👁️ Production Costing Report Preview";
-    document.getElementById('previewContent').innerHTML = html;
-    openModal('previewModal');
-}
+        let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        let idx = designMastersList.findIndex(d => cleanDesignName(d.name) === cleanDNo);
+        if(idx > -1) { designMastersList[idx].status = statusText; } else { designMastersList.push({ name: dName, status: statusText }); }
+        localStorage.setItem('design_masters_data', JSON.stringify(designMastersList));
+
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(!designSpecs[dName]) designSpecs[dName] = {};
+        designSpecs[dName].status = statusText;
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        if (window.firebaseSave) {
+            window.firebaseSave('design_masters_data', designMastersList);
+            window.firebaseSave('design_specs', designSpecs);
+        }
+        alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+    }
+
+    function loadBitmapImage() {
+        let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+        let imgHtml = '';
+        if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
+            let b64 = designSpecs[activeDesign].bitmap;
+            imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+        }
+        let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+        let cb = document.getElementById('top_completed_status'); let wasChecked = cb ? cb.checked : false;
+        bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+        if(wasChecked) document.getElementById('top_completed_status').checked = true;
+    }
+
+    window.addEventListener('load', initDropdown);
 </script>
 
-<!-- Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1292,33 +1132,16 @@ function previewCostingReport() {
     const db = getFirestore(app);
 
     window.firebaseSave = async function(key, data) {
-        try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) { console.error("Firebase Save Error: ", e); }
+        try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) {}
     }
 
     window.firebaseLoad = async function(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
             if (docSnap.exists()) { return JSON.parse(docSnap.data().content); }
-        } catch (e) { console.error("Firebase Load Error: ", e); }
+        } catch (e) {}
         return null;
     }
-
-    window.addEventListener('load', async function() {
-        if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to access this page. ❌");
-            window.location.href = "dashboard.html";
-            return;
-        }
-
-        let collections = ['pre_design_numbers', 'design_masters_data', 'design_specs'];
-        for(let col of collections) {
-            let data = await window.firebaseLoad(col);
-            if (data) localStorage.setItem(col, JSON.stringify(data));
-        }
-
-        initDropdown(); 
-        loadBitmapImage();
-    });
 </script>
 </body>
 </html>

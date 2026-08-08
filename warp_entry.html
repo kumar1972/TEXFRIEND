@@ -323,8 +323,17 @@ function loadDesignData() {
     let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
     let autoReed = baseReed > 0 ? (baseReed - 8) : ''; let autoPick = basePick > 0 ? (basePick - 4) : '';
 
+    // 📌 கட்சி ஆர்டர்களில் இருந்து Production Metres மதிப்பை உறுதியாக கண்டறிந்து எடுக்கும் முறை
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let totalOrderMtr = orders.filter(o => cleanDesignName(o.designNo || o.designNumber) === cleanDNo).reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
+    let matchedOrder = orders.find(o => {
+        let orderDesign = o.designNumber || o.designNo || o.designName || '';
+        return cleanDesignName(orderDesign) === cleanDNo;
+    });
+
+    let matchedProdMtr = 0;
+    if (matchedOrder) {
+        matchedProdMtr = parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || matchedOrder.productionMeters || 0);
+    }
 
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let found = masters.find(m => cleanDesignName(m.name) === cleanDNo);
@@ -336,7 +345,11 @@ function loadDesignData() {
         saveBtn.innerText = "✏️ Update"; 
         document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
-        document.getElementById('infoOrderMtr').value = found.orderMtr || (totalOrderMtr > 0 ? totalOrderMtr : '');
+        
+        // 📌 கட்சி ஆர்டரில் உள்ள Production Metres-க்கு எப்போதுமே முதல் முன்னுரிமை வழங்கப்படும்
+        let finalMtrToFill = matchedProdMtr > 0 ? matchedProdMtr : (found.orderMtr || '');
+        document.getElementById('infoOrderMtr').value = finalMtrToFill;
+        
         document.getElementById('infoTopBeam').value = found.topBeam || '';
         document.getElementById('infoType').value = found.type || 'Plain';
         document.getElementById('infoReed').value = found.reed || autoReed;
@@ -349,7 +362,12 @@ function loadDesignData() {
         saveBtn.innerText = "💾 Save";
         document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
-        document.getElementById('infoOrderMtr').value = totalOrderMtr > 0 ? totalOrderMtr : '';
+        
+        // 📌 புதிய என்ட்ரி என்றால் Production Metres மதிப்பை Order Mtrs-ல் ஆட்டோ ஃபில் செய்யும்
+        if (matchedProdMtr > 0) {
+            document.getElementById('infoOrderMtr').value = matchedProdMtr;
+        }
+        
         document.getElementById('infoReed').value = autoReed; document.getElementById('infoPick').value = autoPick;
         loadDefaultRow();
     }

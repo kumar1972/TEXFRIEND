@@ -348,13 +348,21 @@
             <!-- Section 3: Commercials -->
             <div class="form-section">
                 <div class="section-badge">Commercials</div>
-                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     <div class="form-group">
-                        <label>Total Order Meters</label>
-                        <input type="number" step="0.01" id="orderMtr" placeholder="0.00 Mtrs" required>
+                        <label>Order Metres</label>
+                        <input type="number" step="0.01" id="orderMtr" placeholder="0.00 Metres" oninput="calculateProductionMeter()" required>
                     </div>
                     <div class="form-group">
-                        <label>Rate / Meter (₹)</label>
+                        <label>Input %</label>
+                        <input type="number" step="0.01" id="inputPercent" placeholder="0 %" value="0" oninput="calculateProductionMeter()">
+                    </div>
+                    <div class="form-group">
+                        <label>Production Metres</label>
+                        <input type="number" step="0.01" id="productionMeter" placeholder="0.00 Metres" oninput="calculateOrderMeterFromProduction()">
+                    </div>
+                    <div class="form-group" style="grid-column: span 3;">
+                        <label>Rate / Metre (₹)</label>
                         <input type="number" step="0.01" id="rateMtr" placeholder="₹ 0.00" required>
                     </div>
                 </div>
@@ -382,8 +390,9 @@
                                 <th>Party Name</th>
                                 <th>PO No</th>
                                 <th>Design No</th>
-                                <th>Order Mtr</th>
-                                <th>Rate/Mtr</th>
+                                <th>Order Metres</th>
+                                <th>Prod Metres</th>
+                                <th>Rate/Metre</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -410,8 +419,7 @@
             let userRole = localStorage.getItem('user_role');
             if (userRole !== 'Administrator' && userRole !== 'Admin') {
                 let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-                // settings.html-ல் உள்ள சரியான கீ பெயர் 'party_orders.html' அல்லது 'party_orders' என இருக்கலாம்
-                if (permissions['party_orders.html'] === false || permissions['party_orders'] === false || permissions['party_orders.html'] === false) {
+                if (permissions['party_orders.html'] === false || permissions['party_orders'] === false) {
                     return false;
                 }
             }
@@ -426,6 +434,23 @@
                 return;
             }
         });
+
+        // 📌 Calculation Logic for Production Metres = Order Metres + Input %
+        function calculateProductionMeter() {
+            let orderMtr = parseFloat(document.getElementById('orderMtr').value) || 0;
+            let inputPercent = parseFloat(document.getElementById('inputPercent').value) || 0;
+            let productionMeter = orderMtr + (orderMtr * inputPercent / 100);
+            document.getElementById('productionMeter').value = productionMeter > 0 ? productionMeter.toFixed(2) : '';
+        }
+
+        function calculateOrderMeterFromProduction() {
+            let prodMtr = parseFloat(document.getElementById('productionMeter').value) || 0;
+            let inputPercent = parseFloat(document.getElementById('inputPercent').value) || 0;
+            if (inputPercent > -100) {
+                let orderMtr = prodMtr / (1 + (inputPercent / 100));
+                document.getElementById('orderMtr').value = orderMtr > 0 ? orderMtr.toFixed(2) : '';
+            }
+        }
 
         function openModal(modalId) {
             let modal = document.getElementById(modalId);
@@ -498,7 +523,6 @@
 
         // 📌 Completed Checkbox Quick Toggle with Alert Pop-up
         async function quickCompleteToggle() {
-            // 🔒 Permission Check for Quick Complete Toggle
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to modify status on this page. ❌");
                 let toggle = document.getElementById('orderStatusToggle');
@@ -536,6 +560,8 @@
                     width: document.getElementById('width').value.trim() || '-',
                     weaveType: document.getElementById('weaveType').value.trim() || '-',
                     orderMtr: document.getElementById('orderMtr').value.trim() || '0',
+                    inputPercent: document.getElementById('inputPercent').value.trim() || '0',
+                    productionMeter: document.getElementById('productionMeter').value.trim() || '0',
                     rateMtr: document.getElementById('rateMtr').value.trim() || '0',
                     deliveryDate: document.getElementById('deliveryDate').value || new Date().toISOString().split('T')[0],
                     status: statusText
@@ -568,7 +594,6 @@
         async function savePartyOrder(e) {
             e.preventDefault();
             
-            // 🔒 Absolute Guard: Block saving immediately if permission is false
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to save party orders on this page. ❌");
                 return;
@@ -577,7 +602,6 @@
             let designNo = document.getElementById('designNumber').value;
             let cleanDesign = designNo ? designNo.replace('#', '').trim().toLowerCase() : '';
 
-            // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
             if(editingId === null && cleanDesign) {
                 let alreadyExists = partyOrders.some(x => {
                     let d = x.designNumber || x.designNo || '';
@@ -587,9 +611,8 @@
                 if(alreadyExists) {
                     let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே பார்ட்டி ஆர்டர் என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
                     if(!confirmReEntry) {
-                        return; // Cancel save action if user clicks Cancel
+                        return;
                     }
-                    // If confirmed, filter out old records of this design to prevent duplicate entries
                     partyOrders = partyOrders.filter(x => {
                         let d = x.designNumber || x.designNo || '';
                         return d.replace('#', '').trim().toLowerCase() !== cleanDesign;
@@ -610,6 +633,8 @@
                 width: document.getElementById('width').value.trim(),
                 weaveType: document.getElementById('weaveType').value.trim(),
                 orderMtr: document.getElementById('orderMtr').value.trim(),
+                inputPercent: document.getElementById('inputPercent').value.trim(),
+                productionMeter: document.getElementById('productionMeter').value.trim(),
                 rateMtr: document.getElementById('rateMtr').value.trim(),
                 deliveryDate: document.getElementById('deliveryDate').value,
                 status: document.getElementById('orderStatusToggle').checked ? 'completed' : 'running'
@@ -646,6 +671,7 @@
             updatePartyTable();
             
             document.getElementById('partyOrderForm').reset();
+            document.getElementById('inputPercent').value = '0';
             document.getElementById('orderStatusToggle').checked = false;
             document.getElementById('orderDate').valueAsDate = new Date();
             document.getElementById('deliveryDate').valueAsDate = new Date();
@@ -660,7 +686,6 @@
         }
 
         function editOrder(id) {
-            // 🔒 Permission Check for Edit
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to edit entries. ❌");
                 return;
@@ -683,6 +708,8 @@
             document.getElementById('width').value = item.width || '';
             document.getElementById('weaveType').value = item.weaveType || '';
             document.getElementById('orderMtr').value = item.orderMtr || '';
+            document.getElementById('inputPercent').value = item.inputPercent || '0';
+            document.getElementById('productionMeter').value = item.productionMeter || '';
             document.getElementById('rateMtr').value = item.rateMtr || '';
             document.getElementById('orderStatusToggle').checked = (item.status === 'completed');
 
@@ -708,6 +735,7 @@
                     <td>${item.poNo}</td>
                     <td><b style="color:#2F4F38;">${item.designNumber || item.designNo}</b></td>
                     <td>${item.orderMtr}</td>
+                    <td>${item.productionMeter || '-'}</td>
                     <td>₹${item.rateMtr}</td>
                     <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
                     <td>
@@ -722,7 +750,6 @@
         }
 
         async function toggleStatus(id, newStatus) {
-            // 🔒 Permission Check for Toggle Status
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to change status. ❌");
                 return;
@@ -754,7 +781,6 @@
         }
 
         async function deleteOrder(id) {
-            // 🔒 Permission Check for Delete
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to delete entries. ❌");
                 return;
@@ -799,7 +825,7 @@
             }
         }
 
-        window.firebaseLoad = async function(key) {
+        window.firebaseLoad = async function(key, defaultVal) {
             try {
                 const docSnap = await getDoc(doc(db, "texfriend_erp", key));
                 if (docSnap.exists()) {
@@ -812,7 +838,6 @@
         }
 
         window.addEventListener('load', async function() {
-            // 🔒 Page Access Check on Load
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to access this page. ❌");
                 window.location.href = "dashboard.html";
