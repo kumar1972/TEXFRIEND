@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Yarn Calculation & Costing - TEXFRIEND</title>
-<script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -449,20 +448,26 @@
         
         let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo);
-        let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || 0) : 0;
+        let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
         
-        if (prodMtrVal > 0) {
-            let finalMtrLess5Pct = prodMtrVal - (prodMtrVal * 0.05);
-            document.getElementById('lengthMeters').value = finalMtrLess5Pct.toFixed(2);
-        } else {
-            document.getElementById('lengthMeters').value = '';
-        }
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
+        let sp = specKey ? designSpecs[specKey] : {};
 
         let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
-        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-        let sp = specKey ? specs[specKey] : {};
+
+        let savedOrderMtr = parseFloat(sp.orderMtr || foundMaster.orderMtr || 0);
+
+        if (savedOrderMtr > 0) {
+            document.getElementById('lengthMeters').value = savedOrderMtr.toFixed(2);
+        } else if (prodMtrVal > 0) {
+            // 📌 உற்பத்தி மீட்டருடன் 5% சேர்த்து (Add 5%) Warp Dyeing Order (Mtrs)-ல் ஆட்டோ ஃபில் செய்தல்
+            let finalMtrAdd5Pct = prodMtrVal + (prodMtrVal * 0.05);
+            document.getElementById('lengthMeters').value = finalMtrAdd5Pct.toFixed(2);
+        } else {
+            document.getElementById('lengthMeters').value = '';
+        }
 
         let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
         if(specStatus === 'completed' || (foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) {
@@ -773,7 +778,6 @@
         };
     }
 
-    // 📌 Updated translateColorToTamil Function
     function translateColorToTamil(colorName) {
         if (!colorName) return '-';
         var original = colorName.trim();
@@ -1051,19 +1055,6 @@
 
         document.getElementById('resTotalCost').innerText = "₹" + totalProductionCost.toFixed(2);
         document.getElementById('resSellingRate').innerText = "₹" + finalSellingRate.toFixed(2);
-    }
-
-    function generatePrintTableHtml(dataArray, totals, isWeft) {
-        if (dataArray.length === 0) return '<tr><td colspan="5" style="text-align:center;">No Data</td></tr>';
-        let html = '';
-        dataArray.forEach(r => {
-            let colorDisplay = translateColorToTamil(r.color);
-            let tVal = isWeft ? r.totalVal.toFixed(2) : r.totalVal;
-            html += `<tr><td>${r.count}</td><td>${colorDisplay}</td><td>${r.patternVal}</td><td>${tVal}</td><td>${r.weight.toFixed(3)} kg</td></tr>`;
-        });
-        let tTot = isWeft ? totals.t.toFixed(2) : totals.t;
-        html += `<tr class="total-row"><td colspan="2" style="text-align:right; padding-right:15px;">Total:</td><td>${totals.p}</td><td>${tTot}</td><td>${totals.w.toFixed(3)} kg</td></tr>`;
-        return html;
     }
 
     function previewYarnReport() {

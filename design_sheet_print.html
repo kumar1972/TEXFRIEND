@@ -575,7 +575,7 @@ function loadDesignDetails() {
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
-    // 📌 Weft Entry பக்கத்தில் சேமிக்கப்பட்டுள்ள சரியான Pick மதிப்பை (எ.கா. 72) எடுக்குமாறு உறுதியாக அமைக்கப்பட்டுள்ளது
+    // 📌 Weft Entry பக்கத்தில் சேமிக்கப்பட்டுள்ள சரியான Pick மதிப்பை (எ.கா. 72) உறுதியாக கண்டறிந்து எடுக்கும் முறை
     let exactPick = foundMaster.weftPick || sp.weftPick || foundMaster.pick || sp.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || "72";
     let actualPick = parseFloat(String(exactPick).replace(/[^0-9.]/g, '')) || 72;
     
@@ -743,26 +743,19 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
             if(finalGrandTotal === 0) finalGrandTotal = pureSum;
         }
     } else {
-        let width = parseFloat(foundMaster.width || sp.width) || 0;
-        let pick = actualPick > 0 ? actualPick : 44;
-        if (width > 0 && pick > 0) {
-            let weftWidth = width + 3;
-            let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
-            let netPick = pick - pickLess;
-            if (netPick < 0) netPick = 0;
-            finalGrandTotal = Math.round(weftWidth * netPick);
-        } else {
-            finalGrandTotal = totalMultiplierSum + remainderSum;
-            if(finalGrandTotal === 0) finalGrandTotal = pureSum;
-        }
+        let width = parseFloat(foundMaster.weftWidth || foundMaster.width || sp.width || 67.44) || 67.44;
+        // 📌 Weft Entry பக்கத்தில் உள்ள அதே முறையைப் பின்பற்றி Weft Width மற்றும் சரியான Pick மதிப்பை (actualPick) கொண்டு கணக்கிடுதல்
+        let pickNum = actualPick; 
+        finalGrandTotal = width * pickNum;
     }
 
     let summaryHtml = '';
     if(type === 'weft') {
         let storedWidthVal = parseFloat(foundMaster.weftWidth) || (parseFloat(foundMaster.width || sp.width || 0) > 0 ? parseFloat(foundMaster.width || sp.width || 0) + 3 : 67.44);
-        let pickNum = actualPick;
+        let pickNum = actualPick; // 📌 இங்கே சரியான 72 (actualPick) பயன்படுத்தப்படும்
+        
         summaryHtml += `<div class="line-1">Total Pattern ${unitName}: <b>${pureSum}</b></div>`;
-        summaryHtml += `<div>Weft Width ${storedWidthVal} X Pick ${pickNum} = <b>${finalGrandTotal} Total Pick</b></div>`;
+        summaryHtml += `<div>Weft Width ${storedWidthVal} X Pick ${pickNum} = <b>${finalGrandTotal.toFixed(2)} Total Pick</b></div>`;
     } else {
         let calculatedPatternEnds = totalMultiplierSum + remainderSum;
         if (calculatedPatternEnds === 0) calculatedPatternEnds = pureSum;
