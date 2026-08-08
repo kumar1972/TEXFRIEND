@@ -130,7 +130,7 @@
         font-size: 9px;
         color: #4A554A;
         font-weight: 500;
-        white-space: pre-line; /* முகவரியில் உள்ள புதிய வரிகள் சரியாக வர */
+        white-space: pre-line;
     }
 
     .design-info-box {
@@ -147,6 +147,25 @@
         margin-bottom: 4px;
     }
     .design-info-box div span {
+        color: #4A7C59;
+        font-weight: 700;
+    }
+
+    .weft-info-box {
+        background: #F8FAF8;
+        border: 1px solid #D1DED1;
+        border-radius: 6px;
+        padding: 6px 8px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        font-size: 9px;
+        font-weight: 600;
+        color: #2F4F38;
+        margin-bottom: 4px;
+        margin-top: 4px;
+    }
+    .weft-info-box div span {
         color: #4A7C59;
         font-weight: 700;
     }
@@ -301,7 +320,7 @@
         .summary-box { background: #F9F9F9 !important; border: 1px solid #666 !important; padding: 5px 8px !important; margin-bottom: 3px !important; font-size: 9px !important; text-align: left !important; }
         .summary-box .line-1 { border-bottom: 1px dashed #666 !important; }
         h3.section-title { background: #4A7C59 !important; color: #fff !important; padding: 3px 6px !important; font-size: 9px !important; margin-top: 2px !important; margin-bottom: 2px !important; }
-        .design-info-box { background: #F8FAF8 !important; border: 1px solid #666 !important; padding: 4px 6px !important; font-size: 8px !important; }
+        .design-info-box, .weft-info-box { background: #F8FAF8 !important; border: 1px solid #666 !important; padding: 4px 6px !important; font-size: 8px !important; }
     }
 </style>
 </head>
@@ -317,7 +336,6 @@
         <button class="print-btn no-print" onclick="window.print()">🖨️ பிரிண்ட் செய்க</button>
     </div>
 
-    <!-- Company Header (Settings-ல் இருந்து அட்ரஸ் இங்கே வரும்) -->
     <div class="company-header">
         <h1 id="printCompName">TEXFRIEND</h1>
         <p id="printCompAddr">-</p>
@@ -332,7 +350,7 @@
         </div>
     </div>
 
-    <!-- Design Details Header Box -->
+    <!-- Warp Header Box -->
     <div id="designHeaderBox" class="design-info-box" style="display:none;">
         <div>டிசைன்: <span id="hdrDesign">-</span></div>
         <div>கவுண்ட்ஸ்: <span id="hdrCounts">-</span></div>
@@ -371,7 +389,17 @@
     <!-- WEFT PREVIEW SECTION -->
     <div id="weftSection">
         <h3 class="section-title">🧶 வெப்ட் பேட்டர்ன் பிரிவ்யூ (Weft Pattern Preview)</h3>
-        <div id="weftContainerWrapper">
+        
+        <!-- Weft Specific Header Box -->
+        <div id="weftHeaderBox" class="weft-info-box" style="display:none;">
+            <div>Design: <span id="weftHdrDesign">-</span></div>
+            <div>Weft Count: <span id="weftHdrCount">-</span></div>
+            <div>Weft Width: <span id="weftHdrWidth">-</span></div>
+            <div>Pick: <span id="weftHdrPick">-</span></div>
+            <div style="grid-column: span 4; margin-top: 2px;">Weave: <span id="weftHdrWeave">-</span></div>
+        </div>
+
+        <div id="weftContainerWrapper" style="margin-top: 4px;">
             <div class="table-container">
                 <table>
                     <thead>
@@ -396,24 +424,20 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDropdown();
-    loadCompanySettings(); // Settings அட்ரûஸ லோட் செய்ய
+    loadCompanySettings();
 });
 
-// Settings-ல் சேமிக்கப்பட்ட முகவரியை பிரிண்ட் பக்கத்தில் கொண்டு வர
 function loadCompanySettings() {
-    // Settings பக்கத்தில் சேமிக்கப்படும் சரியான கீ (Key) 'company_full_address' ஆகும்
     let savedAddr = localStorage.getItem('company_full_address') || 
                     localStorage.getItem('set_comp_addr') || 
                     localStorage.getItem('company_address');
 
     if (savedAddr && savedAddr.trim() !== '') {
-        // அட்ரஸில் உள்ள புதிய வரிகளை (Line breaks) சரியாக பிரிண்ட் பக்கத்தில் காட்ட
         document.getElementById('printCompAddr').innerHTML = savedAddr.replace(/\n/g, '<br>');
     } else {
         document.getElementById('printCompAddr').innerText = "முகவரி கிடைக்கவில்லை";
     }
 
-    // கம்பெனி பெயர் சரியாக வர
     let savedCompName = localStorage.getItem('app_heading_name') || 
                         localStorage.getItem('company_name') || 'TEXFRIEND';
     
@@ -421,9 +445,6 @@ function loadCompanySettings() {
         document.getElementById('printCompName').innerText = savedCompName;
     }
 }
-
-
-
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -493,7 +514,7 @@ function translateColorToTamil(colorName) {
                            .replace(/white/gi, 'வெள்ளை')
                            .replace(/black/gi, 'கருப்பு')
                            .replace(/blue/gi, 'ப்ளூ')
-                           .replace(/yellow/gi, ' மஞ்சள்')
+                           .replace(/yellow/gi, 'மஞ்சள்')
                            .replace(/red/gi, 'ரெட்')
                            .replace(/green/gi, 'கிரீன்')
                            .replace(/brown/gi, 'பிரவுன்')
@@ -534,6 +555,9 @@ function loadDesignDetails() {
     let dName = document.getElementById('designNumber').value;
     if(!dName) {
         document.getElementById('designHeaderBox').style.display = 'none';
+        let weftBox = document.getElementById('weftHeaderBox');
+        if(weftBox) weftBox.style.display = 'none';
+        
         document.getElementById('warpContainerWrapper').innerHTML = `<div class="table-container"><table><thead><tr><th class="col-no">எண்</th><th class="col-count">கவுண்ட்</th><th class="col-color">நிறம்</th><th class="col-val">எண்ட்ஸ்</th><th class="col-set">செட்</th></tr></thead><tbody><tr><td colspan="5">தரவுகள் இல்லை</td></tr></tbody></table></div>`;
         document.getElementById('warpSummaryBox').style.display = 'none';
         document.getElementById('weftContainerWrapper').innerHTML = `<div class="table-container"><table><thead><tr><th class="col-no">எண்</th><th class="col-count">கவுண்ட்</th><th class="col-color">நிறம்</th><th class="col-val">பிக்ஸ்</th><th class="col-set">செட்</th></tr></thead><tbody><tr><td colspan="5">தரவுகள் இல்லை</td></tr></tbody></table></div>`;
@@ -551,20 +575,36 @@ function loadDesignDetails() {
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
-    let actualPick = parseFloat(sp.pick || foundMaster.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || sp.calculationPick || 44) || 44;
-    let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
-    let displayPick = actualPick - pickLess;
-    if (displayPick < 0) displayPick = 0;
+    // 📌 Weft Entry பக்கத்தில் சேமிக்கப்பட்டுள்ள சரியான Pick மதிப்பை (எ.கா. 72) எடுக்குமாறு உறுதியாக அமைக்கப்பட்டுள்ளது
+    let exactPick = foundMaster.weftPick || sp.weftPick || foundMaster.pick || sp.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || "72";
+    let actualPick = parseFloat(String(exactPick).replace(/[^0-9.]/g, '')) || 72;
+    
+    let widthVal = parseFloat(foundMaster.width || sp.width || 0) || 0;
+    let weftWidthVal = widthVal > 0 ? (widthVal + 3).toFixed(2) : '-';
+    let storedWeftWidth = foundMaster.weftWidth || sp.weftWidth;
+    let finalWeftWidthDisplay = storedWeftWidth ? storedWeftWidth + '"' : (weftWidthVal !== '-' ? weftWidthVal + '"' : '-');
 
+    // Warp Header Data
     document.getElementById('hdrDesign').innerText = dName;
     document.getElementById('hdrCounts').innerText = foundMaster.counts || sp.counts || '-';
     document.getElementById('hdrMtr').innerText = foundMaster.orderMtr || sp.orderMtr || foundMaster.meters || '-';
     document.getElementById('hdrTopBeam').innerText = foundMaster.topBeam || sp.topBeam || '-';
     document.getElementById('hdrType').innerText = foundMaster.type || sp.type || '-';
     document.getElementById('hdrReed').innerText = foundMaster.reed || sp.reed || '-';
-    document.getElementById('hdrPick').innerText = displayPick || '-';
+    document.getElementById('hdrPick').innerText = actualPick || '-';
     document.getElementById('hdrWidth').innerText = foundMaster.width || sp.width || '-';
     document.getElementById('designHeaderBox').style.display = 'grid';
+
+    // Weft Header Data (📌 76 மாறி இப்போது Weft Entry பக்கத்து மதிப்பான 72 சரியாக வரும் மற்றும் ஹெட்டர் கட்டாயமாகத் தோன்றும்)
+    let weftHdrBox = document.getElementById('weftHeaderBox');
+    if (weftHdrBox) {
+        document.getElementById('weftHdrDesign').innerText = dName;
+        document.getElementById('weftHdrCount').innerText = foundMaster.weftCount || sp.weftCount || foundMaster.counts || sp.counts || '-';
+        document.getElementById('weftHdrWidth').innerText = finalWeftWidthDisplay;
+        document.getElementById('weftHdrPick').innerText = actualPick; 
+        document.getElementById('weftHdrWeave').innerText = foundMaster.weaveType || foundMaster.type || sp.weave || sp.type || 'Plain';
+        weftHdrBox.style.display = 'grid';
+    }
 
     let warpLines = foundMaster.warpLines || sp.warpLines || [];
     let warpRanges = foundMaster.warpRanges || sp.warpRanges || [];
@@ -596,7 +636,6 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
     }
 
     let rowsData = [];
-    let patternTotal = 0;
     let countTotals = {};
     let totalMultiplierSum = 0;
     let totalSetsSum = 0;
@@ -720,15 +759,15 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
 
     let summaryHtml = '';
     if(type === 'weft') {
-        let width = parseFloat(foundMaster.width || sp.width) || 0;
-        let pick = actualPick > 0 ? actualPick : 44;
-        let weftWidth = (width > 0 ? width + 3 : 69.29);
-        let pickLess = parseFloat(foundMaster.onloomPickLess || sp.onloomPickLess || localStorage.getItem('onloomPickLess')) || 0;
-        let netPick = pick > 0 ? pick - pickLess : pick;
+        let storedWidthVal = parseFloat(foundMaster.weftWidth) || (parseFloat(foundMaster.width || sp.width || 0) > 0 ? parseFloat(foundMaster.width || sp.width || 0) + 3 : 67.44);
+        let pickNum = actualPick;
         summaryHtml += `<div class="line-1">Total Pattern ${unitName}: <b>${pureSum}</b></div>`;
-        summaryHtml += `<div>Weft Width ${weftWidth} X Pick ${netPick} = <b>${finalGrandTotal} Total Pick</b></div>`;
+        summaryHtml += `<div>Weft Width ${storedWidthVal} X Pick ${pickNum} = <b>${finalGrandTotal} Total Pick</b></div>`;
     } else {
-        summaryHtml += `<div class="line-1">Total Pattern Ends: <b>82</b></div>`;
+        let calculatedPatternEnds = totalMultiplierSum + remainderSum;
+        if (calculatedPatternEnds === 0) calculatedPatternEnds = pureSum;
+        
+        summaryHtml += `<div class="line-1">Total Pattern Ends: <b>${calculatedPatternEnds}</b></div>`;
         if(ranges && ranges.length > 0) {
             summaryHtml += `<div class="line-1">${totalSetsSum} Set + ${remainderSum} Ends = <b>${finalGrandTotal} Total Ends</b></div>`;
         } else {
