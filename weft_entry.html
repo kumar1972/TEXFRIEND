@@ -138,6 +138,13 @@
         .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
         .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+        #bitmapDisplayContainer img {
+            max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
         /* 🔥 CLEAN PRINT & ALWAYS TWO COLUMNS SETTINGS */
         @media print {
             @page { size: A4 portrait; margin: 5mm 8mm; }
@@ -153,6 +160,21 @@
             .print-flex-row { display: flex !important; flex-wrap: nowrap !important; gap: 20px !important; align-items: flex-start !important; justify-content: space-between !important; }
             .print-col-box { flex: 1; min-width: 0; background: #FFF; width: 48%; }
         }
+
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -160,9 +182,8 @@
 <div class="container">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div class="completed-checkbox">
-            <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
-            <label for="top_completed_status">Completed</label>
+        <div id="bitmapDisplayContainer">
+            <!-- Checkbox and Image will be loaded here -->
         </div>
     </div>
 
@@ -237,6 +258,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 // 🔒 Universal Permission Checker Function for Weft Entry Page
 function checkUserPermission() {
@@ -257,12 +284,44 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = "dashboard.html";
         return;
     }
-    loadDesignDropdown();
+    // Note: Dropdown load moved to Firebase window onload to ensure data is ready
 });
 
 function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
 function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
 function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+    let imgHtml = '';
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+
+    let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+    let cb = document.getElementById('top_completed_status'); 
+    let wasChecked = cb ? cb.checked : false;
+
+    bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+    if(wasChecked) document.getElementById('top_completed_status').checked = true;
+}
 
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -280,13 +339,16 @@ function loadDesignDropdown() {
 
 function loadWeftDesignData() {
     let dNo = document.getElementById('designNo').value;
+    if(dNo) localStorage.setItem('selected_design_number', dNo);
+    loadBitmapImage(); // Ensure the HD image loads when the dropdown changes
+    
     document.getElementById('weftLinesContainer').innerHTML = ''; document.getElementById('weftRangesContainer').innerHTML = '';
     let saveBtn = document.getElementById('saveBtnTxt');
     
     document.getElementById('infoWeftWidth').value = ''; document.getElementById('infoWeftCount').value = '';
     document.getElementById('infoPick').value = ''; document.getElementById('infoWeave').value = '';
     document.getElementById('displayTotalPicks').innerText = '0'; document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
-    document.getElementById('top_completed_status').checked = false;
+    if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status').checked = false;
 
     if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
 
@@ -301,7 +363,7 @@ function loadWeftDesignData() {
 
     let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
     if(specStatus === 'completed' || (foundMaster && foundMaster.status && foundMaster.status.toLowerCase() === 'completed')) { 
-        document.getElementById('top_completed_status').checked = true; 
+        if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status').checked = true; 
     }
 
     let baseReed = parseFloat(sp.reed || sp.baseReed || foundMaster.reed || foundMaster.baseReed || 64) || 0;
@@ -418,11 +480,21 @@ async function quickCompleteToggle() {
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = statusText;
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    try { if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); } } catch(e) {}
+    try { 
+        if (window.firebaseSave) { 
+            await window.firebaseSave('design_masters_data', masters); 
+            await window.firebaseSave('design_specs', designSpecs); 
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) {}
     renderSavedList(); alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
@@ -475,13 +547,24 @@ async function saveWeftDesign() {
     }
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = document.getElementById('top_completed_status').checked ? 'completed' : 'running';
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = document.getElementById('top_completed_status').checked ? 'completed' : 'running';
     
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
-    if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+    try {
+        if (window.firebaseSave) { 
+            await window.firebaseSave('design_masters_data', masters); 
+            await window.firebaseSave('design_specs', designSpecs); 
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) {}
+    
     saveBtn.innerText = originalText; alert("Weft Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
@@ -492,14 +575,29 @@ async function toggleStatus(dNo, newStatus) {
     }
 
     if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
+        let cleanDNo = cleanDesignName(dNo);
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
+        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+        
         if(index > -1) {
             masters[index].status = newStatus; localStorage.setItem('design_masters_data', JSON.stringify(masters));
+            
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            if(!designSpecs[dNo]) designSpecs[dNo] = {};
-            designSpecs[dNo].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+            
+            if(!designSpecs[specKey]) designSpecs[specKey] = {};
+            designSpecs[specKey].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            
+            try {
+                if(window.firebaseSave) { 
+                    await window.firebaseSave('design_masters_data', masters); 
+                    await window.firebaseSave('design_specs', designSpecs); 
+                }
+                if (window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                }
+            } catch(e) {}
+            
             renderSavedList();
         }
     }
@@ -749,7 +847,7 @@ function authorizationAlert() {
 <!-- Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -769,6 +867,15 @@ function authorizationAlert() {
             await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
         } catch (e) {
             console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    // 🚀 Added Individual Document Save Logic for HD Support
+    window.firebaseSaveIndividual = async function(key, data) {
+        try {
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Individual Error: ", e);
         }
     }
 
@@ -794,17 +901,29 @@ function authorizationAlert() {
         let saveBtn = document.getElementById('saveBtnTxt');
         if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
 
-        let masters = await window.firebaseLoad('design_masters_data');
-        if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
+        let collections = ['design_masters_data', 'pre_design_numbers', 'party_orders_data'];
+        for(let col of collections) {
+            let data = await window.firebaseLoad(col);
+            if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
 
-        let preDesigns = await window.firebaseLoad('pre_design_numbers');
-        if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
 
-        let specs = await window.firebaseLoad('design_specs');
-        if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
 
-        let orders = await window.firebaseLoad('party_orders_data');
-        if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
 
         if(saveBtn) saveBtn.innerText = "💾 Save";
         

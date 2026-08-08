@@ -571,13 +571,17 @@
             return null;
         }
 
+        // 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
         function loadBitmapImage(designNumOverride) {
-            let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value;
+            let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value || localStorage.getItem('selected_design_number');
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
             
-            if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-                let b64 = designSpecs[activeDesign].bitmap;
+            let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+            let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+            if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+                let b64 = designSpecs[specKey].bitmap;
                 bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
             } else {
                 bitmapContainer.innerHTML = '';
@@ -687,8 +691,8 @@
                 localStorage.setItem('selected_design_number', val);
                 let cleanDNo = cleanDesignName(val);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
-                let specs = specKey ? designSpecs[specKey] : { warp: '', warp2: '', weft: '', reed: '', pick: '' };
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || val;
+                let specs = designSpecs[specKey] || { warp: '', warp2: '', weft: '', reed: '', pick: '' };
                 
                 let specStatus = (specs && specs.status) ? specs.status.toLowerCase() : '';
                 let rec = weavingMasterData.find(r => (r.designNo === val || r.designNumber === val));
@@ -894,10 +898,13 @@
             localStorage.setItem('weaving_weft_trans', JSON.stringify(weftTransactions));
 
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            if(!designSpecs[dNo]) {
-                designSpecs[dNo] = {};
+            let cleanDNo = cleanDesignName(dNo);
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+
+            if(!designSpecs[specKey]) {
+                designSpecs[specKey] = {};
             }
-            designSpecs[dNo].status = statusText;
+            designSpecs[specKey].status = statusText;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
             try {
@@ -906,6 +913,9 @@
                     await window.firebaseSave('weaving_warp_trans', warpTransactions);
                     await window.firebaseSave('weaving_weft_trans', weftTransactions);
                     await window.firebaseSave('design_specs', designSpecs);
+                }
+                if (window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
             } catch(e) {
                 console.error("Firebase Sync Error: ", e);
@@ -1025,8 +1035,10 @@
             });
 
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            if(!designSpecs[designNo]) designSpecs[designNo] = {};
-            designSpecs[designNo].status = isCompleted ? 'completed' : 'running';
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
+
+            if(!designSpecs[specKey]) designSpecs[specKey] = {};
+            designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
             localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
@@ -1038,6 +1050,9 @@
                 await window.firebaseSave('weaving_warp_trans', warpTransactions);
                 await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 await window.firebaseSave('design_specs', designSpecs);
+            }
+            if(window.firebaseSaveIndividual) {
+                await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
             }
 
             updateTables();
@@ -1167,10 +1182,15 @@
                 let item = warpTransactions.find(x => x.id === id);
                 if(item && item.designNo) {
                     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                    if(!designSpecs[item.designNo]) designSpecs[item.designNo] = {};
-                    designSpecs[item.designNo].status = newStatus;
+                    let cleanDNo = cleanDesignName(item.designNo);
+                    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || item.designNo;
+
+                    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                    designSpecs[specKey].status = newStatus;
                     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                    
                     if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+                    if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
 
                 if(window.firebaseSave) await window.firebaseSave('weaving_warp_trans', warpTransactions);
@@ -1187,10 +1207,15 @@
                 let item = weftTransactions.find(x => x.id === id);
                 if(item && item.designNo) {
                     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                    if(!designSpecs[item.designNo]) designSpecs[item.designNo] = {};
-                    designSpecs[item.designNo].status = newStatus;
+                    let cleanDNo = cleanDesignName(item.designNo);
+                    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || item.designNo;
+
+                    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                    designSpecs[specKey].status = newStatus;
                     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                    
                     if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+                    if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
 
                 if(window.firebaseSave) await window.firebaseSave('weaving_weft_trans', weftTransactions);
@@ -1325,7 +1350,7 @@
     <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -1348,9 +1373,17 @@
             }
         }
 
+        window.firebaseSaveIndividual = async function(key, data) {
+            try {
+                await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+            } catch (e) {
+                console.error("Firebase Save Individual Error: ", e);
+            }
+        }
+
         window.firebaseLoad = async function(key) {
             try {
-                const docSnap = await getDoc(doc(db, "texfriend_erp, key"));
+                const docSnap = await getDoc(doc(db, "texfriend_erp", key));
                 if (docSnap.exists()) {
                     return JSON.parse(docSnap.data().content);
                 }
@@ -1368,13 +1401,31 @@
 
             let collections = [
                 'weaving_master_data', 'weaving_warp_trans', 'weaving_weft_trans', 
-                'design_masters_data', 'design_specs', 'pre_design_numbers',
+                'design_masters_data', 'pre_design_numbers',
                 'dyeing_issue_records', 'dyeing_receive_records'
             ];
             
             for(let col of collections) {
                 let data = await window.firebaseLoad(col);
                 if (data) localStorage.setItem(col, JSON.stringify(data));
+            }
+
+            // 🚀 NEW HD IMAGE SYNC LOGIC
+            let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            let oldCloudSpecs = await window.firebaseLoad('design_specs');
+            if(oldCloudSpecs) {
+                Object.assign(mergedSpecs, oldCloudSpecs);
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "designs"));
+                querySnapshot.forEach((doc) => {
+                    mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+                });
+            } catch(e) { console.log("No HD individual designs found yet."); }
+
+            if(Object.keys(mergedSpecs).length > 0) {
+                localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
             }
 
             window.weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];

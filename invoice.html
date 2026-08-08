@@ -261,7 +261,6 @@
 
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-        /* 📌 Fullscreen Image Popup Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -277,7 +276,6 @@
             cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* 📌 Advanced Table Design */
         .excel-table {
             width: 100%; border-collapse: separate; border-spacing: 0;
             font-size: 11px; background: #FFFFFF; border-radius: 10px; overflow: hidden;
@@ -288,15 +286,16 @@
         .excel-table tr:last-child td { border-bottom: none; }
         .excel-table tbody tr:hover { background: #F8FAF8; }
 
-        .action-cell { display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
+        .action-cell { display: flex; flex-direction: row; gap: 5px; align-items: center; }
+
         .action-btn {
             border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;
-            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease; width: 100%;
+            font-size: 10px; font-weight: 600; color: white; transition: all 0.2s ease;
         }
         .action-del { background: #EF4444; } .action-del:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
         .action-edit { background: #64748B; } .action-edit:hover { background: #475569; box-shadow: 0 2px 5px rgba(71, 85, 105, 0.3); }
-        .action-complete { background: #526E51; } .action-complete:hover { background: #3F5A3E; }
-        .action-running { background: #D97706; } .action-running:hover { background: #B45309; }
+        .action-complete { background: #10B981; } .action-complete:hover { background: #059669; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); }
+        .action-running { background: #F59E0B; } .action-running:hover { background: #D97706; box-shadow: 0 2px 5px rgba(217, 119, 6, 0.3); }
 
         #printPreviewContainer { display: none; background: #FFFFFF; color: #000000; padding: 25px; border-radius: 12px; margin-top: 10px; border: 1px solid #ccc; width: 100%; max-width: 100%; }
         .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-size: 12px; align-items: flex-start; }
@@ -501,6 +500,8 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
 // 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
@@ -511,30 +512,29 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
-    let activeDesign = localStorage.getItem('selected_design_number');
-    let globalDesignSelect = document.getElementById('global_design');
-    if(globalDesignSelect && globalDesignSelect.value) {
-        activeDesign = globalDesignSelect.value;
-    }
-    
+    let activeDesign = document.getElementById('global_design').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-    
+
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
     let imgHtml = '';
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
-    
+
     let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-    
+
     let wasChecked = false;
     let cb = document.getElementById('top_completed_status');
     if(cb) wasChecked = cb.checked;
-    
+
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
-    
+
     if(wasChecked) {
         document.getElementById('top_completed_status').checked = true;
     }
@@ -564,8 +564,11 @@ function applyGlobalDesign(designNo) {
     localStorage.setItem('selected_design_number', designNo);
     loadBitmapImage();
     
+    let clean = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specStatus = (designSpecs[designNo] && designSpecs[designNo].status) ? designSpecs[designNo].status.toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || designNo;
+    
+    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let invRec = invs.find(x => x.design === designNo);
 
@@ -586,11 +589,11 @@ function applyGlobalDesign(designNo) {
         }
     }
 
-    if(designSpecs[designNo]) {
-        document.getElementById('global_reed').value = designSpecs[designNo].reed || '';
-        document.getElementById('global_pick').value = designSpecs[designNo].pick || '';
-        document.getElementById('global_weave').value = designSpecs[designNo].weave || designSpecs[designNo].warp || '';
-        document.getElementById('global_count').value = designSpecs[designNo].warp || designSpecs[designNo].weft || '';
+    if(designSpecs[specKey]) {
+        document.getElementById('global_reed').value = designSpecs[specKey].reed || '';
+        document.getElementById('global_pick').value = designSpecs[specKey].pick || '';
+        document.getElementById('global_weave').value = designSpecs[specKey].weave || designSpecs[specKey].warp || '';
+        document.getElementById('global_count').value = designSpecs[specKey].warp || designSpecs[specKey].weft || '';
     }
 }
 
@@ -687,16 +690,22 @@ async function quickCompleteToggle() {
     localStorage.setItem('saved_invoices_data', JSON.stringify(invs));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[designNo]) {
-        designSpecs[designNo] = {};
+    let cleanDNo = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || designNo;
+
+    if(!designSpecs[specKey]) {
+        designSpecs[specKey] = {};
     }
-    designSpecs[designNo].status = statusText;
+    designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('saved_invoices_data', invs);
             await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
     } catch(e) {
         console.error("Firebase Sync Error: ", e);
@@ -797,11 +806,17 @@ async function saveInvoice() {
 
     if(design) {
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        if(!designSpecs[design]) designSpecs[design] = {};
-        designSpecs[design].status = isCompleted ? 'completed' : 'running';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDesign) || design;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        
         if (window.firebaseSave) {
             await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
     }
 
@@ -861,12 +876,19 @@ async function toggleStatus(id, newStatus) {
             
             let dNo = savedInvoices[index].design;
             if(dNo) {
+                let cleanDNo = cleanDesignName(dNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                if(!designSpecs[dNo]) designSpecs[dNo] = {};
-                designSpecs[dNo].status = newStatus;
+                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+
+                if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                designSpecs[specKey].status = newStatus;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                
                 if(window.firebaseSave) {
                     await window.firebaseSave('design_specs', designSpecs);
+                }
+                if(window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
             }
 
@@ -1151,7 +1173,7 @@ function goBackToForm() {
 <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -1174,6 +1196,15 @@ function goBackToForm() {
         }
     }
 
+    // 🚀 Added Individual Document Save Logic for HD Support
+    window.firebaseSaveIndividual = async function(key, data) {
+        try {
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Individual Error: ", e);
+        }
+    }
+
     window.firebaseLoad = async function(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -1192,11 +1223,29 @@ function goBackToForm() {
         let origText = btn ? btn.innerText : "✅ Save Invoice Details";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        let collections = ['saved_invoices_data', 'pre_design_numbers', 'design_specs', 'party_orders_data'];
+        let collections = ['saved_invoices_data', 'pre_design_numbers', 'party_orders_data'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
         }
 
         if(btn) btn.innerText = origText;
@@ -1207,8 +1256,8 @@ function goBackToForm() {
         }
         let defaultComp = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
         document.getElementById('comp_address').value = defaultComp;
+        
         loadDesignDropdowns();
-        loadBitmapImage();
         updateInvoicesTable();
     });
 </script>

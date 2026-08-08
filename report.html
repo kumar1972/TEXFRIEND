@@ -1,373 +1,389 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Report - TEXFRIEND ERP</title>
-<script src="translator.js"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Report - TEXFRIEND ERP</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    html, body { 
-        width: 100%; 
-        min-height: 100vh; 
-        background: #030712; 
-        color: #1E2B23; 
-    }
-
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .main-card {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0;
-        background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
-
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.3s ease;
-    }
-    .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
-
-    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
-    #bitmapDisplayContainer img {
-        max-height: 45px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.2);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        cursor: zoom-in;
-        transition: transform 0.3s;
-    }
-    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
-
-    .card-header {
-        font-size: 18px;
-        margin-bottom: 5px;
-        font-weight: 800;
-        color: #2F4F38;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid #EAF0EA;
-        padding-bottom: 12px;
-    }
-
-    .form-section {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 20px 15px 15px 15px;
-        position: relative;
-    }
-    
-    .section-badge {
-        position: absolute;
-        top: -12px;
-        left: 15px;
-        background: #4A7C59;
-        color: #FFF;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .form-group label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #4A554A;
-    }
-
-    select {
-        width: 100%;
-        padding: 12px 14px;
-        border-radius: 8px;
-        border: 1px solid #D1DED1;
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 12px;
-        font-weight: 700;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
-        outline: none;
-        cursor: pointer;
-    }
-
-    select:focus {
-        border-color: #4A7C59;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
-
-    .report-tabs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 8px;
-        margin-top: 5px;
-    }
-
-    .tab-btn {
-        background: #F4F7F4;
-        color: #4A554A;
-        border: 1px solid #D1DED1;
-        padding: 12px 6px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-        text-align: center;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-    }
-
-    .tab-btn:hover { background: #E2E8E2; color: #2F4F38; }
-
-    .tab-btn.active {
-        background: linear-gradient(135deg, #4A7C59, #2F4F38);
-        color: #FFFFFF;
-        border-color: transparent;
-        box-shadow: 0 6px 12px rgba(74, 124, 89, 0.3);
-        transform: translateY(-2px);
-    }
-
-    .special-tab-btn {
-        background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-        color: white;
-        border: none;
-    }
-    .special-tab-btn.active {
-        border: 2px solid #FFFFFF;
-        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
-    }
-
-    .invoice-tab-btn {
-        grid-column: 1 / -1;
-        background: linear-gradient(135deg, #3B82F6, #1E3A8A);
-        color: #FFFFFF;
-        border: none;
-        padding: 14px;
-        border-radius: 10px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        text-align: center;
-        text-transform: uppercase;
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
-        transition: all 0.3s ease;
-    }
-    .invoice-tab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
-    .invoice-tab-btn.active { border: 2px solid #FFFFFF; }
-
-    .report-header-bar {
-        background: #F8FAF8;
-        padding: 12px 15px;
-        border-radius: 12px 12px 0 0;
-        border: 1px solid #E2E8E2;
-        border-bottom: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .report-header-bar span {
-        font-size: 13px;
-        font-weight: 800;
-        color: #2F4F38;
-        text-transform: uppercase;
-    }
-
-    .header-btns {
-        display: flex;
-        gap: 8px;
-    }
-
-    .action-btn { 
-        color: white; border: none; padding: 8px 14px; border-radius: 8px; 
-        font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-        text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(30,43,35,0.1);
-    }
-    .action-btn:hover { transform: translateY(-2px); }
-    
-    .preview-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
-    .print-btn { background: linear-gradient(135deg, #10B981, #059669); }
-    .excel-btn { background: linear-gradient(135deg, #F59E0B, #D97706); }
-
-    .table-container {
-        width: 100%; border-radius: 0 0 12px 12px; overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-    }
-
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
-    th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
-    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; border-bottom: 2px solid #D1DED1; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
-
-    tfoot td {
-        background: #F4F7F4;
-        color: #2F4F38;
-        font-weight: 800;
-        border-top: 2px solid #D1DED1;
-    }
-
-    .no-data {
-        padding: 30px;
-        color: #64748B;
-        font-size: 13px;
-        text-align: center;
-        font-weight: 600;
-        background: #F8FAF8;
-        border-radius: 12px;
-        border: 1px dashed #D1DED1;
-    }
-
-    .badge-stock { background: #ECFDF5; color: #059669; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); display: inline-block;}
-    .badge-pending { background: #FEF2F2; color: #DC2626; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(220,38,38,0.3); display: inline-block;}
-    .badge-excess { background: #FFFBEB; color: #D97706; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); display: inline-block;}
-
-    /* Modals */
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
-    }
-    .overlay-modal.show { opacity: 1; }
-    
-    .modal-content {
-        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
-        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
-    }
-    .overlay-modal.show .modal-content { transform: scale(1); }
-
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
-    }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #2F4F38; font-weight: 800; text-transform: uppercase; }
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
-    .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
-    
-    /* Strict Portrait Mode Print Styles with Condensed First Column */
-    @media print {
-        @page {
-            size: A4 portrait;
-            margin: 6mm;
-        }
-        
-        body * { visibility: hidden; }
-        body { background: #FFFFFF; margin: 0; padding: 0; }
-        
-        .overlay-modal, .overlay-modal * { visibility: visible; }
-        
-        .overlay-modal { 
-            position: absolute; 
-            left: 0; 
-            top: 0; 
+        html, body { 
             width: 100%; 
-            padding: 0; 
-            z-index: 99999; 
-            background: #FFFFFF; 
-            display: block !important; 
+            min-height: 100vh; 
+            background: #030712; 
+            color: #1E2B23; 
         }
-        
-        .modal-content, .modal-body { 
-            box-shadow: none; 
-            border: none; 
-            border-radius: 0; 
-            overflow: visible !important; 
-            height: auto !important;
-            padding: 0;
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        
-        .no-print { display: none !important; }
-        
-        table {
-            width: 100% !important;
-            max-width: 100%;
-            border-collapse: collapse;
-            page-break-inside: auto;
-            table-layout: fixed;
-        }
-        
-        table th:first-child, 
-        table td:first-child {
-            width: 38% !important;
-            text-align: left !important;
-            word-break: break-word;
-        }
-        
-        table th:not(:first-child), 
-        table td:not(:first-child) {
-            width: 20% !important;
-        }
-        
-        tr { 
-            page-break-inside: avoid; 
-            page-break-after: auto; 
-        }
-        
-        th, td { 
-            white-space: normal !important; 
-            word-wrap: break-word;
-            padding: 4px 6px !important; 
-            font-size: 9px !important; 
-        }
-        
-        #printTableWrapper {
+
+        .main-card {
             width: 100%;
-            overflow-x: hidden;
+            max-width: 1200px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-    }
-</style>
+
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
+
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+        #bitmapDisplayContainer img {
+            max-height: 45px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        .card-header {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 800;
+            color: #2F4F38;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #EAF0EA;
+            padding-bottom: 12px;
+        }
+
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4A554A;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #D1DED1;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #4A7C59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+
+        .report-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .tab-btn {
+            background: #F4F7F4;
+            color: #4A554A;
+            border: 1px solid #D1DED1;
+            padding: 12px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover { background: #E2E8E2; color: #2F4F38; }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4A7C59, #2F4F38);
+            color: #FFFFFF;
+            border-color: transparent;
+            box-shadow: 0 6px 12px rgba(74, 124, 89, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .special-tab-btn {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            color: white;
+            border: none;
+        }
+        .special-tab-btn.active {
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .invoice-tab-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+            color: #FFFFFF;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+        .invoice-tab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
+        .invoice-tab-btn.active { border: 2px solid #FFFFFF; }
+
+        .report-header-bar {
+            background: #F8FAF8;
+            padding: 12px 15px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid #E2E8E2;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .report-header-bar span {
+            font-size: 13px;
+            font-weight: 800;
+            color: #2F4F38;
+            text-transform: uppercase;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn { 
+            color: white; border: none; padding: 8px 14px; border-radius: 8px; 
+            font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(30,43,35,0.1);
+        }
+        .action-btn:hover { transform: translateY(-2px); }
+        
+        .preview-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); }
+        .excel-btn { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+        .table-container {
+            width: 100%; border-radius: 0 0 12px 12px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
+        th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; border-bottom: 2px solid #D1DED1; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
+
+        tfoot td {
+            background: #F4F7F4;
+            color: #2F4F38;
+            font-weight: 800;
+            border-top: 2px solid #D1DED1;
+        }
+
+        .no-data {
+            padding: 30px;
+            color: #64748B;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+            background: #F8FAF8;
+            border-radius: 12px;
+            border: 1px dashed #D1DED1;
+        }
+
+        .badge-stock { background: #ECFDF5; color: #059669; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); display: inline-block;}
+        .badge-pending { background: #FEF2F2; color: #DC2626; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(220,38,38,0.3); display: inline-block;}
+        .badge-excess { background: #FFFBEB; color: #D97706; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); display: inline-block;}
+
+        /* Modals */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #2F4F38; font-weight: 800; text-transform: uppercase; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
+
+        /* Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        /* Strict Portrait Mode Print Styles with Condensed First Column */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 6mm;
+            }
+            
+            body * { visibility: hidden; }
+            body { background: #FFFFFF; margin: 0; padding: 0; }
+            
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            
+            .overlay-modal { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                padding: 0; 
+                z-index: 99999; 
+                background: #FFFFFF; 
+                display: block !important; 
+            }
+            
+            .modal-content, .modal-body { 
+                box-shadow: none; 
+                border: none; 
+                border-radius: 0; 
+                overflow: visible !important; 
+                height: auto !important;
+                padding: 0;
+            }
+            
+            .no-print { display: none !important; }
+            
+            table {
+                width: 100% !important;
+                max-width: 100%;
+                border-collapse: collapse;
+                page-break-inside: auto;
+                table-layout: fixed;
+            }
+            
+            table th:first-child, 
+            table td:first-child {
+                width: 38% !important;
+                text-align: left !important;
+                word-break: break-word;
+            }
+            
+            table th:not(:first-child), 
+            table td:not(:first-child) {
+                width: 20% !important;
+            }
+            
+            tr { 
+                page-break-inside: avoid; 
+                page-break-after: auto; 
+            }
+            
+            th, td { 
+                white-space: normal !important; 
+                word-wrap: break-word;
+                padding: 4px 6px !important; 
+                font-size: 9px !important; 
+            }
+            
+            #printTableWrapper {
+                width: 100%;
+                overflow-x: hidden;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -431,11 +447,46 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
 var currentTab = 'KoraDyeing';
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designFilter').value;
+    if(activeDesign === 'All') activeDesign = localStorage.getItem('selected_design_number');
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+    let imgHtml = '';
+    if (activeDesign && activeDesign !== 'All' && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    bitmapContainer.innerHTML = imgHtml;
 }
 
 function loadDesignFilter() {
@@ -447,12 +498,18 @@ function loadDesignFilter() {
     orders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
 
     let select = document.getElementById('designFilter');
+    let currentVal = select.value;
     let html = '<option value="All">All Designs (மொத்தம்)</option>';
     [...allDesigns].forEach(d => html += `<option value="${d}">${d}</option>`);
     select.innerHTML = html;
-
-    let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && allDesigns.has(activeDesign)) select.value = activeDesign;
+    
+    if(currentVal && select.querySelector(`option[value="${currentVal}"]`)) {
+        select.value = currentVal;
+    } else {
+        let activeDesign = localStorage.getItem('selected_design_number');
+        if(activeDesign && allDesigns.has(activeDesign)) select.value = activeDesign;
+    }
+    loadBitmapImage();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -468,6 +525,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function switchTab(tabName) {
     currentTab = tabName;
+    loadBitmapImage();
     
     document.querySelectorAll('.tab-btn, .special-tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
     let activeBtn = document.getElementById('tab-' + tabName);
@@ -768,9 +826,6 @@ function renderKoraStockTable() {
         </tr>`;
     });
 
-    // -------------------------------------------------------------------------
-    // 🌟 New Clean Dashboard Grid Layout (Without top table headers)
-    // -------------------------------------------------------------------------
     body.innerHTML += `<tr><td colspan="4" style="padding: 15px 0 5px 0; background: #ffffff; border: none;"></td></tr>`;
     body.innerHTML += `<tr><td colspan="4" style="background:#4A7C59; color:white; font-weight:bold; text-align:center; padding:14px; text-transform:uppercase; border-radius: 12px 12px 0 0; font-size:13px; letter-spacing:0.5px;">📊 Overall Count-Wise Summary Cards (கவுண்ட் வாரியான பாஸ் கார்டுகள்)</td></tr>`;
     
@@ -955,9 +1010,10 @@ function exportToExcel() {
 }
 </script>
 
+<!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM", authDomain: "texfriend.firebaseapp.com", projectId: "texfriend", storageBucket: "texfriend.appspot.com", messagingSenderId: "331673079578", appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3", measurementId: "G-2NP13ZTKCN" };
     const app = initializeApp(firebaseConfig); const db = getFirestore(app);
@@ -969,9 +1025,30 @@ function exportToExcel() {
 
     window.addEventListener('load', async function() {
         let mainHeader = document.getElementById('pageMainHeader'); let origText = mainHeader.innerText; mainHeader.innerText = "⏳ Syncing Cloud Data...";
-        let collections = ['party_orders_data', 'kora_outward_records', 'kora_stock_records', 'kora_inward_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records', 'weaving_master_data', 'despatch_records', 'saved_invoices_data', 'pre_design_numbers', 'design_specs'];
+        let collections = ['party_orders_data', 'kora_outward_records', 'kora_stock_records', 'kora_inward_records', 'kora_issue_records', 'dyeing_issue_records', 'dyeing_receive_records', 'weaving_master_data', 'despatch_records', 'saved_invoices_data', 'pre_design_numbers'];
         for(let col of collections) { let data = await window.firebaseLoad(col); if (data) localStorage.setItem(col, JSON.stringify(data)); }
-        mainHeader.innerText = origText; loadDesignFilter();
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
+
+        mainHeader.innerText = origText; 
+        loadDesignFilter();
+        loadBitmapImage();
     });
 </script>
 </body>

@@ -278,6 +278,17 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
+    /* 📌 Saved List Modal */
+    #savedListModal .modal-content {
+        max-width: 1000px;
+        height: 90vh;
+        margin: auto;
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        transform: scale(0.95);
+    }
+    #savedListModal.show .modal-content { transform: scale(1); }
+
     /* 📌 Fullscreen Image Popup Modal */
     .fullscreen-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -294,7 +305,7 @@
         cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    /* 📌 Advanced Table Design with Horizontal Scroll */
+    /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
@@ -533,8 +544,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('topDate').valueAsDate = new Date();
     document.getElementById('botDate').valueAsDate = new Date();
-    loadDesignDropdowns();
-    renderTable();
+    // Dropdowns and renderTable handled in Firebase window load
 });
 
 function openModal(modalId) {
@@ -559,22 +569,26 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
     let imgHtml = '';
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
     
     bitmapContainer.innerHTML = imgHtml;
-}
-
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
 
 function openDesignModal() {
@@ -650,7 +664,10 @@ function onDesignSelect(val) {
     localStorage.setItem('selected_design_number', val);
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
+    let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
+
+    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
 
@@ -737,16 +754,22 @@ async function quickCompleteToggle() {
     localStorage.setItem('washing_issue_records', JSON.stringify(issues));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) {
-        designSpecs[dNo] = {};
+    let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+
+    if(!designSpecs[specKey]) {
+        designSpecs[specKey] = {};
     }
-    designSpecs[dNo].status = statusText;
+    designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('washing_issue_records', issues);
             await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
     } catch(e) {
         console.error("Firebase Sync Error: ", e);
@@ -812,8 +835,10 @@ async function saveTopOrder() {
 
     if(savedCount > 0) {
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        if(!designSpecs[dNo]) designSpecs[dNo] = {};
-        designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
         localStorage.setItem('washing_issue_records', JSON.stringify(issues));
@@ -821,6 +846,9 @@ async function saveTopOrder() {
         if (window.firebaseSave) {
             await window.firebaseSave('washing_issue_records', issues);
             await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
         
         alert("Top Order Saved to Cloud Successfully! ✅☁️");
@@ -1009,12 +1037,18 @@ async function toggleStatus(id, newStatus) {
             let dNo = issues[index].designNo;
             if(dNo) {
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                if(!designSpecs[dNo]) designSpecs[dNo] = {};
-                designSpecs[dNo].status = newStatus;
+                let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+
+                if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                designSpecs[specKey].status = newStatus;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
                 if(window.firebaseSave) {
                     await window.firebaseSave('design_specs', designSpecs);
+                }
+                if (window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
             }
 
@@ -1238,7 +1272,7 @@ function printReport() {
 <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -1261,6 +1295,15 @@ function printReport() {
         }
     }
 
+    // 🚀 Added Individual Document Save Logic for HD Support
+    window.firebaseSaveIndividual = async function(key, data) {
+        try {
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Individual Error: ", e);
+        }
+    }
+
     window.firebaseLoad = async function(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -1279,11 +1322,29 @@ function printReport() {
         let origText = btn ? btn.innerText : "✅ Save Washing Order";
         if(btn) btn.innerText = "⏳ Syncing Cloud...";
 
-        let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers', 'design_specs'];
+        let collections = ['washing_issue_records', 'washing_receive_records', 'pre_design_numbers'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
         }
 
         if(btn) btn.innerText = origText;

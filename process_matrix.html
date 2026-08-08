@@ -136,7 +136,7 @@
 <!-- Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -170,6 +170,19 @@
             if(cloudData) localStorage.setItem(col, JSON.stringify(cloudData));
         }
         
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
+        
         renderMatrixTable(); // Render updated data
     }
 
@@ -191,7 +204,6 @@
 
         let matched = records.filter(r => cleanDesignName(r.designNo || r.designNumber || r.design || r.name) === cDNo);
         
-        // 🔥 Re-entry / Double entry check helper function integration if needed during navigation
         if (isGlobalCompleted || matched.some(r => r.status === 'completed')) return { text: '✅', className: 'done' };
         if (matched.length === 0) return { text: 'NONE', className: 'none' };
         let hasRunning = matched.some(r => r.status === 'running');
@@ -236,8 +248,6 @@
 
             function buildCell(records, label, linkPage) {
                 let statusObj = getProcessStatus(records, dNo, linkPage);
-                
-                // Optional click check handler to prevent accidental double entry navigation / confirm re-entry
                 return `<td><a href="${linkPage}?design=${encodeURIComponent(dNo)}" class="status-badge ${statusObj.className}" title="View ${label}">${statusObj.text}</a></td>`;
             }
 

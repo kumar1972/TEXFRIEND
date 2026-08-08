@@ -262,22 +262,30 @@ function closeModal(modalId) { let modal = document.getElementById(modalId); mod
 window.openFullscreenImage = function(src) { if(!src || src === '' || src === 'null') return; document.getElementById('fullscreenImg').src = src; document.getElementById('fullscreenModal').style.display = 'flex'; }
 window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
+function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
     let imgHtml = '';
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
+    
     let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-    let cb = document.getElementById('top_completed_status'); let wasChecked = cb ? cb.checked : false;
+    let cb = document.getElementById('top_completed_status'); 
+    let wasChecked = cb ? cb.checked : false;
+    
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
     if(wasChecked) document.getElementById('top_completed_status').checked = true;
 }
-
-function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
 function loadDesignDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -316,14 +324,13 @@ function loadDesignData() {
 
     let cleanDNo = cleanDesignName(dNo);
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    currentBaseSpecs = specKey ? specs[specKey] : {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    currentBaseSpecs = specs[specKey] || {};
 
     let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
     let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
     let autoReed = baseReed > 0 ? (baseReed - 8) : ''; let autoPick = basePick > 0 ? (basePick - 4) : '';
 
-    // 📌 கட்சி ஆர்டர்களில் இருந்து Production Metres மதிப்பை உறுதியாக கண்டறிந்து எடுக்கும் முறை
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
     let matchedOrder = orders.find(o => {
         let orderDesign = o.designNumber || o.designNo || o.designName || '';
@@ -346,7 +353,6 @@ function loadDesignData() {
         document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         
-        // 📌 கட்சி ஆர்டரில் உள்ள Production Metres-க்கு எப்போதுமே முதல் முன்னுரிமை வழங்கப்படும்
         let finalMtrToFill = matchedProdMtr > 0 ? matchedProdMtr : (found.orderMtr || '');
         document.getElementById('infoOrderMtr').value = finalMtrToFill;
         
@@ -363,7 +369,6 @@ function loadDesignData() {
         document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         
-        // 📌 புதிய என்ட்ரி என்றால் Production Metres மதிப்பை Order Mtrs-ல் ஆட்டோ ஃபில் செய்யும்
         if (matchedProdMtr > 0) {
             document.getElementById('infoOrderMtr').value = matchedProdMtr;
         }
@@ -429,9 +434,11 @@ async function quickCompleteToggle() {
 
     let dNo = document.getElementById('designNo').value;
     if(!dNo) { alert("Mudhala Design Number select pannunga bro"); document.getElementById('top_completed_status').checked = false; return; }
+    
     let isCompleted = document.getElementById('top_completed_status').checked;
     let statusText = isCompleted ? 'completed' : 'running';
     let cleanDNo = cleanDesignName(dNo);
+    
     let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let idx = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
 
@@ -440,12 +447,24 @@ async function quickCompleteToggle() {
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = statusText;
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-    try { if (window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); } } catch(e) {}
-    renderSavedList(); alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+    try { 
+        if (window.firebaseSave) { 
+            await window.firebaseSave('design_masters_data', masters); 
+            await window.firebaseSave('design_specs', designSpecs); 
+        } 
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) {}
+    
+    renderSavedList(); 
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
 window.saveWarpDesign = async function() {
@@ -503,13 +522,24 @@ window.saveWarpDesign = async function() {
     if(idx === -1) masters.push(patternData); else masters[idx] = Object.assign({}, masters[idx], patternData);
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
     
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
     localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
-    if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+    try {
+        if(window.firebaseSave) { 
+            await window.firebaseSave('design_masters_data', masters); 
+            await window.firebaseSave('design_specs', designSpecs); 
+        }
+        if(window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) {}
+    
     saveBtn.innerText = originalText; alert("Warp Pattern Saved to Cloud Successfully! ✅☁️");
 }
 
@@ -520,14 +550,31 @@ async function toggleStatus(dNo, newStatus) {
     }
 
     if(confirm(newStatus === 'completed' ? "Change this pattern to Completed?" : "Change this pattern to Running?")) {
+        let cleanDNo = cleanDesignName(dNo);
         let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDesignName(dNo));
+        let index = masters.findIndex(m => cleanDesignName(m.name) === cleanDNo);
+        
         if(index > -1) {
-            masters[index].status = newStatus; localStorage.setItem('design_masters_data', JSON.stringify(masters));
+            masters[index].status = newStatus; 
+            localStorage.setItem('design_masters_data', JSON.stringify(masters));
+            
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            if(!designSpecs[dNo]) designSpecs[dNo] = {};
-            designSpecs[dNo].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            if(window.firebaseSave) { await window.firebaseSave('design_masters_data', masters); await window.firebaseSave('design_specs', designSpecs); }
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+            
+            if(!designSpecs[specKey]) designSpecs[specKey] = {};
+            designSpecs[specKey].status = newStatus; 
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            
+            try {
+                if(window.firebaseSave) { 
+                    await window.firebaseSave('design_masters_data', masters); 
+                    await window.firebaseSave('design_specs', designSpecs); 
+                }
+                if(window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                }
+            } catch(e) {}
+            
             renderSavedList();
         }
     }
@@ -756,12 +803,18 @@ function previewPattern() {
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM", authDomain: "texfriend.firebaseapp.com", projectId: "texfriend", storageBucket: "texfriend.appspot.com", messagingSenderId: "331673079578", appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3", measurementId: "G-2NP13ZTKCN" };
     const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
     window.firebaseSave = async function(key, data) { try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) {} }
+    
+    // 🚀 Added Individual Document Save Logic for HD Support
+    window.firebaseSaveIndividual = async function(key, data) {
+        try { await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) }); } catch (e) {}
+    }
+
     window.firebaseLoad = async function(key) { try { const docSnap = await getDoc(doc(db, "texfriend_erp", key)); if (docSnap.exists()) return JSON.parse(docSnap.data().content); } catch (e) {} return null; }
 
     window.addEventListener('load', async function() {
@@ -774,8 +827,23 @@ function previewPattern() {
         let saveBtn = document.getElementById('saveBtnTxt'); if(saveBtn) saveBtn.innerText = "⏳ Syncing Cloud...";
         let masters = await window.firebaseLoad('design_masters_data'); if (masters) localStorage.setItem('design_masters_data', JSON.stringify(masters));
         let preDesigns = await window.firebaseLoad('pre_design_numbers'); if (preDesigns) localStorage.setItem('pre_design_numbers', JSON.stringify(preDesigns));
-        let specs = await window.firebaseLoad('design_specs'); if (specs) localStorage.setItem('design_specs', JSON.stringify(specs));
         let orders = await window.firebaseLoad('party_orders_data'); if (orders) localStorage.setItem('party_orders_data', JSON.stringify(orders));
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let specs = await window.firebaseLoad('design_specs');
+        if (specs) { Object.assign(mergedSpecs, specs); }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
 
         if(saveBtn) saveBtn.innerText = "💾 Save";
         loadDesignDropdown(); if(!document.getElementById('designNo').value) loadDefaultRow(); loadBitmapImage();

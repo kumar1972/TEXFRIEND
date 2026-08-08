@@ -1,279 +1,279 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kora Yarn - TEXFRIEND</title>
-<script src="translator.js"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kora Yarn - TEXFRIEND</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Background - STRICTLY NO BLACK */
-    html, body { 
-        width: 100%; 
-        min-height: 100vh; 
-        background: #030712; 
-        color: #1E2B23; /* Deep Dark Green */
-    }
+        /* 📌 Smart Background - STRICTLY NO BLACK */
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #030712; 
+            color: #1E2B23; /* Deep Dark Green */
+        }
 
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    /* 📌 Main Container */
-    .main-card {
-        width: 100%;
-        max-width: 900px;
-        margin: 0;
-        background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
+        /* 📌 Main Container */
+        .main-card {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
 
-    /* 📌 Smart Back Button */
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.3s ease;
-    }
-    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+        /* 📌 Smart Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-    /* Checkbox Styling */
-    .completed-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #D8DFD6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: #526E51;
-        margin: 0;
-        padding: 0;
-        border: none;
-    }
-    
-    .completed-checkbox label {
-        margin: 0;
-        color: #3F5A3E;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-    }
+        /* Checkbox Styling */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
-    #bitmapDisplayContainer img {
-        max-height: 40px;
-        border-radius: 4px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        cursor: zoom-in;
-        transition: transform 0.2s;
-    }
-    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    .page-title {
-        font-size: 16px;
-        margin-bottom: 5px;
-        font-weight: 700;
-        color: #2F4F38;
-        text-align: left;
-        position: relative;
-        padding-left: 12px;
-    }
-    .page-title::before {
-        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
-        background: #4A7C59; border-radius: 4px;
-    }
+        .page-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .page-title::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
 
-    /* 📌 Smart Sectioning */
-    .form-section {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 20px 15px 15px 15px;
-        margin-bottom: 5px;
-        position: relative;
-    }
-    
-    .section-badge {
-        position: absolute;
-        top: -12px;
-        left: 15px;
-        background: #4A7C59;
-        color: #FFF;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
-    }
-    .section-badge.issue { background: linear-gradient(135deg, #D97706, #B45309); }
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+        .section-badge.issue { background: linear-gradient(135deg, #D97706, #B45309); }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 12px;
-    }
-    
-    .form-row.full { grid-template-columns: 1fr; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .form-row.full { grid-template-columns: 1fr; }
 
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-    /* 📌 Smart 3D Inputs */
-    input, select {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #D1DED1;
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 11px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
-    }
+        /* 📌 Smart 3D Inputs */
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #D1DED1;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        }
 
-    input:focus, select:focus {
-        border-color: #4A7C59;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
-    
-    input::placeholder { color: #A0AFA0; font-weight: 400; }
+        input:focus, select:focus {
+            border-color: #4A7C59;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+        
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-    /* 📌 Smart Buttons */
-    .btn-main {
-        width: 100%; padding: 14px; margin: 5px 0 0 0; border: none; border-radius: 10px;
-        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
-        background: linear-gradient(135deg, #4A7C59, #33593D);
-        box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
-        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
-    .btn-main:active { transform: translateY(1px); }
+        /* 📌 Smart Buttons */
+        .btn-main {
+            width: 100%; padding: 14px; margin: 5px 0 0 0; border: none; border-radius: 10px;
+            color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+            background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-main:active { transform: translateY(1px); }
 
-    .btn-issue { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(217, 119, 6, 0.25); }
-    .btn-issue:hover { box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35); }
+        .btn-issue { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 15px rgba(217, 119, 6, 0.25); }
+        .btn-issue:hover { box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35); }
 
-    .popup-trigger-btn {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-        color: white; border: none; padding: 14px; border-radius: 10px;
-        font-size: 12px; font-weight: bold; cursor: pointer; width: 100%;
-        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
-        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
-    
-    .popup-btn-secondary { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25); }
-    .popup-btn-secondary:hover { box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35); }
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white; border: none; padding: 14px; border-radius: 10px;
+            font-size: 12px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        
+        .popup-btn-secondary { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25); }
+        .popup-btn-secondary:hover { box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35); }
 
-    .history-btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .history-btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 
-    /* 📌 Advanced Pop-up Modal Styling */
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
-    }
-    .overlay-modal.show { opacity: 1; }
-    
-    .modal-content {
-        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
-        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
-    }
-    .overlay-modal.show .modal-content { transform: scale(1); }
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
 
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-    }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-    /* 📌 Fullscreen Image Popup Modal */
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
 
-    /* 📌 Advanced Table Design */
-    .table-container {
-        width: 100%; border-radius: 10px; overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-        -webkit-overflow-scrolling: touch;
-    }
+        /* 📌 Advanced Table Design */
+        .table-container {
+            width: 100%; border-radius: 10px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
 
-    .action-btns { display: flex; gap: 6px; justify-content: center; }
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-    .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+        .action-btns { display: flex; gap: 6px; justify-content: center; }
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .edit-action-btn:hover { background: #475569; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
 
-    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-</style>
+        .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+    </style>
 </head>
 <body>
 
@@ -437,7 +437,6 @@ function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        // settings.html-ல் உள்ள சரியான கீ பெயர் 'kora_yarn.html' அல்லது 'kora' என இருக்கலாம், இங்கேயும் செக் செய்கிறோம்
         if (permissions['kora_yarn.html'] === false || permissions['kora_yarn'] === false || permissions['kora'] === false) {
             return false;
         }
@@ -455,8 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('inwardDate').valueAsDate = new Date();
     document.getElementById('issueDate').valueAsDate = new Date();
-    loadDesignDropdown();
-    refreshAllTables();
+    // Dropdowns handled in window.load
 });
 
 function openModal(modalId) {
@@ -471,6 +469,8 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
 // 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
@@ -481,14 +481,18 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let bitmapContainer = document.getElementById('bitmapDisplayContainer');
     
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
     let imgHtml = '';
-    if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-        let b64 = designSpecs[activeDesign].bitmap;
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
     
@@ -527,7 +531,10 @@ function onDesignSelect(val) {
     localStorage.setItem('selected_design_number', val);
     
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specStatus = (designSpecs[val] && designSpecs[val].status) ? designSpecs[val].status.toLowerCase() : '';
+    let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
+
+    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
 
@@ -542,7 +549,6 @@ function onDesignSelect(val) {
 
 // 📌 Completed Checkbox Quick Toggle
 async function quickCompleteToggle() {
-    // 🔒 Permission Check for Quick Complete Toggle
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to modify status on this page. ❌");
         let cb = document.getElementById('top_completed_status');
@@ -594,16 +600,22 @@ async function quickCompleteToggle() {
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) {
-        designSpecs[dNo] = {};
+    let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+
+    if(!designSpecs[specKey]) {
+        designSpecs[specKey] = {};
     }
-    designSpecs[dNo].status = statusText;
+    designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
     try {
         if (window.firebaseSave) {
             await window.firebaseSave('kora_issue_records', issues);
             await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
     } catch(e) {
         console.error("Firebase Sync Error: ", e);
@@ -613,9 +625,8 @@ async function quickCompleteToggle() {
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 1. SAVE INWARD STOCK with Re-entry Confirmation Popup & Double Entry Prevention
+// 1. SAVE INWARD STOCK
 async function saveInward() {
-    // 🔒 Absolute Guard: Block saving immediately if permission is false
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to save inward stock on this page. ❌");
         return;
@@ -638,7 +649,6 @@ async function saveInward() {
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let cleanSupplier = supplier.replace('#', '').trim().toLowerCase();
 
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION (Inward)
     if(editingInwardId === null && cleanSupplier) {
         let alreadyExists = records.some(r => {
             let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
@@ -649,9 +659,8 @@ async function saveInward() {
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த சப்ளையர் மற்றும் கவுண்டிற்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
             if(!confirmReEntry) {
-                return; // Cancel save action if user clicks Cancel
+                return; 
             }
-            // If confirmed, filter out old records to prevent duplicates
             records = records.filter(r => {
                 let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
                 let rCount = r.count ? r.count.trim().toLowerCase() : '';
@@ -702,9 +711,8 @@ async function saveInward() {
     btn.innerText = "✅ Save Kora Stock";
 }
 
-// 2. SAVE OUTWARD ISSUE with Re-entry Confirmation Popup & Double Entry Prevention
+// 2. SAVE OUTWARD ISSUE
 async function saveIssue() {
-    // 🔒 Absolute Guard: Block saving immediately if permission is false
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to add kora issue on this page. ❌");
         return;
@@ -727,12 +735,11 @@ async function saveIssue() {
     }
 
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-    let cleanDNo = dNo.replace('#', '').trim().toLowerCase();
+    let cleanDNo = cleanDesignName(dNo);
 
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION (Issue)
     if(editingIssueId === null && cleanDNo) {
         let alreadyExists = issues.some(r => {
-            let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+            let rDno = cleanDesignName(r.designNo || r.designNumber);
             let rCount = r.count ? r.count.trim().toLowerCase() : '';
             return rDno === cleanDNo && rCount === count.trim().toLowerCase();
         });
@@ -740,11 +747,10 @@ async function saveIssue() {
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Kora Issue என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
             if(!confirmReEntry) {
-                return; // Cancel save action if user clicks Cancel
+                return; 
             }
-            // If confirmed, filter out old records of this design & count to prevent duplicates
             issues = issues.filter(r => {
-                let rDno = (r.designNo || r.designNumber || "").replace('#', '').trim().toLowerCase();
+                let rDno = cleanDesignName(r.designNo || r.designNumber);
                 let rCount = r.count ? r.count.trim().toLowerCase() : '';
                 return !(rDno === cleanDNo && rCount === count.trim().toLowerCase());
             });
@@ -783,8 +789,10 @@ async function saveIssue() {
     }
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-    designSpecs[dNo].status = isCompleted ? 'completed' : 'running';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
     localStorage.setItem('kora_issue_records', JSON.stringify(issues));
@@ -792,6 +800,9 @@ async function saveIssue() {
     if (window.firebaseSave) {
         await window.firebaseSave('kora_issue_records', issues);
         await window.firebaseSave('design_specs', designSpecs);
+    }
+    if (window.firebaseSaveIndividual) {
+        await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
     }
 
     document.getElementById('dyeingName').value = '';
@@ -805,9 +816,7 @@ async function saveIssue() {
     btn.innerText = "➕ Add Kora Issue";
 }
 
-// 📌 FIREBASE SYNC: toggleStatus for Inward
 async function toggleInwardStatus(id, newStatus) {
-    // 🔒 Permission Check for Toggle Inward Status
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to change status. ❌");
         return;
@@ -829,9 +838,7 @@ async function toggleInwardStatus(id, newStatus) {
     }
 }
 
-// 📌 FIREBASE SYNC: toggleStatus for Issue
 async function toggleIssueStatus(id, newStatus) {
-    // 🔒 Permission Check for Toggle Issue Status
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to change status. ❌");
         return;
@@ -847,12 +854,19 @@ async function toggleIssueStatus(id, newStatus) {
             
             let dNo = records[index].designNo;
             if(dNo) {
+                let cleanDNo = cleanDesignName(dNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                if(!designSpecs[dNo]) designSpecs[dNo] = {};
-                designSpecs[dNo].status = newStatus;
+                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+
+                if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                designSpecs[specKey].status = newStatus;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                
                 if(window.firebaseSave) {
                     await window.firebaseSave('design_specs', designSpecs);
+                }
+                if(window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
             }
 
@@ -864,7 +878,6 @@ async function toggleIssueStatus(id, newStatus) {
     }
 }
 
-// 3. REFRESH HISTORY TABLES ONLY
 function refreshAllTables() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
@@ -936,9 +949,7 @@ function refreshAllTables() {
     }
 }
 
-// 4. EDIT & DELETE FUNCTIONS
 function editInward(id) {
-    // 🔒 Permission Check for Edit Inward
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to edit entries. ❌");
         return;
@@ -962,7 +973,6 @@ function editInward(id) {
 }
 
 async function deleteInward(id) {
-    // 🔒 Permission Check for Delete Inward
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to delete entries. ❌");
         return;
@@ -981,7 +991,6 @@ async function deleteInward(id) {
 }
 
 function editIssue(id) {
-    // 🔒 Permission Check for Edit Issue
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to edit entries. ❌");
         return;
@@ -1009,7 +1018,6 @@ function editIssue(id) {
 }
 
 async function deleteIssue(id) {
-    // 🔒 Permission Check for Delete Issue
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to delete entries. ❌");
         return;
@@ -1031,7 +1039,7 @@ async function deleteIssue(id) {
 <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -1051,6 +1059,15 @@ async function deleteIssue(id) {
             await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) });
         } catch (e) {
             console.error("Firebase Save Error: ", e);
+        }
+    }
+
+    // 🚀 Added Individual Document Save Logic for HD Support
+    window.firebaseSaveIndividual = async function(key, data) {
+        try {
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Individual Error: ", e);
         }
     }
 
@@ -1077,11 +1094,29 @@ async function deleteIssue(id) {
         if(btn1) btn1.innerText = "⏳ Syncing...";
         if(btn2) btn2.innerText = "⏳ Syncing...";
 
-        let collections = ['kora_stock_records', 'kora_issue_records', 'pre_design_numbers', 'design_specs'];
+        let collections = ['kora_stock_records', 'kora_issue_records', 'pre_design_numbers'];
         
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
+        }
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
         }
 
         if(btn1) btn1.innerText = origText1;

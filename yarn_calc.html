@@ -1,184 +1,184 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Yarn Calculation & Costing - TEXFRIEND</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yarn Calculation & Costing - TEXFRIEND</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    html, body { 
-        width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; 
-    }
-    body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+        html, body { 
+            width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; 
+        }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
 
-    .main-card {
-        width: 100%; max-width: 900px; margin: 0; background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15); border-radius: 20px;
-        padding: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex; flex-direction: column; gap: 15px;
-    }
+        .main-card {
+            width: 100%; max-width: 900px; margin: 0; background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15); border-radius: 20px;
+            padding: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex; flex-direction: column; gap: 15px;
+        }
 
-    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
 
-    .back-btn {
-        display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
-        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
-        padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.3s ease;
-    }
-    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+            text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+            padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
-    #bitmapDisplayContainer img {
-        max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
-    }
-    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+        #bitmapDisplayContainer img {
+            max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    .completed-checkbox {
-        display: flex; align-items: center; gap: 6px; background: #D8DFD6;
-        padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .completed-checkbox input[type="checkbox"] {
-        width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; padding: 0; border: none;
-    }
-    .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .completed-checkbox {
+            display: flex; align-items: center; gap: 6px; background: #D8DFD6;
+            padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; padding: 0; border: none;
+        }
+        .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
 
-    .header-bar {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 2px solid #EAF0EA; padding-bottom: 12px; margin-bottom: 5px;
-    }
-    .header-bar h3 {
-        font-size: 16px; color: #2F4F38; font-weight: 700; margin: 0;
-        display: flex; align-items: center; gap: 6px;
-    }
+        .header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #EAF0EA; padding-bottom: 12px; margin-bottom: 5px;
+        }
+        .header-bar h3 {
+            font-size: 16px; color: #2F4F38; font-weight: 700; margin: 0;
+            display: flex; align-items: center; gap: 6px;
+        }
 
-    .header-btns { display: flex; gap: 6px; }
-    .top-action-badge {
-        display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px;
-        border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; color: white;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12); transition: all 0.2s ease;
-    }
-    .top-action-badge.gsm-badge { background: linear-gradient(135deg, #F59E0B, #D97706); cursor: default; }
-    .top-action-badge.preview-badge { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
-    .top-action-badge.costing-preview-badge { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
-    .top-action-badge:hover:not(.gsm-badge) { transform: translateY(-2px); }
+        .header-btns { display: flex; gap: 6px; }
+        .top-action-badge {
+            display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px;
+            border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; color: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12); transition: all 0.2s ease;
+        }
+        .top-action-badge.gsm-badge { background: linear-gradient(135deg, #F59E0B, #D97706); cursor: default; }
+        .top-action-badge.preview-badge { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .top-action-badge.costing-preview-badge { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+        .top-action-badge:hover:not(.gsm-badge) { transform: translateY(-2px); }
 
-    .section-save-container { display: flex; justify-content: flex-end; margin-top: 12px; }
-    .section-save-btn {
-        background: linear-gradient(135deg, #4A7C59, #2F4F38); color: white; border: none;
-        padding: 10px 24px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
-        box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
-    }
-    .section-save-btn:hover { background: linear-gradient(135deg, #3F5A3E, #1E2B23); transform: translateY(-2px); }
+        .section-save-container { display: flex; justify-content: flex-end; margin-top: 12px; }
+        .section-save-btn {
+            background: linear-gradient(135deg, #4A7C59, #2F4F38); color: white; border: none;
+            padding: 10px 24px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .section-save-btn:hover { background: linear-gradient(135deg, #3F5A3E, #1E2B23); transform: translateY(-2px); }
 
-    .top-form-row-single {
-        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 12px 15px; margin-bottom: 8px;
-    }
-    .top-form-row, .top-form-row-2, .top-form-row-3, .costing-grid {
-        display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 15px;
-    }
-    .top-form-row-2 { grid-template-columns: repeat(3, 1fr); }
-    .top-form-row-3 { grid-template-columns: repeat(3, 1fr); }
-    .costing-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .top-form-row-single {
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 12px 15px; margin-bottom: 8px;
+        }
+        .top-form-row, .top-form-row-2, .top-form-row-3, .costing-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 15px;
+        }
+        .top-form-row-2 { grid-template-columns: repeat(3, 1fr); }
+        .top-form-row-3 { grid-template-columns: repeat(3, 1fr); }
+        .costing-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
-    .form-group label {
-        display: block; font-size: 10px; font-weight: 600; color: #4A554A; margin-bottom: 6px; white-space: nowrap;
-    }
-    input, select {
-        width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
-        background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600;
-        transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
-    }
-    input:focus, select:focus {
-        border-color: #4A7C59; outline: none; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
-    input::placeholder { color: #A0AFA0; font-weight: 400; }
+        .form-group label {
+            display: block; font-size: 10px; font-weight: 600; color: #4A554A; margin-bottom: 6px; white-space: nowrap;
+        }
+        input, select {
+            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
+            background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        }
+        input:focus, select:focus {
+            border-color: #4A7C59; outline: none; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+        input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-    h3.section-title {
-        font-size: 11px; color: #FFFFFF; background: #4A7C59; padding: 6px 14px;
-        border-radius: 12px; display: inline-block; margin: 10px 0 5px 0; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); border: none; width: max-content;
-    }
+        h3.section-title {
+            font-size: 11px; color: #FFFFFF; background: #4A7C59; padding: 6px 14px;
+            border-radius: 12px; display: inline-block; margin: 10px 0 5px 0; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); border: none; width: max-content;
+        }
 
-    .table-container {
-        width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        border: 1px solid #E2E8E2; background: #FFFFFF; -webkit-overflow-scrolling: touch; margin-bottom: 10px;
-    }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-    th {
-        background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase;
-        font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #D1DED1;
-    }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
-    .total-row td { background: #F4F7F4; color: #2F4F38; font-weight: 700; border-top: 2px solid #D1DED1; }
+        .table-container {
+            width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid #E2E8E2; background: #FFFFFF; -webkit-overflow-scrolling: touch; margin-bottom: 10px;
+        }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        th {
+            background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase;
+            font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #D1DED1;
+        }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
+        .total-row td { background: #F4F7F4; color: #2F4F38; font-weight: 700; border-top: 2px solid #D1DED1; }
 
-    .result-box {
-        background: #EAF0EA; border: 1px solid #4A7C59; border-radius: 12px;
-        padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px;
-    }
-    .result-title { font-size: 12px; font-weight: 700; color: #2F4F38; text-transform: uppercase; border-bottom: 1px dashed #4A7C59; padding-bottom: 5px; }
-    .result-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #1E2B23; }
-    .result-value { color: #D97706; font-weight: 700; }
-    .final-profit { color: #059669; font-size: 14px; font-weight: 800; }
+        .result-box {
+            background: #EAF0EA; border: 1px solid #4A7C59; border-radius: 12px;
+            padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 15px;
+        }
+        .result-title { font-size: 12px; font-weight: 700; color: #2F4F38; text-transform: uppercase; border-bottom: 1px dashed #4A7C59; padding-bottom: 5px; }
+        .result-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #1E2B23; }
+        .result-value { color: #D97706; font-weight: 700; }
+        .final-profit { color: #059669; font-size: 14px; font-weight: 800; }
 
-    .form-section-box {
-        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
-        padding: 25px 15px 15px 15px; margin-top: 15px; position: relative;
-    }
-    .section-badge-top {
-        position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
-        font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
-        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); z-index: 2;
-    }
-    .section-badge-bottom {
-        position: absolute; top: -12px; left: 15px; background: #1E2B23; color: #FFF;
-        font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
-        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(30, 43, 35, 0.25); z-index: 2;
-    }
+        .form-section-box {
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+            padding: 25px 15px 15px 15px; margin-top: 15px; position: relative;
+        }
+        .section-badge-top {
+            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
+            font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
+            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25); z-index: 2;
+        }
+        .section-badge-bottom {
+            position: absolute; top: -12px; left: 15px; background: #1E2B23; color: #FFF;
+            font-size: 10px; font-weight: 700; padding: 5px 14px; border-radius: 12px;
+            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(30, 43, 35, 0.25); z-index: 2;
+        }
 
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
-        z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
-    }
-    .overlay-modal.show { opacity: 1; }
-    .modal-content {
-        background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-        display: flex; flex-direction: column; box-shadow: none; overflow: hidden;
-    }
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0;
-    }
-    .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; }
-    .modal-actions { display: flex; gap: 8px; }
-    .print-btn-modal { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-    .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-    .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
+            z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        .modal-content {
+            background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
+            display: flex; flex-direction: column; box-shadow: none; overflow: hidden;
+        }
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0;
+        }
+        .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; }
+        .modal-actions { display: flex; gap: 8px; }
+        .print-btn-modal { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
-    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
+        .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    @media print {
-        body * { visibility: hidden; }
-        .overlay-modal, .overlay-modal * { visibility: visible; }
-        .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-        .modal-content { height: auto !important; overflow: visible !important; }
-        .no-print { display: none !important; }
-        .modal-body { padding: 0; background: #FFFFFF; }
-    }
-</style>
+        @media print {
+            body * { visibility: hidden; }
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
+            .modal-content { height: auto !important; overflow: visible !important; }
+            .no-print { display: none !important; }
+            .modal-body { padding: 0; background: #FFFFFF; }
+        }
+    </style>
 </head>
 <body>
 
@@ -385,6 +385,12 @@
     </div>
 </div>
 
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
 <script>
     function checkUserPermission() {
         let userRole = localStorage.getItem('user_role');
@@ -406,6 +412,34 @@
     }
 
     function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+
+    window.openFullscreenImage = function(src) {
+        if(!src || src === '' || src === 'null') return;
+        document.getElementById('fullscreenImg').src = src;
+        document.getElementById('fullscreenModal').style.display = 'flex';
+    }
+    window.closeFullscreenImage = function() {
+        document.getElementById('fullscreenModal').style.display = 'none';
+    }
+
+    function loadBitmapImage() {
+        let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+        
+        let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+        let imgHtml = '';
+        if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+            let b64 = designSpecs[specKey].bitmap;
+            imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+        }
+        let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
+        let cb = document.getElementById('top_completed_status'); let wasChecked = cb ? cb.checked : false;
+        bitmapContainer.innerHTML = checkboxHtml + imgHtml;
+        if(wasChecked) document.getElementById('top_completed_status').checked = true;
+    }
 
     function getSharedVal(o1, o2, keys) {
         for(let k of keys) {
@@ -451,8 +485,8 @@
         let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
         
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
-        let sp = specKey ? designSpecs[specKey] : {};
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+        let sp = designSpecs[specKey] || {};
 
         let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
@@ -462,7 +496,6 @@
         if (savedOrderMtr > 0) {
             document.getElementById('lengthMeters').value = savedOrderMtr.toFixed(2);
         } else if (prodMtrVal > 0) {
-            // 📌 உற்பத்தி மீட்டருடன் 5% சேர்த்து (Add 5%) Warp Dyeing Order (Mtrs)-ல் ஆட்டோ ஃபில் செய்தல்
             let finalMtrAdd5Pct = prodMtrVal + (prodMtrVal * 0.05);
             document.getElementById('lengthMeters').value = finalMtrAdd5Pct.toFixed(2);
         } else {
@@ -557,8 +590,8 @@
         let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
         let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-        let sp = specKey ? specs[specKey] : {};
+        let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+        let sp = specs[specKey] || {};
 
         let uiReed = parseFloat(document.getElementById('calcReed').value) || 0;
         let uiPick = parseFloat(document.getElementById('calcPick').value) || 0;
@@ -663,7 +696,7 @@
         
         let pickLessVal = document.getElementById('onloomPickLess').value.trim();
         let pickLess = pickLessVal === '' ? 0 : parseFloat(pickLessVal) || 0;
-        let netPick = uiPick - pickLess; // 📌 Weft கணக்கீட்டிற்கு 76 - 4 = 72 பயன்படுத்தப்படும்
+        let netPick = uiPick - pickLess; 
         if (netPick < 0) netPick = 0;
 
         let totalFabricPick = weftWidth * netPick;
@@ -784,49 +817,17 @@
         var c = original.toLowerCase();
 
         var map = {
-            'gold': 'கோல்டு',
-            'l. olive': 'L. ஆலிவ்',
-            'd. olive': 'D. ஆலிவ்',
-            'grey': 'கிரே',
-            'gray': 'கிரே',
-            't.salavai': 'T. சலவை',
-            't. salavai': 'T. சலவை',
-            't. white': 'T. சலவை',
-            '1/2 salavai': '1/2 சலவை',
-            '1/2 white': '1/2 சலவை',
-            'white': 'வெள்ளை',
-            'black': 'கருப்பு',
-            'blue': 'ப்ளூ',
-            'yellow': 'மஞ்சள்',
-            'red': 'ரெட்',
-            'green': 'கிரீன்',
-            'p. green': 'கிளி பச்சை',
-            'brown': 'பிரவுன்',
-            'khaki': 'காக்கி',
-            'l. khaki': 'L. காக்கி',
-            'd. khaki': 'D. காக்கி',
-            'rose': 'ரோஸ்',
-            'orange': 'ஆரஞ்சு',
-            'violet': 'வைலட்',
-            'pink': 'பிங்க்',
-            'navy': 'நேவி',
-            'l. navy': 'L. நேவி',
-            'd. navy': 'D. நேவி',
-            'maroon': 'மெரூன்',
-            'olive': 'ஆலிவ்',
-            'l. blue': 'L. ப்ளூ',
-            'r. blue': 'R. ப்ளூ',
-            'turq': 'டர்க்',
-            'purple': 'பர்புள்',
-            'cream': 'கிரீம்',
-            'beige': 'பேஜ்',
-            'biscuit': 'பிஸ்கட்',
-            'majenda': 'மெஜந்தா'
+            'gold': 'கோல்டு', 'l. olive': 'L. ஆலிவ்', 'd. olive': 'D. ஆலிவ்', 'grey': 'கிரே', 'gray': 'கிரே',
+            't.salavai': 'T. சலவை', 't. salavai': 'T. சலவை', 't. white': 'T. சலவை', '1/2 salavai': '1/2 சலவை',
+            '1/2 white': '1/2 சலவை', 'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
+            'red': 'ரெட்', 'green': 'கிரீன்', 'p. green': 'கிளி பச்சை', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
+            'l. khaki': 'L. காக்கி', 'd. khaki': 'D. காக்கி', 'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'violet': 'வைலட்',
+            'pink': 'பிங்க்', 'navy': 'நேவி', 'l. navy': 'L. நேவி', 'd. navy': 'D. நேவி', 'maroon': 'மெரூன்',
+            'olive': 'ஆலிவ்', 'l. blue': 'L. ப்ளூ', 'r. blue': 'R. ப்ளூ', 'turq': 'டர்க்', 'purple': 'பர்புள்',
+            'cream': 'கிரீம்', 'beige': 'பேஜ்', 'biscuit': 'பிஸ்கட்', 'majenda': 'மெஜந்தா'
         };
 
-        if (map[c]) {
-            return map[c];
-        }
+        if (map[c]) return map[c];
 
         let translated = original;
         translated = translated.replace(/^t\.\s*/i, 'T. ');
@@ -835,29 +836,14 @@
         translated = translated.replace(/^r\.\s*/i, 'R. ');
         translated = translated.replace(/^p\.\s*/i, 'P. ');
         
-        translated = translated.replace(/gold/gi, 'கோல்டு')
-                               .replace(/grey/gi, 'கிரே')
-                               .replace(/gray/gi, 'கிரே')
-                               .replace(/salavai/gi, 'சலவை')
-                               .replace(/white/gi, 'வெள்ளை')
-                               .replace(/black/gi, 'கருப்பு')
-                               .replace(/blue/gi, 'ப்ளூ')
-                               .replace(/yellow/gi, 'மஞ்சள்')
-                               .replace(/red/gi, 'ரெட்')
-                               .replace(/green/gi, 'கிரீன்')
-                               .replace(/brown/gi, 'பிரவுன்')
-                               .replace(/khaki/gi, 'காக்கி')
-                               .replace(/rose/gi, 'ரோஸ்')
-                               .replace(/orange/gi, 'ஆரஞ்சு')
-                               .replace(/pink/gi, 'பிங்க்')
-                               .replace(/maroon/gi, 'மெரூன்')
-                               .replace(/olive/gi, 'ஆலிவ்')
-                               .replace(/purple/gi, 'பர்புள்')
-                               .replace(/cream/gi, 'கிரீம்')
-                               .replace(/beige/gi, 'பேஜ்')
-                               .replace(/biscuit/gi, 'பிஸ்கட்')
-                               .replace(/majenda/gi, 'மெஜந்தா')
-                               .replace(/navy/gi, 'நேவி');
+        translated = translated.replace(/gold/gi, 'கோல்டு').replace(/grey/gi, 'கிரே').replace(/gray/gi, 'கிரே')
+                               .replace(/salavai/gi, 'சலவை').replace(/white/gi, 'வெள்ளை').replace(/black/gi, 'கருப்பு')
+                               .replace(/blue/gi, 'ப்ளூ').replace(/yellow/gi, 'மஞ்சள்').replace(/red/gi, 'ரெட்')
+                               .replace(/green/gi, 'கிரீன்').replace(/brown/gi, 'பிரவுன்').replace(/khaki/gi, 'காக்கி')
+                               .replace(/rose/gi, 'ரோஸ்').replace(/orange/gi, 'ஆரஞ்சு').replace(/pink/gi, 'பிங்க்')
+                               .replace(/maroon/gi, 'மெரூன்').replace(/olive/gi, 'ஆலிவ்').replace(/purple/gi, 'பர்புள்')
+                               .replace(/cream/gi, 'கிரீம்').replace(/beige/gi, 'பேஜ்').replace(/biscuit/gi, 'பிஸ்கட்')
+                               .replace(/majenda/gi, 'மெஜந்தா').replace(/navy/gi, 'நேவி');
 
         return translated;
     }
@@ -868,7 +854,7 @@
 
         let cleanDNo = cleanDesignName(dName);
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dName;
         
         if(!designSpecs[specKey]) designSpecs[specKey] = {};
 
@@ -882,6 +868,7 @@
 
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
         if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+        if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         alert(`Design ${dName} Calculation Saved Successfully! ✅`);
     }
 
@@ -891,7 +878,7 @@
 
         let cleanDNo = cleanDesignName(dName);
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dName;
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dName;
         
         if(!designSpecs[specKey]) designSpecs[specKey] = {};
 
@@ -924,13 +911,17 @@
 
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
         if (window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+        if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         alert(`Design ${dName} Costing Saved Successfully! ✅`);
     }
 
     function populateCostingTable() {
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
         let dName = document.getElementById('designNumber').value;
-        let sp = designSpecs[dName] || {};
+        let clean = dName ? dName.toString().replace('#', '').trim().toLowerCase() : '';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dName;
+        let sp = designSpecs[specKey] || {};
+        
         let savedCountRates = sp.countRates || {};
         let savedDyeRates = sp.dyeingRates || {};
 
@@ -972,6 +963,16 @@
                 </tr>
             `;
         }
+
+        let cData = sp.costingData || {};
+        if (document.getElementById('warpCrimp')) document.getElementById('warpCrimp').value = cData.warpCrimp || '';
+        if (document.getElementById('dyeingShortagePct')) document.getElementById('dyeingShortagePct').value = cData.dyeingShortagePct || '5';
+        if (document.getElementById('warpingWages')) document.getElementById('warpingWages').value = cData.warpingWages || '';
+        if (document.getElementById('sizingWages')) document.getElementById('sizingWages').value = cData.sizingWages || '';
+        if (document.getElementById('weavingPickRate')) document.getElementById('weavingPickRate').value = cData.weavingPickRate || '';
+        if (document.getElementById('washingWages')) document.getElementById('washingWages').value = cData.washingWages || '';
+        if (document.getElementById('washingShortagePct')) document.getElementById('washingShortagePct').value = cData.washingShortagePct || '';
+        if (document.getElementById('profitMargin')) document.getElementById('profitMargin').value = cData.profitMargin || '';
 
         calculateCostingBreakdown();
     }
@@ -1127,7 +1128,6 @@
             `;
         }
 
-        // 📌 Weft Yarn Calculation பிரிவின் மேற்பகுதியில் சரியான குறைக்கப்பட்ட பிக் மதிப்பை (எ.கா. 72) மட்டும் காட்டுதல்
         let netPickDisplay = (parseFloat(pick) || 0) - (parseFloat(pickLess) || 0);
         if (netPickDisplay < 0) netPickDisplay = 0;
 
@@ -1168,7 +1168,7 @@
         openModal('previewModal');
     }
 
-    function quickCompleteToggle() {
+    async function quickCompleteToggle() {
         let cb = document.getElementById('top_completed_status');
         let isCompleted = cb ? cb.checked : false;
         let dName = document.getElementById('designNumber').value;
@@ -1183,30 +1183,21 @@
         localStorage.setItem('design_masters_data', JSON.stringify(designMastersList));
 
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        if(!designSpecs[dName]) designSpecs[dName] = {};
-        designSpecs[dName].status = statusText;
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dName;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = statusText;
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
         if (window.firebaseSave) {
             window.firebaseSave('design_masters_data', designMastersList);
             window.firebaseSave('design_specs', designSpecs);
         }
-        alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
-    }
-
-    function loadBitmapImage() {
-        let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-        let imgHtml = '';
-        if (activeDesign && designSpecs[activeDesign] && designSpecs[activeDesign].bitmap) {
-            let b64 = designSpecs[activeDesign].bitmap;
-            imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
-        let checkboxHtml = `<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>`;
-        let cb = document.getElementById('top_completed_status'); let wasChecked = cb ? cb.checked : false;
-        bitmapContainer.innerHTML = checkboxHtml + imgHtml;
-        if(wasChecked) document.getElementById('top_completed_status').checked = true;
+
+        alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
     }
 
     window.addEventListener('load', initDropdown);
@@ -1214,7 +1205,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -1233,6 +1224,10 @@
         try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } catch (e) {}
     }
 
+    window.firebaseSaveIndividual = async function(key, data) {
+        try { await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) }); } catch (e) {}
+    }
+
     window.firebaseLoad = async function(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -1242,11 +1237,30 @@
     }
 
     window.addEventListener('load', async function() {
-        let collections = ['pre_design_numbers', 'design_masters_data', 'design_specs', 'party_orders_data'];
+        let collections = ['pre_design_numbers', 'design_masters_data', 'party_orders_data'];
         for(let col of collections) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
         }
+
+        // 🚀 NEW HD IMAGE SYNC LOGIC
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
+
         initDropdown(); 
         loadBitmapImage();
     });
