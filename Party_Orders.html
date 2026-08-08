@@ -11,7 +11,7 @@
         html, body { 
             width: 100%;
             min-height: 100vh;
-            background: #030712; /* Softer smart background */
+            background: #030712; 
             color: #1E2B23; 
         }
 
@@ -43,7 +43,6 @@
             margin-bottom: 5px;
         }
 
-        /* 📌 Smart Black Button Layout for Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -85,7 +84,6 @@
             background: #4A7C59; border-radius: 4px;
         }
 
-        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -145,7 +143,6 @@
         
         input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-        /* 📌 Smart Buttons */
         .btn-main {
             width: 100%;
             padding: 14px;
@@ -183,12 +180,11 @@
         .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
         .popup-trigger-btn:active { transform: translateY(1px); }
 
-        /* 📌 Advanced Pop-up Modal Styling */
         .overlay-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); /* Darker smart overlay */
+            background: rgba(18, 25, 20, 0.85);
             backdrop-filter: blur(4px);
             z-index: 99999;
             flex-direction: column;
@@ -228,7 +224,6 @@
 
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-        /* 📌 Fullscreen Image Popup Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -244,7 +239,6 @@
             cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* 📌 Advanced Table Design */
         .excel-table {
             width: 100%; border-collapse: separate; border-spacing: 0;
             font-size: 11px; background: #FFFFFF; border-radius: 10px; overflow: hidden;
@@ -291,19 +285,19 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Order Date</label>
-                        <input type="date" id="orderDate" required>
+                        <input type="date" id="orderDate">
                     </div>
                     <div class="form-group">
                         <label>Delivery Date</label>
-                        <input type="date" id="deliveryDate" required>
+                        <input type="date" id="deliveryDate">
                     </div>
                     <div class="form-group">
                         <label>Party Name</label>
-                        <input type="text" id="partyName" placeholder="Enter Party Name" required>
+                        <input type="text" id="partyName" placeholder="Enter Party Name">
                     </div>
                     <div class="form-group">
                         <label>PO Number</label>
-                        <input type="text" id="poNumber" placeholder="Enter PO No" required>
+                        <input type="text" id="poNumber" placeholder="Enter PO No">
                     </div>
                 </div>
             </div>
@@ -314,7 +308,7 @@
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: span 2;">
                         <label>Design Number</label>
-                        <select id="designNumber" onchange="onDesignSelect(this.value)" required>
+                        <select id="designNumber" onchange="onDesignSelect(this.value)">
                             <option value="">Select Design</option>
                         </select>
                     </div>
@@ -328,19 +322,19 @@
                     </div>
                     <div class="form-group">
                         <label>Reed</label>
-                        <input type="text" id="reed" placeholder="Reed" required>
+                        <input type="text" id="reed" placeholder="Reed">
                     </div>
                     <div class="form-group">
                         <label>Pick</label>
-                        <input type="text" id="pick" placeholder="Pick" required>
+                        <input type="text" id="pick" placeholder="Pick">
                     </div>
                     <div class="form-group">
                         <label>Width</label>
-                        <input type="text" id="width" placeholder="Width" required>
+                        <input type="text" id="width" placeholder="Width">
                     </div>
                     <div class="form-group">
                         <label>Weave Type</label>
-                        <input type="text" id="weaveType" placeholder="Weave Type" required>
+                        <input type="text" id="weaveType" placeholder="Weave Type">
                     </div>
                 </div>
             </div>
@@ -351,7 +345,7 @@
                 <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     <div class="form-group">
                         <label>Order Metres</label>
-                        <input type="number" step="0.01" id="orderMtr" placeholder="0.00 Metres" oninput="calculateProductionMeter()" required>
+                        <input type="number" step="0.01" id="orderMtr" placeholder="0.00 Metres" oninput="calculateProductionMeter()">
                     </div>
                     <div class="form-group">
                         <label>Input %</label>
@@ -363,7 +357,7 @@
                     </div>
                     <div class="form-group" style="grid-column: span 3;">
                         <label>Rate / Metre (₹)</label>
-                        <input type="number" step="0.01" id="rateMtr" placeholder="₹ 0.00" required>
+                        <input type="number" step="0.01" id="rateMtr" placeholder="₹ 0.00">
                     </div>
                 </div>
             </div>
@@ -414,7 +408,6 @@
         let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
         let editingId = null;
         
-        // 🔒 Universal Permission Checker Function for Party Orders Page
         function checkUserPermission() {
             let userRole = localStorage.getItem('user_role');
             if (userRole !== 'Administrator' && userRole !== 'Admin') {
@@ -427,7 +420,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 🔒 Page Access Check on Load
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to access this page. ❌");
                 window.location.href = "dashboard.html";
@@ -435,7 +427,6 @@
             }
         });
 
-        // 📌 Calculation Logic for Production Metres = Order Metres + Input %
         function calculateProductionMeter() {
             let orderMtr = parseFloat(document.getElementById('orderMtr').value) || 0;
             let inputPercent = parseFloat(document.getElementById('inputPercent').value) || 0;
@@ -464,7 +455,6 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // 📌 Fullscreen Image Popup Controls
         window.openFullscreenImage = function(src) {
             if(!src || src === '' || src === 'null') return;
             document.getElementById('fullscreenImg').src = src;
@@ -521,7 +511,6 @@
             }
         }
 
-        // 📌 Completed Checkbox Quick Toggle with Alert Pop-up
         async function quickCompleteToggle() {
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to modify status on this page. ❌");
@@ -590,7 +579,6 @@
             alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
         }
 
-        // 📌 FIREBASE SYNC: savePartyOrder with Re-entry Confirmation Popup & Double Entry Prevention
         async function savePartyOrder(e) {
             e.preventDefault();
             
@@ -622,21 +610,21 @@
 
             const orderData = {
                 id: editingId !== null ? editingId : Date.now(),
-                date: document.getElementById('orderDate').value,
-                partyName: document.getElementById('partyName').value.trim(),
-                poNo: document.getElementById('poNumber').value.trim(),
-                designNumber: designNo,
-                warpCount: document.getElementById('warpCount').value.trim(),
-                weftCount: document.getElementById('weftCount').value.trim(),
-                reed: document.getElementById('reed').value.trim(),
-                pick: document.getElementById('pick').value.trim(),
-                width: document.getElementById('width').value.trim(),
-                weaveType: document.getElementById('weaveType').value.trim(),
-                orderMtr: document.getElementById('orderMtr').value.trim(),
-                inputPercent: document.getElementById('inputPercent').value.trim(),
-                productionMeter: document.getElementById('productionMeter').value.trim(),
-                rateMtr: document.getElementById('rateMtr').value.trim(),
-                deliveryDate: document.getElementById('deliveryDate').value,
+                date: document.getElementById('orderDate').value || '',
+                partyName: document.getElementById('partyName').value.trim() || 'N/A',
+                poNo: document.getElementById('poNumber').value.trim() || 'N/A',
+                designNumber: designNo || 'N/A',
+                warpCount: document.getElementById('warpCount').value.trim() || '-',
+                weftCount: document.getElementById('weftCount').value.trim() || '-',
+                reed: document.getElementById('reed').value.trim() || '-',
+                pick: document.getElementById('pick').value.trim() || '-',
+                width: document.getElementById('width').value.trim() || '-',
+                weaveType: document.getElementById('weaveType').value.trim() || '-',
+                orderMtr: document.getElementById('orderMtr').value.trim() || '0',
+                inputPercent: document.getElementById('inputPercent').value.trim() || '0',
+                productionMeter: document.getElementById('productionMeter').value.trim() || '0',
+                rateMtr: document.getElementById('rateMtr').value.trim() || '0',
+                deliveryDate: document.getElementById('deliveryDate').value || '',
                 status: document.getElementById('orderStatusToggle').checked ? 'completed' : 'running'
             };
 
@@ -657,15 +645,17 @@
             }
 
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            if(!designSpecs[designNo]) designSpecs[designNo] = {};
-            designSpecs[designNo].status = orderData.status;
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            if(designNo) {
+                if(!designSpecs[designNo]) designSpecs[designNo] = {};
+                designSpecs[designNo].status = orderData.status;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            }
 
             localStorage.setItem('party_orders_data', JSON.stringify(partyOrders));
             
             if (window.firebaseSave) {
                 await window.firebaseSave('party_orders_data', partyOrders);
-                await window.firebaseSave('design_specs', designSpecs);
+                if(designNo) await window.firebaseSave('design_specs', designSpecs);
             }
 
             updatePartyTable();
@@ -673,8 +663,6 @@
             document.getElementById('partyOrderForm').reset();
             document.getElementById('inputPercent').value = '0';
             document.getElementById('orderStatusToggle').checked = false;
-            document.getElementById('orderDate').valueAsDate = new Date();
-            document.getElementById('deliveryDate').valueAsDate = new Date();
             
             var activeDesign = localStorage.getItem('selected_design_number');
             if(activeDesign) {
@@ -730,14 +718,14 @@
                 
                 let row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${item.date}</td>
-                    <td><b>${item.partyName}</b></td>
-                    <td>${item.poNo}</td>
-                    <td><b style="color:#2F4F38;">${item.designNumber || item.designNo}</b></td>
-                    <td>${item.orderMtr}</td>
+                    <td>${item.date || '-'}</td>
+                    <td><b>${item.partyName || '-'}</b></td>
+                    <td>${item.poNo || '-'}</td>
+                    <td><b style="color:#2F4F38;">${item.designNumber || item.designNo || '-'}</b></td>
+                    <td>${item.orderMtr || '0'}</td>
                     <td>${item.productionMeter || '-'}</td>
-                    <td>₹${item.rateMtr}</td>
-                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status}</span></td>
+                    <td>₹${item.rateMtr || '0'}</td>
+                    <td><span style="color:${statusColor}; font-weight:800; font-size:9px; background:rgba(0,0,0,0.05); padding:3px 8px; border-radius:12px; text-transform:uppercase;">${item.status || 'running'}</span></td>
                     <td>
                         <div class="action-cell">
                             ${statusBtn}
@@ -763,12 +751,14 @@
                 let item = partyOrders.find(x => x.id === id);
                 if(item) {
                     let dNo = item.designNumber || item.designNo;
-                    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                    if(!designSpecs[dNo]) designSpecs[dNo] = {};
-                    designSpecs[dNo].status = newStatus;
-                    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-                    if (window.firebaseSave) {
-                        await window.firebaseSave('design_specs', designSpecs);
+                    if(dNo) {
+                        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                        if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                        designSpecs[dNo].status = newStatus;
+                        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                        if (window.firebaseSave) {
+                            await window.firebaseSave('design_specs', designSpecs);
+                        }
                     }
                 }
 
@@ -856,9 +846,6 @@
             }
 
             if(btn) btn.innerText = origText;
-            
-            document.getElementById('orderDate').valueAsDate = new Date();
-            document.getElementById('deliveryDate').valueAsDate = new Date();
             
             var preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             var designSelect = document.getElementById('designNumber');
