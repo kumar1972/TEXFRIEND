@@ -10,7 +10,7 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        html, body { width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; }
+        html, body { width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; }
         body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
         
         .main-card {
@@ -66,7 +66,7 @@
         .btn-edit { background: linear-gradient(135deg, #3B82F6, #1D4ED8); width: 100%; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.15); margin-top: 10px; text-transform: uppercase; }
         .btn-add:hover, .btn-del:hover, .btn-edit:hover { transform: translateY(-2px); }
 
-        #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; text-align: center; }
+        #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; text-align: center; display: none; }
         #bitmapImgTag { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); cursor: zoom-in; }
 
         /* Modals */
@@ -80,49 +80,25 @@
             padding: 20px; display: flex; flex-direction: column; gap: 10px; text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         }
-        .choice-btn { background: #4A7C59; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .choice-btn { background: #4A7C59; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; display: block; }
         .choice-btn.gallery { background: #3B82F6; }
         .choice-btn.cancel { background: #EF4444; }
 
         /* 🔥 FULL SCREEN IMAGE MODAL */
         .fullscreen-modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background: rgba(0, 0, 0, 0.95); 
-            z-index: 999999; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 0; 
-            margin: 0;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0, 0, 0, 0.95); z-index: 999999; justify-content: center; align-items: center; padding: 0; margin: 0;
         }
         .fullscreen-modal img { 
-            width: 100vw; 
-            height: 100vh; 
-            max-width: 100vw; 
-            max-height: 100vh; 
-            object-fit: contain; 
-            border-radius: 0; 
-            display: block;
+            width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; object-fit: contain; border-radius: 0; display: block;
         }
         .close-fullscreen { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background: #EF4444; 
-            color: white; 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            font-size: 14px; 
-            cursor: pointer; 
-            z-index: 1000000; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            position: fixed; top: 20px; right: 20px; background: #EF4444; color: white; border: none; 
+            padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; z-index: 1000000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
         }
+
+        /* Hidden Input Fix */
+        .hidden-file-input { opacity: 0; position: absolute; z-index: -1; width: 0; height: 0; }
     </style>
 </head>
 <body>
@@ -157,7 +133,6 @@
             <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
         </div>
 
-        <!-- 📌 Type of Process Row Added Here -->
         <div class="form-row">
             <div class="form-group" style="flex: 1;"><label>Type of Process</label><input type="text" id="typeOfProcess" placeholder="e.g., Bleaching, Dyeing, Printing"></div>
         </div>
@@ -165,11 +140,12 @@
         <div class="form-group">
             <label>Design Bitmap / Photo Upload</label>
             <button type="button" class="custom-upload-btn" onclick="openChoiceModal()">📷 Take Photo / 🖼️ Choose from Gallery</button>
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelect(this)">
-            <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
+            
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden-file-input" onchange="handleFileSelect(this)">
+            <input type="file" id="galleryInput" accept="image/*" class="hidden-file-input" onchange="handleFileSelect(this)">
         </div>
 
-        <div id="bitmapPreviewBox" style="display:none;">
+        <div id="bitmapPreviewBox">
             <img id="bitmapImgTag" src="" alt="Bitmap" onclick="openFullscreenImage(this.src)">
         </div>
         
@@ -181,8 +157,8 @@
 <div id="choiceModal" class="choice-modal">
     <div class="choice-content">
         <h4>Select Image Source</h4>
-        <button class="choice-btn" onclick="triggerCamera()">📷 Take Photo (Camera)</button>
-        <button class="choice-btn gallery" onclick="triggerGallery()">🖼️ Choose from Gallery</button>
+        <label for="cameraInput" class="choice-btn" onclick="setTimeout(closeChoiceModal, 100)">📷 Camera</label>
+        <label for="galleryInput" class="choice-btn gallery" onclick="setTimeout(closeChoiceModal, 100)">🖼️ Gallery</label>
         <button class="choice-btn cancel" onclick="closeChoiceModal()">Cancel</button>
     </div>
 </div>
@@ -195,7 +171,7 @@
 <!-- JavaScript Core -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -210,11 +186,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function firebaseSave(key, data) {
-        try { await setDoc(doc(db, "texfriend_erp", key), { content: JSON.stringify(data) }); } 
-        catch (e) { console.error("Firebase Save Error: ", e); }
-    }
-
     async function firebaseLoad(key) {
         try {
             const docSnap = await getDoc(doc(db, "texfriend_erp", key));
@@ -226,18 +197,22 @@
     let designList = [];
     let tempBitmapData = "";
 
-    // 🔒 Universal Permission Checker Function
     function checkUserPermission() {
         let userRole = localStorage.getItem('user_role');
-        // Administrator அல்லது Admin தவிர மற்றவர்களுக்கு மட்டும் பெர்மிஷன் செக் செய்யும்
         if (userRole !== 'Administrator' && userRole !== 'Admin') {
             let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-            // settings.html-ல் உள்ள கீ வடிவமைப்புப்படி செக் செய்கிறது
-            if (permissions['design_master'] === false) {
-                return false; // பெர்மிஷன் இல்லை
-            }
+            if (permissions['design_master'] === false) { return false; }
         }
-        return true; // பெர்மிஷன் உண்டு
+        return true; 
+    }
+
+    function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+    
+    function getSpecKey(designNo) {
+        let specs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let clean = cleanDesignName(designNo);
+        let foundKey = Object.keys(specs).find(k => cleanDesignName(k) === clean);
+        return foundKey ? foundKey : designNo;
     }
 
     window.onload = async function() {
@@ -250,6 +225,7 @@
         designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
         loadDesignDropdown();
 
+        // 1. Load Design List
         let cloudDesigns = await firebaseLoad('pre_design_numbers');
         if(cloudDesigns) {
             designList = cloudDesigns;
@@ -257,16 +233,31 @@
             loadDesignDropdown();
         }
 
-        let cloudSpecs = await firebaseLoad('design_specs');
-        if(cloudSpecs) localStorage.setItem('design_specs', JSON.stringify(cloudSpecs));
-    }
+        // 2. Load Old Monolithic Data
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        let oldCloudSpecs = await firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
 
-    function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+        // 3. Load New Individual Document Data
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No new individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+            if(document.getElementById('designSelect').value) {
+                selectDesign(document.getElementById('designSelect').value);
+            }
+        }
+    }
 
     window.openChoiceModal = () => document.getElementById('choiceModal').style.display = 'flex';
     window.closeChoiceModal = () => document.getElementById('choiceModal').style.display = 'none';
-    window.triggerCamera = () => { closeChoiceModal(); document.getElementById('cameraInput').click(); }
-    window.triggerGallery = () => { closeChoiceModal(); document.getElementById('galleryInput').click(); }
 
     window.openFullscreenImage = (src) => { 
         if(!src || src === '' || src === 'null') return;
@@ -275,12 +266,14 @@
     }
     window.closeFullscreenImage = () => { document.getElementById('fullscreenModal').style.display = 'none'; }
 
+    // 🚀 CLARITY RESTORED: Increased resolution to 1200x1200 and quality to 0.85 for HD output
     window.handleFileSelect = function(input) {
         if (input.files && input.files[0]) {
-            compressImage(input.files[0], 800, 800, 0.75, function(compressedB64) {
+            compressImage(input.files[0], 1200, 1200, 0.85, function(compressedB64) {
                 tempBitmapData = compressedB64;
                 document.getElementById('bitmapImgTag').src = tempBitmapData;
                 document.getElementById('bitmapPreviewBox').style.display = 'block';
+                input.value = ''; 
             });
         }
     }
@@ -304,12 +297,8 @@
     }
 
     window.addDesign = async function() {
-        // 🔒 Absolute Guard: Block saving immediately if permission is false
-        if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to save entries on this page. ❌");
-            return;
-        }
-
+        if (!checkUserPermission()) { alert("Access Denied!"); return; }
+        
         let designNo = document.getElementById('newDesign').value.trim();
         if(!designNo) { alert("Design Number type pannu"); return; }
 
@@ -317,14 +306,11 @@
         let alreadyExists = designList.some(d => cleanDesignName(d) === cleanDNo);
 
         if(alreadyExists) {
-            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) {
-                return; 
-            }
+            if(!confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?")) return;
             designList = designList.filter(d => cleanDesignName(d) !== cleanDNo);
         }
 
-        document.getElementById('addBtn').innerText = "Saving...";
+        document.getElementById('addBtn').innerText = "Saving...⏳";
         designList.push(designNo);
         
         let specs = { 
@@ -340,39 +326,43 @@
         };
         
         let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
-        designSpecs[specKey] = specs;
+        let key = getSpecKey(designNo);
+        designSpecs[key] = specs; 
         
-        localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-        localStorage.setItem('selected_design_number', designNo);
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        try {
+            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+            localStorage.setItem('selected_design_number', designNo);
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
-        await firebaseSave('pre_design_numbers', designList);
-        await firebaseSave('design_specs', designSpecs);
+            await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify(designList) });
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(specs) });
 
-        document.getElementById('addBtn').innerText = "+ Add";
-        loadDesignDropdown();
-        document.getElementById('newDesign').value = '';
-        alert("Design Saved Successfully! ✅");
+            tempBitmapData = ""; 
+            loadDesignDropdown();
+            document.getElementById('newDesign').value = '';
+            alert("Design Saved Successfully! ✅");
+        } catch (err) {
+            alert("Error saving: " + err.message);
+        } finally {
+            document.getElementById('addBtn').innerText = "+ Add";
+        }
     }
 
     window.updateDesign = async function() {
-        // 🔒 Absolute Guard: Block updating immediately if permission is false
-        if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to update entries on this page. ❌");
-            return;
-        }
-
+        if (!checkUserPermission()) { alert("Access Denied!"); return; }
+        
         let designNo = document.getElementById('designSelect').value;
-        if(!designNo) { alert("Select Design!"); return; }
+        if(!designNo) { alert("Select Design First!"); return; }
         
-        document.getElementById('editBtn').innerText = "Updating...";
-        let cleanDNo = cleanDesignName(designNo);
+        document.getElementById('editBtn').innerText = "Updating...⏳";
+        
         let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || designNo;
+        let key = getSpecKey(designNo);
+        let existing = designSpecs[key] || {};
         
-        let existing = designSpecs[specKey] || {};
-        designSpecs[specKey] = { 
+        let finalBitmap = (tempBitmapData && tempBitmapData !== "") ? tempBitmapData : (existing.bitmap || "");
+
+        let updatedSpecs = { 
             warp: document.getElementById('warpCount').value, 
             warp2: document.getElementById('warpCount2').value, 
             weft: document.getElementById('weftCount').value, 
@@ -382,43 +372,54 @@
             weave: document.getElementById('weave').value, 
             typeOfProcess: document.getElementById('typeOfProcess').value, 
             status: existing.status || 'running',
-            bitmap: tempBitmapData || existing.bitmap 
+            bitmap: finalBitmap 
         };
+
+        designSpecs[key] = updatedSpecs;
         
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-        await firebaseSave('design_specs', designSpecs);
-        document.getElementById('editBtn').innerText = "✏️ Update / Edit Design";
-        alert("Updated successfully! ✅");
+        try {
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(updatedSpecs) });
+            
+            tempBitmapData = ""; 
+            alert("Updated successfully! ✅");
+        } catch (err) {
+            alert("Error updating! " + err.message);
+        } finally {
+            document.getElementById('editBtn').innerText = "✏️ Update / Edit Design";
+        }
     }
 
     window.deleteDesign = async function() {
-        // 🔒 Absolute Guard: Block deleting immediately if permission is false
-        if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to delete entries on this page. ❌");
-            return;
-        }
-
+        if (!checkUserPermission()) { alert("Access Denied!"); return; }
+        
         let designNo = document.getElementById('designSelect').value;
         if(!designNo) return;
         
         if(confirm(designNo + " delete pannalama?")){
-            document.getElementById('delBtn').innerText = "Del...";
+            document.getElementById('delBtn').innerText = "Del...⏳";
+            
             designList = designList.filter(x => x != designNo);
             
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDesignName(designNo));
-            if(specKey) delete designSpecs[specKey];
+            let key = getSpecKey(designNo);
+            if(designSpecs[key]) delete designSpecs[key];
             
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            localStorage.removeItem('selected_design_number');
+            try {
+                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                localStorage.removeItem('selected_design_number');
 
-            await firebaseSave('pre_design_numbers', designList);
-            await firebaseSave('design_specs', designSpecs);
+                await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify(designList) });
+                await deleteDoc(doc(db, "designs", key));
 
-            document.getElementById('delBtn').innerText = "Delete";
-            loadDesignDropdown();
-            clearForm();
+                loadDesignDropdown();
+                clearForm();
+            } catch (err) {
+                alert("Error deleting! " + err.message);
+            } finally {
+                document.getElementById('delBtn').innerText = "Delete";
+            }
         }
     }
 
@@ -436,33 +437,37 @@
 
     window.selectDesign = function(val){
         localStorage.setItem('selected_design_number', val);
+        tempBitmapData = ""; 
+
         if(val) {
             let specs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(val)) || val;
-            let data = specs[specKey] || {};
+            let key = getSpecKey(val);
+            let data = specs[key] || {};
 
-            document.getElementById('warpCount').value = data.warp || data.count1 || '';
-            document.getElementById('warpCount2').value = data.warp2 || data.count2 || '';
+            document.getElementById('warpCount').value = data.warp || '';
+            document.getElementById('warpCount2').value = data.warp2 || '';
             document.getElementById('weftCount').value = data.weft || '';
-            document.getElementById('width').value = data.width || data.baseWidth || '';
-            document.getElementById('reed').value = data.reed || data.baseReed || '';
-            document.getElementById('pick').value = data.pick || data.basePick || '';
+            document.getElementById('width').value = data.width || '';
+            document.getElementById('reed').value = data.reed || '';
+            document.getElementById('pick').value = data.pick || '';
             document.getElementById('weave').value = data.weave || '';
             document.getElementById('typeOfProcess').value = data.typeOfProcess || '';
             
-            if(data.bitmap) {
-                tempBitmapData = data.bitmap;
+            if(data.bitmap && data.bitmap !== "") {
                 document.getElementById('bitmapImgTag').src = data.bitmap;
                 document.getElementById('bitmapPreviewBox').style.display = 'block';
             } else { 
-                tempBitmapData = ""; document.getElementById('bitmapPreviewBox').style.display = 'none'; 
+                document.getElementById('bitmapImgTag').src = "";
+                document.getElementById('bitmapPreviewBox').style.display = 'none'; 
             }
         } else { clearForm(); }
     }
 
     function clearForm() {
         document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
-        tempBitmapData = ""; document.getElementById('bitmapPreviewBox').style.display = 'none';
+        tempBitmapData = ""; 
+        document.getElementById('bitmapImgTag').src = "";
+        document.getElementById('bitmapPreviewBox').style.display = 'none';
     }
 </script>
 </body>
