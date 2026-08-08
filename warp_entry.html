@@ -310,7 +310,7 @@ function loadDesignData() {
     document.getElementById('infoOrderMtr').value = ''; document.getElementById('infoTopBeam').value = '';
     document.getElementById('infoType').value = 'Plain'; document.getElementById('infoReed').value = '';
     document.getElementById('infoPick').value = ''; document.getElementById('infoWidth').value = '';
-    if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status'].checked = false;
+    if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status').checked = false;
 
     if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
 
@@ -320,12 +320,10 @@ function loadDesignData() {
     currentBaseSpecs = specKey ? specs[specKey] : {};
 
     let baseReed = parseFloat(currentBaseSpecs.reed || currentBaseSpecs.baseReed) || 0;
-    let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick || currentBaseSpecs.finishPick || 72) || 72;
-    let autoReed = baseReed > 0 ? (baseReed - 8) : ''; 
-    
-    // 📌 76 என்று வருவதற்குப் பதிலாக சரியான ஒரிஜினல் Pick மதிப்பை (எ.கா. 72) இங்கே ஆட்டோ ஃபில் செய்யும்படி சரிசெய்யப்பட்டுள்ளது
-    let autoPick = basePick;
+    let basePick = parseFloat(currentBaseSpecs.pick || currentBaseSpecs.basePick) || 0;
+    let autoReed = baseReed > 0 ? (baseReed - 8) : ''; let autoPick = basePick > 0 ? (basePick - 4) : '';
 
+    // 📌 கட்சி ஆர்டர்களில் இருந்து Production Metres மதிப்பை உறுதியாக கண்டறிந்து எடுக்கும் முறை
     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
     let matchedOrder = orders.find(o => {
         let orderDesign = o.designNumber || o.designNo || o.designName || '';
@@ -348,13 +346,14 @@ function loadDesignData() {
         document.getElementById('infoCount1').value = found.count1 || currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = found.count2 || currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         
+        // 📌 கட்சி ஆர்டரில் உள்ள Production Metres-க்கு எப்போதுமே முதல் முன்னுரிமை வழங்கப்படும்
         let finalMtrToFill = matchedProdMtr > 0 ? matchedProdMtr : (found.orderMtr || '');
         document.getElementById('infoOrderMtr').value = finalMtrToFill;
         
         document.getElementById('infoTopBeam').value = found.topBeam || '';
         document.getElementById('infoType').value = found.type || 'Plain';
         document.getElementById('infoReed').value = found.reed || autoReed;
-        document.getElementById('infoPick').value = found.pick || autoPick; // 📌 Master இல் சேமிக்கப்பட்ட Pick (72)
+        document.getElementById('infoPick').value = found.pick || autoPick;
 
         if(found.warpLines && found.warpLines.length > 0) { found.warpLines.forEach(l => addWarpLine(l.count, l.color, l.beam || 'Ground', l.ends)); } 
         else { loadDefaultRow(); }
@@ -364,12 +363,12 @@ function loadDesignData() {
         document.getElementById('infoCount1').value = currentBaseSpecs.warp || currentBaseSpecs.count1 || '';
         document.getElementById('infoCount2').value = currentBaseSpecs.warp2 || currentBaseSpecs.count2 || '';
         
+        // 📌 புதிய என்ட்ரி என்றால் Production Metres மதிப்பை Order Mtrs-ல் ஆட்டோ ஃபில் செய்யும்
         if (matchedProdMtr > 0) {
             document.getElementById('infoOrderMtr').value = matchedProdMtr;
         }
         
-        document.getElementById('infoReed').value = autoReed; 
-        document.getElementById('infoPick').value = autoPick; // 📌 Default Pick (72)
+        document.getElementById('infoReed').value = autoReed; document.getElementById('infoPick').value = autoPick;
         loadDefaultRow();
     }
     calculateOnloomWidth(); updateLineNumbers();
@@ -744,7 +743,7 @@ function previewPattern() {
         let breakdownHtml = Object.keys(countTotals).map(c => `<span style="color:#1E2B23;"><b>${c}</b>: ${countTotals[c]} Ends</span>`).join(' &nbsp;&nbsp;|&nbsp;&nbsp; ');
         html += `<tr style="font-size:11px; background:#EAF0EA;">
             <td colspan="2" style="padding:10px; text-align:center;">
-                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase; font-size:11px;">Count Wise Total:</span> ${breakdownHtml}
+                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;">Count Wise Total:</span> ${breakdownHtml}
             </td>
         </tr>`;
     }
@@ -767,7 +766,7 @@ function previewPattern() {
 
     window.addEventListener('load', async function() {
         if (!checkUserPermission()) {
-            alert("Access Denied! You do not have permission to access this page. ❌");
+            authorizationAlert();
             window.location.href = "dashboard.html";
             return;
         }
