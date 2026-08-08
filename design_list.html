@@ -177,10 +177,13 @@ window.toggleRecordStatus = async function(storageKey, index, isChecked) {
 // 📌 FIREBASE SYNC: Toggle Status for Base Design (in Total Saved Designs)
 window.toggleBaseDesignStatus = async function(dNo, isChecked) {
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    if(!specs[dNo]) specs[dNo] = {}; // Ensure object exists
+    let clean = cleanDesignName(dNo);
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === clean) || dNo;
+    
+    if(!specs[specKey]) specs[specKey] = {}; // Ensure object exists
     
     let newStatus = isChecked ? 'Completed' : 'Running';
-    specs[dNo].status = newStatus;
+    specs[specKey].status = newStatus;
     localStorage.setItem('design_specs', JSON.stringify(specs));
     
     let titleElem = document.getElementById('pageTitle');
@@ -189,6 +192,10 @@ window.toggleBaseDesignStatus = async function(dNo, isChecked) {
     
     if (window.firebaseSave) {
         await window.firebaseSave('design_specs', specs);
+    }
+    // 🚀 NEW: Save individual HD design status too if applicable
+    if (window.firebaseSaveIndividual) {
+        await window.firebaseSaveIndividual(specKey, specs[specKey]);
     }
     
     titleElem.innerText = origTitle;
@@ -227,7 +234,9 @@ window.renderDesignList = function() {
                 if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; // Filter skip
             }
 
-            let s = specs[dNo] || {};
+            let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
+            let s = specs[specKey] || {};
+            
             let orderItems = orders.filter(o => o.designNo === dNo || o.designNumber === dNo);
             let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
             
@@ -271,10 +280,9 @@ window.renderDesignList = function() {
         let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
         
         orders.forEach((o, index) => {
-            // Apply Design Filter
             let dNo = o.designNo || o.designNumber || '';
             if(designFilter !== 'all' && designFilter !== '') {
-                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; // Filter skip
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; 
             }
 
             let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
@@ -285,7 +293,6 @@ window.renderDesignList = function() {
             let isCompleted = (currentStatus === 'completed' || currentStatus === 'received');
             let isRunning = !isCompleted;
 
-            // Apply Status Filter
             if (status === 'running' && !isRunning) return;
             if (status === 'completed' && !isCompleted) return;
 
@@ -316,7 +323,7 @@ window.renderDesignList = function() {
         });
     } 
     
-    // --- 3. OTHER MODULES (Weaving, Dyeing, Warping, Washing, Despatch) ---
+    // --- 3. OTHER MODULES ---
     else {
         let storageKey = type + '_issue_records';
         if(type === 'despatch') storageKey = 'despatch_records';
@@ -328,10 +335,9 @@ window.renderDesignList = function() {
         theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Date</th><th>Unit / Name</th><th>Design</th><th>Value (${valUnit})</th><th>Status (Tick to Complete)</th></tr>`;
 
         records.forEach((r, index) => {
-            // Apply Design Filter
             let dNo = r.designNo || r.designNumber || '';
             if(designFilter !== 'all' && designFilter !== '') {
-                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; // Filter skip
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return; 
             }
 
             let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
@@ -342,7 +348,6 @@ window.renderDesignList = function() {
             let isCompleted = (currentStatus === 'completed' || currentStatus === 'received');
             let isRunning = !isCompleted;
 
-            // Apply Status Filter
             if (status === 'running' && !isRunning) return;
             if (status === 'completed' && !isCompleted) return;
 
@@ -400,7 +405,7 @@ window.renderDesignList = function() {
 <!-- 📌 Firebase App SDK (CDN) & Core Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
@@ -435,6 +440,14 @@ window.renderDesignList = function() {
         }
     }
 
+    window.firebaseSaveIndividual = async function(key, data) {
+        try {
+            await setDoc(doc(db, "designs", key), { content: JSON.stringify(data) });
+        } catch (e) {
+            console.error("Firebase Save Individual Error: ", e);
+        }
+    }
+
     window.addEventListener('load', async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const type = urlParams.get('type') || 'all';
@@ -442,7 +455,7 @@ window.renderDesignList = function() {
         let collectionsToFetch = [];
         
         if (type === 'all') {
-            collectionsToFetch = ['pre_design_numbers', 'design_specs', 'party_orders_data'];
+            collectionsToFetch = ['pre_design_numbers', 'party_orders_data']; // Removed design_specs, handling HD below
         } else if (type === 'order' || type === 'party_orders') {
             collectionsToFetch = ['party_orders_data'];
         } else if (type === 'despatch') {
@@ -453,11 +466,34 @@ window.renderDesignList = function() {
             collectionsToFetch = [`${type}_issue_records`];
         }
 
+        // Standard Collections
         for(let col of collectionsToFetch) {
             let data = await window.firebaseLoad(col);
             if (data) localStorage.setItem(col, JSON.stringify(data));
         }
 
+        // 🚀 NEW HD IMAGE SYNC LOGIC (Merging Old & New Structure)
+        let mergedSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+        
+        // Load Old Monolithic Data
+        let oldCloudSpecs = await window.firebaseLoad('design_specs');
+        if(oldCloudSpecs) {
+            Object.assign(mergedSpecs, oldCloudSpecs);
+        }
+
+        // Load New Individual Document Data (HD Images from 'designs' collection)
+        try {
+            const querySnapshot = await getDocs(collection(db, "designs"));
+            querySnapshot.forEach((doc) => {
+                mergedSpecs[doc.id] = JSON.parse(doc.data().content);
+            });
+        } catch(e) { console.log("No HD individual designs found yet."); }
+
+        if(Object.keys(mergedSpecs).length > 0) {
+            localStorage.setItem('design_specs', JSON.stringify(mergedSpecs));
+        }
+
+        // Render after all fetching is done
         if(window.renderDesignList) {
             window.renderDesignList();
         }
