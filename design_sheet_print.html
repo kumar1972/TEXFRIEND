@@ -744,7 +744,6 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
         }
     } else {
         let width = parseFloat(foundMaster.weftWidth || foundMaster.width || sp.width || 67.44) || 67.44;
-        // 📌 Weft Entry பக்கத்தில் உள்ள அதே முறையைப் பின்பற்றி Weft Width மற்றும் சரியான Pick மதிப்பை (actualPick) கொண்டு கணக்கிடுதல்
         let pickNum = actualPick; 
         finalGrandTotal = width * pickNum;
     }
@@ -752,7 +751,7 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
     let summaryHtml = '';
     if(type === 'weft') {
         let storedWidthVal = parseFloat(foundMaster.weftWidth) || (parseFloat(foundMaster.width || sp.width || 0) > 0 ? parseFloat(foundMaster.width || sp.width || 0) + 3 : 67.44);
-        let pickNum = actualPick; // 📌 இங்கே சரியான 72 (actualPick) பயன்படுத்தப்படும்
+        let pickNum = actualPick; 
         
         summaryHtml += `<div class="line-1">Total Pattern ${unitName}: <b>${pureSum}</b></div>`;
         summaryHtml += `<div>Weft Width ${storedWidthVal} X Pick ${pickNum} = <b>${finalGrandTotal.toFixed(2)} Total Pick</b></div>`;
