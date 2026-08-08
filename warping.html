@@ -656,8 +656,12 @@ function loadTopDesignSpecs(dNo) {
 
     let reed = found.reed || sp.reed || sp.baseReed || 52;
     let count1 = found.count1 || sp.warp || '20';
-    let baseOrderMtr = parseFloat(found.orderMtr) || 100;
-    let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
+    
+    // 📌 Yarn Calculation பக்கத்தில் சேமிக்கப்பட்ட orderMtr மதிப்பை எடுத்தல்
+    let yarnCalcOrderMtr = parseFloat(sp.orderMtr) || 0;
+    
+    // 📌 அந்த மதிப்பில் இருந்து 5% குறைத்து Warping Mts-ல் ஆட்டோ ஃபில் செய்தல் (Warping Mts = Order Mtr - 5%)
+    let warpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
 
     let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
     if (existingIssues.length > 0) {
@@ -665,7 +669,7 @@ function loadTopDesignSpecs(dNo) {
         if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
         if(existingIssues[0].warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = existingIssues[0].warpingMts;
     } else {
-        document.getElementById('topWarpingMts').value = warpingMts.toFixed(2);
+        document.getElementById('topWarpingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
         document.getElementById('topUnit').value = '';
         if(document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = '';
     }
