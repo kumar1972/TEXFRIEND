@@ -416,10 +416,31 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // 🛡️ பாதுகாப்பான Clear Cache (யூசர்கள் மற்றும் செட்டிங்ஸ் அழியாது)
     window.resetLocalStorageOnly = function() {
-        if(confirm("⚠️ WARNING: This will clear local cache on this device only. Cloud data remains safe. Continue?")) {
+        if(confirm("⚠️ WARNING: This will clear temporary local cache, but your saved Users, Permissions and Settings will remain safe. Continue?")) {
+            // முக்கியமான யூசர் மற்றும் செட்டிங்ஸ் டேட்டாவை மட்டும் காப்புப் பிரதி (Backup) எடுத்துக்கொள்கிறோம்
+            let savedUsers = localStorage.getItem('erp_system_users');
+            let savedPermissions = localStorage.getItem('user_permissions');
+            let appHeading = localStorage.getItem('app_heading_name');
+            let compAddress = localStorage.getItem('company_full_address');
+            let compLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
+
+            // லோக்கல் ஸ்டோரேஜை முழுமையாகக் காலியாக்குகிறோம்
             localStorage.clear();
-            alert("Local storage cleared successfully! ✅");
+
+            // பாதுகாத்து வைத்த முக்கியமான செட்டிங்ஸ் & யூசர் விபரங்களை மீண்டும் திருப்புகிறோம்
+            if(savedUsers) localStorage.setItem('erp_system_users', savedUsers);
+            if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
+            if(appHeading) localStorage.setItem('app_heading_name', appHeading);
+            if(compAddress) localStorage.setItem('company_full_address', compAddress);
+            if(compLogo) {
+                localStorage.setItem('company_logo_base64', compLogo);
+                localStorage.setItem('company_logo', compLogo);
+                localStorage.setItem('logo', compLogo);
+            }
+
+            alert("Local cache cleared successfully! (Users and settings are safely preserved) ✅");
             location.reload();
         }
     }
