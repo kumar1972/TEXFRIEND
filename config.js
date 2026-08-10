@@ -130,3 +130,14 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }, 300);
 });
+// 🌟 TEXFRIEND - Master Data List (Mills, Weavers, Counts, Colours, Washing, etc.)
+window.texMasterList = {
+    mills: ["Mill 1", "Mill 2"],
+    weavers: ["Weaver A", "Weaver B"],
+    dyeingNames: ["Dyeing Unit 1", "Dyeing Unit 2"],
+    warpingNames: ["Warping Unit 1"],
+    sizingNames: ["Sizing Unit 1"],
+    washingNames: ["Washing Unit 1", "Washing Unit 2"],
+    counts: ["2/40s", "2/60s", "30s"],
+    colours: ["White", "Black", "Navy Blue", "Maroon"]
+};
