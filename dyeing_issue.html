@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dyeing Issue - TEXFRIEND</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        /* 📌 Smart Background - STRICTLY NO BLACK */
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #030712; 
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 📌 Main Container */
+        .main-card {
+            width: 100%;
+            max-width: 900px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+
+        /* 📌 Smart Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        /* Checkbox Styling for Top Right */
+        .completed-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #D8DFD6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .completed-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #526E51;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .completed-checkbox label {
+            margin: 0;
+            color: #3F5A3E;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #bitmapDisplayContainer {
+            text-align: right;
+        }
+        #bitmapDisplayContainer img {
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        .card-header {
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            color: #2F4F38;
+            text-align: left;
+            position: relative;
+            padding-left: 12px;
+        }
+        .card-header::before {
+            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+            background: #4A7C59; border-radius: 4px;
+        }
+
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #4A554A;
+            white-space: nowrap;
+        }
+
+        /* 📌 Smart 3D Inputs */
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #D1DED1;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+        }
+
+        input:focus, select:focus {
+            border-color: #4A7C59;
+            outline: none;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+
+        /* 📌 Advanced Issue Grid (Updated with Mill Name column) */
+        .issue-grid-header {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
+            gap: 6px;
+            padding: 0 4px;
+            margin-bottom: 8px;
+        }
+
+        .issue-grid-header div {
+            font-size: 10px;
+            font-weight: 700;
+            color: #4A7C59;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .line-row {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1fr 36px;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .line-row input {
+            padding: 10px 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .del-row-btn {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .del-row-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+        /* 📌 Premium Totals Box */
+        .totals-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: linear-gradient(135deg, #F4F7F4, #EAF0EA);
+            border: 1px dashed #4A7C59;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #2F4F38;
+        }
+        .total-item span:last-child {
+            background: #FFFFFF;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #D1DED1;
+            min-width: 80px;
+            text-align: center;
+            color: #10B981; 
+        }
+
+        /* 📌 Smart Buttons */
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 0 0;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-main:active { transform: translateY(1px); }
+
+        .popup-trigger-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        .popup-trigger-btn:active { transform: translateY(1px); }
+
+        /* 📌 Advanced Pop-up Modal Styling */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
+
+        /* 📌 Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* 📌 Advanced Table Design with Horizontal Scroll */
+        .table-container {
+            width: 100%; border-radius: 10px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
+        th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
+
+        tfoot td {
+            background: #F4F7F4;
+            color: #2F4F38;
+            font-weight: 700;
+            border-top: 2px solid #D1DED1;
+            position: sticky; bottom: 0; z-index: 10;
+        }
+        
+        .action-btns { display: flex; gap: 6px; justify-content: center; }
+        .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .edit-action-btn:hover { background: #475569; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
+        .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
+
+        /* Custom Checkbox Container */
+        .checkbox-container {
+            background: #F8FAF8; padding: 12px 15px; border-radius: 10px; 
+            margin-bottom: 12px; display: flex; align-items: center; 
+            justify-content: space-between; border: 1px dashed #A0AFA0;
+        }
+
+        /* Action buttons in modal */
+        .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
+        </div>
+    </div>
+
+    <h2 class="card-header">Dyeing Issue (Warp + Weft)</h2>
+
+    <!-- 📌 Section: Issue Details -->
+    <div class="form-section" style="margin-top: 10px;">
+        <div class="section-badge">Issue Info</div>
+        <div class="form-group">
+            <label>Issue Date</label>
+            <input type="date" id="issueDate">
+        </div>
+        <div class="form-group">
+            <label>Select Design Number</label>
+            <select id="designNumber" onchange="loadDesignItems()">
+                <option value="">Select Design No</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 📌 Section: Yarn Issue Entry -->
+    <div class="form-section" style="padding-bottom: 10px;">
+        <div class="section-badge">Yarn Details</div>
+        
+        <div class="checkbox-container">
+            <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #4A7C59; cursor: pointer; margin:0;">🔗 Combine Warp + Weft (Same Count & Colour)</label>
+            <input type="checkbox" id="combineToggle" checked onchange="loadDesignItems()" style="width: 18px; height: 18px; accent-color: #4A7C59; cursor: pointer;">
+        </div>
+
+        <div style="margin-top: 10px; overflow-x: auto;">
+            <div style="min-width: 600px;">
+                <div class="issue-grid-header">
+                    <div>Count</div>
+                    <div>Mill Name</div>
+                    <div>Colour</div>
+                    <div>Ord Wt</div>
+                    <div>Iss Wt</div>
+                    <div>Dyeing Unit</div>
+                    <div></div>
+                </div>
+                <div id="issueLinesContainer"></div>
+            </div>
+        </div>
+
+        <div class="totals-box">
+            <div class="total-item">
+                <span>Total Balance Ord Wt:</span>
+                <span id="sumOrdWt">0.000</span>
+            </div>
+            <div class="total-item">
+                <span>Total Iss Wt:</span>
+                <span id="sumIssWt">0.000</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-main" id="saveIssueBtnTxt" onclick="saveIssueEntries()">✅ Save Dyeing Order Issue</button>
+
+    <!-- 📌 Popup Button for Issued Orders List -->
+    <button class="popup-trigger-btn" onclick="openModal('issuedListModal')">📊 View Issued Orders List</button>
+</div>
+
+<!-- Full-Screen Pop-up Modal for Issued Orders List -->
+<div id="issuedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 Issued Orders Registry</h3>
+            <button class="close-btn" onclick="closeModal('issuedListModal')">Close ✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Dyeing Unit</th>
+                            <th>Design No</th>
+                            <th>Type</th>
+                            <th>Count</th>
+                            <th>Mill Name</th>
+                            <th>Colour</th>
+                            <th>Ord Wt</th>
+                            <th>Iss Wt</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="issuedListBody">
+                        <!-- Records go here -->
+                    </tbody>
+                    <tfoot id="issuedListFoot">
+                        <!-- Grand Total goes here -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
+<script>
+let editingIssueId = null;
+
+// 🔒 Universal Permission Checker Function for Dyeing Issue
+function checkUserPermission() {
+    let userRole = localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['dyeing_issue'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 🔒 Page Access Check on Load
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
+    document.getElementById('issueDate').valueAsDate = new Date();
+    // loadDesignDropdowns(); and renderIssuedList(); are called in Firebase window.onload
+});
+
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+    if(modalId === 'issuedListModal') {
+        renderIssuedList(); 
+    }
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
+        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    } else {
+        bitmapContainer.innerHTML = '';
+    }
+}
+
+// 🔥 ROBUST LOAD DESIGN DROPDOWN CHECKING MULTIPLE KEYS
+function loadDesignDropdowns() {
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || 
+                        JSON.parse(localStorage.getItem('design_master')) || 
+                        JSON.parse(localStorage.getItem('design_specs')) || [];
+    
+    if (!Array.isArray(designMasters) && typeof designMasters === 'object') {
+        designMasters = Object.keys(designMasters).map(k => ({ name: k, ...designMasters[k] }));
+    }
+
+    let select = document.getElementById('designNumber');
+    let html = '<option value="">Select Design No</option>';
+    
+    if (designMasters.length > 0) {
+        designMasters.forEach(function(d) {
+            let dName = d.name || d.designNo || d.designNumber;
+            if(dName) {
+                html += '<option value="' + dName + '">' + dName + '</option>';
+            }
+        });
+    }
+    
+    select.innerHTML = html;
+    document.getElementById('bitmapDisplayContainer').innerHTML = '';
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign) {
+        let match = designMasters.find(d => (d.name || d.designNo || d.designNumber) === activeDesign);
+        if(match) {
+            select.value = activeDesign;
+            loadDesignItems();
+        }
+    }
+}
+
+function resolvePattern(lines, ranges, type, defaultCount) {
+    if(!lines || lines.length === 0) return [];
+    let covered = new Array(lines.length).fill(false);
+    let orderedPattern = [];
+
+    if(ranges && ranges.length > 0) {
+        ranges.forEach(r => {
+            for(let s=0; s<r.set; s++) {
+                for(let j = r.start; j <= r.end; j++) {
+                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                }
+            }
+            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+        });
+    }
+    lines.forEach((l, idx) => {
+        if(!covered[idx]) orderedPattern.push({...l});
+    });
+
+    let exactSequence = [];
+    orderedPattern.forEach(item => {
+        let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+        let clr = item.color ? String(item.color).trim() : '-';
+        for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
+    });
+
+    let summaryMap = new Map();
+    let order = [];
+    exactSequence.forEach(item => {
+        let key = item.count.toLowerCase() + "||" + item.color.toLowerCase().trim();
+        if(!summaryMap.has(key)) {
+            summaryMap.set(key, { count: item.count, color: item.color.trim(), patternVal: 0 });
+            order.push(key);
+        }
+        summaryMap.get(key).patternVal++;
+    });
+
+    return order.map(k => summaryMap.get(k));
+}
+
+function parseYarnCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
+}
+
+function getMillNameFromKora(designNo, countStr) {
+    let koraRecords = JSON.parse(localStorage.getItem('kora_outward_records')) || [];
+    if(koraRecords.length === 0) return "";
+    
+    let cleanDNo = String(designNo).trim().toLowerCase();
+    let cleanCount = String(countStr).trim().toLowerCase();
+
+    let match = koraRecords.find(r => 
+        (String(r.designNo || r.designNumber || "").trim().toLowerCase() === cleanDNo) &&
+        (String(r.count || "").trim().toLowerCase() === cleanCount)
+    );
+
+    if (match && match.millName) {
+        return match.millName;
+    }
+    return "";
+}
+
+function loadDesignItems() {
+    loadBitmapImage();
+    renderIssuedList(); 
+    let dNo = document.getElementById('designNumber').value;
+    let container = document.getElementById('issueLinesContainer');
+    container.innerHTML = '';
+
+    if(!dNo) {
+        updateTotals();
+        return;
+    }
+
+    localStorage.setItem('selected_design_number', dNo);
+    let cleanDNo = cleanDesignName(dNo);
+    
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || 
+                            JSON.parse(localStorage.getItem('design_master')) || 
+                            JSON.parse(localStorage.getItem('design_specs')) || [];
+    if (!Array.isArray(designMastersList) && typeof designMastersList === 'object') {
+        designMastersList = Object.keys(designMastersList).map(k => ({ name: k, ...designMastersList[k] }));
+    }
+    let foundMaster = designMastersList.find(d => {
+        let name = d.name || d.designNo || d.designNumber;
+        return name && cleanDesignName(name) === cleanDNo;
+    }) || {};
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    let foundSpec = designSpecs[specKey] || {};
+
+    let specStatus = (foundSpec && foundSpec.status) ? foundSpec.status.toLowerCase() : '';
+    let existingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let rec = existingIssues.find(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
+
+    if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
+        document.getElementById('top_completed_status').checked = true;
+    } else {
+        document.getElementById('top_completed_status').checked = false;
+    }
+
+    let defaultWarpCount = foundMaster.count1 || foundSpec.warp || '20';
+    let defaultWeftCount = foundMaster.weftCount || foundSpec.weft || '40';
+
+    let uiReed = parseFloat(foundMaster.reed || foundSpec.reed || foundSpec.baseReed) || 52;
+    let baseWidth = parseFloat(foundMaster.width || foundSpec.width || foundSpec.baseWidth) || 66.92;
+    let totalWarpEnds = Math.round(uiReed * baseWidth);
+    let baseOrderMtr = parseFloat(foundMaster.orderMtr) || 100;
+    let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
+
+    let uiPick = parseFloat(foundMaster.pick || foundSpec.pick || foundSpec.basePick) || 56;
+    let weftWidth = parseFloat(foundMaster.weftWidth || foundSpec.weftWidth) || (baseWidth + 3);
+    let totalFabricPick = weftWidth * uiPick;
+    let weftMtrs = warpingMts * (0.94 / 0.95);
+
+    let warpList = resolvePattern(foundMaster.warpLines || [], foundMaster.warpRanges || [], 'warp', defaultWarpCount);
+    let weftList = resolvePattern(foundMaster.weftLines || [], foundMaster.weftRanges || [], 'weft', defaultWeftCount);
+
+    let combinedMap = new Map();
+    let isCombineChecked = document.getElementById('combineToggle').checked;
+
+    warpList.forEach(item => {
+        let calcCount = parseYarnCount(item.count) || parseYarnCount(defaultWarpCount) || 20;
+        let totalEndsForColor = item.patternVal * Math.floor(totalWarpEnds / (warpList.reduce((a,b)=>a+b.patternVal,0) || 1));
+        let weightKg = (totalEndsForColor * warpingMts) / (1693.33 * calcCount);
+        
+        let key = isCombineChecked ? (item.count.toLowerCase() + '_' + item.color.toLowerCase()) : ('warp_' + item.count.toLowerCase() + '_' + item.color.toLowerCase());
+        combinedMap.set(key, {
+            type: "Warp",
+            count: item.count,
+            color: item.color,
+            orderWt: weightKg
+        });
+    });
+
+    weftList.forEach(item => {
+        let calcCount = parseYarnCount(item.count) || parseYarnCount(defaultWeftCount) || 40;
+        let totalWeftPicks = (item.patternVal / (weftList.reduce((a,b)=>a+b.patternVal,0) || 1)) * totalFabricPick;
+        let weightKg = (totalWeftPicks * weftMtrs) / (1693.33 * calcCount);
+
+        let key = isCombineChecked ? (item.count.toLowerCase() + '_' + item.color.toLowerCase()) : ('weft_' + item.count.toLowerCase() + '_' + item.color.toLowerCase());
+        
+        if(combinedMap.has(key)) {
+            combinedMap.get(key).orderWt += weightKg;
+            if(isCombineChecked) combinedMap.get(key).type = "Combined";
+        } else {
+            combinedMap.set(key, {
+                type: "Weft",
+                count: item.count,
+                color: item.color,
+                orderWt: weightKg
+            });
+        }
+    });
+
+    let displayList = Array.from(combinedMap.values());
+    let cleanSelectedDNoForFilter = (dNo || "").trim().toLowerCase();
+    
+    displayList.forEach(item => {
+        let alreadyIssuedWt = 0;
+        existingIssues.forEach(rec => {
+            let rDno = (rec.designNo || rec.designNumber || rec.design || "").trim().toLowerCase();
+            let rCount = (rec.count || "").trim().toLowerCase();
+            let rColor = (rec.color || "").trim().toLowerCase();
+            
+            if(cleanDesignName(rDno) === cleanSelectedDNoForFilter && rCount === item.count.toLowerCase().trim() && rColor === item.color.toLowerCase().trim()) {
+                alreadyIssuedWt += (parseFloat(rec.issueWt) || 0);
+            }
+        });
+        
+        item.orderWt = item.orderWt - alreadyIssuedWt;
+    });
+
+    displayList = displayList.filter(item => item.orderWt > 0.005);
+
+    if(displayList.length > 0) {
+        displayList.forEach(item => {
+            let autofillMill = getMillNameFromKora(dNo, item.count);
+            let row = document.createElement('div');
+            row.className = 'line-row';
+            row.innerHTML = `
+                <input type="text" class="inp-count" value="${item.count}" readonly>
+                <input type="text" class="inp-mill" value="${autofillMill}" placeholder="Mill Name">
+                <input type="text" class="inp-color" value="${item.color}" readonly>
+                <input type="number" class="inp-ordwt" value="${item.orderWt.toFixed(3)}" step="0.001" readonly>
+                <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
+                <input type="text" class="inp-unit" placeholder="Dyeing Unit">
+                <input type="hidden" class="inp-type" value="${item.type}">
+                <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+            `;
+            container.appendChild(row);
+        });
+        updateTotals();
+    } else {
+        let autofillMill = getMillNameFromKora(dNo, '20/s');
+        let row = document.createElement('div');
+        row.className = 'line-row';
+        row.innerHTML = `
+            <input type="text" class="inp-count" value="20/s" placeholder="Count">
+            <input type="text" class="inp-mill" value="${autofillMill}" placeholder="Mill Name">
+            <input type="text" class="inp-color" value="White" placeholder="Colour">
+            <input type="number" class="inp-ordwt" value="0.000" step="0.001">
+            <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
+            <input type="text" class="inp-unit" placeholder="Dyeing Unit">
+            <input type="hidden" class="inp-type" value="Combined">
+            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+        `;
+        container.appendChild(row);
+        updateTotals();
+    }
+}
+
+function updateTotals() {
+    let ordWtInputs = document.querySelectorAll('.inp-ordwt');
+    let issWtInputs = document.querySelectorAll('.inp-isswt');
+
+    let totalOrd = 0;
+    let totalIss = 0;
+
+    ordWtInputs.forEach(inp => { totalOrd += parseFloat(inp.value) || 0; });
+    issWtInputs.forEach(inp => { totalIss += parseFloat(inp.value) || 0; });
+
+    document.getElementById('sumOrdWt').innerText = totalOrd.toFixed(3);
+    document.getElementById('sumIssWt').innerText = totalIss.toFixed(3);
+}
+
+// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
+async function quickCompleteToggle() {
+    // 🔒 Permission Check for Quick Complete Toggle
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to modify status on this page. ❌");
+        document.getElementById('top_completed_status').checked = !document.getElementById('top_completed_status').checked;
+        return;
+    }
+
+    let dNo = document.getElementById('designNumber').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        document.getElementById('top_completed_status').checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let updated = false;
+
+    records.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) {
+            r.status = statusText;
+            updated = true;
+        }
+    });
+
+    if(!updated) {
+        let dateVal = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
+        let firstRow = document.querySelector('.line-row');
+        let count = firstRow ? firstRow.querySelector('.inp-count').value : '20/s';
+        let mill = firstRow ? firstRow.querySelector('.inp-mill').value : '';
+        let color = firstRow ? firstRow.querySelector('.inp-color').value : 'General';
+        let ordWt = firstRow ? parseFloat(firstRow.querySelector('.inp-ordwt').value) || 0 : 0;
+        let issWt = firstRow ? parseFloat(firstRow.querySelector('.inp-isswt').value) || 0 : 0;
+        let unit = firstRow ? firstRow.querySelector('.inp-unit').value.trim() : 'Main Unit';
+        let type = firstRow ? firstRow.querySelector('.inp-type').value : 'Combined';
+
+        records.push({
+            id: Date.now(),
+            date: dateVal,
+            designNo: dNo,
+            yarnType: type,
+            count: count,
+            millName: mill,
+            color: color,
+            orderWt: ordWt.toFixed(3),
+            issueWt: issWt.toFixed(3),
+            unit: unit || 'Main Unit',
+            status: statusText
+        });
+    }
+
+    localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+
+    if(!designSpecs[specKey]) {
+        designSpecs[specKey] = {};
+    }
+    designSpecs[specKey].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_issue_records', records);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) {
+        console.error("Firebase Sync Error: ", e);
+    }
+
+    renderIssuedList();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
+// 📌 FIREBASE SYNC: saveIssueEntries with Re-entry Confirmation Popup & Double Entry Prevention
+async function saveIssueEntries() {
+    // 🔒 Absolute Guard: Block saving immediately if permission is false
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to save entries on this page. ❌");
+        return;
+    }
+
+    let dateVal = document.getElementById('issueDate').value;
+    let dNo = document.getElementById('designNumber').value;
+    let isCompleted = document.getElementById('top_completed_status').checked;
+
+    if(!dNo) {
+        alert("Please select a Design Number!");
+        return;
+    }
+
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let cleanDNo = cleanDesignName(dNo);
+
+    if(editingIssueId === null) {
+        let alreadyExists = records.some(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
+
+        if(alreadyExists) {
+            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+            if(!confirmReEntry) {
+                return; 
+            }
+            records = records.filter(r => cleanDesignName(r.designNo || r.designNumber) !== cleanDNo);
+        }
+    }
+
+    let container = document.getElementById('issueLinesContainer');
+    let rows = container.querySelectorAll('.line-row');
+    
+    if(rows.length === 0) {
+        alert("Please add at least one yarn item row.");
+        return;
+    }
+
+    let btn = document.getElementById('saveIssueBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "⏳ Saving to Cloud...";
+
+    let savedCount = 0;
+    
+    if(editingIssueId) {
+       let rowIndex = records.findIndex(r => r.id == editingIssueId);
+       if(rowIndex > -1) {
+           let row = rows[0]; 
+           records[rowIndex].date = dateVal;
+           records[rowIndex].designNo = dNo;
+           records[rowIndex].millName = row.querySelector('.inp-mill').value.trim();
+           records[rowIndex].issueWt = parseFloat(row.querySelector('.inp-isswt').value).toFixed(3) || "0.000";
+           records[rowIndex].unit = row.querySelector('.inp-unit').value.trim();
+           records[rowIndex].status = isCompleted ? "completed" : "running";
+           savedCount++;
+       }
+       editingIssueId = null; 
+    } else {
+        rows.forEach(row => {
+            let count = row.querySelector('.inp-count').value.trim();
+            let mill = row.querySelector('.inp-mill').value.trim();
+            let color = row.querySelector('.inp-color').value.trim();
+            let ordWt = parseFloat(row.querySelector('.inp-ordwt').value) || 0;
+            let issWt = parseFloat(row.querySelector('.inp-isswt').value) || 0;
+            let unit = row.querySelector('.inp-unit').value.trim();
+            let type = row.querySelector('.inp-type').value.trim();
+
+            if(!unit) unit = "Default Unit";
+
+            records.push({
+                id: Date.now() + Math.random(),
+                date: dateVal,
+                designNo: dNo,
+                yarnType: type,
+                count: count || '20/s',
+                millName: mill || '',
+                color: color || '-',
+                orderWt: ordWt.toFixed(3),
+                issueWt: (issWt > 0 ? issWt : ordWt).toFixed(3),
+                unit: unit,
+                status: isCompleted ? "completed" : "running"
+            });
+            savedCount++;
+        });
+    }
+
+    if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+        
+        if (window.firebaseSave) {
+            await window.firebaseSave('dyeing_issue_records', records);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+
+        alert("Dyeing Order Issues Saved to Cloud Successfully! ✅☁️");
+        
+        document.getElementById('issueLinesContainer').innerHTML = '';
+        document.getElementById('designNumber').value = '';
+        document.getElementById('top_completed_status').checked = false; 
+        updateTotals();
+        renderIssuedList();
+    } else {
+        alert("Please check your entry fields.");
+    }
+    btn.innerText = origText;
+}
+
+// 📌 EDIT RECORD FUNCTION
+async function editIssuedRecord(id) {
+    // 🔒 Permission Check for Edit
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to edit entries. ❌");
+        return;
+    }
+
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let rec = records.find(r => r.id == id);
+    if (!rec) return;
+
+    closeModal('issuedListModal');
+    editingIssueId = id; 
+
+    document.getElementById('issueDate').value = rec.date || new Date().toISOString().split('T')[0];
+    document.getElementById('designNumber').value = rec.designNo;
+    document.getElementById('top_completed_status').checked = (rec.status === 'completed');
+
+    let container = document.getElementById('issueLinesContainer');
+    container.innerHTML = '';
+    
+    let row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `
+        <input type="text" class="inp-count" value="${rec.count}" readonly>
+        <input type="text" class="inp-mill" value="${rec.millName || ''}">
+        <input type="text" class="inp-color" value="${rec.color}" readonly>
+        <input type="number" class="inp-ordwt" value="${rec.orderWt}" step="0.001" readonly>
+        <input type="number" class="inp-isswt" value="${rec.issueWt}" step="0.001" oninput="updateTotals()">
+        <input type="text" class="inp-unit" value="${rec.unit}">
+        <input type="hidden" class="inp-type" value="${rec.yarnType}">
+        <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+    `;
+    container.appendChild(row);
+    
+    updateTotals();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 📌 FIREBASE SYNC: toggleStatus
+async function toggleStatus(id, newStatus) {
+    // 🔒 Permission Check for Toggle Status
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to change status. ❌");
+        return;
+    }
+
+    let msg = newStatus === 'completed' ? "Change this issue to Completed?" : "Change this issue to Running?";
+    if(confirm(msg)) {
+        let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+        let recIndex = records.findIndex(r => r.id == id);
+        if(recIndex > -1) {
+            records[recIndex].status = newStatus;
+            localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+            
+            let dNo = records[recIndex].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+
+                if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                designSpecs[specKey].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+                
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+                if(window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                }
+            }
+
+            if(window.firebaseSave) {
+                await window.firebaseSave('dyeing_issue_records', records);
+            }
+            renderIssuedList();
+        }
+    }
+}
+
+// 📌 FIREBASE SYNC: deleteIssuedRecord
+async function deleteIssuedRecord(id) {
+    // 🔒 Permission Check for Delete
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to delete entries. ❌");
+        return;
+    }
+
+    if(!confirm("Are you sure you want to delete this record?")) return;
+    
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    records = records.filter(r => r.id != id);
+    
+    localStorage.setItem('dyeing_issue_records', JSON.stringify(records));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('dyeing_issue_records', records);
+    }
+    
+    renderIssuedList();
+}
+
+function renderIssuedList() {
+    let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let selectedDesign = document.getElementById('designNumber').value.trim();
+
+    if(selectedDesign) {
+        records = records.filter(r => cleanDesignName(r.designNo || r.designNumber) === cleanDesignName(selectedDesign));
+    }
+
+    let tbody = document.getElementById('issuedListBody');
+    let tfoot = document.getElementById('issuedListFoot');
+    tbody.innerHTML = '';
+    tfoot.innerHTML = '';
+
+    if(records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:15px; color:#A0AFA0;">No Dyeing Orders Issued for this design yet.</td></tr>`;
+        return;
+    }
+
+    let grandOrdWt = 0;
+    let grandIssWt = 0;
+
+    records.slice().reverse().forEach(record => {
+        let dObj = new Date(record.date);
+        let dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
+        
+        let oWt = parseFloat(record.orderWt) || 0;
+        let iWt = parseFloat(record.issueWt) || 0;
+        grandOrdWt += oWt;
+        grandIssWt += iWt;
+        
+        if(!record.status) record.status = "running";
+        let statusColor = record.status === 'running' ? '#D97706' : '#526E51';
+        let statusBtn = record.status === 'running' 
+            ? `<button class="action-complete" onclick="toggleStatus('${record.id}', 'completed')">Complete</button>` 
+            : `<button class="action-running" onclick="toggleStatus('${record.id}', 'running')">Running</button>`;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${dateStr}</td>
+                <td><b>${record.unit || '-'}</b></td>
+                <td><b>${record.designNo}</b></td>
+                <td>${record.yarnType || 'Combined'}</td>
+                <td>${record.count}</td>
+                <td>${record.millName || '-'}</td>
+                <td>${record.color}</td>
+                <td>${oWt.toFixed(3)}</td>
+                <td style="color:#10B981; font-weight:bold;">${iWt.toFixed(3)}</td>
+                <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${record.status}</td>
+                <td style="white-space:nowrap;">
+                    <div style="display: flex; gap: 4px; justify-content: center;">
+                        ${statusBtn}
+                        <button class="edit-action-btn" onclick="editIssuedRecord('${record.id}')" title="Edit">✏️</button>
+                        <button class="del-action-btn" onclick="deleteIssuedRecord('${record.id}')" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tfoot.innerHTML = `
+        <tr>
+            <td colspan="7" style="text-align: right; padding: 12px;">Grand Total:</td>
+            <td><b>${grandOrdWt.toFixed(3)}</b></td>
+            <td><b style="color:#10B981;">${grandIssWt.toFixed(3)}</b></td>
+            <td colspan="2"></td>
+        </tr>
+    `;
+}
+</script>
+<script src="config.js"></script>
+</script>
+</body>
+</html>

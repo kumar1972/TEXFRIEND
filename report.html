@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Report - TEXFRIEND ERP</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #030712; 
+            color: #1E2B23; 
+        }
+
+        body { 
+            padding: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-card {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0;
+            background: #FFFFFF;
+            border: 1px solid rgba(82, 110, 81, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
+
+        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+        #bitmapDisplayContainer img {
+            max-height: 45px;
+            border-radius: 6px;
+            border: 1px solid rgba(82, 110, 81, 0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
+        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+        .card-header {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 800;
+            color: #2F4F38;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #EAF0EA;
+            padding-bottom: 12px;
+        }
+
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 20px 15px 15px 15px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4A554A;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #D1DED1;
+            background: #FFFFFF;
+            color: #1E2B23;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #4A7C59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+
+        .report-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .tab-btn {
+            background: #F4F7F4;
+            color: #4A554A;
+            border: 1px solid #D1DED1;
+            padding: 12px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover { background: #E2E8E2; color: #2F4F38; }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4A7C59, #2F4F38);
+            color: #FFFFFF;
+            border-color: transparent;
+            box-shadow: 0 6px 12px rgba(74, 124, 89, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .special-tab-btn {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            color: white;
+            border: none;
+        }
+        .special-tab-btn.active {
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .invoice-tab-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+            color: #FFFFFF;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+        .invoice-tab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
+        .invoice-tab-btn.active { border: 2px solid #FFFFFF; }
+
+        .report-header-bar {
+            background: #F8FAF8;
+            padding: 12px 15px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid #E2E8E2;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .report-header-bar span {
+            font-size: 13px;
+            font-weight: 800;
+            color: #2F4F38;
+            text-transform: uppercase;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn { 
+            color: white; border: none; padding: 8px 14px; border-radius: 8px; 
+            font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(30,43,35,0.1);
+        }
+        .action-btn:hover { transform: translateY(-2px); }
+        
+        .preview-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); }
+        .excel-btn { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+        .table-container {
+            width: 100%; border-radius: 0 0 12px 12px; overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(30, 43, 35, 0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
+        th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
+        th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; border-bottom: 2px solid #D1DED1; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #F8FAF8; }
+
+        tfoot td {
+            background: #F4F7F4;
+            color: #2F4F38;
+            font-weight: 800;
+            border-top: 2px solid #D1DED1;
+        }
+
+        .no-data {
+            padding: 30px;
+            color: #64748B;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+            background: #F8FAF8;
+            border-radius: 12px;
+            border: 1px dashed #D1DED1;
+        }
+
+        .badge-stock { background: #ECFDF5; color: #059669; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); display: inline-block;}
+        .badge-pending { background: #FEF2F2; color: #DC2626; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(220,38,38,0.3); display: inline-block;}
+        .badge-excess { background: #FFFBEB; color: #D97706; font-weight: 800; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); display: inline-block;}
+
+        /* Modals */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .overlay-modal.show { opacity: 1; }
+        
+        .modal-content {
+            background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .overlay-modal.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: flex-end; align-items: center; border-bottom: 1px solid #E2E8E2; gap:10px;
+        }
+        .modal-header h3 { margin: 0; font-size: 15px; color: #2F4F38; font-weight: 800; text-transform: uppercase; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; color: #1E2B23; }
+
+        /* Fullscreen Image Popup Modal */
+        .fullscreen-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
+        }
+        .fullscreen-modal img {
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        .close-fullscreen {
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        /* Strict Portrait Mode Print Styles with Condensed First Column */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 6mm;
+            }
+            
+            body * { visibility: hidden; }
+            body { background: #FFFFFF; margin: 0; padding: 0; }
+            
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            
+            .overlay-modal { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                padding: 0; 
+                z-index: 99999; 
+                background: #FFFFFF; 
+                display: block !important; 
+            }
+            
+            .modal-content, .modal-body { 
+                box-shadow: none; 
+                border: none; 
+                border-radius: 0; 
+                overflow: visible !important; 
+                height: auto !important;
+                padding: 0;
+            }
+            
+            .no-print { display: none !important; }
+            
+            table {
+                width: 100% !important;
+                max-width: 100%;
+                border-collapse: collapse;
+                page-break-inside: auto;
+                table-layout: fixed;
+            }
+            
+            table th:first-child, 
+            table td:first-child {
+                width: 38% !important;
+                text-align: left !important;
+                word-break: break-word;
+            }
+            
+            table th:not(:first-child), 
+            table td:not(:first-child) {
+                width: 20% !important;
+            }
+            
+            tr { 
+                page-break-inside: avoid; 
+                page-break-after: auto; 
+            }
+            
+            th, td { 
+                white-space: normal !important; 
+                word-wrap: break-word;
+                padding: 4px 6px !important; 
+                font-size: 9px !important; 
+            }
+            
+            #printTableWrapper {
+                width: 100%;
+                overflow-x: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div id="bitmapDisplayContainer"></div>
+    </div>
+
+    <h2 class="card-header" id="pageMainHeader">Management Reports & Analytics</h2>
+
+    <div class="form-section" id="filterSection">
+        <div class="section-badge">Filter Records</div>
+        <div class="form-group">
+            <label>🔍 Select Design Number:</label>
+            <select id="designFilter" onchange="switchTab(currentTab)">
+                <option value="All">All Designs (மொத்தம்)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="report-tabs">
+        <button class="tab-btn active" id="tab-KoraDyeing" onclick="switchTab('KoraDyeing')">🏭 Kora at Dyeing</button>
+        <button class="tab-btn" id="tab-KoraStock" onclick="switchTab('KoraStock')">🧵 Kora Stock</button>
+        <button class="tab-btn" id="tab-Dyeing" onclick="switchTab('Dyeing')">🎨 Dyeing Balance</button>
+        <button class="tab-btn special-tab-btn" id="tab-Analytics360" onclick="switchTab('Analytics360')">🌟 360° Design Analytics</button>
+        <button class="invoice-tab-btn" id="tab-Invoice" onclick="switchTab('Invoice')">📄 Invoice / Financial Report</button>
+    </div>
+
+    <!-- Standard Report Container -->
+    <div id="standardReportContainer">
+        <div class="report-header-bar">
+            <span id="reportTitle">📊 Report Data</span>
+            <div class="header-btns" id="exportBtns">
+                <button class="action-btn preview-btn" onclick="previewReport()">👁️ Preview</button>
+                <button class="action-btn print-btn" onclick="printReport()">🖨️ Print</button>
+                <button class="action-btn excel-btn" onclick="exportToExcel()">📥 Excel</button>
+            </div>
+        </div>
+
+        <div class="table-container" id="tableWrapper">
+            <table id="reportTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFoot"></tfoot>
+            </table>
+        </div>
+
+        <!-- 360 Analytics Custom Layout -->
+        <div id="analyticsWrapper" style="display: none; border: 1px solid #E2E8E2; border-top: none; border-radius: 0 0 12px 12px; background: #FFFFFF;"></div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <button class="close-btn" onclick="closePreviewModal()">Close ✕</button>
+        </div>
+        <div class="modal-body" id="previewContent"></div>
+    </div>
+</div>
+
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
+<script>
+var currentTab = 'KoraDyeing';
+
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('designFilter').value;
+    if(activeDesign === 'All') activeDesign = localStorage.getItem('selected_design_number');
+    
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+    let imgHtml = '';
+    if (activeDesign && activeDesign !== 'All' && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    bitmapContainer.innerHTML = imgHtml;
+}
+
+function loadDesignFilter() {
+    let allDesigns = new Set();
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    preDesigns.forEach(d => allDesigns.add(d));
+
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    orders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
+
+    let select = document.getElementById('designFilter');
+    let currentVal = select.value;
+    let html = '<option value="All">All Designs (மொத்தம்)</option>';
+    [...allDesigns].forEach(d => html += `<option value="${d}">${d}</option>`);
+    select.innerHTML = html;
+    
+    if(currentVal && select.querySelector(`option[value="${currentVal}"]`)) {
+        select.value = currentVal;
+    } else {
+        let activeDesign = localStorage.getItem('selected_design_number');
+        if(activeDesign && allDesigns.has(activeDesign)) select.value = activeDesign;
+    }
+    loadBitmapImage();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadDesignFilter();
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if(tabParam) {
+        let tabMap = { 'KoraDyeing':'KoraDyeing', 'KoraStock':'KoraStock', 'Dyeing':'Dyeing', 'Invoice':'Invoice', 'Analytics360': 'Analytics360' };
+        if(tabMap[tabParam]) currentTab = tabMap[tabParam];
+    }
+    switchTab(currentTab);
+});
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    loadBitmapImage();
+    
+    document.querySelectorAll('.tab-btn, .special-tab-btn, .invoice-tab-btn').forEach(btn => btn.classList.remove('active'));
+    let activeBtn = document.getElementById('tab-' + tabName);
+    if(activeBtn) activeBtn.classList.add('active');
+
+    let filterVal = document.getElementById('designFilter').value;
+    let titleElem = document.getElementById('reportTitle');
+    let tableWrap = document.getElementById('tableWrapper');
+    let analyticsWrap = document.getElementById('analyticsWrapper');
+    let exportBtns = document.getElementById('exportBtns');
+    let filterSection = document.getElementById('filterSection');
+    let head = document.getElementById('tableHead');
+    let foot = document.getElementById('tableFoot');
+    if(head) head.innerHTML = ''; if(foot) foot.innerHTML = ''; 
+
+    if (tabName === 'KoraStock') {
+        filterSection.style.display = 'none';
+    } else {
+        filterSection.style.display = 'block';
+    }
+
+    if(tabName === 'Analytics360') {
+        titleElem.innerText = "🌟 360° DESIGN LIFECYCLE SUMMARY";
+        tableWrap.style.display = 'none'; exportBtns.style.display = 'none'; analyticsWrap.style.display = 'block';
+        render360Analytics(filterVal);
+        return;
+    } else {
+        tableWrap.style.display = 'block'; exportBtns.style.display = 'flex'; analyticsWrap.style.display = 'none';
+    }
+
+    if (tabName === 'KoraDyeing') {
+        titleElem.innerText = "🏭 KORA STOCK AT DYEING (Outward vs Dyeing Issue)";
+        head.innerHTML = `<tr><th>Date</th><th>Dyeing Unit</th><th>Design No</th><th>Mill Name</th><th>Count</th><th>Kora Outward (Kg)</th><th>Dyeing Issue (Kg)</th><th>Pending Bal (Kg)</th><th>Excess (Kg)</th><th>Status</th></tr>`;
+        renderKoraDyeingTable(filterVal);
+    } 
+    else if (tabName === 'KoraStock') {
+        titleElem.innerText = "🧵 KORA YARN STOCK (Mill-wise & Count Summary)";
+        head.innerHTML = `<tr><th>Mill / Count Summary</th><th>Inward Rcvd (Kg)</th><th>Issued Out (Kg)</th><th>Current Stock (Kg)</th></tr>`;
+        renderKoraStockTable();
+    } 
+    else if (tabName === 'Dyeing') {
+        titleElem.innerText = "🎨 DYEING Report (Sent vs Received Balance)";
+        head.innerHTML = `<tr><th>Dyeing Unit</th><th>Design No</th><th>Color / Count</th><th>Issued to Dyer (Kg)</th><th>Received (Kg)</th><th>Pending Bal (Kg)</th></tr>`;
+        renderDyeingTable(filterVal);
+    }
+    else if (tabName === 'Invoice') {
+        titleElem.innerText = "📄 INVOICE / FINANCIAL Report";
+        head.innerHTML = `<tr><th>Inv No</th><th>Date</th><th>Party Name</th><th>Design No</th><th>Total Qty</th><th>Grand Total (₹)</th></tr>`;
+        renderInvoiceTable(filterVal);
+    }
+}
+
+function renderKoraDyeingTable(filterVal) {
+    let koraOutward = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let dyeingIssue = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
+    let map = new Map();
+
+    function getBasicCount(c) {
+        let m = (c || '').match(/\d+/);
+        return m ? m[0] : (c || '-').toLowerCase().trim();
+    }
+
+    koraOutward.forEach(k => {
+        let dNo = k.designNo || k.designNumber || '-';
+        let cnt = (k.count || '-').trim();
+        let basicCnt = getBasicCount(cnt);
+        let key = cleanDesignName(dNo) + "_" + basicCnt;
+
+        if(!map.has(key)) {
+            map.set(key, { 
+                date: k.date || '-', 
+                designNo: dNo, 
+                count: cnt,
+                mill: new Set(),
+                unit: new Set(),
+                koraWt: 0, 
+                dyeWt: 0 
+            });
+        }
+        
+        let entry = map.get(key);
+        entry.koraWt += parseFloat(k.weight || k.issueWt || k.qty) || 0;
+        if (k.date) entry.date = k.date;
+        
+        let mName = (k.millName || k.mill || '').trim();
+        if(mName && mName !== '-') entry.mill.add(mName);
+        
+        let uName = (k.dyeingName || k.unit || k.dyeingUnit || '').trim();
+        if(uName && uName !== '-') entry.unit.add(uName);
+        
+        if(cnt.length > entry.count.length) entry.count = cnt;
+    });
+
+    dyeingIssue.forEach(d => {
+        let dNo = d.designNo || d.designNumber || '-';
+        let cnt = (d.count || '-').trim();
+        let basicCnt = getBasicCount(cnt);
+        let key = cleanDesignName(dNo) + "_" + basicCnt;
+
+        if(!map.has(key)) {
+            map.set(key, { 
+                date: d.date || '-', 
+                designNo: dNo, 
+                count: cnt,
+                mill: new Set(),
+                unit: new Set(),
+                koraWt: 0, 
+                dyeWt: 0 
+            });
+        }
+        
+        let entry = map.get(key);
+        entry.dyeWt += parseFloat(d.issueWt || d.orderWt) || 0;
+        if(d.date && entry.koraWt === 0) entry.date = d.date;
+        
+        let mName = (d.millName || d.mill || '').trim();
+        if(mName && mName !== '-') entry.mill.add(mName);
+        
+        let uName = (d.unit || d.dyeingName || '').trim();
+        if(uName && uName !== '-') entry.unit.add(uName);
+        
+        if(cnt.length > entry.count.length) entry.count = cnt;
+    });
+
+    let mappedData = Array.from(map.values()).map(val => {
+        let diff = val.koraWt - val.dyeWt;
+        val.balance = diff > 0.005 ? diff : 0;
+        val.excess = diff < -0.005 ? Math.abs(diff) : 0;
+        
+        if (val.balance > 0.005) val.status = "Pending";
+        else if (val.excess > 0.005) val.status = "Excess Used";
+        else val.status = "Settled";
+        
+        val.millStr = val.mill.size > 0 ? Array.from(val.mill).join(', ') : '-';
+        val.unitStr = val.unit.size > 0 ? Array.from(val.unit).join(', ') : '-';
+        
+        return val;
+    });
+
+    let body = document.getElementById('tableBody');
+    let foot = document.getElementById('tableFoot');
+    body.innerHTML = ''; foot.innerHTML = '';
+    
+    let filtered = filterVal !== 'All' ? mappedData.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal)) : mappedData;
+    if (filtered.length === 0) {
+        body.innerHTML = `<tr><td colspan="10" class="no-data">No records found.</td></tr>`; return;
+    }
+
+    let tKora = 0, tDye = 0;
+    filtered.slice().reverse().forEach(item => {
+        tKora += item.koraWt; tDye += item.dyeWt; 
+        let balDisplay = item.balance > 0 ? `<span class="badge-pending">${item.balance.toFixed(3)}</span>` : `<span style="color:#A0AFA0;">-</span>`;
+        let excDisplay = item.excess > 0 ? `<span class="badge-excess">${item.excess.toFixed(3)}</span>` : `<span style="color:#A0AFA0;">-</span>`;
+        let statusBadge = item.status === 'Settled' ? `<span class="badge-stock">Received / Settled</span>` : 
+                         (item.status === 'Pending' ? `<span class="badge-pending">Pending</span>` : `<span class="badge-excess">Excess Used</span>`);
+
+        body.innerHTML += `<tr>
+            <td>${item.date}</td>
+            <td><b>${item.unitStr}</b></td>
+            <td><b>${item.designNo}</b></td>
+            <td><b>${item.millStr}</b></td>
+            <td>${item.count}</td>
+            <td>${item.koraWt.toFixed(3)}</td>
+            <td style="color:#10B981; font-weight:bold;">${item.dyeWt.toFixed(3)}</td>
+            <td>${balDisplay}</td>
+            <td>${excDisplay}</td>
+            <td>${statusBadge}</td>
+        </tr>`;
+    });
+
+    let netDiff = tKora - tDye;
+    let tBal = netDiff > 0.005 ? netDiff : 0;
+    let tExc = netDiff < -0.005 ? Math.abs(netDiff) : 0;
+
+    foot.innerHTML = `<tr>
+        <td colspan="5" style="text-align:right; padding:12px;">Grand Total:</td>
+        <td><b>${tKora.toFixed(3)}</b></td>
+        <td style="color:#10B981;"><b>${tDye.toFixed(3)}</b></td>
+        <td><b style="color:#DC2626;">${tBal > 0 ? tBal.toFixed(3) : '-'}</b></td>
+        <td><b style="color:#D97706;">${tExc > 0 ? tExc.toFixed(3) : '-'}</b></td>
+        <td></td>
+    </tr>`;
+}
+
+function render360Analytics(filterVal) {
+    let wrap = document.getElementById('analyticsWrapper');
+    if(filterVal === 'All') {
+        wrap.innerHTML = `<div class="no-data" style="margin:20px;">ℹ️ தயவுசெய்து மேலே ஒரு குறிப்பிட்ட டிசைனை (Design Number) தேர்ந்தெடுக்கவும். அப்போதுதான் அந்த டிசைனின் முழு ஜாதகத்தையும் பார்க்க முடியும்!</div>`; return;
+    }
+
+    let cleanD = cleanDesignName(filterVal);
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let koraIssues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let weaving = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+    let despatch = JSON.parse(localStorage.getItem('despatch_records')) || [];
+
+    let totalOrderMtrs = orders.filter(o => cleanDesignName(o.designNumber || o.designNo) === cleanD).reduce((sum, o) => sum + (parseFloat(o.orderMtr || o.meters) || 0), 0);
+    let totalKoraKg = koraIssues.filter(k => cleanDesignName(k.designNo) === cleanD).reduce((sum, k) => sum + (parseFloat(k.weight || k.issueWt || k.qty) || 0), 0);
+    let totalWovenMtrs = weaving.filter(w => cleanDesignName(w.designNo) === cleanD).reduce((sum, w) => sum + (parseFloat(w.weavingMts) || 0), 0);
+    let totalDespatchMtrs = despatch.filter(d => cleanDesignName(d.designNo) === cleanD).reduce((sum, d) => sum + (parseFloat(d.mtr) || 0), 0);
+
+    let progress = totalOrderMtrs > 0 ? ((totalDespatchMtrs / totalOrderMtrs) * 100).toFixed(1) : 0;
+    let fillWidth = progress > 100 ? 100 : progress;
+
+    wrap.innerHTML = `
+        <div class="analytics-grid">
+            <div class="analytic-card"><h3>📦 Total Order Target</h3><p style="color:#3B82F6;">${totalOrderMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+            <div class="analytic-card"><h3>🧵 Total Kora Outward</h3><p style="color:#D97706;">${totalKoraKg.toFixed(2)} <span style="font-size:12px;">Kg</span></p></div>
+            <div class="analytic-card"><h3>🏭 Fabric Woven</h3><p style="color:#8B5CF6;">${totalWovenMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+            <div class="analytic-card"><h3>🚚 Final Despatched</h3><p style="color:#10B981;">${totalDespatchMtrs.toFixed(2)} <span style="font-size:12px;">Mtrs</span></p></div>
+        </div>
+        <div class="progress-wrapper">
+            <h4 style="margin:0 0 5px 0; color:#2F4F38; font-size:14px; text-transform:uppercase;">🚀 Overall Design Lifecycle Completion</h4>
+            <div style="font-size:11px; color:#64748B;">(Based on Total Despatched vs Total Ordered Meters)</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${fillWidth}%;">${progress}%</div></div>
+        </div>
+    `;
+}
+
+function renderKoraStockTable() {
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || JSON.parse(localStorage.getItem('kora_inward_records')) || [];
+    let issues = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let millMap = new Map();
+    let countSummaryMap = new Map();
+
+    inwards.forEach(item => {
+        let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim();
+        let cnt = (item.count || 'Unknown').trim();
+        let wt = parseFloat(item.weight || item.qty) || 0;
+
+        if(!millMap.has(mill)) millMap.set(mill, new Map());
+        let countMap = millMap.get(mill);
+        if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
+        countMap.get(cnt).inward += wt;
+
+        if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
+        countSummaryMap.get(cnt).inward += wt;
+        if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
+    });
+
+    issues.forEach(item => {
+        let mill = (item.millName || item.supplier || item.mill || 'General Mill').trim(); 
+        let cnt = (item.count || 'Unknown').trim();
+        let wt = parseFloat(item.weight || item.issueWt || item.qty) || 0;
+
+        if(!millMap.has(mill)) millMap.set(mill, new Map());
+        let countMap = millMap.get(mill);
+        if(!countMap.has(cnt)) countMap.set(cnt, { inward: 0, issued: 0 });
+        countMap.get(cnt).issued += wt;
+
+        if(!countSummaryMap.has(cnt)) countSummaryMap.set(cnt, { inward: 0, issued: 0, mills: new Set() });
+        countSummaryMap.get(cnt).issued += wt;
+        if(mill && mill !== 'General Mill') countSummaryMap.get(cnt).mills.add(mill);
+    });
+
+    let body = document.getElementById('tableBody'); 
+    let foot = document.getElementById('tableFoot');
+    body.innerHTML = ''; foot.innerHTML = '';
+    
+    if (millMap.size === 0) { 
+        body.innerHTML = `<tr><td colspan="4" class="no-data">No stock records found.</td></tr>`; 
+        return; 
+    }
+
+    let grandIn = 0, grandOut = 0, grandBal = 0;
+    let sortedMills = Array.from(millMap.keys()).sort();
+
+    sortedMills.forEach(mill => {
+        body.innerHTML += `<tr style="background:#EAF0EA; font-weight:bold;"><td colspan="4" style="text-align:left; padding-left:15px; color:#2F4F38;">🏭 MILL: ${mill.toUpperCase()}</td></tr>`;
+        
+        let countMap = millMap.get(mill);
+        let sortedCounts = Array.from(countMap.keys()).sort();
+        let millIn = 0, millOut = 0;
+
+        sortedCounts.forEach(cnt => {
+            let data = countMap.get(cnt);
+            let bal = data.inward - data.issued;
+            millIn += data.inward; millOut += data.issued;
+            
+            let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
+
+            body.innerHTML += `<tr>
+                <td style="text-align:left; padding-left:30px;">↳ Count: ${cnt}</td>
+                <td style="color:#10B981; font-weight:bold;">${data.inward.toFixed(3)}</td>
+                <td style="color:#D97706; font-weight:bold;">${data.issued.toFixed(3)}</td>
+                <td>${balDisplay}</td>
+            </tr>`;
+        });
+
+        let millBal = millIn - millOut;
+        let millBalDisplay = millBal >= 0 ? `<span class="badge-stock">${millBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(millBal).toFixed(3)} Kg</span>`;
+        
+        body.innerHTML += `<tr style="background:#F4F7F4; font-weight:bold; border-bottom:2px solid #D1DED1;">
+            <td style="text-align:left; padding-left:15px; color:#2F4F38;">📊 ${mill} Subtotal:</td>
+            <td style="color:#10B981;">${millIn.toFixed(3)}</td>
+            <td style="color:#D97706;">${millOut.toFixed(3)}</td>
+            <td>${millBalDisplay}</td>
+        </tr>`;
+    });
+
+    body.innerHTML += `<tr><td colspan="4" style="padding: 15px 0 5px 0; background: #ffffff; border: none;"></td></tr>`;
+    body.innerHTML += `<tr><td colspan="4" style="background:#4A7C59; color:white; font-weight:bold; text-align:center; padding:14px; text-transform:uppercase; border-radius: 12px 12px 0 0; font-size:13px; letter-spacing:0.5px;">📊 Overall Count-Wise Summary Cards (கவுண்ட் வாரியான பாஸ் கார்டுகள்)</td></tr>`;
+    
+    let wrapperTr = document.createElement('tr');
+    let wrapperTd = document.createElement('td');
+    wrapperTd.colSpan = 4;
+    wrapperTd.style.padding = "20px";
+    wrapperTd.style.background = "#F8FAF8";
+    wrapperTd.style.border = "1px solid #E2E8E2";
+    wrapperTd.style.borderRadius = "0 0 16px 16px";
+
+    let gridContainer = document.createElement('div');
+    gridContainer.style.display = "grid";
+    gridContainer.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
+    gridContainer.style.gap = "18px";
+
+    let sortedSummaryCounts = Array.from(countSummaryMap.keys()).sort();
+    sortedSummaryCounts.forEach(cnt => {
+        let data = countSummaryMap.get(cnt);
+        let bal = data.inward - data.issued;
+        grandIn += data.inward; grandOut += data.issued; grandBal += bal;
+        let balDisplay = bal >= 0 ? `<span class="badge-stock">${bal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(bal).toFixed(3)} Kg</span>`;
+
+        let millsArr = Array.from(data.mills).sort();
+        let millsStr = millsArr.length > 0 ? `<div style="font-size:11px; color:#556B2F; margin-top:4px; font-weight:600;">Mill: ${millsArr.join(', ')}</div>` : `<div style="font-size:11px; color:#888; margin-top:4px;">Mill: General</div>`;
+
+        let boxCard = document.createElement('div');
+        boxCard.style.background = "#FFFFFF";
+        boxCard.style.border = "1px solid #D1DED1";
+        boxCard.style.borderRadius = "14px";
+        boxCard.style.padding = "16px";
+        boxCard.style.boxShadow = "0 6px 15px rgba(30, 43, 35, 0.05)";
+        boxCard.style.display = "flex";
+        boxCard.style.flexDirection = "column";
+        boxCard.style.gap = "10px";
+        boxCard.style.transition = "transform 0.2s ease";
+
+        boxCard.innerHTML = `
+            <div style="border-bottom: 2px solid #EAF0EA; padding-bottom: 10px;">
+                <div style="font-size: 14px; font-weight: 800; color: #2F4F38; text-transform: uppercase;">COUNT: ${cnt}</div>
+                ${millsStr}
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: #4A554A; background: #F8FAF8; padding: 6px 10px; border-radius: 6px;">
+                <span>Inward Rcvd:</span>
+                <span style="color: #10B981; font-weight: bold;">${data.inward.toFixed(3)} Kg</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: #4A554A; background: #F8FAF8; padding: 6px 10px; border-radius: 6px;">
+                <span>Issued Out:</span>
+                <span style="color: #D97706; font-weight: bold;">${data.issued.toFixed(3)} Kg</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #2F4F38; margin-top: 2px; border-top: 1px dashed #D1DED1; padding-top: 10px;">
+                <span>Current Stock:</span>
+                <div>${balDisplay}</div>
+            </div>
+        `;
+        gridContainer.appendChild(boxCard);
+    });
+
+    wrapperTd.appendChild(gridContainer);
+    wrapperTr.appendChild(wrapperTd);
+    body.appendChild(wrapperTr);
+
+    let grandBalDisplay = grandBal >= 0 ? `<span class="badge-stock">${grandBal.toFixed(3)} Kg</span>` : `<span class="badge-pending">Ex: ${Math.abs(grandBal).toFixed(3)} Kg</span>`;
+    foot.innerHTML = `<tr>
+        <td style="text-align:right; padding:12px;">Grand Total (All Mills & Counts):</td>
+        <td style="color:#10B981;"><b>${grandIn.toFixed(3)}</b></td>
+        <td style="color:#D97706;"><b>${grandOut.toFixed(3)}</b></td>
+        <td><b>${grandBalDisplay}</b></td>
+    </tr>`;
+}
+
+function renderDyeingTable(filterVal) {
+    let dyeingIssues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || []; 
+    let dyeingReceives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || []; 
+    let unitMap = new Map();
+
+    dyeingIssues.forEach(iss => {
+        let unit = (iss.unit || iss.dyeingName || 'Unknown').trim();
+        let dNo = iss.designNo || '-';
+        let color = (iss.color || '-') + " (" + (iss.count || '') + ")";
+        let key = unit + "_" + cleanDesignName(dNo) + "_" + color;
+        if (!unitMap.has(key)) unitMap.set(key, { unit: unit, designNo: dNo, color: color, sentWt: 0, rcvdWt: 0 });
+        unitMap.get(key).sentWt += parseFloat(iss.issueWt || iss.orderWt) || 0;
+    });
+
+    dyeingReceives.forEach(rcv => {
+        let unit = (rcv.unit || rcv.dyeingName || 'Unknown').trim();
+        let dNo = rcv.designNo || '-';
+        let color = (rcv.color || '-') + " (" + (rcv.count || '') + ")";
+        let key = unit + "_" + cleanDesignName(dNo) + "_" + color;
+        if (!unitMap.has(key)) unitMap.set(key, { unit: unit, designNo: dNo, color: color, sentWt: 0, rcvdWt: 0 });
+        unitMap.get(key).rcvdWt += parseFloat(rcv.receivedWt || rcv.netWt) || 0;
+    });
+
+    let mappedData = Array.from(unitMap.values()).map(val => { val.balance = val.sentWt - val.rcvdWt; return val; });
+    generateBalanceHTML(mappedData, filterVal, ['unit', 'designNo', 'color', 'sentWt', 'rcvdWt', 'balance'], 'balance', 'Kg');
+}
+
+function renderInvoiceTable(filterVal) {
+    let rawData = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
+    let mappedData = rawData.map(item => ({
+        invNo: item.invNo || '-', date: item.invDate || '-', partyName: item.partyAddress ? item.partyAddress.split('\n')[0] : '-',
+        designNo: item.design || '-', meters: item.totalQty ? parseFloat(item.totalQty) : 0, amount: item.grandTotal ? parseFloat(item.grandTotal) : 0
+    }));
+    generateBalanceHTML(mappedData, filterVal, ['invNo', 'date', 'partyName', 'designNo', 'meters', 'amount'], null, '');
+}
+
+function generateBalanceHTML(dataList, filterVal, keys, balanceKey, unitStr) {
+    let body = document.getElementById('tableBody'); let foot = document.getElementById('tableFoot');
+    body.innerHTML = ''; foot.innerHTML = '';
+    
+    let filtered = filterVal !== 'All' ? dataList.filter(item => cleanDesignName(item.designNo) === cleanDesignName(filterVal)) : dataList;
+    if (filtered.length === 0) { body.innerHTML = `<tr><td colspan="${keys.length}" class="no-data">No records found.</td></tr>`; return; }
+
+    let totals = {}; keys.forEach(k => totals[k] = 0);
+
+    filtered.forEach(item => {
+        let rowHtml = '<tr>';
+        keys.forEach(k => {
+            let val = item[k];
+            if (!isNaN(parseFloat(val)) && typeof val === 'number') totals[k] += val;
+
+            if (k === 'designNo' || k === 'mill' || k === 'unit' || k === 'weaver') val = `<b>${val}</b>`;
+            else if (k === balanceKey) {
+                if (val > 0.05) val = `<span class="badge-pending">${val.toFixed(3)} ${unitStr}</span>`;
+                else if (val < -0.05) val = `<span class="badge-excess">Ex: ${Math.abs(val).toFixed(3)} ${unitStr}</span>`;
+                else val = `<span class="badge-stock">Settled</span>`;
+            }
+            else if (k === 'amount') val = `<span style="color:#10B981; font-weight:bold;">₹${val.toFixed(2)}</span>`;
+            else if (typeof val === 'number') val = val > 0 ? val.toFixed(3) : "0.000";
+            
+            rowHtml += `<td>${val}</td>`;
+        });
+        rowHtml += '</tr>'; body.innerHTML += rowHtml;
+    });
+
+    let footHtml = `<tr><td colspan="${keys.length > 5 ? 3 : 2}" style="text-align:right; padding:12px;">Grand Total:</td>`;
+    for(let i = (keys.length > 5 ? 3 : 2); i < keys.length; i++) {
+        let k = keys[i];
+        if (k === balanceKey) {
+            let tBal = totals[k];
+            let balHTML = tBal > 0.05 ? `<span class="badge-pending">${tBal.toFixed(3)}</span>` : 
+                         (tBal < -0.05 ? `<span class="badge-excess">Ex: ${Math.abs(tBal).toFixed(3)}</span>` : `<span class="badge-stock">Settled</span>`);
+            footHtml += `<td>${balHTML}</td>`;
+        } else if (k === 'amount') footHtml += `<td style="color:#10B981;"><b>₹${totals[k].toFixed(2)}</b></td>`;
+        else if (totals[k] !== undefined && totals[k] !== 0) footHtml += `<td><b>${totals[k].toFixed(3)}</b></td>`;
+        else footHtml += `<td>-</td>`;
+    }
+    footHtml += `</tr>`; foot.innerHTML = footHtml;
+}
+
+function previewReport() {
+    let title = document.getElementById('reportTitle').innerText; let filterVal = document.getElementById('designFilter').value;
+    let tableHtml = document.getElementById('reportTable').outerHTML;
+    
+    let html = `<div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">`;
+    html += `<h2 style='color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-size:20px; font-weight:800; text-transform:uppercase;'>${title}</h2>`;
+    html += `<p style='font-family: sans-serif; font-size: 13px; margin-top: 0; color:#4A554A;'><b>Filter Applied:</b> ${filterVal}</p></div>`;
+    html += `<div id="printTableWrapper" style="color: #1E2B23;">${tableHtml}</div>`;
+    
+    document.getElementById('previewContent').innerHTML = html;
+    let previewTable = document.getElementById('previewContent').querySelector('table');
+    if(previewTable) {
+        previewTable.style.width = '100%'; previewTable.style.borderCollapse = 'collapse'; previewTable.style.color = '#1E2B23';
+        previewTable.style.fontFamily = 'sans-serif'; previewTable.style.fontSize = '12px';
+        
+        previewTable.querySelectorAll('th').forEach(th => { th.style.border = '1px solid #D1DED1'; th.style.padding = '10px'; th.style.background = '#EAF0EA'; th.style.color = '#2F4F38'; th.style.fontWeight = 'bold'; th.style.textTransform = 'uppercase'; });
+        previewTable.querySelectorAll('td').forEach(td => { td.style.border = '1px solid #E2E8E2'; td.style.padding = '10px'; td.style.color = '#1E2B23'; });
+        previewTable.querySelectorAll('tfoot td').forEach(td => { td.style.background = '#F4F7F4'; td.style.fontWeight = 'bold'; td.style.borderTop = '2px solid #4A7C59'; });
+    }
+
+    let modal = document.getElementById('previewModal'); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closePreviewModal() {
+    let modal = document.getElementById('previewModal'); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300);
+}
+function printReport() { if(document.getElementById('previewModal').style.display !== 'flex') previewReport(); setTimeout(() => { window.print(); }, 300); }
+function exportToExcel() {
+    let table = document.getElementById('reportTable'); let html = table.outerHTML; let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+    let link = document.createElement('a'); link.href = url; link.download = currentTab + '_Report.xls'; link.click();
+}
+</script>
+<script src="config.js"></script>
+</script>
+</body>
+</html>

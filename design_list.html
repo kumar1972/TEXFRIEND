@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Design List - TEXFRIEND ERP</title>
+<script src="translator.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    
+    html, body { width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; }
+    body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+
+    .container {
+        width: 100%; max-width: 900px; background: #FFFFFF; padding: 20px;
+        border-radius: 20px; box-shadow: 0 10px 35px rgba(0,0,0,0.06);
+        border: 1px solid rgba(82, 110, 81, 0.15); display: flex; flex-direction: column; gap: 15px;
+        flex: 1;
+    }
+
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .back-btn { 
+        display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF; 
+        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+        padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.3s ease; 
+    }
+    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+    .header-section { 
+        display: flex; justify-content: space-between; align-items: center; 
+        border-bottom: 2px solid #EAF0EA; padding-bottom: 12px; margin-bottom: 5px; flex-wrap: wrap; gap: 10px;
+    }
+    .page-title { font-size: 16px; font-weight: 800; color: #2F4F38; text-transform: uppercase; margin: 0; }
+    
+    .action-btns { display: flex; gap: 8px; }
+    .btn-action { 
+        color: #FFF; border: none; padding: 8px 12px; border-radius: 8px; 
+        font-size: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s; 
+    }
+    .btn-action:hover { transform: translateY(-2px); }
+    .btn-print { background: linear-gradient(135deg, #10B981, #059669); }
+    .btn-excel { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+    .summary-box { 
+        background: #F8FAF8; border: 1px solid #E2E8E2; padding: 15px; 
+        border-radius: 12px; font-size: 12px; color: #1E2B23; font-weight: 700; 
+        display: flex; justify-content: space-between; align-items: center; 
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 10px;
+    }
+    .summary-box span { 
+        color: #4A7C59; font-size: 14px; font-weight: 800; background: #EAF0EA; 
+        padding: 4px 10px; border-radius: 8px; margin-left: 5px;
+    }
+
+    .table-container { width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid #D1DED1; background: #FFFFFF; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; white-space: nowrap; }
+    th { background: #EAF0EA; color: #2F4F38; padding: 12px 10px; font-weight: 700; border-bottom: 2px solid #D1DED1; font-size: 10px; text-transform: uppercase; }
+    td { padding: 12px 10px; border-bottom: 1px solid #E2E8E2; color: #1E2B23; font-weight: 500; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #F8FAF8; }
+    td b { color: #2F4F38; font-weight: 800; }
+
+    /* Table Bitmap Thumbnail */
+    .table-img {
+        width: 35px; height: 35px; object-fit: cover; border-radius: 6px; border: 1px solid #4A7C59;
+        cursor: zoom-in; transition: transform 0.2s; vertical-align: middle;
+    }
+    .table-img:hover { transform: scale(1.15); }
+
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .empty-msg { text-align: center; padding: 40px 20px; color: #64748B; font-weight: 600; font-size: 12px; background: #F8FAF8; border-radius: 10px; border: 1px dashed #D1DED1; }
+    
+    @media print {
+        body { background: #FFF; padding: 0; }
+        .container { box-shadow: none; border: none; padding: 0; width: 100%; max-width: 100%; }
+        .top-nav, .action-btns { display: none !important; }
+        .table-img { border: 1px solid #000; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+    </div>
+    
+    <div class="header-section">
+        <h3 class="page-title" id="pageTitle">TOTAL SAVED DESIGNS</h3>
+        <div class="action-btns">
+            <button class="btn-action btn-print" onclick="window.print()">🖨️ Print</button>
+            <button class="btn-action btn-excel" onclick="exportToExcel()">📥 Excel</button>
+        </div>
+    </div>
+    
+    <div class="summary-box" id="summaryBox" style="display: none;">
+        <div>Total Records: <span id="totRecords">0</span></div>
+        <div>Total Value: <span id="totValue">0.00</span></div>
+    </div>
+
+    <div id="listContainer">
+        <!-- Dynamic Table will populate here -->
+    </div>
+</div>
+
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
+<script>
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+function exportToExcel() {
+    let table = document.querySelector("table");
+    if(!table) { alert("No data to export!"); return; }
+    let html = table.outerHTML;
+    let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+    let link = document.createElement('a');
+    link.href = url;
+    link.download = 'Design_List_Report.xls';
+    link.click();
+}
+
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+window.toggleBaseDesignStatus = function(dNo, isChecked) {
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let clean = cleanDesignName(dNo);
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === clean) || dNo;
+    
+    if(!specs[specKey]) specs[specKey] = {};
+    
+    let newStatus = isChecked ? 'Completed' : 'Running';
+    specs[specKey].status = newStatus;
+    localStorage.setItem('design_specs', JSON.stringify(specs));
+    
+    window.renderDesignList();
+};
+
+window.renderDesignList = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'all';
+    const status = urlParams.get('status') || 'all';
+    const designFilter = urlParams.get('design') || 'all';
+
+    const pageTitle = document.getElementById('pageTitle');
+    const listContainer = document.getElementById('listContainer');
+    const summaryBox = document.getElementById('summaryBox');
+
+    let titleText = type === 'all' ? "TOTAL SAVED DESIGNS" : `${type} DESIGN - ${status}`;
+    if(designFilter !== 'all') { titleText += ` [ #${designFilter} ]`; }
+    pageTitle.innerText = titleText.toUpperCase();
+
+    let theadHtml = '';
+    let tbodyHtml = '';
+
+    if (type === 'all') {
+        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th><th>Status</th></tr>`;
+        
+        let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+        if(designs.length === 0) {
+            listContainer.innerHTML = '<div class="empty-msg">No Saved Designs Found!</div>';
+            return;
+        }
+
+        designs.forEach((dNo, index) => {
+            if(designFilter !== 'all' && designFilter !== '') {
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return;
+            }
+
+            let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
+            let s = specs[specKey] || {};
+            
+            let orderItems = orders.filter(o => o.designNo === dNo || o.designNumber === dNo);
+            let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
+            
+            let currentStatus = (s.status || 'Running').toLowerCase();
+            let isCompleted = (currentStatus === 'completed');
+
+            let imgTag = s.bitmap ? `<img src="${s.bitmap}" class="table-img" onclick="openFullscreenImage(this.src)">` : '-';
+
+            tbodyHtml += `<tr>
+                <td>${index + 1}</td>
+                <td>${imgTag}</td>
+                <td><b>${dNo}</b></td>
+                <td>${s.weft || '-'}</td>
+                <td>${s.reed || '-'}</td>
+                <td>${s.pick || '-'}</td>
+                <td>${mtrSum > 0 ? mtrSum : '-'}</td>
+                <td><input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleBaseDesignStatus('${dNo}', this.checked)"> ${isCompleted ? 'Completed' : 'Running'}</td>
+            </tr>`;
+        });
+
+        listContainer.innerHTML = `<div class="table-container"><table><thead>${theadHtml}</thead><tbody>${tbodyHtml}</tbody></table></div>`;
+    }
+};
+
+window.onload = function() {
+    window.renderDesignList();
+};
+</script>
+<script src="config.js"></script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ERP Master Settings</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        /* 📌 Smart Background - STRICTLY NO BLACK */
+        html, body { 
+            width: 100%; 
+            min-height: 100vh; 
+            background: #030712; 
+            color: #1E2B23; /* Deep Dark Green */
+        }
+        
+        body { 
+            padding: 12px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        /* 📌 Main Container */
+        .container { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0; 
+            background: #FFFFFF; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06); 
+            border: 1px solid rgba(82, 110, 81, 0.15); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+        }
+
+        .top-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+
+        /* 📌 Smart Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 11px;
+            background: #1A2421; 
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: #2F4F38; transform: translateY(-2px); }
+
+        .page-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 800;
+            color: #2F4F38;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #EAF0EA;
+            padding-bottom: 12px;
+        }
+
+        /* 📌 Smart Sectioning */
+        .form-section {
+            background: #F8FAF8;
+            border: 1px solid #E2E8E2;
+            border-radius: 14px;
+            padding: 22px 15px 15px 15px;
+            position: relative;
+        }
+        
+        .section-badge {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4A7C59;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        }
+        .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+        .section-badge.amber { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25); }
+        .section-badge.danger { background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.25); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: #4A554A; }
+
+        /* 📌 Smart 3D Inputs */
+        input, select, textarea {
+            width: 100%; padding: 12px 14px; border-radius: 8px;
+            border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
+            font-size: 12px; font-weight: 600; transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02); outline: none;
+        }
+        textarea { resize: vertical; height: 80px; }
+        input:focus, select:focus, textarea:focus {
+            border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+        }
+
+        /* 📌 Checkbox Group Styling */
+        .checkbox-group-container {
+            background: #FFFFFF;
+            border: 1px solid #D1DED1;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1E2B23;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #EF4444;
+            cursor: pointer;
+        }
+
+        /* 📌 Users Table Styling */
+        .users-table-container {
+            margin-top: 15px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #D1DED1;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: center;
+        }
+        .users-table th, .users-table td {
+            padding: 10px;
+            border-bottom: 1px solid #E2E8E2;
+            color: #1E2B23;
+        }
+        .users-table th {
+            background: #EAF0EA;
+            color: #2F4F38;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* 📌 Premium File Input Styling */
+        input[type="file"] {
+            padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; cursor: pointer;
+        }
+        input[type="file"]::file-selector-button {
+            background: #4A7C59; color: white; border: none; padding: 6px 14px;
+            border-radius: 6px; font-weight: 600; font-size: 10px; cursor: pointer;
+            margin-right: 10px; transition: background 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover { background: #33593D; }
+
+        .preview-box {
+            margin-top: 10px; background: #FFFFFF; padding: 10px; border-radius: 10px;
+            border: 1px solid #D1DED1; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.05);
+            display: none; align-items: center; justify-content: center;
+        }
+        .preview-box img { max-height: 70px; border-radius: 6px; }
+
+        /* 📌 Smart Code Editor (For JSON) */
+        #advancedJsonEditor {
+            background: #1A2421; 
+            color: #A7F3D0; 
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px; padding: 15px; border-radius: 10px;
+            border: 1px solid #064E3B; height: 120px;
+        }
+        #advancedJsonEditor:focus { box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.2); border-color: #34D399; }
+
+        /* 📌 Smart Buttons */
+        .btn-action { 
+            color: white; border: none; padding: 12px 16px; border-radius: 8px; 
+            font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
+            box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase;
+            letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-action:hover { transform: translateY(-2px); }
+        .btn-action:active { transform: translateY(1px); }
+
+        .btn-primary { background: linear-gradient(135deg, #4A7C59, #2F4F38); font-size: 13px; padding: 14px; width: 100%; box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
+        .btn-primary:hover { box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+
+        .btn-success { background: linear-gradient(135deg, #10B981, #059669); }
+        .btn-info { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .btn-warning { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .btn-danger { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <span style="font-size: 12px; font-weight: 700; color: #4A7C59; text-transform: uppercase;">⚙️ System Config</span>
+    </div>
+
+    <h2 class="page-title">ERP Master Settings</h2>
+
+    <!-- 📌 Section: User Access Control (All 20 Pages) -->
+    <div class="form-section" style="border-left: 4px solid #EF4444;">
+        <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
+        <div class="form-group">
+            <label style="color: #2F4F38; font-size: 12px; margin-bottom: 5px;">Select which pages the 'User' is allowed to access:</label>
+            <div class="checkbox-group-container" style="max-height: 280px; overflow-y: auto;">
+                <label class="checkbox-item"><input type="checkbox" id="perm_dashboard" checked> dashboard.html (Dashboard)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_design_list" checked> design_list.html (Design List)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_design_master" checked> design_master.html (Design Master)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_despatch" checked> Despatch.html (Despatch)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_dyeing_issue" checked> dyeing_issue.html (Dyeing Issue)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_dyeing_receive" checked> dyeing_receive.html (Dyeing Receive)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_index" checked> index.html (Index / Login)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_invoice" checked> invoice.html (Invoice / Bill)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_kora_yarn" checked> kora_yarn.html (Kora Yarn)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_party_orders" checked> Party_Orders.html (Party Orders)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_process_matrix" checked> process_matrix.html (Process Matrix)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_report" checked> report.html (Report)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_settings" checked> settings.html (Settings)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_warp_entry" checked> warp_entry.html (Warp Entry)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_warping" checked> warping.html (Warping)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_washing" checked> washing.html (Washing)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_weaving" checked> weaving.html (Weaving)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_weft_entry" checked> weft_entry.html (Weft Entry)</label>
+                <label class="checkbox-item"><input type="checkbox" id="perm_yarn_calc" checked> yarn_calc.html (Yarn Calculation)</label>
+            </div>
+        </div>
+        <button class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
+    </div>
+
+    <!-- 📌 Section: User Management (Add New User & List) -->
+    <div class="form-section" style="border-left: 4px solid #3B82F6;">
+        <div class="section-badge blue">👤 User Management</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="newUsername" placeholder="Enter Username...">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="newPassword" placeholder="Enter Password...">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Role / Permissions Level</label>
+            <select id="newUserRole">
+                <option value="Standard User">Standard User</option>
+                <option value="Administrator">Administrator</option>
+            </select>
+        </div>
+        <button class="btn-action btn-info" style="width: 100%; margin-top: 10px;" onclick="addNewUserAccount()">Create New User Account</button>
+        
+        <!-- Saved Users Table List -->
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Dynamic users list -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 📌 Section 1: General Settings -->
+    <div class="form-section">
+        <div class="section-badge">General Profile</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Change Main Heading Name</label>
+                <input type="text" id="set_heading" placeholder="Enter App Heading...">
+            </div>
+            <div class="form-group">
+                <label>Company Logo Upload</label>
+                <input type="file" id="set_logo_file" accept="image/*" onchange="previewLogo(this)">
+                <div id="logoPreviewBox" class="preview-box">
+                    <img id="logoImgTag" src="" alt="Logo">
+                </div>
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 5px;">
+            <label>Default Company Address (For Invoices)</label>
+            <textarea id="set_comp_addr" placeholder="Enter Full Company Address..."></textarea>
+        </div>
+    </div>
+
+    <!-- 📌 Section 2: Design Assets -->
+    <div class="form-section">
+        <div class="section-badge blue">Design Assets</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Select Design No</label>
+                <select id="settingDesignSelect" onchange="loadDesignBitmap(this.value)">
+                    <option value="">Select Design Number</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Upload Bitmap Image for Design</label>
+                <input type="file" id="designBitmapFile" accept="image/*" onchange="previewDesignBitmap(this)">
+                <div id="designBitmapPreviewBox" class="preview-box">
+                    <img id="designBitmapImgTag" src="" alt="Design Bitmap">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📌 Section 3: Party Master -->
+    <div class="form-section">
+        <div class="section-badge amber">Party Directory</div>
+        <div class="form-group">
+            <label>Manage Existing Parties</label>
+            <select id="partyListSelect" onchange="selectPartyToEdit(this.value)">
+                <option value="">Select Party to Edit/View</option>
+            </select>
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Party Name</label>
+                <input type="text" id="partyNameInput" placeholder="Enter Party Name...">
+            </div>
+            <div class="form-group">
+                <label>Party Address & GST Details</label>
+                <textarea id="partyAddressInput" placeholder="Enter Full Address & GST No..."></textarea>
+            </div>
+        </div>
+        <div class="action-row">
+            <button class="btn-action btn-success" onclick="savePartyMaster()">💾 Save / Add Party</button>
+            <button class="btn-action btn-danger" onclick="deletePartyMaster()">🗑️ Delete Party</button>
+        </div>
+    </div>
+
+    <!-- 📌 Section 4: Advanced Editor -->
+    <div class="form-section">
+        <div class="section-badge danger">Advanced Config</div>
+        <div class="form-group">
+            <label>🛠️ System Database Editor (Local JSON Data)</label>
+            <textarea id="advancedJsonEditor" placeholder="Click 'Load Data' to view JSON here..."></textarea>
+        </div>
+        <div class="action-row">
+            <button type="button" class="btn-action btn-info" onclick="loadStorageDataToEditor()">📥 Load JSON Data</button>
+            <button type="button" class="btn-action btn-success" onclick="saveStorageDataFromEditor()">💾 Save JSON Changes</button>
+        </div>
+    </div>
+
+    <!-- 📌 Section 5: System Actions -->
+    <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
+        <button class="btn-action btn-primary" onclick="saveSettings()">✅ Save All Settings & Exit</button>
+        <button class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
+        
+        <div class="action-row">
+            <button class="btn-action btn-warning" onclick="resetLocalStorageOnly()">🧹 Clear Local Cache</button>
+            <button class="btn-action btn-danger" onclick="resetCloudDataOnly()">⚠️ Factory Reset Cloud</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK & Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🛡️ பாதுகாப்பான Clear Cache (யூசர்கள் மற்றும் செட்டிங்ஸ் அழியாது)
+    window.resetLocalStorageOnly = function() {
+        if(confirm("⚠️ WARNING: This will clear temporary local cache, but your saved Users, Permissions and Settings will remain safe. Continue?")) {
+            // முக்கியமான யூசர் மற்றும் செட்டிங்ஸ் டேட்டாவை மட்டும் காப்புப் பிரதி (Backup) எடுத்துக்கொள்கிறோம்
+            let savedUsers = localStorage.getItem('erp_system_users');
+            let savedPermissions = localStorage.getItem('user_permissions');
+            let appHeading = localStorage.getItem('app_heading_name');
+            let compAddress = localStorage.getItem('company_full_address');
+            let compLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
+
+            // லோக்கல் ஸ்டோரேஜை முழுமையாகக் காலியாக்குகிறோம்
+            localStorage.clear();
+
+            // பாதுகாத்து வைத்த முக்கியமான செட்டிங்ஸ் & யூசர் விபரங்களை மீண்டும் திருப்புகிறோம்
+            if(savedUsers) localStorage.setItem('erp_system_users', savedUsers);
+            if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
+            if(appHeading) localStorage.setItem('app_heading_name', appHeading);
+            if(compAddress) localStorage.setItem('company_full_address', compAddress);
+            if(compLogo) {
+                localStorage.setItem('company_logo_base64', compLogo);
+                localStorage.setItem('company_logo', compLogo);
+                localStorage.setItem('logo', compLogo);
+            }
+
+            alert("Local cache cleared successfully! (Users and settings are safely preserved) ✅");
+            location.reload();
+        }
+    }
+
+    window.resetCloudDataOnly = async function() {
+        if(confirm("⚠️ CRITICAL WARNING: This will permanently format/reset all Design and Party data on the Cloud Server! Are you absolutely sure?")) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify([]) });
+                await setDoc(doc(db, "texfriend_erp", "design_specs"), { content: JSON.stringify({}) });
+                await setDoc(doc(db, "texfriend_erp", "party_master_db"), { content: JSON.stringify({}) });
+                
+                alert("Cloud data factory reset successful! ☁️🗑️");
+                location.reload();
+            } catch(e) {
+                alert("Cloud Reset Error: " + e.message);
+            }
+        }
+    }
+</script>
+
+<script>
+let tempLogoData = "";
+let tempDesignBitmapData = "";
+
+window.onload = function() {
+    let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+    document.getElementById('set_heading').value = heading;
+
+    let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
+    document.getElementById('set_comp_addr').value = compAddr;
+
+    let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo');
+    if(logo) {
+        tempLogoData = logo;
+        let imgTag = document.getElementById('logoImgTag');
+        imgTag.src = logo;
+        document.getElementById('logoPreviewBox').style.display = 'flex';
+    }
+
+    loadDesignDropdownInSettings();
+    loadPartyDropdown();
+    loadUserPermissions();
+    renderUsersTable();
+}
+
+function loadDesignDropdownInSettings() {
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let select = document.getElementById('settingDesignSelect');
+    let html = '<option value="">Select Design Number</option>';
+    preDesigns.forEach(d => {
+        html += `<option value="${d}">${d}</option>`;
+    });
+    select.innerHTML = html;
+}
+
+function loadDesignBitmap(designNo) {
+    if(!designNo) {
+        tempDesignBitmapData = "";
+        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+        return;
+    }
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    if(designSpecs[designNo] && designSpecs[designNo].bitmap) {
+        tempDesignBitmapData = designSpecs[designNo].bitmap;
+        document.getElementById('designBitmapImgTag').src = tempDesignBitmapData;
+        document.getElementById('designBitmapPreviewBox').style.display = 'flex';
+    } else {
+        tempDesignBitmapData = "";
+        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+    }
+}
+
+function previewLogo(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            tempLogoData = e.target.result;
+            let imgTag = document.getElementById('logoImgTag');
+            imgTag.src = tempLogoData;
+            document.getElementById('logoPreviewBox').style.display = 'flex';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewDesignBitmap(input) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            tempDesignBitmapData = e.target.result;
+            let imgTag = document.getElementById('designBitmapImgTag');
+            imgTag.src = tempDesignBitmapData;
+            document.getElementById('designBitmapPreviewBox').style.display = 'flex';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function getPartyDatabase() {
+    let raw = localStorage.getItem('party_master_db');
+    if(raw) {
+        try { return JSON.parse(raw); } catch(e) {}
+    }
+    return {};
+}
+
+function loadPartyDropdown() {
+    let db = getPartyDatabase();
+    let select = document.getElementById('partyListSelect');
+    let html = '<option value="">Select Party to Edit/View</option>';
+    Object.keys(db).forEach(p => {
+        html += `<option value="${p}">${p}</option>`;
+    });
+    select.innerHTML = html;
+}
+
+function selectPartyToEdit(partyName) {
+    if(!partyName) {
+        document.getElementById('partyNameInput').value = '';
+        document.getElementById('partyAddressInput').value = '';
+        return;
+    }
+    let db = getPartyDatabase();
+    document.getElementById('partyNameInput').value = partyName;
+    document.getElementById('partyAddressInput').value = db[partyName] || '';
+}
+
+function savePartyMaster() {
+    let pName = document.getElementById('partyNameInput').value.trim();
+    let pAddr = document.getElementById('partyAddressInput').value.trim();
+
+    if(!pName) {
+        alert("Please enter a Party Name!");
+        return;
+    }
+
+    let db = getPartyDatabase();
+    db[pName] = pAddr;
+
+    localStorage.setItem('party_master_db', JSON.stringify(db));
+    localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
+
+    loadPartyDropdown();
+    alert("Party Details Saved Successfully! ✅");
+}
+
+function deletePartyMaster() {
+    let select = document.getElementById('partyListSelect');
+    let val = select.value;
+    if(!val) {
+        alert("Please select a Party to delete!");
+        return;
+    }
+    if(confirm(`Are you sure you want to delete party: ${val}?`)) {
+        let db = getPartyDatabase();
+        delete db[val];
+        localStorage.setItem('party_master_db', JSON.stringify(db));
+        localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
+
+        document.getElementById('partyNameInput').value = '';
+        document.getElementById('partyAddressInput').value = '';
+        loadPartyDropdown();
+        alert("Party deleted successfully! 🗑️");
+    }
+}
+
+// User Access Control Functions
+function updateUserPermissions() {
+    let permissions = {
+        dashboard: document.getElementById('perm_dashboard').checked,
+        design_list: document.getElementById('perm_design_list').checked,
+        design_master: document.getElementById('perm_design_master').checked,
+        despatch: document.getElementById('perm_despatch').checked,
+        dyeing_issue: document.getElementById('perm_dyeing_issue').checked,
+        dyeing_receive: document.getElementById('perm_dyeing_receive').checked,
+        index: document.getElementById('perm_index').checked,
+        invoice: document.getElementById('perm_invoice').checked,
+        kora_yarn: document.getElementById('perm_kora_yarn').checked,
+        party_orders: document.getElementById('perm_party_orders').checked,
+        process_matrix: document.getElementById('perm_process_matrix').checked,
+        report: document.getElementById('perm_report').checked,
+        settings: document.getElementById('perm_settings').checked,
+        warp_entry: document.getElementById('perm_warp_entry').checked,
+        warping: document.getElementById('perm_warping').checked,
+        washing: document.getElementById('perm_washing').checked,
+        weaving: document.getElementById('perm_weaving').checked,
+        weft_entry: document.getElementById('perm_weft_entry').checked,
+        yarn_calc: document.getElementById('perm_yarn_calc').checked
+    };
+    localStorage.setItem('user_permissions', JSON.stringify(permissions));
+    alert("All Pages User Permissions Updated Successfully! ✅");
+}
+
+function loadUserPermissions() {
+    let saved = localStorage.getItem('user_permissions');
+
+</script>
+ <script src="config.js"></script>
+</body>
+</html>

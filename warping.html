@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Warping - TEXFRIEND ERP</title>
+<script src="translator.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    /* 📌 Smart Background - STRICTLY NO BLACK */
+    html, body { 
+        width: 100%; 
+        min-height: 100vh; 
+        background: #030712; 
+        color: #1E2B23; /* Deep Dark Green */
+    }
+
+    body { 
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* 📌 Main Container */
+    .main-card {
+        width: 100%;
+        max-width: 900px;
+        margin: 0;
+        background: #FFFFFF;
+        border: 1px solid rgba(82, 110, 81, 0.15);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 5px; 
+    }
+
+    /* 📌 Smart Back Button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFFFFF;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+        background: #1A2421; 
+        padding: 8px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer img {
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+
+    /* Checkbox Styling */
+    .completed-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .page-title {
+        font-size: 16px;
+        margin-bottom: 5px;
+        font-weight: 700;
+        color: #2F4F38;
+        text-align: left;
+        position: relative;
+        padding-left: 12px;
+    }
+    .page-title::before {
+        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
+        background: #4A7C59; border-radius: 4px;
+    }
+
+    /* 📌 Smart Sectioning */
+    .form-section {
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 14px;
+        padding: 22px 15px 15px 15px;
+        margin-bottom: 5px;
+        position: relative;
+    }
+    
+    .section-badge {
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: #4A7C59;
+        color: #FFF;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+    }
+    .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+
+    /* 📌 Clean Multi-Row Grid Layout */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
+
+    /* 📌 Smart 3D Inputs */
+    input, select {
+        width: 100%; padding: 10px 12px; border-radius: 8px;
+        border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
+        font-size: 11px; font-weight: 600; transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+    }
+    input:focus, select:focus {
+        border-color: #4A7C59; outline: none; background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+    }
+    input::placeholder { color: #A0AFA0; font-weight: 400; }
+    input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
+
+    /* 📌 Advanced Grids */
+    .grid-header {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+    }
+    .grid-header-bot {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+    }
+
+    .grid-header div, .grid-header-bot div {
+        font-size: 10px; font-weight: 700; color: #2F4F38;
+        text-align: center; text-transform: uppercase;
+    }
+
+    .line-row {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+    .line-row-bot {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
+        gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+
+    .line-row input, .line-row-bot input { padding: 10px 4px; font-size: 11px; text-align: center; }
+
+    .del-btn {
+        color: white; border: none; width: 35px; height: 35px; border-radius: 8px;
+        cursor: pointer; font-size: 16px; font-weight: bold; display: flex;
+        align-items: center; justify-content: center; transition: all 0.2s ease;
+        background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1);
+    }
+    .del-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+    /* 📌 Smart Buttons */
+    .btn-main {
+        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
+        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+    
+    .btn-blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
+    .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+
+    .popup-trigger-btn {
+        background: linear-gradient(135deg, #6366F1, #4338CA);
+        color: white; border: none; padding: 14px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+    }
+    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
+
+    /* 📌 Advanced Pop-up Modal Styling */
+    .overlay-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .overlay-modal.show { opacity: 1; }
+    
+    .modal-content {
+        background: #FFFFFF; width: 100%; max-width: 950px; margin: auto; height: 90vh; border-radius: 16px;
+        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .overlay-modal.show .modal-content { transform: scale(1); }
+
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+    }
+    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+    
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+
+    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; display: flex; flex-direction: column; gap: 12px; }
+
+    /* 📌 Saved Warping Card Layout */
+    .saved-warp-card {
+        background: #FFFFFF; border: 1px solid #D1DED1; border-radius: 12px; padding: 14px;
+        box-shadow: 0 4px 12px rgba(30,43,35,0.04); display: flex; flex-direction: column; gap: 10px;
+    }
+    .saved-warp-top {
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #E2E8E2; padding-bottom: 8px;
+    }
+    .warp-card-img {
+        width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #4A7C59; cursor: zoom-in;
+    }
+    
+    .table-container {
+        width: 100%; border-radius: 8px; overflow-x: auto; border: 1px solid #E2E8E2; background: #FFFFFF;
+    }
+    .warp-sub-table {
+        width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto;
+    }
+    .warp-sub-table th, .warp-sub-table td {
+        padding: 9px 8px; border: 1px solid #E2E8E2; text-align: center; white-space: nowrap;
+    }
+    .warp-sub-table th {
+        background: #EAF0EA; color: #2F4F38; font-weight: 700; font-size: 10px; text-transform: uppercase;
+    }
+    .warp-sub-table td { color: #1E2B23; }
+
+    .action-row {
+        display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid #F4F7F4; padding-top: 8px;
+    }
+    .action-row button {
+        padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none;
+    }
+    .btn-card-edit { background: #64748B; color: white; }
+    .btn-card-del { background: #EF4444; color: white; }
+    .btn-card-complete { background: #526E51; color: white; }
+    .btn-card-running { background: #D97706; color: white; }
+
+    .excess-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
+    .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
+
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+</style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="completed-checkbox">
+                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
+                <label for="top_completed_status">Completed</label>
+            </div>
+            <div id="bitmapDisplayContainer"></div>
+        </div>
+    </div>
+
+    <div class="page-title" style="font-size: 18px; font-weight: 800;">Warping Entry System</div>
+
+    <!-- 📌 1. TOP SECTION (ORDER DETAILS) -->
+    <div class="form-section" id="sectionTop">
+        <div class="section-badge">1. Warping Order Details (Top)</div>
+        
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="topDate">
+            </div>
+            <div class="form-group">
+                <label>Warping Name (Unit)</label>
+                <input type="text" id="topUnit" placeholder="Warping Name">
+            </div>
+            <div class="form-group">
+                <label>Design No</label>
+                <select id="topDesignNo" onchange="loadTopDesignSpecs(this.value)">
+                    <option value="">Select Design</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-grid-3" style="margin-top: 10px;">
+            <div class="form-group">
+                <label>Reed</label>
+                <input type="text" id="topReed" placeholder="0" readonly>
+            </div>
+            <div class="form-group">
+                <label>Count</label>
+                <input type="text" id="topCount" placeholder="Count" readonly>
+            </div>
+            <div class="form-group">
+                <label>Warping Mts</label>
+                <input type="number" id="topWarpingMts" placeholder="100" step="0.01" onchange="loadTopYarnLines()">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Weaver To</label>
+            <input type="text" id="topWeaverTo" placeholder="Enter Weaver To / Party Name">
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 10px;">
+            <div style="min-width: 500px;">
+                <div class="grid-header">
+                    <div>Count</div>
+                    <div>Colour</div>
+                    <div>Order Wt</div>
+                    <div>Issued Wt</div>
+                    <div></div>
+                </div>
+                <div id="topLinesContainer">
+                    <!-- Dynamic rows here -->
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-main btn-save" id="saveTopBtnTxt" onclick="saveTopOrder()">Save Top Order</button>
+    </div>
+
+    <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) -->
+    <div class="form-section" id="sectionBottom">
+        <div class="section-badge blue">2. Warping Received & Loss (Bottom)</div>
+        
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="botDate">
+            </div>
+            <div class="form-group">
+                <label>Design Number (Select Pending)</label>
+                <select id="botActiveOrderSelect" onchange="onBottomOrderSelect(this.value)">
+                    <option value="">Select Pending Order</option>
+                </select>
+                <input type="hidden" id="botDesignNo">
+                <input type="hidden" id="botUnitName">
+            </div>
+        </div>
+
+        <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
+            <div style="min-width: 550px;">
+                <div class="grid-header-bot">
+                    <div>Count</div>
+                    <div>Colour</div>
+                    <div>Order Wt</div>
+                    <div>Issued Wt</div>
+                    <div>Rcvd Wt</div>
+                </div>
+                <div id="botLinesContainer"></div>
+            </div>
+            <button class="btn-main btn-blue" id="saveBotBtnTxt" onclick="saveBottomEntry()">Save Bottom Entry</button>
+        </div>
+    </div>
+
+    <!-- 📌 3. SAVED DATA POPUP BUTTON -->
+    <button type="button" class="popup-trigger-btn" onclick="openModal('savedListModal')">View Saved Warping Data</button>
+</div>
+
+<!-- 📌 Saved List Modal -->
+<div id="savedListModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Saved Warping Data</h3>
+            <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
+        </div>
+        <div class="modal-body" id="savedCardsContainer">
+            <!-- Cards populate here -->
+        </div>
+    </div>
+</div>
+
+<!-- 📌 Fullscreen Image Popup Modal -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+    <button class="close-fullscreen">Close ✕</button>
+    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+</div>
+
+<script>
+let editingWarpId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('topDate').valueAsDate = new Date();
+    document.getElementById('botDate').valueAsDate = new Date();
+    // Dropdowns are loaded in window.onload
+});
+
+function openModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+    if(modalId === 'savedListModal') {
+        renderCards(); 
+    }
+}
+
+function closeModal(modalId) {
+    let modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
+// 📌 Fullscreen Image Popup Controls
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
+// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+function loadBitmapImage() {
+    let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+    
+    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
+
+    let imgHtml = '';
+    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
+        let b64 = designSpecs[specKey].bitmap;
+        imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
+    }
+    
+    bitmapContainer.innerHTML = imgHtml;
+}
+
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+function parseYarnCount(countStr) {
+    if (!countStr) return 0;
+    let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
+    }
+    return parseFloat(str) || 0;
+}
+
+function resolvePattern(lines, ranges, type, defaultCount) {
+    if(!lines || lines.length === 0) return [];
+    let covered = new Array(lines.length).fill(false);
+    let orderedPattern = [];
+
+    if(ranges && ranges.length > 0) {
+        ranges.forEach(r => {
+            for(let s=0; s<r.set; s++) {
+                for(let j = r.start; j <= r.end; j++) {
+                    if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+                }
+            }
+            for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
+        });
+    }
+    lines.forEach((l, idx) => {
+        if(!covered[idx]) orderedPattern.push({...l});
+    });
+
+    let exactSequence = [];
+    orderedPattern.forEach(item => {
+        let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
+        let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
+        let clr = item.color ? String(item.color).trim() : '-';
+        for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
+    });
+
+    let summaryMap = new Map();
+    let order = [];
+    exactSequence.forEach(item => {
+        let key = item.count.toLowerCase() + "||" + item.color.toLowerCase().trim();
+        if(!summaryMap.has(key)) {
+            summaryMap.set(key, { count: item.count, color: item.color.trim(), patternVal: 0 });
+            order.push(key);
+        }
+        summaryMap.get(key).patternVal++;
+    });
+
+    return order.map(k => summaryMap.get(k));
+}
+
+function loadTopDesignDropdown() {
+    let allDesignSet = new Set();
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    preDesignList.forEach(d => allDesignSet.add(d));
+
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    designMasters.forEach(d => allDesignSet.add(d.name));
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    Object.keys(designSpecs).forEach(d => allDesignSet.add(d));
+
+    let select = document.getElementById('topDesignNo');
+    let html = '<option value="">Select Design</option>';
+    [...allDesignSet].forEach(d => { if(d) html += `<option value="${d}">${d}</option>`; });
+    select.innerHTML = html;
+
+    let activeDesign = localStorage.getItem('selected_design_number');
+    if(activeDesign && allDesignSet.has(activeDesign)) {
+        select.value = activeDesign;
+        loadTopDesignSpecs(activeDesign);
+    }
+}
+
+function loadBottomOrderDropdown() {
+    let select = document.getElementById('botActiveOrderSelect');
+    let html = '<option value="">Select Pending Order</option>';
+    
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+
+    let pendingItems = issues.filter(issue => {
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive; 
+    });
+
+    let uniqueMap = new Map();
+    pendingItems.forEach(item => {
+        let key = `${item.designNo}_${item.unit}`;
+        if(!uniqueMap.has(key)) {
+            uniqueMap.set(key, { designNo: item.designNo, unit: item.unit });
+        }
+    });
+
+    uniqueMap.forEach((val) => {
+        html += `<option value="${val.designNo}_${val.unit}">${val.designNo} - ${val.unit}</option>`;
+    });
+
+    select.innerHTML = html;
+}
+
+function onBottomOrderSelect(val) {
+    if(!val) {
+        document.getElementById('botDesignNo').value = '';
+        document.getElementById('botUnitName').value = '';
+        document.getElementById('botGridWrapper').style.display = 'none';
+        return;
+    }
+    let lastUnderscore = val.lastIndexOf('_');
+    let dNo = val.substring(0, lastUnderscore);
+    let unit = val.substring(lastUnderscore + 1);
+
+    document.getElementById('botDesignNo').value = dNo;
+    document.getElementById('botUnitName').value = unit;
+    loadBottomRows();
+}
+
+function loadTopDesignSpecs(dNo) {
+    loadBitmapImage();
+    if(!dNo) return;
+    localStorage.setItem('selected_design_number', dNo);
+    
+    let cleanDNo = cleanDesignName(dNo);
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
+
+    let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let rec = issues.find(r => (r.designNo === dNo || r.designNumber === dNo));
+
+    if(specStatus === 'completed' || (rec && rec.status.toLowerCase() === 'completed')) {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = true;
+    } else {
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = false;
+    }
+
+    let reed = found.reed || sp.reed || sp.baseReed || 52;
+    let count1 = found.count1 || sp.warp || '20';
+    
+    // 📌 Yarn Calculation பக்கத்தில் சேமிக்கப்பட்ட orderMtr மதிப்பை எடுத்தல்
+    let yarnCalcOrderMtr = parseFloat(sp.orderMtr) || 0;
+    
+    // 📌 அந்த மதிப்பில் இருந்து 5% குறைத்து Warping Mts-ல் ஆட்டோ ஃபில் செய்தல் (Warping Mts = Order Mtr - 5%)
+    let warpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
+
+    let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
+    if (existingIssues.length > 0) {
+        if(existingIssues[0].unit) document.getElementById('topUnit').value = existingIssues[0].unit;
+        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+        if(existingIssues[0].warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = existingIssues[0].warpingMts;
+    } else {
+        document.getElementById('topWarpingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
+        document.getElementById('topUnit').value = '';
+        if(document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = '';
+    }
+
+    document.getElementById('topReed').value = reed;
+    document.getElementById('topCount').value = count1;
+
+    loadTopYarnLines();
+}
+
+function loadTopYarnLines() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let container = document.getElementById('topLinesContainer');
+    container.innerHTML = '';
+
+    if(!dNo) return;
+
+    let cleanDNo = cleanDesignName(dNo);
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
+    let sp = specKey ? specs[specKey] : {};
+
+    let reed = parseFloat(document.getElementById('topReed').value) || parseFloat(found.reed || sp.reed || sp.baseReed) || 52;
+    let baseWidth = parseFloat(found.width || sp.width || sp.baseWidth) || 66.92;
+    let totalWarpEnds = Math.round(reed * baseWidth);
+    let warpingMts = parseFloat(document.getElementById('topWarpingMts').value) || 100;
+    let defaultWarpCount = found.count1 || sp.warp || '20';
+
+    let warpList = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
+    let dyeingReceives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
+
+    if (existingIssues.length > 0) {
+        if(existingIssues[0].unit) document.getElementById('topUnit').value = existingIssues[0].unit;
+        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+    }
+
+    if(warpList.length > 0) {
+        let totalPatternVal = warpList.reduce((a, b) => a + b.patternVal, 0) || 1;
+        warpList.forEach(item => {
+            let calcCount = parseYarnCount(item.count) || parseYarnCount(defaultWarpCount) || 20;
+            let totalEndsForColor = item.patternVal * Math.floor(totalWarpEnds / totalPatternVal);
+            let weightKg = (totalEndsForColor * warpingMts) / (1693.33 * calcCount);
+
+            let matchedExisting = existingIssues.find(i => 
+                i.count && item.count && i.count.trim().toLowerCase() === item.count.trim().toLowerCase() &&
+                i.color && item.color && i.color.trim().toLowerCase() === item.color.trim().toLowerCase()
+            );
+
+            let matchedDyeRec = dyeingReceives.find(r => 
+                cleanDesignName(r.designNo) === cleanDNo && 
+                r.color && item.color && 
+                r.color.trim().toLowerCase() === item.color.trim().toLowerCase()
+            );
+
+            if (!matchedDyeRec) {
+                matchedDyeRec = dyeingReceives.find(r => cleanDesignName(r.designNo) === cleanDNo);
+            }
+
+            let initialWt = matchedExisting ? parseFloat(matchedExisting.issueWt) : 
+                           (matchedDyeRec ? parseFloat(matchedDyeRec.receivedWt || matchedDyeRec.netWt) : weightKg);
+
+            let row = document.createElement('div');
+            row.className = 'line-row';
+            row.innerHTML = `
+                <input type="text" class="t-count" value="${item.count}" readonly>
+                <input type="text" class="t-color" value="${item.color}" readonly>
+                <input type="number" class="t-orderwt" value="${weightKg.toFixed(3)}" step="0.001" readonly>
+                <input type="number" class="t-isswt" value="${initialWt.toFixed(3)}" step="0.001">
+                <button class="del-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(row);
+        });
+    }
+}
+
+async function quickCompleteToggle() {
+    let dNo = document.getElementById('topDesignNo').value;
+    let cb = document.getElementById('top_completed_status');
+    let isCompleted = cb ? cb.checked : false;
+
+    if(!dNo) {
+        alert("Mudhala Design Number select pannunga bro");
+        if(cb) cb.checked = false;
+        return;
+    }
+
+    let statusText = isCompleted ? 'completed' : 'running';
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    issues.forEach(r => {
+        if(r.designNo === dNo || r.designNumber === dNo) r.status = statusText;
+    });
+
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
+
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    designSpecs[specKey].status = statusText;
+    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+    try {
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+    } catch(e) { console.error(e); }
+
+    renderCards();
+    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+}
+
+async function saveTopOrder() {
+    let dateVal = document.getElementById('topDate').value;
+    let unit = document.getElementById('topUnit').value.trim();
+    let dNo = document.getElementById('topDesignNo').value;
+    let weaverTo = document.getElementById('topWeaverTo') ? document.getElementById('topWeaverTo').value.trim() : '';
+    let warpingMts = document.getElementById('topWarpingMts') ? document.getElementById('topWarpingMts').value : '';
+    
+    let isCompleted = false;
+    let cb = document.getElementById('top_completed_status');
+    if(cb) isCompleted = cb.checked;
+
+    if(!dNo || !unit) { alert("Please fill Warping Name and Design Number!"); return; }
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let cleanDNo = cleanDesignName(dNo);
+
+    let alreadyExists = issues.some(i => cleanDesignName(i.designNo) === cleanDNo);
+    if(alreadyExists) {
+        let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Warping Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
+        if(!confirmReEntry) {
+            return;
+        }
+        issues = issues.filter(i => cleanDesignName(i.designNo) !== cleanDNo);
+    }
+
+    let btn = document.getElementById('saveTopBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "⏳ Saving to Cloud...";
+
+    let rows = document.querySelectorAll('#topLinesContainer .line-row');
+    if(rows.length === 0) { btn.innerText = origText; return; }
+
+    let savedCount = 0;
+
+    rows.forEach(row => {
+        let count = row.querySelector('.t-count').value.trim();
+        let color = row.querySelector('.t-color').value.trim();
+        let orderWt = parseFloat(row.querySelector('.t-orderwt').value) || 0;
+        let issWt = parseFloat(row.querySelector('.t-isswt').value) || 0;
+
+        if(count && issWt > 0) {
+            issues.push({
+                id: Date.now() + Math.random(),
+                date: dateVal,
+                unit: unit,
+                designNo: dNo,
+                weaverTo: weaverTo,
+                warpingMts: warpingMts,
+                count: count,
+                color: color,
+                orderWt: orderWt.toFixed(3),
+                issueWt: issWt.toFixed(3),
+                status: isCompleted ? 'completed' : 'running'
+            });
+            savedCount++;
+        }
+    });
+
+    if(savedCount > 0) {
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+        
+        alert("Warping Order Saved to Cloud Successfully! ✅☁️");
+        
+        document.getElementById('topLinesContainer').innerHTML = '';
+        document.getElementById('topDesignNo').value = '';
+        document.getElementById('topUnit').value = '';
+        document.getElementById('topReed').value = '';
+        document.getElementById('topCount').value = '';
+        if(cb) cb.checked = false;
+        
+        loadTopDesignDropdown();
+        loadBottomOrderDropdown();
+        renderCards();
+        loadBitmapImage();
+    } else {
+        alert("Please enter valid Issued Weight.");
+    }
+    btn.innerText = origText;
+}
+
+function loadBottomRows() {
+    let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
+    let wrapper = document.getElementById('botGridWrapper');
+    let container = document.getElementById('botLinesContainer');
+    container.innerHTML = '';
+    
+    if(!dNo || !uName) { wrapper.style.display = 'none'; return; }
+    wrapper.style.display = 'block';
+
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+
+    let pendingItems = issues.filter(issue => {
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
+    });
+
+    pendingItems.forEach(item => {
+        let row = document.createElement('div');
+        row.className = 'line-row-bot';
+        row.setAttribute('data-id', item.id);
+        
+        row.innerHTML = `
+            <input type="text" class="b-count" value="${item.count}" readonly>
+            <input type="text" class="b-color" value="${item.color}" readonly>
+            <input type="text" class="b-orderwt" value="${item.orderWt}" readonly>
+            <input type="text" class="b-isswt" value="${item.issueWt}" readonly>
+            <input type="number" class="b-received" placeholder="Rcvd Wt" step="0.001">
+        `;
+        container.appendChild(row);
+    });
+}
+
+async function saveBottomEntry() {
+    let dateVal = document.getElementById('botDate').value;
+    let dNo = document.getElementById('botDesignNo').value;
+    let uName = document.getElementById('botUnitName').value;
+
+    if(!dNo || !uName) { alert("Please select a Pending Warping Order!"); return; }
+
+    let btn = document.getElementById('saveBotBtnTxt');
+    let origText = btn.innerText;
+    btn.innerText = "⏳ Saving to Cloud...";
+
+    let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+    if(rows.length === 0) { btn.innerText = origText; return; }
+
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let savedCount = 0;
+
+    rows.forEach(row => {
+        let rcvWt = parseFloat(row.querySelector('.b-received').value);
+        let recId = row.getAttribute('data-id');
+        
+        if(rcvWt > 0) {
+            receives.push({
+                id: Date.now() + Math.random(),
+                issueId: recId,
+                botDate: dateVal,
+                designNo: dNo,
+                unit: uName,
+                receivedWt: rcvWt.toFixed(3)
+            });
+            savedCount++;
+        }
+    });
+
+    if(savedCount > 0) {
+        localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+        if (window.firebaseSave) {
+            await window.firebaseSave('warping_receive_records', receives);
+        }
+
+        alert("Bottom Entry Saved to Cloud Successfully! ✅☁️");
+        document.getElementById('botActiveOrderSelect').value = '';
+        document.getElementById('botDesignNo').value = '';
+        document.getElementById('botUnitName').value = '';
+        document.getElementById('botGridWrapper').style.display = 'none';
+        loadBottomOrderDropdown();
+        renderCards();
+    } else {
+        alert("Please enter Received Weight for at least one item.");
+    }
+    btn.innerText = origText;
+}
+
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
+    if(confirm(msg)) {
+        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        let index = issues.findIndex(r => r.id == id);
+        
+        if(index > -1) {
+            issues[index].status = newStatus;
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            
+            let dNo = issues[index].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
+            }
+
+            if(window.firebaseSave) {
+                await window.firebaseSave('warping_issue_records', issues);
+            }
+            renderCards();
+        }
+    }
+}
+
+async function editWarpingRecord(issueId, isReceived) {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) {
+            let recRecord = receives[recIndex];
+            receives.splice(recIndex, 1);
+            localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+            if (window.firebaseSave) window.firebaseSave('warping_receive_records', receives);
+            
+            document.getElementById('botDate').value = recRecord.botDate;
+            document.getElementById('botActiveOrderSelect').value = `${recRecord.designNo}_${recRecord.unit}`;
+            document.getElementById('botDesignNo').value = recRecord.designNo;
+            document.getElementById('botUnitName').value = recRecord.unit;
+            closeModal('savedListModal');
+            loadBottomRows();
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+                rows.forEach(row => {
+                    if(row.getAttribute('data-id') == issueId) {
+                        row.querySelector('.b-received').value = recRecord.receivedWt;
+                    }
+                });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }, 100);
+            renderCards();
+        }
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) {
+            let issRecord = issues[issueIndex];
+            issues.splice(issueIndex, 1);
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            if (window.firebaseSave) window.firebaseSave('warping_issue_records', issues);
+            
+            document.getElementById('topDate').value = issRecord.date;
+            document.getElementById('topUnit').value = issRecord.unit;
+            document.getElementById('topDesignNo').value = issRecord.designNo;
+            if(issRecord.weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = issRecord.weaverTo;
+            if(issRecord.warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = issRecord.warpingMts;
+            
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = (issRecord.status === 'completed');
+            
+            loadTopDesignSpecs(issRecord.designNo);
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#topLinesContainer .line-row');
+                rows.forEach(row => {
+                    if(row.querySelector('.t-count').value === issRecord.count && row.querySelector('.t-color').value === issRecord.color) {
+                        row.querySelector('.t-isswt').value = issRecord.issueWt;
+                    }
+                });
+            }, 100);
+
+            closeModal('savedListModal');
+            renderCards();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+}
+
+async function deleteWarpingRecord(issueId, isReceived) {
+    if(!confirm("Are you sure you want to delete this record?")) return;
+    
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) receives.splice(recIndex, 1);
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) issues.splice(issueIndex, 1);
+    }
+    
+    localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('warping_receive_records', receives);
+        await window.firebaseSave('warping_issue_records', issues);
+    }
+    
+    loadBottomOrderDropdown();
+    renderCards();
+    document.getElementById('botLinesContainer').innerHTML = '';
+    document.getElementById('botGridWrapper').style.display = 'none';
+    document.getElementById('botActiveOrderSelect').value = '';
+}
+
+function renderCards() {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    let activeDesign = document.getElementById('topDesignNo').value;
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+
+    let container = document.getElementById('savedCardsContainer');
+    if(!container) return;
+    container.innerHTML = '';
+
+    let filteredIssues = issues;
+    if(activeDesign) {
+        filteredIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(activeDesign));
+    }
+
+    if(filteredIssues.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:#A0AFA0; font-weight:600;">No Saved Warping Data found for this Design.</div>`;
+        return;
+    }
+
+    let groupMap = new Map();
+    filteredIssues.forEach(issue => {
+        let groupKey = `${cleanDesignName(issue.designNo)}_${issue.unit}`;
+        if(!groupMap.has(groupKey)) {
+            groupMap.set(groupKey, {
+                date: issue.date,
+                unit: issue.unit,
+                designNo: issue.designNo,
+                weaverTo: issue.weaverTo,
+                warpingMts: issue.warpingMts,
+                status: issue.status || 'running',
+                items: []
+            });
+        }
+        groupMap.get(groupKey).items.push(issue);
+    });
+
+    groupMap.forEach((group) => {
+        let dateObj = new Date(group.date);
+        let dateStr = ("0" + dateObj.getDate()).slice(-2) + "/" + ("0" + (dateObj.getMonth() + 1)).slice(-2) + "/" + dateObj.getFullYear();
+
+        let cleanDNo = cleanDesignName(group.designNo);
+        let bitmapUrl = '';
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
+        if(specKey && designSpecs[specKey].bitmap) {
+            bitmapUrl = designSpecs[specKey].bitmap;
+        }
+
+        let imgTag = bitmapUrl ? `<img src="${bitmapUrl}" class="warp-card-img" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : `<div style="width:45px; height:45px; background:#EAF0EA; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#4A7C59; font-weight:bold;">No Img</div>`;
+
+        let subTableRows = '';
+        group.items.forEach((item, index) => {
+            let matchingRec = receives.find(r => r.issueId == item.id);
+            let rcvWtStr = matchingRec ? `<b style="color:#10B981;">${matchingRec.receivedWt}</b>` : `<span class="status-pending">Pending</span>`;
+            let issWtNum = parseFloat(item.issueWt) || 0;
+            let rcvWtNum = matchingRec ? parseFloat(matchingRec.receivedWt) || 0 : 0;
+            
+            let excessStr = "-";
+            if(matchingRec) {
+                let diff = issWtNum - rcvWtNum;
+                if(Math.abs(diff) > 0.001) {
+                    excessStr = `<span class="excess-text">${diff.toFixed(3)}</span>`;
+                } else {
+                    excessStr = `<span style="color:#10B981; font-weight:bold;">0.000</span>`;
+                }
+            }
+
+            subTableRows += `
+                <tr>
+                    <td style="width: 45px;">${index + 1}</td>
+                    <td style="width: 70px;"><b>${item.count}</b></td>
+                    <td>${item.color}</td>
+                    <td style="width: 80px;">${item.orderWt}</td>
+                    <td style="width: 85px;"><b>${item.issueWt}</b></td>
+                    <td style="width: 85px;">${rcvWtStr}</td>
+                    <td style="width: 75px;">${excessStr}</td>
+                </tr>
+            `;
+        });
+
+        let statusBtnClass = group.status === 'running' ? 'btn-card-complete' : 'btn-card-running';
+        let statusBtnText = group.status === 'running' ? 'Complete' : 'Running';
+        let nextStatus = group.status === 'running' ? 'completed' : 'running';
+
+        let card = document.createElement('div');
+        card.className = 'saved-warp-card';
+        card.innerHTML = `
+            <div class="saved-warp-top">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    ${imgTag}
+                    <div>
+                        <div style="font-size:12px; font-weight:800; color:#2F4F38;">${group.designNo}</div>
+                        <div style="font-size:10px; color:#64748B;">Date: ${dateStr}</div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:10px; font-weight:700; text-transform:uppercase; background:${group.status === 'completed' ? '#ECFDF5' : '#FFFBEB'}; color:${group.status === 'completed' ? '#059669' : '#D97706'}; padding:4px 8px; border-radius:6px; border:1px solid currentColor;">${group.status}</span>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; color: #1E2B23; background:#F8FAF8; padding:8px; border-radius:8px;">
+                <div><span>Warping Name:</span> <b>${group.unit || '-'}</b></div>
+                <div><span>Weaver To:</span> <b>${group.weaverTo || '-'}</b></div>
+                <div><span>Warping Mtr:</span> <b>${group.warpingMts || '-'} Mts</b></div>
+            </div>
+
+            <div class="table-container">
+                <table class="warp-sub-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45px;">S.No</th>
+                            <th style="width: 70px;">Count</th>
+                            <th>Colour</th>
+                            <th style="width: 80px;">Order Wt</th>
+                            <th style="width: 85px;">Issued Wt</th>
+                            <th style="width: 85px;">Rcvd Wt</th>
+                            <th style="width: 75px;">Excess</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${subTableRows}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-row">
+                <button class="${statusBtnClass}" onclick="toggleStatusForGroup('${group.designNo}', '${group.unit}', '${nextStatus}')">${statusBtnText}</button>
+                <button class="btn-card-edit" onclick="editWarpingGroup('${group.designNo}', '${group.unit}')">Edit</button>
+                <button class="btn-card-del" onclick="deleteWarpingGroup('${group.designNo}', '${group.unit}')">Delete</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+async function toggleStatusForGroup(dNo, unitName, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this design order to Completed?" : "Change this design order to Running?";
+    if(confirm(msg)) {
+        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        issues.forEach(r => {
+            if(cleanDesignName(r.designNo) === cleanDesignName(dNo) && r.unit === unitName) {
+                r.status = newStatus;
+            }
+        });
+
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = newStatus;
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        if(window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+        renderCards();
+    }
+}
+
+async function editWarpingGroup(dNo, unitName) {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let targetIssue = issues.find(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName);
+    
+    if(targetIssue) {
+        document.getElementById('topDate').value = targetIssue.date;
+        document.getElementById('topUnit').value = targetIssue.unit;
+        document.getElementById('topDesignNo').value = targetIssue.designNo;
+        if(targetIssue.weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = targetIssue.weaverTo;
+        if(targetIssue.warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = targetIssue.warpingMts;
+        
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = (targetIssue.status === 'completed');
+        
+        loadTopDesignSpecs(targetIssue.designNo);
+        closeModal('savedListModal');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+async function deleteWarpingGroup(dNo, unitName) {
+    if(!confirm("Are you sure you want to delete this entire warping entry?")) return;
+    
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    let targetIds = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName).map(i => i.id);
+    
+    issues = issues.filter(i => !(cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName));
+    receives = receives.filter(r => !targetIds.includes(parseFloat(r.issueId)));
+    
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('warping_issue_records', issues);
+        await window.firebaseSave('warping_receive_records', receives);
+    }
+    
+    loadBottomOrderDropdown();
+    renderCards();
+}
+</script>
+<script src="config.js"></script>
+    
+</script>
+</body>
+</html>
