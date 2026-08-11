@@ -90,27 +90,16 @@
             font-weight: 700;
         }
 
-        #bitmapDisplayContainer {
-            text-align: right;
-        }
+        #bitmapDisplayContainer { text-align: right; }
         #bitmapDisplayContainer img {
-            max-height: 40px;
-            border-radius: 4px;
-            border: 1px solid rgba(82, 110, 81, 0.4);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            cursor: zoom-in;
-            transition: transform 0.2s;
+            max-height: 40px; border-radius: 4px; border: 1px solid rgba(82, 110, 81, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: zoom-in; transition: transform 0.2s;
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
         .card-header {
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: 700;
-            color: #2F4F38;
-            text-align: left;
-            position: relative;
-            padding-left: 12px;
+            font-size: 16px; margin-bottom: 5px; font-weight: 700; color: #2F4F38;
+            text-align: left; position: relative; padding-left: 12px;
         }
         .card-header::before {
             content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
@@ -118,69 +107,29 @@
         }
 
         .form-section {
-            background: #F8FAF8;
-            border: 1px solid #E2E8E2;
-            border-radius: 14px;
-            padding: 20px 15px 15px 15px;
-            margin-bottom: 5px;
-            position: relative;
+            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
+            padding: 20px 15px 15px 15px; margin-bottom: 5px; position: relative;
         }
         
         .section-badge {
-            position: absolute;
-            top: -12px;
-            left: 15px;
-            background: #4A7C59;
-            color: #FFF;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
+            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
+            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 12px;
-        }
+        .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; white-space: nowrap; }
 
-        .form-group label {
-            font-size: 10px;
-            font-weight: 600;
-            color: #4A554A;
-            white-space: nowrap;
-        }
-
-        /* 📌 Smart 3D Inputs */
         input, select {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #D1DED1;
-            background: #FFFFFF;
-            color: #1E2B23;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
+            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
+            background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
         }
+        input:focus, select:focus { border-color: #4A7C59; outline: none; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
-        input:focus, select:focus {
-            border-color: #4A7C59;
-            outline: none;
-            background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-        }
-
-        /* 📌 Add/Del Buttons for Dropdowns */
         .btn-add-inline {
             background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 8px;
-            font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); white-space: nowrap;
+            font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); white-space: nowrap;
         }
         .btn-add-inline:hover { background: #059669; }
         
@@ -191,200 +140,80 @@
         }
         .btn-del-inline:hover { background: #FECACA; }
 
-        /* 📌 Advanced Issue Grid */
-        .issue-grid-header {
-            display: grid;
-            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px;
-            gap: 6px;
-            padding: 0 4px;
-            margin-bottom: 8px;
-        }
+        .issue-grid-header { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
+        .issue-grid-header div { font-size: 10px; font-weight: 700; color: #4A7C59; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .issue-grid-header div {
-            font-size: 10px;
-            font-weight: 700;
-            color: #4A7C59;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .line-row {
-            display: grid;
-            grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .line-row input, .line-row select {
-            padding: 10px 6px;
-            font-size: 11px;
-            text-align: center;
-            width: 100%;
-        }
+        .line-row { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .line-row input, .line-row select { padding: 10px 6px; font-size: 11px; text-align: center; width: 100%; }
 
         .del-row-btn {
-            background: #FEE2E2;
-            color: #DC2626;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
+            background: #FEE2E2; color: #DC2626; border: none; width: 32px; height: 32px;
+            border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
         }
         .del-row-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-        /* 📌 Premium Totals Box */
         .totals-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            background: linear-gradient(135deg, #F4F7F4, #EAF0EA);
-            border: 1px dashed #4A7C59;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-top: 10px;
-            margin-bottom: 5px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: linear-gradient(135deg, #F4F7F4, #EAF0EA);
+            border: 1px dashed #4A7C59; padding: 12px 15px; border-radius: 12px; margin-top: 10px; margin-bottom: 5px;
         }
-        .total-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #2F4F38;
-        }
-        .total-item span:last-child {
-            background: #FFFFFF;
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #D1DED1;
-            min-width: 80px;
-            text-align: center;
-            color: #10B981; 
-        }
+        .total-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #2F4F38; }
+        .total-item span:last-child { background: #FFFFFF; padding: 6px 12px; border-radius: 6px; border: 1px solid #D1DED1; min-width: 80px; text-align: center; color: #10B981; }
 
-        /* 📌 Smart Buttons */
         .btn-main {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0 0 0;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #4A7C59, #33593D);
-            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px; color: white;
+            font-weight: 700; font-size: 13px; cursor: pointer; background: linear-gradient(135deg, #4A7C59, #33593D);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
         .btn-main:active { transform: translateY(1px); }
 
         .popup-trigger-btn {
-            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 5px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 14px;
+            border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
         }
         .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
 
-        /* 📌 Advanced Pop-up Modal Styling */
         .overlay-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-            z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+            background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px); z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
         }
         .overlay-modal.show { opacity: 1; }
         
         .modal-content {
             background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
-            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
         }
         .overlay-modal.show .modal-content { transform: scale(1); }
 
-        .modal-header {
-            padding: 15px 20px; background: #F4F7F4; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-        }
+        .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; }
         .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
-        .close-btn {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
-            transition: all 0.2s ease;
-        }
+        .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; transition: all 0.2s ease; }
         .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-        /* 📌 Fullscreen Image Popup Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-            padding: 20px; flex-direction: column;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
         }
-        .fullscreen-modal img {
-            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-        }
-        .close-fullscreen {
-            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
+        .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+        .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* 📌 Advanced Table Design */
-        .table-container {
-            width: 100%; border-radius: 10px; overflow-x: auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-            -webkit-overflow-scrolling: touch;
-        }
-
+        .table-container { width: 100%; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
         th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
         th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         tr:last-child td { border-bottom: none; }
         tbody tr:hover { background: #F8FAF8; }
-
-        tfoot td {
-            background: #F4F7F4;
-            color: #2F4F38;
-            font-weight: 700;
-            border-top: 2px solid #D1DED1;
-            position: sticky; bottom: 0; z-index: 10;
-        }
+        tfoot td { background: #F4F7F4; color: #2F4F38; font-weight: 700; border-top: 2px solid #D1DED1; position: sticky; bottom: 0; z-index: 10; }
         
-        .action-btns { display: flex; gap: 6px; justify-content: center; }
         .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
         .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
         .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
         .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
 
-        .checkbox-container {
-            background: #F8FAF8; padding: 12px 15px; border-radius: 10px; 
-            display: flex; align-items: center; justify-content: space-between; border: 1px dashed #A0AFA0;
-        }
+        .checkbox-container { background: #F8FAF8; padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px dashed #A0AFA0; }
     </style>
 </head>
 <body>
@@ -422,7 +251,6 @@
     <div class="form-section" style="padding-bottom: 10px;">
         <div class="section-badge">Yarn Details</div>
         
-        <!-- Dropdown Controls for the Table -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
             <div class="checkbox-container" style="flex: 1; min-width: 250px;">
                 <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #4A7C59; cursor: pointer; margin:0;">🔗 Combine Warp & Weft</label>
@@ -515,7 +343,6 @@
 <script>
 let editingIssueId = null;
 
-// 🔒 Universal Permission Checker
 function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
@@ -534,7 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('issueDate').valueAsDate = new Date();
 });
 
-// 📌 Master Data Controls (Dropdowns)
 function addMasterMill() {
     let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
     if(val) {
@@ -593,7 +419,6 @@ function deleteMasterItem(type) {
     }
 }
 
-// 📌 Get Options HTML
 function getMillOptions(selectedVal) {
     let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
@@ -993,14 +818,8 @@ async function saveIssueEntries() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let cleanDNo = cleanDesignName(dNo);
 
-    if(editingIssueId === null) {
-        let alreadyExists = records.some(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
-        if(alreadyExists) {
-            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) return; 
-            records = records.filter(r => cleanDesignName(r.designNo || r.designNumber) !== cleanDNo);
-        }
-    }
+    // 🔥 REMOVED THE DUPLICATE CHECK / OVERWRITE LOGIC ENTIRELY
+    // Now you can issue the same color to multiple units without any alert or overwriting!
 
     let container = document.getElementById('issueLinesContainer');
     let rows = container.querySelectorAll('.line-row');
