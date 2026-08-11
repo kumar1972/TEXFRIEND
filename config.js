@@ -1,4 +1,4 @@
-// config.js - TEXFRIEND ERP (Final Clean Version with Cross-Page Universal Loaders)
+// config.js - TEXFRIEND ERP (Ultimate Cloud Sync Version)
 
 window.isDemo = false; 
 
@@ -24,23 +24,50 @@ const firebaseConfig = {
 
 window.db = null; window._doc = null; window._setDoc = null; window._getDoc = null;
 
+// 🔥 Firebase Async Connection & Auto-Sync on Startup
 import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((firebaseApp) => {
     const app = firebaseApp.initializeApp(firebaseConfig);
     import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then((firebaseFirestore) => {
         window.db = firebaseFirestore.getFirestore(app);
-        window._doc = firebaseFirestore.doc; window._setDoc = firebaseFirestore.setDoc; window._getDoc = firebaseFirestore.getDoc;
+        window._doc = firebaseFirestore.doc; 
+        window._setDoc = firebaseFirestore.setDoc; 
+        window._getDoc = firebaseFirestore.getDoc;
         console.log("🔥 Firebase Connected!");
+
+        // 🌟 Auto sync all main ERP keys from Cloud to LocalStorage if local is empty
+        let mainKeys = [
+            'design_specs', 'pre_design_numbers', 'design_masters_data', 
+            'warping_issue_records', 'weaving_master_data', 'weaving_warp_trans', 
+            'weaving_weft_trans', 'party_orders_data', 'dyeing_issue_records', 
+            'dyeing_receive_records', 'tex_master_weavers', 'tex_master_warping_units'
+        ];
+
+        mainKeys.forEach(key => {
+            window._getDoc(window._doc(window.db, "texfriend_erp", key)).then(docSnap => {
+                if (docSnap.exists()) {
+                    let cloudData = JSON.parse(docSnap.data().content);
+                    let localData = localStorage.getItem(key);
+                    // If local data is missing or empty, restore from cloud automatically
+                    if (!localData || localData === "[]" || localData === "{}") {
+                        localStorage.setItem(key, JSON.stringify(cloudData));
+                        console.log(`☁️ Restored ${key} from Cloud!`);
+                    }
+                }
+            }).catch(e => console.log("Sync error for", key, e));
+        });
     });
 });
 
+// 🚀 Cloud Load (Checks Local first, fallback or direct sync)
 window.firebaseLoad = function(key) {
     return window.localLoad(key); 
 };
 
+// 🚀 Cloud Save (Saves to both Local & Firebase Firestore instantly)
 window.firebaseSave = function(key, data) {
     window.localSave(key, data);
     if (window.db && window._setDoc && window._doc) {
-        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log(e));
+        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log("Save error:", e));
     }
 };
 
@@ -48,7 +75,7 @@ window.firebaseSaveIndividual = function(key, data) {
     window.firebaseSave("design_" + key, data);
 };
 
-// 🌟 UNIVERSAL CROSS-PAGE DATA FETCH UTILITY (New Addition for Warping/Weaving sync)
+// 🌟 UNIVERSAL CROSS-PAGE DATA FETCH UTILITY
 window.getCrossPageData = function(designNo, recordKey) {
     let cleanTarget = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
     if (!cleanTarget) return null;
@@ -61,7 +88,6 @@ window.getCrossPageData = function(designNo, recordKey) {
 
     if (match) return match;
 
-    // Fallback: check design specs if direct record not found
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => k.toString().replace('#', '').trim().toLowerCase() === cleanTarget);
     if (specKey && specs[specKey]) {
@@ -70,7 +96,7 @@ window.getCrossPageData = function(designNo, recordKey) {
     return null;
 };
 
-// 🌟 TEXFRIEND - Master Data List (No Dummies)
+// 🌟 TEXFRIEND - Master Data List
 window.texMasterList = {
     mills: [], weavers: [],
     dyeingNames: [], warpingNames: [],
@@ -120,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 400);
 });
 
-// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS (No Dummies)
+// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         let namesSet = new Set();
@@ -134,7 +160,7 @@ window.addEventListener('DOMContentLoaded', function() {
         let existingDatalist = document.getElementById('globalUniversalSuggestions');
         if(!existingDatalist) {
             existingDatalist = document.createElement('datalist');
-            existingDdatalist.id = 'globalUniversalSuggestions';
+            existingDatalist.id = 'globalUniversalSuggestions';
             document.body.appendChild(existingDatalist);
         }
 
