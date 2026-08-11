@@ -140,11 +140,19 @@
         }
         .btn-del-inline:hover { background: #FECACA; }
 
-        .issue-grid-header { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
+        /* 📌 Advanced Issue Grid - Adjusted for 2 buttons (+ and X) */
+        .issue-grid-header { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 70px; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
         .issue-grid-header div { font-size: 10px; font-weight: 700; color: #4A7C59; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .line-row { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 36px; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .line-row { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 70px; gap: 6px; align-items: center; margin-bottom: 10px; }
         .line-row input, .line-row select { padding: 10px 6px; font-size: 11px; text-align: center; width: 100%; }
+
+        .btn-split-row {
+            background: #D1FAE5; color: #059669; border: none; width: 32px; height: 32px;
+            border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+        }
+        .btn-split-row:hover { background: #A7F3D0; transform: scale(1.05); }
 
         .del-row-btn {
             background: #FEE2E2; color: #DC2626; border: none; width: 32px; height: 32px;
@@ -251,6 +259,7 @@
     <div class="form-section" style="padding-bottom: 10px;">
         <div class="section-badge">Yarn Details</div>
         
+        <!-- Dropdown Controls for the Table -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
             <div class="checkbox-container" style="flex: 1; min-width: 250px;">
                 <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #4A7C59; cursor: pointer; margin:0;">🔗 Combine Warp & Weft</label>
@@ -273,7 +282,7 @@
                     <div>Ord Wt</div>
                     <div>Iss Wt</div>
                     <div>Dyeing Unit</div>
-                    <div></div>
+                    <div>Action</div>
                 </div>
                 <div id="issueLinesContainer"></div>
             </div>
@@ -360,6 +369,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.getElementById('issueDate').valueAsDate = new Date();
 });
+
+// 📌 Split Row / Duplicate Row Function
+window.duplicateRow = function(btn) {
+    let currentRow = btn.closest('.line-row');
+    let newRow = document.createElement('div');
+    newRow.className = 'line-row';
+    
+    let count = currentRow.querySelector('.inp-count').value;
+    let mill = currentRow.querySelector('.inp-mill').value;
+    let color = currentRow.querySelector('.inp-color').value;
+    let ordWt = currentRow.querySelector('.inp-ordwt').value;
+    let type = currentRow.querySelector('.inp-type').value;
+
+    newRow.innerHTML = `
+        <input type="text" class="inp-count" value="${count}" readonly>
+        <select class="inp-mill">${getMillOptions(mill)}</select>
+        <input type="text" class="inp-color" value="${color}" readonly>
+        <input type="number" class="inp-ordwt" value="${ordWt}" step="0.001" readonly>
+        <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
+        <select class="inp-unit">${getUnitOptions('')}</select>
+        <input type="hidden" class="inp-type" value="${type}">
+        <div style="display:flex; gap:4px; align-items:center;">
+            <button type="button" class="btn-split-row" onclick="duplicateRow(this)" title="Split / Duplicate Row">➕</button>
+            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();" title="Delete Row">✕</button>
+        </div>
+    `;
+    currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
+    updateTotals();
+}
 
 function addMasterMill() {
     let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
@@ -709,7 +747,10 @@ function loadDesignItems() {
                 <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
                 <select class="inp-unit">${getUnitOptions('')}</select>
                 <input type="hidden" class="inp-type" value="${item.type}">
-                <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <button type="button" class="btn-split-row" onclick="duplicateRow(this)" title="Split / Duplicate Row">➕</button>
+                    <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();" title="Delete Row">✕</button>
+                </div>
             `;
             container.appendChild(row);
         });
@@ -726,7 +767,10 @@ function loadDesignItems() {
             <input type="number" class="inp-isswt" placeholder="Wt" step="0.001" oninput="updateTotals()">
             <select class="inp-unit">${getUnitOptions('')}</select>
             <input type="hidden" class="inp-type" value="Combined">
-            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+            <div style="display:flex; gap:4px; align-items:center;">
+                <button type="button" class="btn-split-row" onclick="duplicateRow(this)" title="Split / Duplicate Row">➕</button>
+                <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();" title="Delete Row">✕</button>
+            </div>
         `;
         container.appendChild(row);
         updateTotals();
@@ -818,9 +862,7 @@ async function saveIssueEntries() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let cleanDNo = cleanDesignName(dNo);
 
-    // 🔥 REMOVED THE DUPLICATE CHECK / OVERWRITE LOGIC ENTIRELY
-    // Now you can issue the same color to multiple units without any alert or overwriting!
-
+    // 🔥 NO OVERWRITE / DUPLICATE CHECK
     let container = document.getElementById('issueLinesContainer');
     let rows = container.querySelectorAll('.line-row');
     if(rows.length === 0) { alert("Please add at least one yarn item row."); return; }
@@ -908,7 +950,10 @@ async function editIssuedRecord(id) {
         <input type="number" class="inp-isswt" value="${rec.issueWt}" step="0.001" oninput="updateTotals()">
         <select class="inp-unit">${getUnitOptions(rec.unit)}</select>
         <input type="hidden" class="inp-type" value="${rec.yarnType}">
-        <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+        <div style="display:flex; gap:4px; align-items:center;">
+            <button type="button" class="btn-split-row" onclick="duplicateRow(this)" title="Split / Duplicate Row">➕</button>
+            <button type="button" class="del-row-btn" onclick="this.closest('.line-row').remove(); updateTotals();">✕</button>
+        </div>
     `;
     container.appendChild(row);
     

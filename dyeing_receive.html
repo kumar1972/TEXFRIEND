@@ -459,7 +459,6 @@ function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
 }
 
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -476,7 +475,6 @@ function loadBitmapImage() {
     }
 }
 
-// 📌 All Master Designs loaded in Dropdown like Dyeing Issue
 function loadPendingDesigns() {
     loadBitmapImage();
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -660,7 +658,6 @@ function calculateLoss(inp) {
     }
 }
 
-// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
     let dNo = document.getElementById('designNumber').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -738,7 +735,7 @@ async function quickCompleteToggle() {
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveReceiveEntry with Re-entry Confirmation Popup & Double Entry Prevention
+// 📌 FIREBASE SYNC: saveReceiveEntry
 async function saveReceiveEntry() {
     let dateVal = document.getElementById('receiveDate').value;
     let dNo = document.getElementById('designNumber').value;
@@ -752,16 +749,8 @@ async function saveReceiveEntry() {
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let cleanDNo = cleanDesignName(dNo);
 
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
-    let alreadyExists = receives.some(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
-
-    if(alreadyExists) {
-        let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-        if(!confirmReEntry) {
-            return; 
-        }
-        receives = receives.filter(r => cleanDesignName(r.designNo || r.designNumber) !== cleanDNo);
-    }
+    // 🔥 REMOVED THE DUPLICATE CHECK / OVERWRITE LOGIC ENTIRELY
+    // Now you can receive items multiple times without any alert or overwriting!
 
     let rows = document.querySelectorAll('#receiveLinesContainer .receive-line-row');
     if(rows.length === 0) return;
@@ -846,7 +835,6 @@ async function saveReceiveEntry() {
     btn.innerText = origText;
 }
 
-// 📌 FIREBASE SYNC: toggleStatus
 async function toggleStatus(id, newStatus) {
     let msg = newStatus === 'completed' ? "Change this receive entry to Completed?" : "Change this receive entry to Running?";
     if(confirm(msg)) {
@@ -882,7 +870,6 @@ async function toggleStatus(id, newStatus) {
     }
 }
 
-// 📌 BATCH EDIT RECORD
 async function editReceiveRecord(recId) {
     closeModal('receivedListModal');
     let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
@@ -951,7 +938,6 @@ async function editReceiveRecord(recId) {
     }
 }
 
-// 📌 BATCH DELETE RECORD
 async function deleteReceiveRecord(recId) {
     if(!confirm("Are you sure you want to delete this record (and related batch items)? They will revert to Pending status.")) return;
     
@@ -997,7 +983,6 @@ async function deleteReceiveRecord(recId) {
     }
 }
 
-// 🔥 FIXED: renderReceivedList filters by currently selected design number
 function renderReceivedList() {
     let receiveRecords = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
     let selectedDesign = document.getElementById('designNumber').value.trim();
@@ -1081,6 +1066,5 @@ function renderReceivedList() {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>
