@@ -152,6 +152,29 @@
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
+        /* 📌 Add Button Style & Input Group */
+        .input-group-btn {
+            display: flex;
+            gap: 6px;
+        }
+        .input-group-btn input {
+            flex: 1;
+        }
+        .btn-add-inline {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+            white-space: nowrap;
+        }
+        .btn-add-inline:hover { background: #059669; }
+
         input, select {
             width: 100%;
             padding: 10px 12px;
@@ -291,7 +314,10 @@
             </div>
             <div class="form-group">
                 <label id="supplierLabel">Source / Mill Name</label>
-                <input type="text" id="supplierName" list="millSuggestions" placeholder="Type or Select Mill Name">
+                <div class="input-group-btn">
+                    <input type="text" id="supplierName" list="millSuggestions" placeholder="Type or Select Mill">
+                    <button type="button" class="btn-add-inline" onclick="addMasterMill('supplierName')">+ Add</button>
+                </div>
             </div>
         </div>
         <div class="form-row">
@@ -318,18 +344,25 @@
             </div>
             <div class="form-group">
                 <label>Dyeing / Unit Name</label>
-                <input type="text" id="dyeingName" placeholder="Unit Name">
+                <div class="input-group-btn">
+                    <input type="text" id="dyeingName" list="unitSuggestions" placeholder="Type or Select Unit">
+                    <button type="button" class="btn-add-inline" onclick="addMasterUnit('dyeingName')">+ Add</button>
+                </div>
             </div>
         </div>
         <div class="form-row full">
             <div class="form-group">
                 <label>Mill Name (From where yarn is taken)</label>
-                <input type="text" id="issueMillName" list="millSuggestions" placeholder="Type or Select Mill Name">
+                <div class="input-group-btn">
+                    <input type="text" id="issueMillName" list="millSuggestions" placeholder="Type or Select Mill">
+                    <button type="button" class="btn-add-inline" onclick="addMasterMill('issueMillName')">+ Add</button>
+                </div>
             </div>
         </div>
 
-        <!-- 📌 Smart Hybrid Datalist for Mill Names (Old + New typing allowed) -->
+        <!-- 📌 Smart Hybrid Datalists -->
         <datalist id="millSuggestions"></datalist>
+        <datalist id="unitSuggestions"></datalist>
 
         <div class="form-row full">
             <div class="form-group">
@@ -447,23 +480,60 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('inwardDate').valueAsDate = new Date();
     document.getElementById('issueDate').valueAsDate = new Date();
     
-    // 🚀 Load Hybrid Mill Suggestions and Design dropdown on start
     loadMillSuggestions();
+    loadUnitSuggestions();
     loadDesignDropdown();
     refreshAllTables();
 });
 
-// 🚀 Hybrid Mill Datalist Loader (பழைய பெயர்களைக் காட்டும் + புதிய பெயரை நாமே டைப் செய்து கொள்ளலாம்)
+// 🚀 Manual "+ Add" Logic for Mills
+function addMasterMill(inputId) {
+    let val = document.getElementById(inputId).value.trim();
+    if(!val) {
+        alert("Please type a Mill Name to add!");
+        return;
+    }
+    let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+    if(!masterMills.includes(val)) {
+        masterMills.push(val);
+        localStorage.setItem('tex_master_mills', JSON.stringify(masterMills));
+        loadMillSuggestions();
+        alert(`Mill '${val}' added to Master List successfully! ✅`);
+    } else {
+        alert("This Mill Name is already in the Master List!");
+    }
+}
+
+// 🚀 Manual "+ Add" Logic for Units
+function addMasterUnit(inputId) {
+    let val = document.getElementById(inputId).value.trim();
+    if(!val) {
+        alert("Please type a Unit Name to add!");
+        return;
+    }
+    let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
+    if(!masterUnits.includes(val)) {
+        masterUnits.push(val);
+        localStorage.setItem('tex_master_units', JSON.stringify(masterUnits));
+        loadUnitSuggestions();
+        alert(`Unit '${val}' added to Master List successfully! ✅`);
+    } else {
+        alert("This Unit Name is already in the Master List!");
+    }
+}
+
+// 🚀 Hybrid Mill Datalist Loader
 function loadMillSuggestions() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
-    let millsSet = new Set();
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+    
+    let millsSet = new Set([...masterMills]);
     
     inwards.forEach(item => {
         if(item.supplier) millsSet.add(item.supplier.trim());
         if(item.millName) millsSet.add(item.millName.trim());
     });
-    
-    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     issues.forEach(item => {
         if(item.millName) millsSet.add(item.millName.trim());
     });
@@ -478,6 +548,24 @@ function loadMillSuggestions() {
     datalist.innerHTML = '';
     millsSet.forEach(mill => {
         datalist.innerHTML += `<option value="${mill}">`;
+    });
+}
+
+// 🚀 Hybrid Unit Datalist Loader
+function loadUnitSuggestions() {
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
+    
+    let unitSet = new Set([...masterUnits]);
+    
+    issues.forEach(item => {
+        if(item.dyeingName) unitSet.add(item.dyeingName.trim());
+    });
+
+    let datalist = document.getElementById('unitSuggestions');
+    datalist.innerHTML = '';
+    unitSet.forEach(u => {
+        datalist.innerHTML += `<option value="${u}">`;
     });
 }
 
@@ -730,7 +818,7 @@ async function saveInward() {
     document.getElementById('inwardWt').value = '';
     if(cb) cb.checked = false; 
     
-    loadMillSuggestions(); // Refresh suggestions with newly typed mill
+    loadMillSuggestions();
     refreshAllTables();
     btn.innerText = "✅ Save Kora Stock";
 }
@@ -835,7 +923,8 @@ async function saveIssue() {
     document.getElementById('issueWt').value = '';
     if(cb) cb.checked = false; 
     
-    loadMillSuggestions(); // Refresh suggestions with newly typed mill
+    loadUnitSuggestions();
+    loadMillSuggestions();
     refreshAllTables();
     btn.innerText = "➕ Add Kora Issue";
 }
