@@ -460,7 +460,7 @@ let editingInwardId = null;
 let editingIssueId = null;
 
 function checkUserPermission() {
-    let userRole = localStorage.getItem('user_role');
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
         if (permissions['kora_yarn.html'] === false || permissions['kora_yarn'] === false || permissions['kora'] === false) {

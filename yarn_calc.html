@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yarn Calculation & Costing - TEXFRIEND</title>
+    <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -393,13 +394,24 @@
 
 <script>
     function checkUserPermission() {
-        let userRole = localStorage.getItem('user_role');
+        let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
         if (userRole !== 'Administrator' && userRole !== 'Admin') {
             let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-            return permissions['yarn_calculation'] !== false;
+            if (permissions['yarn_calc.html'] === false || permissions['yarn_calc'] === false || permissions['yarn_calculation'] === false) {
+                return false;
+            }
         }
         return true;
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!checkUserPermission()) {
+            alert("Access Denied! You do not have permission to access this page. ❌");
+            window.location.href = "dashboard.html";
+            return;
+        }
+        initDropdown();
+    });
 
     function openModal(modalId) {
         document.getElementById(modalId).style.display = 'flex';
@@ -491,7 +503,6 @@
         let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
 
-        // 🌟 FIXED LOGIC FOR 5% AUTO ADDITION
         let savedYarnOrderMtr = parseFloat(sp.yarnOrderMtr || 0);
         let generalOrderMtr = parseFloat(sp.orderMtr || foundMaster.orderMtr || 0);
 
@@ -766,7 +777,6 @@
         return parseFloat(str) || 0;
     }
 
-    // 🌟 FIXED STRICT SEQUENTIAL PATTERN RESOLVER LOGIC
     function resolvePattern(lines, ranges, type, defaultCount) {
         if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
         
@@ -863,6 +873,7 @@
     }
 
     async function saveCalculationData() {
+        if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
         let dName = document.getElementById('designNumber').value;
         if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
 
@@ -887,6 +898,7 @@
     }
 
     async function saveCostingData() {
+        if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
         let dName = document.getElementById('designNumber').value;
         if(!dName) { alert("Mudhala Design Number select pannunga bro"); return; }
 
@@ -1183,6 +1195,7 @@
     }
 
     async function quickCompleteToggle() {
+        if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
         let cb = document.getElementById('top_completed_status');
         let isCompleted = cb ? cb.checked : false;
         let dName = document.getElementById('designNumber').value;
@@ -1204,8 +1217,8 @@
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
         if (window.firebaseSave) {
-            window.firebaseSave('design_masters_data', designMastersList);
-            window.firebaseSave('design_specs', designSpecs);
+            await window.firebaseSave('design_masters_data', designMastersList);
+            await window.firebaseSave('design_specs', designSpecs);
         }
         if (window.firebaseSaveIndividual) {
             await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
@@ -1213,8 +1226,6 @@
 
         alert(`Design ${dName} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
     }
-
-    window.addEventListener('load', initDropdown);
 </script>
 <script src="config.js"></script>
 </body>

@@ -352,7 +352,6 @@
                 </div>
             </div>
 
-            <!-- 🌟 Updated Grid: Order Mtrs (Warping), Crimp %, Fabrics Mtrs, Warp 1, Warp 2, Weft Count -->
             <div class="form-grid-row-6">
                 <div class="form-group">
                     <label>Order Mtrs (Warping)</label>
@@ -380,7 +379,7 @@
                 </div>
             </div>
 
-            <!-- 📌 WARPING BEAM DETAILS (With Unit Dropdown + Add Button) -->
+            <!-- 📌 WARPING BEAM DETAILS -->
             <div class="warping-beam-tab">
                 <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #059669; display: flex; align-items: center; gap: 6px;">
                     <span>🧵</span> Warping Beam Details (From Warping Unit)
@@ -575,13 +574,40 @@
         let warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
         let weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];
 
-        document.getElementById('topDate').valueAsDate = new Date();
-        document.getElementById('botDate').valueAsDate = new Date();
+        function checkUserPermission() {
+            let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+            if (userRole !== 'Administrator' && userRole !== 'Admin') {
+                let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+                if (permissions['weaving.html'] === false || permissions['weaving'] === false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkUserPermission()) {
+                alert("Access Denied! You do not have permission to access this page. ❌");
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            document.getElementById('topDate').valueAsDate = new Date();
+            document.getElementById('botDate').valueAsDate = new Date();
+            loadTopDesignDropdown();
+            loadBottomOrderDropdown();
+            loadWeaverDropdown();
+            loadWarpingUnitDropdown();
+            updateTables();
+        });
 
         function openModal(modalId) {
             let modal = document.getElementById(modalId);
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
+            if(modalId === 'warpModal' || modalId === 'weftModal') {
+                updateTables(); 
+            }
         }
 
         function closeModal(modalId) {
@@ -664,7 +690,6 @@
             }
         }
 
-        // 🌟 WEAVER DROPDOWN & ADD LOGIC
         function loadWeaverDropdown() {
             let weavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
             let select = document.getElementById('topWeaverName');
@@ -694,7 +719,6 @@
             }
         }
 
-        // 🌟 WARPING UNIT DROPDOWN & ADD LOGIC
         function loadWarpingUnitDropdown() {
             let units = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
             let select = document.getElementById('warpingUnitName');
@@ -805,7 +829,6 @@
             return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
         }
 
-        // 🌟 AUTO CALCULATION OF FABRIC MTRS FROM ORDER MTRS (LESS CRIMP %)
         function calcFabricMts() {
             let orderMtrs = parseFloat(document.getElementById('weavingMts').value) || 0;
             let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
@@ -996,6 +1019,8 @@
         }
 
         async function quickCompleteToggle() {
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
             let dNo = document.getElementById('topDesignNo').value;
             let isCompleted = document.getElementById('top_completed_status').checked;
 
@@ -1066,6 +1091,8 @@
 
         async function saveTopData(e) {
             e.preventDefault();
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission to save entries on this page. ❌"); return; }
+
             const designNo = document.getElementById('topDesignNo').value.trim();
             const weaverName = document.getElementById('topWeaverName').value.trim();
             const topDate = document.getElementById('topDate').value;
@@ -1270,6 +1297,8 @@
 
         async function saveBottomData(e) {
             e.preventDefault();
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission to save entries on this page. ❌"); return; }
+
             const designNo = document.getElementById('botDesignNo').value;
             const weaverName = document.getElementById('botWeaverName').value;
             
@@ -1330,6 +1359,7 @@
         }
 
         async function toggleWarpStatus(id, newStatus) {
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
             let msg = newStatus === 'completed' ? "Change this warp entry to Completed?" : "Change this warp entry to Running?";
             if(confirm(msg)) {
                 warpTransactions = warpTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
@@ -1355,6 +1385,7 @@
         }
 
         async function toggleWeftStatus(id, newStatus) {
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
             let msg = newStatus === 'completed' ? "Change this weft entry to Completed?" : "Change this weft entry to Running?";
             if(confirm(msg)) {
                 weftTransactions = weftTransactions.map(x => x.id === id ? {...x, status: newStatus} : x);
@@ -1381,6 +1412,7 @@
 
         function updateTables() {
             const warpTbody = document.querySelector('#warpTable tbody');
+            if(!warpTbody) return;
             warpTbody.innerHTML = '';
             warpTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
@@ -1409,6 +1441,7 @@
             });
 
             const weftTbody = document.querySelector('#weftTable tbody');
+            if(!weftTbody) return;
             weftTbody.innerHTML = '';
             weftTransactions.slice().reverse().forEach((item) => {
                 if(!item.status) item.status = "running";
@@ -1438,6 +1471,7 @@
         }
 
         async function deleteWarp(id) {
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
             closeModal('warpModal');
             if(confirm("Indha warp entry-ai delete pannanuma?")) {
                 warpTransactions = warpTransactions.filter(item => item.id !== id);
@@ -1448,6 +1482,7 @@
         }
 
         async function deleteWeft(id) {
+            if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
             closeModal('weftModal');
             if(confirm("Indha weft entry-ai delete pannanuma?")) {
                 weftTransactions = weftTransactions.filter(item => item.id !== id);
@@ -1501,12 +1536,6 @@
             document.getElementById('previewContent').innerHTML = html;
             openModal('previewModal');
         }
-
-        loadTopDesignDropdown();
-        loadBottomOrderDropdown();
-        loadWeaverDropdown();
-        loadWarpingUnitDropdown();
-        updateTables();
     </script>
     <script src="config.js"></script>
 </body>

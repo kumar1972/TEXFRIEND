@@ -115,7 +115,7 @@
     <!-- 📌 Live Matrix Progress Table -->
     <div class="matrix-container">
         <div class="matrix-header-row">
-            <div class="matrix-title">Click on Status Badges to View Reports</div>
+            <div class="matrix-title">Click on Status Badges to View Details</div>
         </div>
         <div class="matrix-table-wrapper">
             <table class="matrix-table">
@@ -131,7 +131,7 @@
                     </tr>
                 </thead>
                 <tbody id="matrixTableBody">
-                    <tr><td colspan="7" style="padding:20px; color:#64748B;">Loading Local Data... ⏳</td></tr>
+                    <tr><td colspan="7" style="padding:20px; color:#64748B;">Loading Process Data... ⏳</td></tr>
                 </tbody>
             </table>
         </div>
@@ -154,28 +154,67 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
+
+function getProcessStatus(recordKey, designNo) {
+    let records = JSON.parse(localStorage.getItem(recordKey)) || [];
+    let cleanTarget = cleanDesignName(designNo);
+    
+    let matched = records.filter(r => {
+        let d = r.designNo || r.designNumber || r.design || "";
+        return cleanDesignName(d) === cleanTarget;
+    });
+
+    if (matched.length === 0) {
+        // Fallback for Despatch Data Structure
+        if (recordKey === 'despatch_data') {
+            matched = records.filter(entry => entry.items && entry.items.some(i => cleanDesignName(i.designNo) === cleanTarget));
+        }
+    }
+
+    if (matched.length === 0) return { label: 'Pending', cssClass: 'none' };
+
+    let isCompleted = matched.every(r => (r.status || '').toLowerCase() === 'completed');
+    if (isCompleted) {
+        return { label: 'Completed', cssClass: 'done' };
+    } else {
+        return { label: 'Running', cssClass: 'run' };
+    }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
-    let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let tbody = document.getElementById('matrixTableBody');
 
-    if(designs.length === 0) {
+    let allDesigns = Array.from(new Set([...preDesigns, ...Object.keys(designSpecs)]));
+
+    if(allDesigns.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:#64748B;">No Designs Found! Please add designs in Design Master.</td></tr>`;
         return;
     }
 
     let html = '';
-    designs.forEach((dNo, index) => {
-        let cleanDNo = dNo.toString().replace(/#+/g, '').trim();
+    allDesigns.forEach((dNo, index) => {
+        let cleanDNo = dNo.toString().replace('#', '').trim();
         let cleanLower = cleanDNo.toLowerCase();
 
-        let specKey = Object.keys(designSpecs).find(k => k && k.toString().replace(/#+/g, '').trim().toLowerCase() === cleanLower) || dNo;
+        let specKey = Object.keys(designSpecs).find(k => k && cleanDesignName(k) === cleanLower) || dNo;
         let bitmapHtml = '';
         
         if (designSpecs[specKey] && designSpecs[specKey].bitmap) {
             let b64 = designSpecs[specKey].bitmap;
             bitmapHtml = `<img src="${b64}" class="design-thumb" onclick="openFullscreenImage('${b64}')" title="View Fullscreen">`;
         }
+
+        let kora = getProcessStatus('kora_issue_records', cleanDNo);
+        let dyeing = getProcessStatus('dyeing_issue_records', cleanDNo);
+        let warping = getProcessStatus('warping_issue_records', cleanDNo);
+        let weaving = getProcessStatus('weaving_master_data', cleanDNo);
+        let washing = getProcessStatus('washing_issue_records', cleanDNo);
+        let despatch = getProcessStatus('despatch_data', cleanDNo);
 
         html += `<tr>
             <td style="text-align: left; padding-left: 15px;">
@@ -184,12 +223,12 @@ window.addEventListener('DOMContentLoaded', function() {
                     <span style="font-weight:700; color:#2F4F38;">${index + 1}. #${cleanDNo}</span>
                 </div>
             </td>
-            <td><span class="status-badge run">Running</span></td>
-            <td><span class="status-badge none">Pending</span></td>
-            <td><span class="status-badge none">Pending</span></td>
-            <td><span class="status-badge none">Pending</span></td>
-            <td><span class="status-badge none">Pending</span></td>
-            <td><span class="status-badge none">Pending</span></td>
+            <td><a href="design_list.html?type=kora&design=${cleanDNo}" class="status-badge ${kora.cssClass}">${kora.label}</a></td>
+            <td><a href="design_list.html?type=dyeing&design=${cleanDNo}" class="status-badge ${dyeing.cssClass}">${dyeing.label}</a></td>
+            <td><a href="design_list.html?type=warping&design=${cleanDNo}" class="status-badge ${warping.cssClass}">${warping.label}</a></td>
+            <td><a href="design_list.html?type=weaving&design=${cleanDNo}" class="status-badge ${weaving.cssClass}">${weaving.label}</a></td>
+            <td><a href="design_list.html?type=washing&design=${cleanDNo}" class="status-badge ${washing.cssClass}">${washing.label}</a></td>
+            <td><a href="design_list.html?type=despatch&design=${cleanDNo}" class="status-badge ${despatch.cssClass}">${despatch.label}</a></td>
         </tr>`;
     });
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Washing - TEXFRIEND</title>
+<title>Washing - TEXFRIEND ERP</title>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -556,7 +556,24 @@
 </div>
 
 <script>
+function checkUserPermission() {
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['washing.html'] === false || permissions['washing'] === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     document.getElementById('topDate').valueAsDate = new Date();
     document.getElementById('botDate').valueAsDate = new Date();
     loadWashingUnitDropdown();
@@ -568,6 +585,9 @@ function openModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
+    if(modalId === 'savedListModal') {
+        renderTable(); 
+    }
 }
 
 function closeModal(modalId) {
@@ -576,7 +596,6 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
-// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
@@ -586,11 +605,6 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-}
-
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -608,7 +622,6 @@ function loadBitmapImage() {
     bitmapContainer.innerHTML = imgHtml;
 }
 
-// 🌟 WASHING UNIT DROPDOWN & ADD LOGIC
 function loadWashingUnitDropdown() {
     let masterUnits = JSON.parse(localStorage.getItem('tex_master_washing_units')) || [];
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
@@ -760,6 +773,8 @@ function addNewBottomRow(btn) {
 }
 
 async function quickCompleteToggle() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let dNo = document.getElementById('topDesignNo').value;
     let isCompleted = document.getElementById('top_completed_status').checked;
 
@@ -786,7 +801,7 @@ async function quickCompleteToggle() {
         let unit = document.getElementById('topUnit').value.trim() || 'Main Unit';
         let firstRow = document.querySelector('.line-row');
         let slip = firstRow ? firstRow.querySelector('.t-slip').value.trim() : 'S-01';
-        let piece = firstRow ? parseInt(firstRow.querySelector('.t-piece').value) || 1 : 1;
+        let piece = firstRow ? intval(firstRow.querySelector('.t-piece').value) || 1 : 1;
         let mtr = firstRow ? parseFloat(firstRow.querySelector('.t-mtr').value) || 0 : 0;
         let process = firstRow ? firstRow.querySelector('.t-process').value.trim() : 'General';
 
@@ -832,6 +847,8 @@ async function quickCompleteToggle() {
 }
 
 async function saveTopOrder() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission to save entries on this page. ❌"); return; }
+
     let dateVal = document.getElementById('topDate').value;
     let unit = document.getElementById('topUnit').value.trim();
     let dNo = document.getElementById('topDesignNo').value;
@@ -966,6 +983,8 @@ function loadBottomData() {
 }
 
 async function saveBottomEntry() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission to save entries on this page. ❌"); return; }
+
     let dateVal = document.getElementById('botDate').value;
     let dNo = document.getElementById('botDesignNo').value;
     let uName = document.getElementById('botUnitName').value;
@@ -1075,6 +1094,8 @@ async function saveBottomEntry() {
 }
 
 async function toggleStatus(id, newStatus) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
     if(confirm(msg)) {
         let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
@@ -1111,6 +1132,8 @@ async function toggleStatus(id, newStatus) {
 }
 
 async function editWashingRecord(issueId, isReceived) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
     
@@ -1179,6 +1202,7 @@ async function editWashingRecord(issueId, isReceived) {
 }
 
 async function deleteWashingRecord(issueId, isReceived) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
     if(!confirm("Are you sure you want to delete this record?")) return;
     
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
@@ -1217,6 +1241,7 @@ function renderTable() {
     }
 
     let tbody = document.getElementById('dataTableBody');
+    if(!tbody) return;
     tbody.innerHTML = '';
 
     if(issues.length === 0) {

@@ -168,16 +168,16 @@
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
-<!-- JavaScript Core (Local Storage Version) -->
+<!-- JavaScript Core (Firebase Synced Version) -->
 <script>
     let designList = [];
     let tempBitmapData = "";
 
     function checkUserPermission() {
-        let userRole = localStorage.getItem('user_role');
+        let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
         if (userRole !== 'Administrator' && userRole !== 'Admin') {
             let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-            if (permissions['design_master'] === false) { return false; }
+            if (permissions['design_master.html'] === false || permissions['design_master'] === false) { return false; }
         }
         return true; 
     }
@@ -214,7 +214,7 @@
 
     window.handleFileSelect = function(input) {
         if (input.files && input.files[0]) {
-            compressImage(input.files[0], 1200, 1200, 0.85, function(compressedB64) {
+            compressImage(input.files[0], 800, 800, 0.8, function(compressedB64) {
                 tempBitmapData = compressedB64;
                 document.getElementById('bitmapImgTag').src = tempBitmapData;
                 document.getElementById('bitmapPreviewBox').style.display = 'block';
@@ -241,7 +241,22 @@
         }
     }
 
-    window.addDesign = function() {
+    async function syncDesignMasterToCloud(updatedList, updatedSpecs, activeDesignNo) {
+        localStorage.setItem('pre_design_numbers', JSON.stringify(updatedList));
+        localStorage.setItem('design_specs', JSON.stringify(updatedSpecs));
+        if(activeDesignNo) localStorage.setItem('selected_design_number', activeDesignNo);
+
+        if (window.firebaseSave) {
+            await window.firebaseSave('pre_design_numbers', updatedList);
+            await window.firebaseSave('design_specs', updatedSpecs);
+        }
+        if (window.firebaseSaveIndividual && activeDesignNo) {
+            let key = getSpecKey(activeDesignNo);
+            await window.firebaseSaveIndividual(key, updatedSpecs[key]);
+        }
+    }
+
+    window.addDesign = async function() {
         if (!checkUserPermission()) { alert("Access Denied!"); return; }
         
         let designNo = document.getElementById('newDesign').value.trim();
@@ -275,14 +290,12 @@
         designSpecs[key] = specs; 
         
         try {
-            localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-            localStorage.setItem('selected_design_number', designNo);
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            await syncDesignMasterToCloud(designList, designSpecs, designNo);
 
             tempBitmapData = ""; 
             loadDesignDropdown();
             document.getElementById('newDesign').value = '';
-            alert("Design Saved Successfully! ✅");
+            alert("Design Saved Successfully to Cloud! ✅☁️");
         } catch (err) {
             alert("Error saving: " + err.message);
         } finally {
@@ -290,7 +303,7 @@
         }
     }
 
-    window.updateDesign = function() {
+    window.updateDesign = async function() {
         if (!checkUserPermission()) { alert("Access Denied!"); return; }
         
         let designNo = document.getElementById('designSelect').value;
@@ -320,9 +333,9 @@
         designSpecs[key] = updatedSpecs;
         
         try {
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            await syncDesignMasterToCloud(designList, designSpecs, designNo);
             tempBitmapData = ""; 
-            alert("Updated successfully! ✅");
+            alert("Updated successfully to Cloud! ✅☁️");
         } catch (err) {
             alert("Error updating! " + err.message);
         } finally {
@@ -330,7 +343,7 @@
         }
     }
 
-    window.deleteDesign = function() {
+    window.deleteDesign = async function() {
         if (!checkUserPermission()) { alert("Access Denied!"); return; }
         
         let designNo = document.getElementById('designSelect').value;
@@ -349,13 +362,12 @@
             if(designSpecs[key]) delete designSpecs[key];
             
             try {
-                localStorage.setItem('pre_design_numbers', JSON.stringify(designList));
-                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
                 localStorage.removeItem('selected_design_number');
+                await syncDesignMasterToCloud(designList, designSpecs, null);
 
                 loadDesignDropdown();
                 clearForm();
-                alert("Design deleted successfully! 🗑️");
+                alert("Design deleted successfully from Cloud! 🗑️☁️");
             } catch (err) {
                 alert("Error deleting! " + err.message);
             } finally {

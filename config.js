@@ -4,11 +4,21 @@ window.isDemo = false;
 
 // 🛠️ Local Storage Helpers
 window.localLoad = function(key) {
-    let data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
+    try {
+        let data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+    } catch(e) {
+        console.error("localLoad Error for key:", key, e);
+        return null;
+    }
 };
+
 window.localSave = function(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch(e) {
+        console.error("localSave Error for key:", key, e);
+    }
 };
 
 // 🔥 FIREBASE INITIALIZATION
@@ -48,12 +58,16 @@ import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((fireba
         mainKeys.forEach(key => {
             window._getDoc(window._doc(window.db, "texfriend_erp", key)).then(docSnap => {
                 if (docSnap.exists()) {
-                    let cloudData = JSON.parse(docSnap.data().content);
-                    let localData = localStorage.getItem(key);
-                    // If local data is missing or empty, restore from cloud automatically
-                    if (!localData || localData === "[]" || localData === "{}") {
-                        localStorage.setItem(key, JSON.stringify(cloudData));
-                        console.log(`☁️ Restored ${key} from Cloud!`);
+                    try {
+                        let cloudData = JSON.parse(docSnap.data().content);
+                        let localData = localStorage.getItem(key);
+                        // If local data is missing or empty, restore from cloud automatically
+                        if (!localData || localData === "[]" || localData === "{}") {
+                            localStorage.setItem(key, JSON.stringify(cloudData));
+                            console.log(`☁️ Restored ${key} from Cloud!`);
+                        }
+                    } catch(err) {
+                        console.error("JSON parse error on sync for:", key, err);
                     }
                 }
             }).catch(e => console.log("Sync error for", key, e));
@@ -83,18 +97,22 @@ window.getCrossPageData = function(designNo, recordKey) {
     let cleanTarget = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
     if (!cleanTarget) return null;
 
-    let records = JSON.parse(localStorage.getItem(recordKey)) || [];
-    let match = records.slice().reverse().find(r => {
-        let d = r.designNo || r.designNumber || r.design || r.name || "";
-        return d.toString().replace('#', '').trim().toLowerCase() === cleanTarget;
-    });
+    try {
+        let records = JSON.parse(localStorage.getItem(recordKey)) || [];
+        let match = records.slice().reverse().find(r => {
+            let d = r.designNo || r.designNumber || r.design || r.name || "";
+            return d.toString().replace('#', '').trim().toLowerCase() === cleanTarget;
+        });
 
-    if (match) return match;
+        if (match) return match;
 
-    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => k.toString().replace('#', '').trim().toLowerCase() === cleanTarget);
-    if (specKey && specs[specKey]) {
-        return specs[specKey];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let specKey = Object.keys(specs).find(k => k.toString().replace('#', '').trim().toLowerCase() === cleanTarget);
+        if (specKey && specs[specKey]) {
+            return specs[specKey];
+        }
+    } catch(e) {
+        console.error("Error in getCrossPageData:", e);
     }
     return null;
 };
@@ -110,79 +128,86 @@ window.texMasterList = {
 // 🚀 1. Design Synchronization & Dropdown Loader
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || JSON.parse(localStorage.getItem('tex_master_designs')) || [];
-        
-        preDesignList.forEach(d => {
-            let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
-            if(name) {
-                let clean = name.toString().replace('#', '').trim().toLowerCase();
-                let exists = Object.keys(designSpecs).some(k => k.toString().replace('#', '').trim().toLowerCase() === clean);
-                if(!exists) {
-                    designSpecs[name] = { designNumber: name, status: 'running' };
+        try {
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || JSON.parse(localStorage.getItem('tex_master_designs')) || [];
+            
+            preDesignList.forEach(d => {
+                let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
+                if(name) {
+                    let clean = name.toString().replace('#', '').trim().toLowerCase();
+                    let exists = Object.keys(designSpecs).some(k => k.toString().replace('#', '').trim().toLowerCase() === clean);
+                    if(!exists) {
+                        designSpecs[name] = { designNumber: name, status: 'running' };
+                    }
                 }
-            }
-        });
+            });
 
-        let keysFromSpecs = Object.keys(designSpecs);
-        let combinedList = Array.from(new Set([...preDesignList, ...keysFromSpecs]));
-        
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-        localStorage.setItem('pre_design_numbers', JSON.stringify(combinedList));
+            let keysFromSpecs = Object.keys(designSpecs);
+            let combinedList = Array.from(new Set([...preDesignList, ...keysFromSpecs]));
+            
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            localStorage.setItem('pre_design_numbers', JSON.stringify(combinedList));
 
-        let dropdowns = document.querySelectorAll('select');
-        dropdowns.forEach(function(select) {
-            let idOrClass = (select.id + " " + select.className).toLowerCase();
-            if (idOrClass.includes('design') || select.id === 'designNumber' || select.id === 'designSelect' || select.classList.contains('item-design')) {
-                if (select.options.length <= 1) {
-                    let currentVal = select.value;
-                    let html = '<option value="">Select Design No</option>';
-                    combinedList.forEach(function(d) {
-                        let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
-                        if(name) html += '<option value="' + name + '">' + name + '</option>';
-                    });
-                    select.innerHTML = html;
-                    if (currentVal) select.value = currentVal;
+            let dropdowns = document.querySelectorAll('select');
+            dropdowns.forEach(function(select) {
+                let idOrClass = (select.id + " " + select.className).toLowerCase();
+                if (idOrClass.includes('design') || select.id === 'designNumber' || select.id === 'designSelect' || select.classList.contains('item-design')) {
+                    if (select.options.length <= 1) {
+                        let currentVal = select.value;
+                        let html = '<option value="">Select Design No</option>';
+                        combinedList.forEach(function(d) {
+                            let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
+                            if(name) html += '<option value="' + name + '">' + name + '</option>';
+                        });
+                        select.innerHTML = html;
+                        if (currentVal) select.value = currentVal;
+                    }
                 }
-            }
-        });
+            });
+        } catch(err) {
+            console.error("Design Loader Error:", err);
+        }
     }, 400);
 });
 
 // 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS & UNITS
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        let namesSet = new Set();
-        
-        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
-        inwards.forEach(i => { if(i.supplier) namesSet.add(i.supplier.trim()); if(i.millName) namesSet.add(i.millName.trim()); });
-        
-        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-        issues.forEach(i => { if(i.millName) namesSet.add(i.millName.trim()); if(i.dyeingName) namesSet.add(i.dyeingName.trim()); });
+        try {
+            let namesSet = new Set();
+            
+            let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+            inwards.forEach(i => { if(i.supplier) namesSet.add(i.supplier.trim()); if(i.millName) namesSet.add(i.millName.trim()); });
+            
+            let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+            issues.forEach(i => { if(i.millName) namesSet.add(i.millName.trim()); if(i.dyeingName) namesSet.add(i.dyeingName.trim()); });
 
-        let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
-        masterMills.forEach(m => namesSet.add(m.trim()));
+            let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+            masterMills.forEach(m => namesSet.add(m.trim()));
 
-        let existingDatalist = document.getElementById('globalUniversalSuggestions');
-        if(!existingDatalist) {
-            existingDatalist = document.createElement('datalist');
-            existingDatalist.id = 'globalUniversalSuggestions';
-            document.body.appendChild(existingDatalist);
-        }
-
-        let optionsHtml = '';
-        namesSet.forEach(name => {
-            optionsHtml += `<option value="${name}">`;
-        });
-        existingDatalist.innerHTML = optionsHtml;
-
-        let inputs = document.querySelectorAll('input[type="text"]');
-        inputs.forEach(input => {
-            let idClass = (input.id + " " + input.className + " " + input.placeholder).toLowerCase();
-            if(!idClass.includes('design') && (idClass.includes('mill') || idClass.includes('supplier') || idClass.includes('dyeing') || idClass.includes('weaver') || idClass.includes('washing') || idClass.includes('unit'))) {
-                input.setAttribute('list', 'globalUniversalSuggestions');
+            let existingDatalist = document.getElementById('globalUniversalSuggestions');
+            if(!existingDatalist) {
+                existingDatalist = document.createElement('datalist');
+                existingDatalist.id = 'globalUniversalSuggestions';
+                document.body.appendChild(existingDatalist);
             }
-        });
 
+            let optionsHtml = '';
+            namesSet.forEach(name => {
+                optionsHtml += `<option value="${name}">`;
+            });
+            existingDatalist.innerHTML = optionsHtml;
+
+            let inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                let idClass = (input.id + " " + input.className + " " + input.placeholder).toLowerCase();
+                if(!idClass.includes('design') && (idClass.includes('mill') || idClass.includes('supplier') || idClass.includes('dyeing') || idClass.includes('weaver') || idClass.includes('washing') || idClass.includes('unit'))) {
+                    input.setAttribute('list', 'globalUniversalSuggestions');
+                }
+            });
+        } catch(err) {
+            console.error("Auto-suggest Loader Error:", err);
+        }
     }, 600);
 });

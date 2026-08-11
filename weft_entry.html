@@ -310,7 +310,7 @@
 
 <script>
 function checkUserPermission() {
-    let userRole = localStorage.getItem('user_role');
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
         if (permissions['weft_entry.html'] === false || permissions['weft_entry'] === false) return false;
@@ -324,6 +324,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = "dashboard.html";
         return;
     }
+    loadDesignDropdown();
+    loadDefaultRow();
 });
 
 function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
@@ -335,9 +337,7 @@ window.openFullscreenImage = function(src) {
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
 }
-window.closeFullscreenImage = function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-}
+window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
@@ -422,7 +422,6 @@ function loadWeftDesignData() {
     let basePick = parseFloat(sp.pick || sp.basePick || foundMaster.pick || foundMaster.basePick) || 0;
     let autoPick = basePick > 0 ? basePick - 4 : '';
 
-    // 🌟 Auto-fetch Weft Mtrs logic from Yarn Calc
     let savedYarnOrderMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || foundMaster.orderMtr || 0);
     let savedCrimp = parseFloat(sp.crimpPercentage || 0);
     let calculatedWeftMtrs = '';

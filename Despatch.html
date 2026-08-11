@@ -484,7 +484,22 @@
 var preDesignList = [];
 let editingIndex = null;
 
+function checkUserPermission() {
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['despatch.html'] === false || permissions['despatch'] === false) { return false; }
+    }
+    return true; 
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     var today = new Date().toISOString().split('T')[0];
     var dateEl = document.getElementById('despatch_date');
     if(dateEl && !dateEl.value) dateEl.value = today;
@@ -512,7 +527,7 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+// 🚀 LOAD HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
     let firstDesignSelect = document.querySelector('.item-design');
@@ -692,8 +707,10 @@ function addItemRow(design = '', bale = '', noBales = '', ord = '', des = '', ba
     }
 }
 
-// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
+// 📌 Completed Checkbox Quick Toggle with Cloud Sync
 async function quickCompleteToggle() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+    
     let firstDesignSelect = document.querySelector('.item-design');
     let designNo = firstDesignSelect ? firstDesignSelect.value : '';
     let isCompleted = document.getElementById('top_completed_status').checked;
@@ -767,8 +784,10 @@ async function quickCompleteToggle() {
     alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveDespatchEntry with Re-entry Popup Confirmation
+// 📌 FIREBASE SYNC: saveDespatchEntry
 async function saveDespatchEntry() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     var date = document.getElementById('despatch_date').value;
     var invoiceNo = document.getElementById('invoice_no').value.trim();
     var partyName = document.getElementById('despatch_party').value.trim();
@@ -968,6 +987,7 @@ function updateDespatchTable() {
 }
 
 async function toggleStatus(index, newStatus) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
     let msg = newStatus === 'completed' ? "Indha despatch entry-ai Completed-aga maatranuma?" : "Indha despatch entry-ai Running-ku maatranuma?";
     if(confirm(msg)) {
         var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
@@ -1002,6 +1022,7 @@ async function toggleStatus(index, newStatus) {
 }
 
 function editDespatch(index) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
     closeModal('despatchListModal'); 
     if(confirm("Indha despatch entry-ai edit pannanuma?")) {
         var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
@@ -1071,6 +1092,7 @@ function editDespatch(index) {
 }
 
 async function deleteDespatch(index) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
     if(confirm("Indha despatch entry-ai delete pannanuma?")) {
         var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
         despatchList.splice(index, 1);

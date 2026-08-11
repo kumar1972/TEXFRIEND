@@ -12,7 +12,7 @@
         html, body { 
             width: 100%;
             min-height: 100vh;
-            background: #030712; /* Softer smart background */
+            background: #030712; 
             color: #1E2B23; 
         }
 
@@ -44,7 +44,6 @@
             margin-bottom: 5px;
         }
 
-        /* 📌 Smart Black Button Layout for Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -72,7 +71,6 @@
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-        /* Checkbox Styling */
         .completed-checkbox {
             display: flex;
             align-items: center;
@@ -116,7 +114,6 @@
             background: #4A7C59; border-radius: 4px;
         }
 
-        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -181,7 +178,6 @@
         
         input::placeholder, textarea::placeholder { color: #A0AFA0; font-weight: 400; }
 
-        /* 📌 Row-wise Item Entry Grid Updated */
         .item-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -209,7 +205,6 @@
         .del-row-btn { background: #EF4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
         .del-row-btn:hover { background: #DC2626; transform: translateY(-1px); }
         
-        /* 📌 Smart Buttons */
         .btn-main {
             width: 100%; padding: 14px; margin: 5px 0; border: none; border-radius: 10px;
             color: white; font-weight: 700; font-size: 13px; cursor: pointer;
@@ -232,7 +227,6 @@
         }
         .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
 
-        /* 📌 Advanced Pop-up Modal Styling */
         .overlay-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
@@ -488,6 +482,33 @@
 let editingInvoiceId = null;
 let savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
 
+function checkUserPermission() {
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['invoice.html'] === false || permissions['invoice'] === false) return false;
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access this page. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+    
+    document.getElementById('inv_date').valueAsDate = new Date();
+    
+    let defaultCompAddr = localStorage.getItem('company_full_address') || localStorage.getItem('set_comp_addr') || '';
+    if(defaultCompAddr && !document.getElementById('comp_address').value) {
+        document.getElementById('comp_address').value = defaultCompAddr;
+    }
+
+    loadDesignDropdowns();
+    updateInvoicesTable();
+});
+
 function openModal(modalId) {
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
@@ -502,7 +523,6 @@ function closeModal(modalId) {
 
 function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
-// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
@@ -512,7 +532,6 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('global_design').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -570,7 +589,7 @@ function applyGlobalDesign(designNo) {
     
     let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
-    let invRec = invs.find(x => x.design === designNo);
+    let invRec = invs.find(x => cleanDesignName(x.design) === clean);
 
     if(specStatus === 'completed' || (invRec && invRec.status && invRec.status.toLowerCase() === 'completed')) {
         let cb = document.getElementById('top_completed_status');
@@ -581,7 +600,7 @@ function applyGlobalDesign(designNo) {
     }
 
     let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let matchedOrder = partyOrders.find(p => p.designNumber === designNo || p.designNo === designNo);
+    let matchedOrder = partyOrders.find(p => cleanDesignName(p.designNumber || p.designNo) === clean);
     
     if(matchedOrder) {
         if(matchedOrder.partyName && !document.getElementById('party_address').value) {
@@ -636,8 +655,9 @@ function calcTotal(element) {
     totalField.value = (qty * rate).toFixed(2);
 }
 
-// 📌 Completed Checkbox Quick Toggle with Alert Pop-up
 async function quickCompleteToggle() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let designNo = document.getElementById('global_design').value;
     let cb = document.getElementById('top_completed_status');
     let isCompleted = cb ? cb.checked : false;
@@ -654,7 +674,7 @@ async function quickCompleteToggle() {
     let updated = false;
 
     invs.forEach(r => {
-        if(r.design === designNo) {
+        if(cleanDesignName(r.design) === cleanDesignName(designNo)) {
             r.status = statusText;
             updated = true;
         }
@@ -715,8 +735,9 @@ async function quickCompleteToggle() {
     alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveInvoice with Re-entry Confirmation Popup & Double Entry Prevention
 async function saveInvoice() {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let invNo = document.getElementById('inv_no').value.trim();
     if(!invNo) {
         alert("Invoice Number-ஐ உள்ளிடவும்!");
@@ -724,25 +745,19 @@ async function saveInvoice() {
     }
 
     let design = document.getElementById('global_design').value;
-    let cleanDesign = design ? design.replace('#', '').trim().toLowerCase() : '';
+    let cleanDesign = cleanDesignName(design);
 
-    // 🔥 POP-UP ALERT CHECK FOR RE-ENTRY & DOUBLE ENTRY PREVENTION
     if(editingInvoiceId === null && cleanDesign) {
         let alreadyExists = savedInvoices.some(inv => {
-            let invDesign = inv.design ? inv.design.replace('#', '').trim().toLowerCase() : '';
+            let invDesign = cleanDesignName(inv.design);
             return invDesign === cleanDesign;
         });
 
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
             if(!confirmReEntry) {
-                return; // Cancel save action if user clicks Cancel
+                return;
             }
-            // If confirmed, filter out old records of this design to prevent duplicate entries
-            savedInvoices = savedInvoices.filter(inv => {
-                let invDesign = inv.design ? inv.design.replace('#', '').trim().toLowerCase() : '';
-                return invDesign !== cleanDesign;
-            });
         }
     }
 
@@ -806,7 +821,7 @@ async function saveInvoice() {
 
     if(design) {
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDesign) || design;
+        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDesign) || design;
 
         if(!designSpecs[specKey]) designSpecs[specKey] = {};
         designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
@@ -865,8 +880,9 @@ async function saveInvoice() {
     btn.innerText = "✅ Save Invoice Details";
 }
 
-// 📌 FIREBASE SYNC: toggleStatus
 async function toggleStatus(id, newStatus) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     let msg = newStatus === 'completed' ? "Change this invoice to Completed?" : "Change this invoice to Running?";
     if(confirm(msg)) {
         let index = savedInvoices.findIndex(r => r.id == id);
@@ -878,7 +894,7 @@ async function toggleStatus(id, newStatus) {
             if(dNo) {
                 let cleanDNo = cleanDesignName(dNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
 
                 if(!designSpecs[specKey]) designSpecs[specKey] = {};
                 designSpecs[specKey].status = newStatus;
@@ -903,6 +919,7 @@ async function toggleStatus(id, newStatus) {
 function updateInvoicesTable() {
     savedInvoices = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let tbody = document.querySelector('#invoicesTable tbody');
+    if(!tbody) return;
     tbody.innerHTML = '';
 
     savedInvoices.slice().reverse().forEach(inv => {
@@ -933,6 +950,8 @@ function updateInvoicesTable() {
 }
 
 function editInvoice(id) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     closeModal('invoiceListModal');
     let inv = savedInvoices.find(x => x.id === id);
     if(!inv) return;
@@ -1022,8 +1041,9 @@ function editInvoice(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 📌 FIREBASE SYNC: deleteInvoice
 async function deleteInvoice(id) {
+    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
+
     if(confirm("Indha invoice-ai delete pannanuma?")) {
         savedInvoices = savedInvoices.filter(x => x.id !== id);
         localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
@@ -1170,6 +1190,5 @@ function goBackToForm() {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>

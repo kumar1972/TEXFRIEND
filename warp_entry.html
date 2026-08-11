@@ -293,10 +293,10 @@
 let currentBaseSpecs = {};
 
 function checkUserPermission() {
-    let userRole = localStorage.getItem('user_role');
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        if (permissions['warp_entry'] === false) {
+        if (permissions['warp_entry.html'] === false || permissions['warp_entry'] === false) {
             return false;
         }
     }
@@ -460,7 +460,6 @@ async function copyToNewDesign() {
         return;
     }
 
-    // Update Dropdown UI
     let select = document.getElementById('designNo');
     let option = document.createElement("option");
     option.text = newDNo; option.value = newDNo;
@@ -468,7 +467,6 @@ async function copyToNewDesign() {
 
     localStorage.setItem('selected_design_number', newDNo);
 
-    // Change button text to save
     document.getElementById('saveBtnTxt').innerText = "💾 Save";
     let cb = document.getElementById('top_completed_status'); if(cb) cb.checked = false;
 
@@ -922,7 +920,7 @@ function previewPattern() {
         let breakdownHtml = Object.keys(countTotals).map(c => `<span style="color:#1E2B23;"><b>${c}</b>: ${countTotals[c]} Ends</span>`).join(' &nbsp;&nbsp;|&nbsp;&nbsp; ');
         html += `<tr style="font-size:11px; background:#EAF0EA;">
             <td colspan="2" style="padding:10px; text-align:center;">
-                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;">Count Wise Total:</span> ${breakdownHtml}
+                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;s">Count Wise Total:</span> ${breakdownHtml}
             </td>
         </tr>`;
     }

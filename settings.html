@@ -397,6 +397,15 @@
 let tempLogoData = "";
 let tempDesignBitmapData = "";
 
+function checkUserPermission() {
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+    if (userRole !== 'Administrator' && userRole !== 'Admin') {
+        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+        if (permissions['settings.html'] === false || permissions['settings'] === false) return false;
+    }
+    return true;
+}
+
 // 🧼 Helper function to clean text inputs from corrupt backslashes & quotes
 function cleanInputText(val) {
     if (!val) return "";
@@ -473,6 +482,12 @@ function compressImage(file, maxWidth, maxHeight, quality, callback) {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
+    if (!checkUserPermission()) {
+        alert("Access Denied! You do not have permission to access settings. ❌");
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     try {
         let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
         heading = cleanInputText(heading);
@@ -536,7 +551,6 @@ function loadDesignBitmap(designNo) {
 
 function previewLogo(input) {
     if (input.files && input.files[0]) {
-        // HD Quality logo compression (800x800, quality 0.9)
         compressImage(input.files[0], 800, 800, 0.9, function(base64) {
             tempLogoData = base64;
             let imgTag = document.getElementById('logoImgTag');
@@ -549,7 +563,6 @@ function previewLogo(input) {
 
 function previewDesignBitmap(input) {
     if (input.files && input.files[0]) {
-        // HD Quality bitmap compression (800x800, quality 0.9)
         compressImage(input.files[0], 800, 800, 0.9, function(base64) {
             tempDesignBitmapData = base64;
             let imgTag = document.getElementById('designBitmapImgTag');
@@ -738,7 +751,6 @@ function deleteUserAccount(index) {
     }
 }
 
-// 🌟 ULTIMATE SAFE SAVE ALL WITH INDIVIDUAL FIREBASE SYNC
 function executeSaveAll() {
     try {
         let headingEl = document.getElementById('set_heading');

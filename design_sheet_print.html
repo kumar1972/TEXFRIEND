@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Design Sheet Print - TEXFRIEND </title>       <script src="translator.js"></script>
+<title>Design Sheet Print - TEXFRIEND </title>
+<script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -575,7 +576,6 @@ function loadDesignDetails() {
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
-    // 📌 Weft Entry பக்கத்தில் சேமிக்கப்பட்டுள்ள சரியான Pick மதிப்பை (எ.கா. 72) உறுதியாக கண்டறிந்து எடுக்கும் முறை
     let exactPick = foundMaster.weftPick || sp.weftPick || foundMaster.pick || sp.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || "72";
     let actualPick = parseFloat(String(exactPick).replace(/[^0-9.]/g, '')) || 72;
     
@@ -595,7 +595,7 @@ function loadDesignDetails() {
     document.getElementById('hdrWidth').innerText = foundMaster.width || sp.width || '-';
     document.getElementById('designHeaderBox').style.display = 'grid';
 
-    // Weft Header Data (📌 76 மாறி இப்போது Weft Entry பக்கத்து மதிப்பான 72 சரியாக வரும் மற்றும் ஹெட்டர் கட்டாயமாகத் தோன்றும்)
+    // Weft Header Data
     let weftHdrBox = document.getElementById('weftHeaderBox');
     if (weftHdrBox) {
         document.getElementById('weftHdrDesign').innerText = dName;
@@ -793,6 +793,5 @@ function buildTableRowsHtml(rows) {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>

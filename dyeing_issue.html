@@ -140,7 +140,7 @@
         }
         .btn-del-inline:hover { background: #FECACA; }
 
-        /* 📌 Advanced Issue Grid - Adjusted for 2 buttons (+ and X) */
+        /* 📌 Advanced Issue Grid */
         .issue-grid-header { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 0.8fr 0.8fr 1.2fr 70px; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
         .issue-grid-header div { font-size: 10px; font-weight: 700; color: #4A7C59; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -353,10 +353,10 @@
 let editingIssueId = null;
 
 function checkUserPermission() {
-    let userRole = localStorage.getItem('user_role');
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        if (permissions['dyeing_issue'] === false) return false;
+        if (permissions['dyeing_issue.html'] === false || permissions['dyeing_issue'] === false) return false;
     }
     return true;
 }
@@ -368,7 +368,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     document.getElementById('issueDate').valueAsDate = new Date();
+    loadDesignDropdowns();
 });
+
+// 🚀 Cloud Sync Helper Function
+async function syncMasterToCloud(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+    if (window.firebaseSave) {
+        await window.firebaseSave(key, data);
+    }
+    if (window.firebaseSaveIndividual) {
+        await window.firebaseSaveIndividual(key, data);
+    }
+}
 
 // 📌 Split Row / Duplicate Row Function
 window.duplicateRow = function(btn) {
@@ -399,7 +411,7 @@ window.duplicateRow = function(btn) {
     updateTotals();
 }
 
-function addMasterMill() {
+async function addMasterMill() {
     let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
     if(val) {
         val = val.trim();
@@ -407,16 +419,16 @@ function addMasterMill() {
         let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
         if(!masterMills.includes(val)) {
             masterMills.push(val);
-            localStorage.setItem('tex_master_mills', JSON.stringify(masterMills));
+            await syncMasterToCloud('tex_master_mills', masterMills);
             refreshAllSelects();
-            alert(`Mill '${val}' added successfully! ✅`);
+            alert(`Mill '${val}' added & saved to Cloud successfully! ✅☁️`);
         } else {
             alert("This Mill Name is already in the Master List!");
         }
     }
 }
 
-function addMasterUnit() {
+async function addMasterUnit() {
     let val = prompt("புதிய யூனிட் பெயரை உள்ளிடவும் (Enter new Dyeing/Unit Name):");
     if(val) {
         val = val.trim();
@@ -424,16 +436,16 @@ function addMasterUnit() {
         let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
         if(!masterUnits.includes(val)) {
             masterUnits.push(val);
-            localStorage.setItem('tex_master_units', JSON.stringify(masterUnits));
+            await syncMasterToCloud('tex_master_units', masterUnits);
             refreshAllSelects();
-            alert(`Unit '${val}' added successfully! ✅`);
+            alert(`Unit '${val}' added & saved to Cloud successfully! ✅☁️`);
         } else {
             alert("This Unit Name is already in the Master List!");
         }
     }
 }
 
-function deleteMasterItem(type) {
+async function deleteMasterItem(type) {
     let storageKey = ''; let title = '';
     if(type === 'mill') { storageKey = 'tex_master_mills'; title = "Mill"; }
     else if(type === 'unit') { storageKey = 'tex_master_units'; title = "Unit"; }
@@ -448,9 +460,9 @@ function deleteMasterItem(type) {
         let idx = parseInt(idxStr) - 1;
         if(idx >= 0 && idx < masterList.length) {
             let deleted = masterList.splice(idx, 1);
-            localStorage.setItem(storageKey, JSON.stringify(masterList));
+            await syncMasterToCloud(storageKey, masterList);
             refreshAllSelects();
-            alert(`'${deleted[0]}' நீக்கப்பட்டது (Deleted successfully)! ✅`);
+            alert(`'${deleted[0]}' நீக்கப்பட்டது (Deleted successfully)! ✅☁️`);
         } else {
             alert("தவறான எண் (Invalid Number)!");
         }
@@ -541,34 +553,30 @@ function loadBitmapImage() {
 }
 
 function loadDesignDropdowns() {
-    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || 
-                        JSON.parse(localStorage.getItem('design_master')) || 
-                        JSON.parse(localStorage.getItem('design_specs')) || [];
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     
-    if (!Array.isArray(designMasters) && typeof designMasters === 'object') {
-        designMasters = Object.keys(designMasters).map(k => ({ name: k, ...designMasters[k] }));
+    let allSet = new Set([...preDesigns]);
+    if (Array.isArray(designMasters)) {
+        designMasters.forEach(d => { if(d.name || d.designNo) allSet.add(d.name || d.designNo); });
     }
+    Object.keys(designSpecs).forEach(k => allSet.add(k));
 
     let select = document.getElementById('designNumber');
     let html = '<option value="">Select Design No</option>';
     
-    if (designMasters.length > 0) {
-        designMasters.forEach(function(d) {
-            let dName = d.name || d.designNo || d.designNumber;
-            if(dName) html += '<option value="' + dName + '">' + dName + '</option>';
-        });
-    }
+    Array.from(allSet).forEach(dName => {
+        if(dName) html += `<option value="${dName}">${dName}</option>`;
+    });
     
     select.innerHTML = html;
     document.getElementById('bitmapDisplayContainer').innerHTML = '';
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign) {
-        let match = designMasters.find(d => (d.name || d.designNo || d.designNumber) === activeDesign);
-        if(match) {
-            select.value = activeDesign;
-            loadDesignItems();
-        }
+    if(activeDesign && allSet.has(activeDesign)) {
+        select.value = activeDesign;
+        loadDesignItems();
     }
 }
 
@@ -626,12 +634,12 @@ function parseYarnCount(countStr) {
 }
 
 function getMillNameFromKora(designNo, countStr) {
-    let koraRecords = JSON.parse(localStorage.getItem('kora_outward_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    let koraRecords = JSON.parse(localStorage.getItem('kora_stock_records')) || JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     if(koraRecords.length === 0) return "";
     let cleanDNo = String(designNo).trim().toLowerCase();
     let cleanCount = String(countStr).trim().toLowerCase();
     let match = koraRecords.find(r => (String(r.designNo || r.designNumber || "").trim().toLowerCase() === cleanDNo) && (String(r.count || "").trim().toLowerCase() === cleanCount));
-    if (match && match.millName) return match.millName;
+    if (match && (match.millName || match.supplier)) return match.millName || match.supplier;
     return "";
 }
 
@@ -647,16 +655,8 @@ function loadDesignItems() {
     localStorage.setItem('selected_design_number', dNo);
     let cleanDNo = cleanDesignName(dNo);
     
-    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || 
-                            JSON.parse(localStorage.getItem('design_master')) || 
-                            JSON.parse(localStorage.getItem('design_specs')) || [];
-    if (!Array.isArray(designMastersList) && typeof designMastersList === 'object') {
-        designMastersList = Object.keys(designMastersList).map(k => ({ name: k, ...designMastersList[k] }));
-    }
-    let foundMaster = designMastersList.find(d => {
-        let name = d.name || d.designNo || d.designNumber;
-        return name && cleanDesignName(name) === cleanDNo;
-    }) || {};
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = designMastersList.find(d => cleanDesignName(d.name || d.designNo) === cleanDNo) || {};
     
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
@@ -862,7 +862,6 @@ async function saveIssueEntries() {
     let records = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
     let cleanDNo = cleanDesignName(dNo);
 
-    // 🔥 NO OVERWRITE / DUPLICATE CHECK
     let container = document.getElementById('issueLinesContainer');
     let rows = container.querySelectorAll('.line-row');
     if(rows.length === 0) { alert("Please add at least one yarn item row."); return; }

@@ -113,7 +113,7 @@
     
     <div class="summary-box" id="summaryBox" style="display: none;">
         <div>Total Records: <span id="totRecords">0</span></div>
-        <div>Total Value: <span id="totValue">0.00</span></div>
+        <div>Total Meters / Weight: <span id="totValue">0.00</span></div>
     </div>
 
     <div id="listContainer">
@@ -152,7 +152,7 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-window.toggleBaseDesignStatus = function(dNo, isChecked) {
+window.toggleBaseDesignStatus = async function(dNo, isChecked) {
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let clean = cleanDesignName(dNo);
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === clean) || dNo;
@@ -162,6 +162,13 @@ window.toggleBaseDesignStatus = function(dNo, isChecked) {
     let newStatus = isChecked ? 'Completed' : 'Running';
     specs[specKey].status = newStatus;
     localStorage.setItem('design_specs', JSON.stringify(specs));
+
+    if (window.firebaseSave) {
+        await window.firebaseSave('design_specs', specs);
+    }
+    if (window.firebaseSaveIndividual) {
+        await window.firebaseSaveIndividual(specKey, specs[specKey]);
+    }
     
     window.renderDesignList();
 };
@@ -169,29 +176,35 @@ window.toggleBaseDesignStatus = function(dNo, isChecked) {
 window.renderDesignList = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const type = urlParams.get('type') || 'all';
-    const status = urlParams.get('status') || 'all';
+    const statusFilter = (urlParams.get('status') || 'all').toLowerCase();
     const designFilter = urlParams.get('design') || 'all';
 
     const pageTitle = document.getElementById('pageTitle');
     const listContainer = document.getElementById('listContainer');
     const summaryBox = document.getElementById('summaryBox');
 
-    let titleText = type === 'all' ? "TOTAL SAVED DESIGNS" : `${type} DESIGN - ${status}`;
-    if(designFilter !== 'all') { titleText += ` [ #${designFilter} ]`; }
-    pageTitle.innerText = titleText.toUpperCase();
+    let titleText = type === 'all' ? "TOTAL SAVED DESIGNS" : `${type} DESIGNS - ${statusFilter.toUpperCase()}`;
+    if(designFilter !== 'all' && designFilter !== '') { titleText += ` [ #${designFilter} ]`; }
+    pageTitle.innerText = titleText;
 
     let theadHtml = '';
     let tbodyHtml = '';
+    let totalMetersVal = 0;
+    let recordsCount = 0;
+
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
 
     if (type === 'all') {
-        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Mtr</th><th>Status</th></tr>`;
+        theadHtml = `<tr><th>S.No</th><th>Photo</th><th>Design</th><th>Count</th><th>Reed</th><th>Pick</th><th>Total Order Mtr</th><th>Status</th></tr>`;
         
-        let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+        let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let keysFromSpecs = Object.keys(specs);
+        let designs = Array.from(new Set([...preDesigns, ...keysFromSpecs]));
 
         if(designs.length === 0) {
             listContainer.innerHTML = '<div class="empty-msg">No Saved Designs Found!</div>';
+            summaryBox.style.display = 'none';
             return;
         }
 
@@ -203,26 +216,77 @@ window.renderDesignList = function() {
             let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDesignName(dNo)) || dNo;
             let s = specs[specKey] || {};
             
-            let orderItems = orders.filter(o => o.designNo === dNo || o.designNumber === dNo);
+            let currentStatus = (s.status || 'Running').toLowerCase();
+            if(statusFilter !== 'all' && currentStatus !== statusFilter) return;
+
+            let orderItems = orders.filter(o => cleanDesignName(o.designNo || o.designNumber) === cleanDesignName(dNo));
             let mtrSum = orderItems.reduce((sum, o) => sum + (parseFloat(o.meters || o.orderMtr) || 0), 0);
             
-            let currentStatus = (s.status || 'Running').toLowerCase();
-            let isCompleted = (currentStatus === 'completed');
+            totalMetersVal += mtrSum;
+            recordsCount++;
 
+            let isCompleted = (currentStatus === 'completed');
             let imgTag = s.bitmap ? `<img src="${s.bitmap}" class="table-img" onclick="openFullscreenImage(this.src)">` : '-';
 
             tbodyHtml += `<tr>
-                <td>${index + 1}</td>
+                <td>${recordsCount}</td>
                 <td>${imgTag}</td>
                 <td><b>${dNo}</b></td>
-                <td>${s.weft || '-'}</td>
+                <td>${s.weft || s.count || '-'}</td>
                 <td>${s.reed || '-'}</td>
                 <td>${s.pick || '-'}</td>
                 <td>${mtrSum > 0 ? mtrSum : '-'}</td>
                 <td><input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleBaseDesignStatus('${dNo}', this.checked)"> ${isCompleted ? 'Completed' : 'Running'}</td>
             </tr>`;
         });
+    } else {
+        // Generic Process List Handler (Party Orders, Weaving, Warping, Dyeing, etc.)
+        theadHtml = `<tr><th>S.No</th><th>Design No</th><th>Party / Unit</th><th>Meters / Wt</th><th>Date</th><th>Status</th></tr>`;
+        let recordKeyMap = {
+            'party_orders': 'party_orders_data',
+            'kora': 'kora_issue_records',
+            'dyeing': 'dyeing_issue_records',
+            'warping': 'warping_issue_records',
+            'weaving': 'weaving_master_data',
+            'washing': 'washing_issue_records'
+        };
 
+        let targetKey = recordKeyMap[type.toLowerCase()] || `${type.toLowerCase()}_records`;
+        let records = JSON.parse(localStorage.getItem(targetKey)) || [];
+
+        records.forEach((r, idx) => {
+            let dNo = r.designNo || r.designNumber || r.design || '-';
+            if(designFilter !== 'all' && designFilter !== '') {
+                if(cleanDesignName(dNo) !== cleanDesignName(designFilter)) return;
+            }
+
+            let curStatus = (r.status || 'running').toLowerCase();
+            if(statusFilter !== 'all' && curStatus !== statusFilter) return;
+
+            let partyUnit = r.partyName || r.dyeingName || r.weaverName || r.supplier || '-';
+            let mtr = parseFloat(r.meters || r.orderMtr || r.issueWt || r.weight || 0);
+            
+            totalMetersVal += mtr;
+            recordsCount++;
+
+            tbodyHtml += `<tr>
+                <td>${recordsCount}</td>
+                <td><b>${dNo}</b></td>
+                <td>${partyUnit}</td>
+                <td>${mtr > 0 ? mtr : '-'}</td>
+                <td>${r.date || r.orderDate || '-'}</td>
+                <td style="font-weight:bold; text-transform:uppercase; color:${curStatus === 'completed' ? '#10B981' : '#D97706'}">${curStatus}</td>
+            </tr>`;
+        });
+    }
+
+    if(recordsCount === 0) {
+        listContainer.innerHTML = '<div class="empty-msg">No Records Found for the Selected Filter!</div>';
+        summaryBox.style.display = 'none';
+    } else {
+        summaryBox.style.display = 'flex';
+        document.getElementById('totRecords').innerText = recordsCount;
+        document.getElementById('totValue').innerText = totalMetersVal.toFixed(2);
         listContainer.innerHTML = `<div class="table-container"><table><thead>${theadHtml}</thead><tbody>${tbodyHtml}</tbody></table></div>`;
     }
 };

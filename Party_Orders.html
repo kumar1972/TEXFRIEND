@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PARTY ORDERS - TEXFRIEND</title>
+    <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        /* 📌 கீழிருக்கும் கருப்பு இடைவெளியை நீக்க Height திருத்தப்பட்டுள்ளது */
         html, body { 
             width: 100%;
             height: 100%;
@@ -295,7 +295,8 @@
                     </div>
                     <div class="form-group">
                         <label>Party Name</label>
-                        <input type="text" id="partyName" placeholder="Enter Party Name">
+                        <input type="text" id="partyName" placeholder="Enter Party Name" list="partyMasterSuggestions">
+                        <datalist id="partyMasterSuggestions"></datalist>
                     </div>
                     <div class="form-group">
                         <label>PO Number</label>
@@ -411,7 +412,7 @@
         let editingId = null;
         
         function checkUserPermission() {
-            let userRole = localStorage.getItem('user_role');
+            let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
             if (userRole !== 'Administrator' && userRole !== 'Admin') {
                 let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
                 if (permissions['party_orders.html'] === false || permissions['party_orders'] === false) {
@@ -421,15 +422,56 @@
             return true;
         }
 
-        // 🔥 மாற்றம் 1: பேஜ் ஓபன் ஆனதும் டேபிளைத் தயார் செய்யும் கோடு
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to access this page. ❌");
                 window.location.href = "dashboard.html";
                 return;
             }
+            document.getElementById('orderDate').valueAsDate = new Date();
+            loadDesignList();
+            loadPartySuggestions();
             updatePartyTable();
         });
+
+        function loadPartySuggestions() {
+            let partyDb = JSON.parse(localStorage.getItem('party_master_db')) || {};
+            let partyList = JSON.parse(localStorage.getItem('party_master_list')) || Object.keys(partyDb);
+            let datalist = document.getElementById('partyMasterSuggestions');
+            if(datalist) {
+                let html = '';
+                partyList.forEach(p => {
+                    html += `<option value="${p}">`;
+                });
+                datalist.innerHTML = html;
+            }
+        }
+
+        function loadDesignList() {
+            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+
+            let allDesigns = new Set();
+            preDesigns.forEach(d => allDesigns.add(d));
+            if(Array.isArray(designMasters)) {
+                designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
+            }
+            Object.keys(designSpecs).forEach(k => allDesigns.add(k));
+
+            let select = document.getElementById('designNumber');
+            let html = '<option value="">Select Design</option>';
+            Array.from(allDesigns).forEach(d => {
+                if(d) html += `<option value="${d}">${d}</option>`;
+            });
+            select.innerHTML = html;
+
+            let activeDesign = localStorage.getItem('selected_design_number');
+            if(activeDesign && allDesigns.has(activeDesign)) {
+                select.value = activeDesign;
+                onDesignSelect(activeDesign);
+            }
+        }
 
         function calculateProductionMeter() {
             let orderMtr = parseFloat(document.getElementById('orderMtr').value) || 0;
@@ -447,7 +489,6 @@
             }
         }
 
-        // 🔥 மாற்றம் 2: டேபிளைத் திறக்கும் முன் டேட்டாவை லோட் செய்யும் கோடு
         function openModal(modalId) {
             if(modalId === 'savedOrdersModal') {
                 updatePartyTable(); 
@@ -472,7 +513,6 @@
             document.getElementById('fullscreenModal').style.display = 'none';
         }
 
-        // 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
         function loadBitmapImage() {
             let activeDesign = localStorage.getItem('selected_design_number');
             let designSelect = document.getElementById('designNumber');
@@ -507,7 +547,7 @@
                 let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                 let order = orders.find(x => x.designNumber === val || x.designNo === val);
 
-                if (specStatus === 'completed' || (order && order.status.toLowerCase() === 'completed')) {
+                if (specStatus === 'completed' || (order && order.status && order.status.toLowerCase() === 'completed')) {
                     document.getElementById('orderStatusToggle').checked = true;
                 } else {
                     document.getElementById('orderStatusToggle').checked = false;
@@ -651,7 +691,6 @@
             };
 
             let btn = document.getElementById('saveBtn');
-            let origText = btn.innerText;
             btn.innerText = "⏳ Saving to Cloud...";
 
             if(editingId !== null) {
@@ -694,13 +733,9 @@
             document.getElementById('partyOrderForm').reset();
             document.getElementById('inputPercent').value = '0';
             document.getElementById('orderStatusToggle').checked = false;
+            document.getElementById('orderDate').valueAsDate = new Date();
             
-            var activeDesign = localStorage.getItem('selected_design_number');
-            if(activeDesign) {
-                document.getElementById('designNumber').value = activeDesign;
-                onDesignSelect(activeDesign);
-            }
-            loadBitmapImage();
+            loadDesignList();
             btn.innerText = "✅ Save Order Details";
         }
 
@@ -740,6 +775,7 @@
         function updatePartyTable() {
             partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
             const tbody = document.querySelector('#partyOrderTable tbody');
+            if(!tbody) return;
             tbody.innerHTML = '';
             partyOrders.slice().reverse().forEach(item => {
                 let statusColor = item.status == 'running' ? '#F59E0B' : '#10B981';
@@ -825,7 +861,6 @@
             }
         }
     </script>
-
     <script src="config.js"></script>
 </body>
 </html>

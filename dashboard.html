@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - TEXFRIEND ERP Pro</title>
-    
+    <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
         
@@ -163,7 +163,7 @@
             display: flex; justify-content: center; align-items: center; gap: 14px;
             box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease; border: 2px solid rgba(255, 255, 255, 0.5); width: 100%;
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
         }
         @keyframes neonGradient {
             0% { background-position: 0% 50%; }
@@ -178,7 +178,7 @@
             font-weight: 900; text-align: center; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; gap: 10px; font-size: 12px; 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 2px solid rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2); position: relative; overflow: hidden; cursor: pointer;
         }
         
         .menu-btn::before {
@@ -307,9 +307,9 @@
 <body>
 
     <div class="top-header-container">
-        <h3>TEXFRIEND PRO</h3>
+        <h3 id="appHeaderTitle">TEXFRIEND PRO</h3>
         
-        <div id="companyLogoContainer" onclick="window.location.href='settings.html'" title="Click to open settings"></div>
+        <div id="companyLogoContainer" onclick="navigateToPage('settings.html')" title="Click to open settings"></div>
 
         <div class="header-right-actions">
             <div class="live-clock-box">
@@ -320,102 +320,13 @@
                 <button onclick="toggleMenu(event)" class="dropdown-btn">👨‍💼</button>
                 <div id="dropdownMenu" class="dropdown-menu">
                     <div id="userInfoBox" class="user-info-box"></div>
-                    <a href="settings.html">⚙️ Settings</a>
+                    <a href="#" onclick="navigateToPage('settings.html')">⚙️ Settings</a>
                     <a href="#" onclick="clearCacheData()">🔄 Clear Cache</a>
                     <a href="#" onclick="logoutUser()">🚪 Log Out</a>
                 </div>
             </div>
         </div>
     </div>
-
-<script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    let role = localStorage.getItem('erp_logged_role') || 'Guest';
-    let username = localStorage.getItem('erp_logged_user') || 'Unknown';
-    let box = document.getElementById('userInfoBox');
-    if(box) {
-        box.innerHTML = `🟢 Role: <span style="color:#38BDF8;">${role}</span><br>👤 Name: <span style="color:#34D399;">${username}</span>`;
-    }
-
-    // 🌟 UNIFIED LOGO LOADER FOR DASHBOARD
-    let localLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo') || '';
-    let logoContainer = document.getElementById('companyLogoContainer');
-    if (localLogo) {
-        logoContainer.innerHTML = `<img src="${localLogo}" alt="Logo">`;
-    } else {
-        logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
-    }
-
-    setInterval(() => {
-        let now = new Date();
-        let hours = now.getHours();
-        let minutes = now.getMinutes();
-        let seconds = now.getSeconds();
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        hours = hours % 12;
-        hours = hours ? hours : 12; 
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        
-        let timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
-        let clockEl = document.getElementById('liveClock');
-        if(clockEl) clockEl.innerText = timeString;
-
-        let options = { day: '2-digit', month: 'short', year: 'numeric' };
-        let dateString = now.toLocaleDateString('en-GB', options);
-        let dateEl = document.getElementById('liveDate');
-        if(dateEl) dateEl.innerText = dateString;
-    }, 1000);
-});
-
-function toggleMenu(event) {
-    event.stopPropagation();
-    let menu = document.getElementById('dropdownMenu');
-    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-}
-
-function quickSearchDesign() {
-    let query = document.getElementById('quickSearchInput').value.trim();
-    if(!query) {
-        alert("Please enter a design number or party name to search!");
-        return;
-    }
-    localStorage.setItem('selected_design_number', query);
-    window.location.href = "design_sheet_print.html";
-}
-
-function logoutUser() {
-    if(confirm("Are you sure you want to log out?")) {
-        localStorage.removeItem('erp_logged_role');
-        localStorage.removeItem('erp_logged_user');
-        window.location.href = "index.html";
-    }
-}
-
-function clearCacheData() {
-    if(confirm("Clear local cache?")) {
-        localStorage.clear();
-        alert("Cache cleared successfully!");
-        location.reload();
-    }
-}
-
-window.onclick = function(event) {
-    if (!event.target.closest('.profile-dropdown-wrapper')) {
-        let dropdown = document.getElementById('dropdownMenu');
-        if (dropdown) {
-            dropdown.style.display = 'none';
-        }
-    }
-    if (!event.target.closest('.search-bar-wrapper')) {
-        let suggBox = document.getElementById('searchSuggestions');
-        if (suggBox) {
-            suggBox.style.display = 'none';
-        }
-    }
-}
-</script>
 
     <div class="container">
         <div class="search-bar-wrapper">
@@ -442,34 +353,34 @@ window.onclick = function(event) {
             </div>
         </div>
 
-        <a href="design_master.html" class="master-setup-btn">
+        <button onclick="navigateToPage('design_master.html')" class="master-setup-btn">
             <span style="font-size: 24px;">🎨</span> Create / Edit Design Master Setup
-        </a>
+        </button>
 
         <div class="menu-grid">
-            <a href="Party_Orders.html" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</a>
-            <a href="warp_entry.html" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</a>
-            <a href="weft_entry.html" class="menu-btn btn-theme-3"><span class="tab-icon">🧶</span> 2.1 Weft Entry</a>
-            <a href="kora_yarn.html" class="menu-btn btn-theme-4"><span class="tab-icon">🧵</span> 3. Kora</a>
-            <a href="dyeing_issue.html" class="menu-btn btn-theme-5"><span class="tab-icon">🧶</span> 4. Dyeing Issue</a>
-            <a href="dyeing_receive.html" class="menu-btn btn-theme-6"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</a>
-            <a href="warping.html" class="menu-btn btn-theme-7"><span class="tab-icon">📏</span> 5. Warping</a>
-            <a href="weaving.html" class="menu-btn btn-theme-8"><span class="tab-icon">🏭</span> 6. Weaving</a>
-            <a href="washing.html" class="menu-btn btn-theme-9"><span class="tab-icon">🌊</span> 7. Washing</a>
-            <a href="Despatch.html" class="menu-btn btn-theme-10"><span class="tab-icon">📦</span> 8. Despatch</a>
-            <a href="report.html" class="menu-btn btn-theme-11"><span class="tab-icon">📊</span> 9. Report</a>
-            <a href="invoice.html" class="menu-btn btn-theme-12"><span class="tab-icon">📄</span> Invoice / Bill</a>
+            <button onclick="navigateToPage('Party_Orders.html')" class="menu-btn btn-theme-1"><span class="tab-icon">📦</span> 1. Party Orders</button>
+            <button onclick="navigateToPage('warp_entry.html')" class="menu-btn btn-theme-2"><span class="tab-icon">📐</span> 2. Warp Entry</button>
+            <button onclick="navigateToPage('weft_entry.html')" class="menu-btn btn-theme-3"><span class="tab-icon">🧶</span> 2.1 Weft Entry</button>
+            <button onclick="navigateToPage('kora_yarn.html')" class="menu-btn btn-theme-4"><span class="tab-icon">🧵</span> 3. Kora</button>
+            <button onclick="navigateToPage('dyeing_issue.html')" class="menu-btn btn-theme-5"><span class="tab-icon">🧶</span> 4. Dyeing Issue</button>
+            <button onclick="navigateToPage('dyeing_receive.html')" class="menu-btn btn-theme-6"><span class="tab-icon">📥</span> 4.1 Dyeing Receive</button>
+            <button onclick="navigateToPage('warping.html')" class="menu-btn btn-theme-7"><span class="tab-icon">📏</span> 5. Warping</button>
+            <button onclick="navigateToPage('weaving.html')" class="menu-btn btn-theme-8"><span class="tab-icon">🏭</span> 6. Weaving</button>
+            <button onclick="navigateToPage('washing.html')" class="menu-btn btn-theme-9"><span class="tab-icon">🌊</span> 7. Washing</button>
+            <button onclick="navigateToPage('Despatch.html')" class="menu-btn btn-theme-10"><span class="tab-icon">📦</span> 8. Despatch</button>
+            <button onclick="navigateToPage('report.html')" class="menu-btn btn-theme-11"><span class="tab-icon">📊</span> 9. Report</button>
+            <button onclick="navigateToPage('invoice.html')" class="menu-btn btn-theme-12"><span class="tab-icon">📄</span> Invoice / Bill</button>
             
-            <a href="yarn_calc.html" class="menu-btn btn-theme-8 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</a>
-            <a href="design_sheet_print.html" class="menu-btn btn-theme-2 full-span"><span class="tab-icon">📋</span> Design Sheet Print</a>
+            <button onclick="navigateToPage('yarn_calc.html')" class="menu-btn btn-theme-8 full-span"><span class="tab-icon">🧵</span> Yarn Calculation</button>
+            <button onclick="navigateToPage('design_sheet_print.html')" class="menu-btn btn-theme-2 full-span"><span class="tab-icon">📋</span> Design Sheet Print</button>
 
-            <a href="design_list.html?type=all&status=all" class="menu-btn btn-m-all">
+            <button onclick="navigateToPage('design_list.html?type=all&status=all')" class="menu-btn btn-m-all">
                 <span class="tab-icon">✨</span> Total Saved Designs List ✨
-            </a>
+            </button>
                 
-            <a href="process_matrix.html" class="menu-btn btn-matrix">
+            <button onclick="navigateToPage('process_matrix.html')" class="menu-btn btn-matrix">
                 <span class="tab-icon">📊</span> Live Multi-Design Process Status Matrix
-            </a>
+            </button>
         </div>
 
         <!-- 📌 Delayed Party Orders Section -->
@@ -492,106 +403,223 @@ window.onclick = function(event) {
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script>
+// 🔒 SAFE USER PERMISSION CHECK & ROUTING
+function navigateToPage(pageUrl) {
+    let cleanPage = pageUrl.split('?')[0];
+    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role') || 'Standard User';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-            authDomain: "texfriend.firebaseapp.com",
-            projectId: "texfriend",
-            storageBucket: "texfriend.appspot.com",
-            messagingSenderId: "331673079578",
-            appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-            measurementId: "G-2NP13ZTKCN"
-        };
+    if (userRole === 'Administrator' || userRole === 'Admin') {
+        window.location.href = pageUrl;
+        return;
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.onload = async function() {
-            // 🌟 1. Saved Designs Count
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let totalDesignsCount = Math.max(Object.keys(designSpecs).length, preDesigns.length);
-            let designsEl = document.getElementById('statDesignsCount');
-            if(designsEl) designsEl.innerText = totalDesignsCount;
-
-            // 🌟 2. Active Orders & Delayed Orders
-            let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-            let activeOrdersCount = 0;
-            let delayedCount = 0;
-            let todayStr = new Date().toISOString().split('T')[0];
-            let delayedList = [];
-
-            partyOrders.forEach(order => {
-                let status = order.status ? order.status.toLowerCase() : 'running';
-                if(status !== 'completed') {
-                    activeOrdersCount++;
-                    let deliveryDate = order.deliveryDate || '';
-                    if(deliveryDate && deliveryDate < todayStr) {
-                        delayedCount++;
-                        delayedList.push(order);
-                    }
-                }
-            });
-
-            let ordersEl = document.getElementById('statOrdersCount');
-            if(ordersEl) ordersEl.innerText = activeOrdersCount;
-            let delayedEl = document.getElementById('statDelayedCount');
-            if(delayedEl) delayedEl.innerText = delayedCount;
-
-            let section = document.getElementById('delayedOrdersSection');
-            let tbody = document.getElementById('delayedOrdersBody');
-            if(tbody) tbody.innerHTML = '';
-
-            if(delayedList.length > 0 && section && tbody) {
-                section.style.display = 'block';
-                delayedList.forEach((item, index) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td><b>${item.designNumber || item.designNo || '-'}</b></td>
-                            <td>${item.partyName || '-'}</td>
-                            <td>${item.orderMtr || '0'}</td>
-                            <td class="red-alert-text">${item.deliveryDate}</td>
-                        </tr>
-                    `;
-                });
-            } else if(section) {
-                section.style.display = 'none';
-            }
-        }
-
-        window.handleSearchInput = function(val) {
-            let suggBox = document.getElementById('searchSuggestions');
-            if(!val || val.trim() === '') {
-                if(suggBox) suggBox.style.display = 'none';
+    let savedPermissions = localStorage.getItem('user_permissions');
+    if (savedPermissions) {
+        try {
+            let p = JSON.parse(savedPermissions);
+            let pageKey = cleanPage.replace('.html', '').toLowerCase();
+            
+            // Check direct page or key name permission
+            if (p[cleanPage] === false || p[pageKey] === false) {
+                alert("Access Denied! You do not have permission to access this page. 🔒");
                 return;
             }
-            let term = val.trim().toLowerCase();
-            let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-            let matches = preDesigns.filter(d => d.toLowerCase().includes(term)).slice(0, 5);
+        } catch(e) {}
+    }
 
-            if(matches.length > 0 && suggBox) {
-                suggBox.innerHTML = '';
-                matches.forEach(m => {
-                    suggBox.innerHTML += `<div class="search-suggestion-item" onclick="selectSearchSuggestion('${m}')">${m}</div>`;
-                });
-                suggBox.style.display = 'block';
-            } else if(suggBox) {
-                suggBox.style.display = 'none';
+    window.location.href = pageUrl;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    let role = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role') || 'Guest';
+    let username = localStorage.getItem('erp_logged_user') || localStorage.getItem('username') || 'Unknown';
+    
+    let box = document.getElementById('userInfoBox');
+    if(box) {
+        box.innerHTML = `🟢 Role: <span style="color:#38BDF8;">${role}</span><br>👤 Name: <span style="color:#34D399;">${username}</span>`;
+    }
+
+    let customHeading = localStorage.getItem('app_heading_name');
+    if (customHeading) {
+        let titleEl = document.getElementById('appHeaderTitle');
+        if (titleEl) titleEl.innerText = customHeading;
+    }
+
+    let localLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo') || '';
+    let logoContainer = document.getElementById('companyLogoContainer');
+    if (logoContainer) {
+        if (localLogo) {
+            logoContainer.innerHTML = `<img src="${localLogo}" alt="Logo">`;
+        } else {
+            logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
+        }
+    }
+
+    loadDashboardStats();
+
+    setInterval(() => {
+        let now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        let timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+        let clockEl = document.getElementById('liveClock');
+        if(clockEl) clockEl.innerText = timeString;
+
+        let options = { day: '2-digit', month: 'short', year: 'numeric' };
+        let dateString = now.toLocaleDateString('en-GB', options);
+        let dateEl = document.getElementById('liveDate');
+        if(dateEl) dateEl.innerText = dateString;
+    }, 1000);
+});
+
+function loadDashboardStats() {
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let totalDesignsCount = Math.max(Object.keys(designSpecs).length, preDesigns.length);
+    let designsEl = document.getElementById('statDesignsCount');
+    if(designsEl) designsEl.innerText = totalDesignsCount;
+
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let activeOrdersCount = 0;
+    let delayedCount = 0;
+    let todayStr = new Date().toISOString().split('T')[0];
+    let delayedList = [];
+
+    partyOrders.forEach(order => {
+        let status = order.status ? order.status.toLowerCase() : 'running';
+        if(status !== 'completed') {
+            activeOrdersCount++;
+            let deliveryDate = order.deliveryDate || '';
+            if(deliveryDate && deliveryDate < todayStr) {
+                delayedCount++;
+                delayedList.push(order);
             }
         }
+    });
 
-        window.selectSearchSuggestion = function(val) {
-            let searchInp = document.getElementById('quickSearchInput');
-            let suggBox = document.getElementById('searchSuggestions');
-            if(searchInp) searchInp.value = val;
-            if(suggBox) suggBox.style.display = 'none';
-            quickSearchDesign();
-        }
-    </script>
-    <script src="config.js"></script>
+    let ordersEl = document.getElementById('statOrdersCount');
+    if(ordersEl) ordersEl.innerText = activeOrdersCount;
+    let delayedEl = document.getElementById('statDelayedCount');
+    if(delayedEl) delayedEl.innerText = delayedCount;
+
+    let section = document.getElementById('delayedOrdersSection');
+    let tbody = document.getElementById('delayedOrdersBody');
+    if(tbody) tbody.innerHTML = '';
+
+    if(delayedList.length > 0 && section && tbody) {
+        section.style.display = 'block';
+        delayedList.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><b>${item.designNumber || item.designNo || '-'}</b></td>
+                    <td>${item.partyName || '-'}</td>
+                    <td>${item.orderMtr || '0'}</td>
+                    <td class="red-alert-text">${item.deliveryDate}</td>
+                </tr>
+            `;
+        });
+    } else if(section) {
+        section.style.display = 'none';
+    }
+}
+
+function handleSearchInput(val) {
+    let suggBox = document.getElementById('searchSuggestions');
+    if(!val || val.trim() === '') {
+        if(suggBox) suggBox.style.display = 'none';
+        return;
+    }
+    let term = val.trim().toLowerCase();
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let matches = preDesigns.filter(d => d.toString().toLowerCase().includes(term)).slice(0, 5);
+
+    if(matches.length > 0 && suggBox) {
+        suggBox.innerHTML = '';
+        matches.forEach(m => {
+            suggBox.innerHTML += `<div class="search-suggestion-item" onclick="selectSearchSuggestion('${m}')">${m}</div>`;
+        });
+        suggBox.style.display = 'block';
+    } else if(suggBox) {
+        suggBox.style.display = 'none';
+    }
+}
+
+function selectSearchSuggestion(val) {
+    let searchInp = document.getElementById('quickSearchInput');
+    let suggBox = document.getElementById('searchSuggestions');
+    if(searchInp) searchInp.value = val;
+    if(suggBox) suggBox.style.display = 'none';
+    quickSearchDesign();
+}
+
+function toggleMenu(event) {
+    event.stopPropagation();
+    let menu = document.getElementById('dropdownMenu');
+    if(menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+function quickSearchDesign() {
+    let query = document.getElementById('quickSearchInput').value.trim();
+    if(!query) {
+        alert("Please enter a design number or party name to search!");
+        return;
+    }
+    localStorage.setItem('selected_design_number', query);
+    navigateToPage("design_sheet_print.html");
+}
+
+function logoutUser() {
+    if(confirm("Are you sure you want to log out?")) {
+        localStorage.removeItem('erp_logged_role');
+        localStorage.removeItem('erp_logged_user');
+        window.location.href = "index.html";
+    }
+}
+
+function clearCacheData() {
+    if(confirm("Clear local cache? (Your login session and settings will remain safe)")) {
+        let savedRole = localStorage.getItem('erp_logged_role');
+        let savedUser = localStorage.getItem('erp_logged_user');
+        let savedUsersList = localStorage.getItem('erp_system_users');
+        let savedPermissions = localStorage.getItem('user_permissions');
+        let savedHeading = localStorage.getItem('app_heading_name');
+        let savedLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo');
+
+        localStorage.clear();
+
+        if(savedRole) localStorage.setItem('erp_logged_role', savedRole);
+        if(savedUser) localStorage.setItem('erp_logged_user', savedUser);
+        if(savedUsersList) localStorage.setItem('erp_system_users', savedUsersList);
+        if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
+        if(savedHeading) localStorage.setItem('app_heading_name', savedHeading);
+        if(savedLogo) localStorage.setItem('company_logo_base64', savedLogo);
+
+        alert("Cache cleared successfully! ✅");
+        location.reload();
+    }
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.profile-dropdown-wrapper')) {
+        let dropdown = document.getElementById('dropdownMenu');
+        if (dropdown) dropdown.style.display = 'none';
+    }
+    if (!event.target.closest('.search-bar-wrapper')) {
+        let suggBox = document.getElementById('searchSuggestions');
+        if (suggBox) suggBox.style.display = 'none';
+    }
+}
+</script>
+<script src="config.js"></script>
 </body>
 </html>

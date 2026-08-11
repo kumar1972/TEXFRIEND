@@ -3,7 +3,7 @@ function translateColorToTamil(colorName) {
     var original = colorName.trim();
     var c = original.toLowerCase();
 
-    // 📌 All Color Mappings Dictionary
+    // 📌 விரிவுபடுத்தப்பட்ட நிறங்கள் அகராதி (Extended Dictionary)
     var map = {
         'gold': 'கோல்டு',
         'l. olive': 'L. ஆலிவ்',
@@ -42,43 +42,40 @@ function translateColorToTamil(colorName) {
         'cream': 'கிரீம்',
         'beige': 'பேஜ்',
         'biscuit': 'பிஸ்கட்',
-        'majenda': 'மெஜந்தா'
+        'majenda': 'மெஜந்தா',
+        'silver': 'சில்வர்',
+        'peach': 'பீச்',
+        'sky blue': 'வான ப்ளூ',
+        'bottle green': 'பாட்டில் கிரீன்',
+        'onion': 'ஆனியன்'
     };
 
-    if (map[c]) {
-        return map[c];
-    }
+    if (map[c]) return map[c];
 
+    // Regex மூலம் இன்னும் எளிதாக மாற்றலாம்
     let translated = original;
-    translated = translated.replace(/^t\.\s*/i, 'T. ');
-    translated = translated.replace(/^l\.\s*/i, 'L. ');
-    translated = translated.replace(/^d\.\s*/i, 'D. ');
-    translated = translated.replace(/^r\.\s*/i, 'R. ');
-    translated = translated.replace(/^p\.\s*/i, 'P. ');
     
-    translated = translated.replace(/gold/gi, 'கோல்டு')
-                           .replace(/grey/gi, 'கிரே')
-                           .replace(/gray/gi, 'கிரே')
-                           .replace(/salavai/gi, 'சலவை')
-                           .replace(/white/gi, 'வெள்ளை')
-                           .replace(/black/gi, 'கருப்பு')
-                           .replace(/blue/gi, 'ப்ளூ')
-                           .replace(/yellow/gi, 'மஞ்சள்')
-                           .replace(/red/gi, 'ரெட்')
-                           .replace(/green/gi, 'கிரீன்')
-                           .replace(/brown/gi, 'பிரவுன்')
-                           .replace(/khaki/gi, 'காக்கி')
-                           .replace(/rose/gi, 'ரோஸ்')
-                           .replace(/orange/gi, 'ஆரஞ்சு')
-                           .replace(/pink/gi, 'பிங்க்')
-                           .replace(/maroon/gi, 'மெரூன்')
-                           .replace(/olive/gi, 'ஆலிவ்')
-                           .replace(/purple/gi, 'பர்புள்')
-                           .replace(/cream/gi, 'கிரீம்')
-                           .replace(/beige/gi, 'பேஜ்')
-                           .replace(/biscuit/gi, 'பிஸ்கட்')
-                           .replace(/majenda/gi, 'மெஜந்தா')
-                           .replace(/navy/gi, 'நேவி');
+    // Prefix மாற்றுதல்
+    translated = translated.replace(/^t\.\s*/i, 'T. ')
+                           .replace(/^l\.\s*/i, 'L. ')
+                           .replace(/^d\.\s*/i, 'D. ')
+                           .replace(/^r\.\s*/i, 'R. ')
+                           .replace(/^p\.\s*/i, 'P. ');
+
+    // பொதுவான நிறங்களை மாற்றுதல்
+    let colorMap = {
+        'gold': 'கோல்டு', 'grey': 'கிரே', 'gray': 'கிரே', 'salavai': 'சலவை',
+        'white': 'வெள்ளை', 'black': 'கருப்பு', 'blue': 'ப்ளூ', 'yellow': 'மஞ்சள்',
+        'red': 'ரெட்', 'green': 'கிரீன்', 'brown': 'பிரவுன்', 'khaki': 'காக்கி',
+        'rose': 'ரோஸ்', 'orange': 'ஆரஞ்சு', 'pink': 'பிங்க்', 'maroon': 'மெரூன்',
+        'olive': 'ஆலிவ்', 'purple': 'பர்புள்', 'cream': 'கிரீம்', 'beige': 'பேஜ்',
+        'biscuit': 'பிஸ்கட்', 'majenda': 'மெஜந்தா', 'navy': 'நேவி'
+    };
+
+    for (let key in colorMap) {
+        let regex = new RegExp(key, 'gi');
+        translated = translated.replace(regex, colorMap[key]);
+    }
 
     return translated;
 }
