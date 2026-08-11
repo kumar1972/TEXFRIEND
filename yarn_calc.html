@@ -491,12 +491,17 @@
         let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
 
-        let savedOrderMtr = parseFloat(sp.orderMtr || foundMaster.orderMtr || 0);
+        // 🌟 FIXED LOGIC FOR 5% AUTO ADDITION
+        let savedYarnOrderMtr = parseFloat(sp.yarnOrderMtr || 0);
+        let generalOrderMtr = parseFloat(sp.orderMtr || foundMaster.orderMtr || 0);
 
-        if (savedOrderMtr > 0) {
-            document.getElementById('lengthMeters').value = savedOrderMtr.toFixed(2);
+        if (savedYarnOrderMtr > 0) {
+            document.getElementById('lengthMeters').value = savedYarnOrderMtr.toFixed(2);
         } else if (prodMtrVal > 0) {
-            let finalMtrAdd5Pct = prodMtrVal + (prodMtrVal * 0.05);
+            let finalMtrAdd5Pct = prodMtrVal * 1.05;
+            document.getElementById('lengthMeters').value = finalMtrAdd5Pct.toFixed(2);
+        } else if (generalOrderMtr > 0) {
+            let finalMtrAdd5Pct = generalOrderMtr * 1.05;
             document.getElementById('lengthMeters').value = finalMtrAdd5Pct.toFixed(2);
         } else {
             document.getElementById('lengthMeters').value = '';
@@ -860,7 +865,7 @@
 
         designSpecs[specKey].reed = document.getElementById('calcReed').value;
         designSpecs[specKey].pick = document.getElementById('calcPick').value;
-        designSpecs[specKey].orderMtr = document.getElementById('lengthMeters').value;
+        designSpecs[specKey].yarnOrderMtr = document.getElementById('lengthMeters').value;
         designSpecs[specKey].topLengthMtr = document.getElementById('topLengthMeters').value;
         designSpecs[specKey].crimpPercentage = document.getElementById('crimpPercentage').value;
         designSpecs[specKey].onloomPickLess = document.getElementById('onloomPickLess').value;
@@ -1203,6 +1208,5 @@
     window.addEventListener('load', initDropdown);
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>

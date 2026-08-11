@@ -93,8 +93,9 @@
         }
         input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
-        .header-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
-        .row-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
+        /* 📌 Updated Grid for Insert (+) Button */
+        .header-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 65px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+        .row-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 65px; gap: 6px; margin-bottom: 8px; align-items: center; }
         .header-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
         .row-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
         .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 4px; font-size: 11px; }
@@ -102,7 +103,12 @@
         .line-no { font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center; background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1; }
 
         .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s ease; }
+        
+        /* 📌 Action Buttons (+ and x) */
+        .action-cell-row { display: flex; gap: 4px; width: 100%; }
+        .btn-insert-small { background: #D1FAE5; color: #059669; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.2s ease; display:flex; align-items:center; justify-content:center; }
+        .btn-insert-small:hover { background: #A7F3D0; transform: scale(1.05); }
+        .btn-del-small { background: #FEE2E2; color: #DC2626; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.2s ease; display:flex; align-items:center; justify-content:center; }
         .btn-del-small:hover { background: #FECACA; transform: scale(1.05); }
 
         .calc-box {
@@ -205,10 +211,10 @@
 
     <div class="form-section">
         <div class="section-badge blue">Weft Thread Pattern</div>
-        <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Picks to add new line)</div>
+        <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Picks to add new line below)</div>
         <div style="overflow-x: auto;">
             <div style="min-width: 400px;">
-                <div class="header-grid"><div>#</div><div>Count</div><div>Colour</div><div>Picks</div><div></div></div>
+                <div class="header-grid"><div>#</div><div>Count</div><div>Colour</div><div>Picks</div><div>Action</div></div>
                 <div id="weftLinesContainer"></div>
             </div>
         </div>
@@ -284,7 +290,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = "dashboard.html";
         return;
     }
-    // Note: Dropdown load moved to Firebase window onload to ensure data is ready
 });
 
 function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
@@ -300,7 +305,6 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -340,7 +344,7 @@ function loadDesignDropdown() {
 function loadWeftDesignData() {
     let dNo = document.getElementById('designNo').value;
     if(dNo) localStorage.setItem('selected_design_number', dNo);
-    loadBitmapImage(); // Ensure the HD image loads when the dropdown changes
+    loadBitmapImage(); 
     
     document.getElementById('weftLinesContainer').innerHTML = ''; document.getElementById('weftRangesContainer').innerHTML = '';
     let saveBtn = document.getElementById('saveBtnTxt');
@@ -405,7 +409,8 @@ function loadWeftDesignData() {
 
 function loadDefaultRow() { document.getElementById('weftLinesContainer').innerHTML = ''; addWeftLine(); }
 
-function addWeftLine(count = '', color = '', picks = '') {
+// 📌 Updated Add Weft Line Function (Supports Insert Below)
+function addWeftLine(count = '', color = '', picks = '', insertAfterElem = null) {
     let container = document.getElementById('weftLinesContainer');
     let row = document.createElement('div'); row.className = 'row-grid line-item';
     row.innerHTML = `
@@ -414,10 +419,20 @@ function addWeftLine(count = '', color = '', picks = '') {
         <input type="text" class="inp-color" placeholder="Colour" value="${color}">
         <input type="number" class="inp-picks" placeholder="Picks" value="${picks}" 
                oninput="calculateWeftValues()"
-               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine(); setTimeout(()=>{let ins=document.querySelectorAll('.inp-count'); if(ins.length>0) ins[ins.length-1].focus();},50); }">
-        <button class="btn-del-small" onclick="this.parentElement.remove(); updateLineNumbers(); calculateWeftValues();">×</button>
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine('', '', '', this.parentElement); setTimeout(()=>{let ins=this.parentElement.nextElementSibling.querySelector('.inp-count'); if(ins) ins.focus();},50); }">
+        <div class="action-cell-row">
+            <button class="btn-insert-small" onclick="addWeftLine('', '', '', this.parentElement.parentElement);" title="Insert row below">+</button>
+            <button class="btn-del-small" onclick="this.parentElement.parentElement.remove(); updateLineNumbers(); calculateWeftValues();" title="Delete row">×</button>
+        </div>
     `;
-    container.appendChild(row); updateLineNumbers();
+    
+    if (insertAfterElem && insertAfterElem.nextSibling) {
+        container.insertBefore(row, insertAfterElem.nextSibling);
+    } else {
+        container.appendChild(row);
+    }
+    updateLineNumbers();
+    calculateWeftValues();
 }
 
 function addWeftRange(start = '', end = '', set = '') {
@@ -844,6 +859,5 @@ function authorizationAlert() {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>
