@@ -747,7 +747,7 @@
             }
         }
 
-        // 🌟 FETCH MTRS DIRECTLY FROM YARN CALCULATION (design_specs -> yarnOrderMtr)
+        // 🌟 DIRECT READ FROM YARN CALCULATION (design_specs -> yarnOrderMtr)
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
@@ -772,14 +772,10 @@
                 document.getElementById('warpCount2').value = sp.warp2 || sp.count2 || ''; 
                 document.getElementById('weftCount').value = sp.weft || found.weftCount || '';
 
-                // 🌟 PULLING DIRECTLY FROM YARN CALCULATION PAGE SPECS (yarnOrderMtr or orderMtr)
-                let targetMts = 0;
-                let warpingUnitName = "";
-
-                let yarnCalcMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr || 0);
-                if (yarnCalcMtr > 0) {
-                    targetMts = yarnCalcMtr; // Yarn calculation order mtr (e.g. warp dyeing order mtr)
-                } else {
+                // 🌟 DIRECT MTR FETCH FROM YARN CALCULATION (yarnOrderMtr)
+                let targetMts = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr || 0);
+                
+                if (!targetMts || targetMts <= 0) {
                     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                     let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
                     let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
