@@ -374,7 +374,7 @@
 
     <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn-action btn-primary" onclick="saveSettings()">✅ Save All Settings & Exit</button>
+        <button class="btn-action btn-primary" id="saveAllSettingsBtn" onclick="saveSettings()">✅ Save All Settings & Exit</button>
         <button class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
         
         <div class="action-row">
@@ -454,7 +454,7 @@ window.onload = function() {
     let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
     document.getElementById('set_comp_addr').value = compAddr;
 
-    let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo');
+    let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
     if(logo) {
         tempLogoData = logo;
         let imgTag = document.getElementById('logoImgTag');
@@ -466,6 +466,14 @@ window.onload = function() {
     loadPartyDropdown();
     loadUserPermissions();
     renderUsersTable();
+
+    // Ensure save button listener is properly attached
+    let saveBtn = document.getElementById('saveAllSettingsBtn');
+    if(saveBtn) {
+        saveBtn.onclick = function() {
+            saveSettings();
+        };
+    }
 }
 
 function loadDesignDropdownInSettings() {
@@ -589,7 +597,7 @@ function deletePartyMaster() {
     }
 }
 
-// User Access Control Functions (Fixed)
+// User Access Control Functions
 function updateUserPermissions() {
     let permissions = {
         dashboard: document.getElementById('perm_dashboard').checked,
@@ -658,6 +666,10 @@ function addNewUserAccount() {
     let users = JSON.parse(localStorage.getItem('erp_system_users')) || [];
     users.push({ username: uName, password: uPass, role: uRole });
     localStorage.setItem('erp_system_users', JSON.stringify(users));
+    
+    if(window.firebaseSave) {
+        window.firebaseSave('erp_system_users', users);
+    }
 
     document.getElementById('newUsername').value = '';
     document.getElementById('newPassword').value = '';
@@ -686,6 +698,11 @@ function deleteUserAccount(index) {
         let users = JSON.parse(localStorage.getItem('erp_system_users')) || [];
         users.splice(index, 1);
         localStorage.setItem('erp_system_users', JSON.stringify(users));
+        
+        if(window.firebaseSave) {
+            window.firebaseSave('erp_system_users', users);
+        }
+
         renderUsersTable();
         alert("User deleted successfully! 🗑️");
     }
@@ -711,6 +728,16 @@ function saveSettings() {
         if(!designSpecs[designNo]) designSpecs[designNo] = {};
         designSpecs[designNo].bitmap = tempDesignBitmapData;
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        if(window.firebaseSaveIndividual) {
+            window.firebaseSaveIndividual(designNo, designSpecs[designNo]);
+        }
+    }
+
+    // Sync settings to firebase if function is available
+    if(window.firebaseSave) {
+        if(heading) window.firebaseSave('app_heading_name', heading);
+        if(compAddr) window.firebaseSave('company_full_address', compAddr);
+        if(tempLogoData) window.firebaseSave('company_logo', tempLogoData);
     }
 
     alert("All Settings Saved Successfully! ✅");
@@ -749,6 +776,9 @@ function saveStorageDataFromEditor() {
         if(confirm("⚠️ Are you sure you want to overwrite local database with these JSON changes?")) {
             for (let key in parsed) {
                 localStorage.setItem(key, parsed[key]);
+                if(window.firebaseSave) {
+                    window.firebaseSave(key, JSON.parse(parsed[key]));
+                }
             }
             alert("Database Updated Successfully from JSON Editor! ✅");
             location.reload();
