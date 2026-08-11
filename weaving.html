@@ -151,6 +151,21 @@
             display: block; font-size: 10px; color: #4A554A; font-weight: 600; margin-bottom: 4px;
         }
 
+        /* 📌 Input Group for Master Add/Del */
+        .input-group-btn { display: flex; gap: 6px; width: 100%; }
+        .input-group-btn select, .input-group-btn input { flex: 1; }
+        .btn-add-inline {
+            background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 8px;
+            font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); white-space: nowrap;
+        }
+        .btn-add-inline:hover { background: #059669; }
+        .btn-del-inline {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px;
+            border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2); display: flex; align-items: center; justify-content: center;
+        }
+        .btn-del-inline:hover { background: #FECACA; }
+
         /* 📌 Smart 3D Inputs */
         input[type="text"], input[type="date"], input[type="number"], select {
             width: 100%; padding: 10px 12px; border: 1px solid #D1DED1;
@@ -171,9 +186,9 @@
             gap: 12px; margin-bottom: 12px;
         }
         
-        .form-grid-row-4 {
+        .form-grid-row-5 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 10px; margin-bottom: 12px;
         }
 
@@ -317,7 +332,12 @@
                 </div>
                 <div class="form-group">
                     <label>Weaver Name</label>
-                    <input type="text" id="topWeaverName" placeholder="Enter Weaver Name" required>
+                    <!-- 🌟 New Weaver Dropdown with Add/Del Buttons -->
+                    <div class="input-group-btn">
+                        <select id="topWeaverName" required><option value="">Select Weaver</option></select>
+                        <button type="button" class="btn-add-inline" onclick="addWeaver()">+ Add</button>
+                        <button type="button" class="btn-del-inline" onclick="deleteWeaver()" title="Delete Weaver">🗑️</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Design Number</label>
@@ -327,22 +347,27 @@
                 </div>
             </div>
 
-            <div class="form-grid-row-4">
+            <!-- 🌟 Updated Grid with Warp Dyeing Mts, Crimp % and Warping Mts -->
+            <div class="form-grid-row-5">
                 <div class="form-group">
-                    <label>Order Mtrs (Warping)</label>
+                    <label>Warp Dyeing Mts</label>
+                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" readonly style="background:#EAF0EA;">
+                </div>
+                <div class="form-group">
+                    <label>Crimp %</label>
+                    <input type="number" step="0.01" id="crimpPerc" placeholder="%" value="5" oninput="calcWarpingMts()">
+                </div>
+                <div class="form-group">
+                    <label>Warping Mts</label>
                     <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="recalculateWeights()" required>
                 </div>
                 <div class="form-group">
-                    <label>Warp 1 (Grnd)</label>
-                    <input type="text" id="warpCount" placeholder="Count 1" readonly style="background:#F4F7F4;">
-                </div>
-                <div class="form-group">
-                    <label>Warp 2 (Top)</label>
-                    <input type="text" id="warpCount2" placeholder="Count 2" readonly style="background:#F4F7F4;">
+                    <label>Warp Count</label>
+                    <input type="text" id="warpCount" placeholder="C1" readonly style="background:#EAF0EA;">
                 </div>
                 <div class="form-group">
                     <label>Weft Count</label>
-                    <input type="text" id="weftCount" placeholder="Weft Count" readonly style="background:#F4F7F4;">
+                    <input type="text" id="weftCount" placeholder="Weft" readonly style="background:#EAF0EA;">
                 </div>
             </div>
 
@@ -517,8 +542,70 @@
         let warpTransactions = JSON.parse(localStorage.getItem('weaving_warp_trans')) || [];
         let weftTransactions = JSON.parse(localStorage.getItem('weaving_weft_trans')) || [];
 
-        document.getElementById('topDate').valueAsDate = new Date();
-        document.getElementById('botDate').valueAsDate = new Date();
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('topDate').valueAsDate = new Date();
+            document.getElementById('botDate').valueAsDate = new Date();
+            loadWeaverSuggestions();
+            loadTopDesignDropdown();
+            loadBottomOrderDropdown();
+        });
+
+        // 🌟 ADD / DELETE WEAVER LOGIC
+        function addWeaver() {
+            let val = prompt("புதிய Weaver / Party பெயரை உள்ளிடவும் (Enter new Weaver Name):");
+            if(val) {
+                val = val.trim();
+                if(!val) return;
+                let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+                if(!masterWeavers.includes(val)) {
+                    masterWeavers.push(val);
+                    localStorage.setItem('tex_master_weavers', JSON.stringify(masterWeavers));
+                    loadWeaverSuggestions();
+                    alert(`Weaver '${val}' added successfully! ✅`);
+                } else {
+                    alert("This Weaver Name is already in the Master List!");
+                }
+                document.getElementById('topWeaverName').value = val;
+            }
+        }
+
+        function deleteWeaver() {
+            let masterList = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+            if(masterList.length === 0) { alert(`No manually added Weavers found to delete.`); return; }
+            let listStr = masterList.map((m, i) => `${i + 1}. ${m}`).join('\n');
+            let idxStr = prompt(`எந்த Weaver பெயரை நீக்க வேண்டும்? அதற்கான எண்ணை டைப் செய்யவும்:\n\n${listStr}`);
+            if(idxStr) {
+                let idx = parseInt(idxStr) - 1;
+                if(idx >= 0 && idx < masterList.length) {
+                    let deleted = masterList.splice(idx, 1);
+                    localStorage.setItem('tex_master_weavers', JSON.stringify(masterList));
+                    loadWeaverSuggestions();
+                    alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
+                } else {
+                    alert("தவறான எண் (Invalid Number)!");
+                }
+            }
+        }
+
+        function loadWeaverSuggestions() {
+            let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+            let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+            
+            let weaverSet = new Set([...masterWeavers]);
+            weavingMasterData.forEach(item => { if(item.weaverName) weaverSet.add(item.weaverName.trim()); });
+
+            let currentVal = document.getElementById('topWeaverName') ? document.getElementById('topWeaverName').value : '';
+            let html = '<option value="">Select Weaver / Party</option>';
+            Array.from(weaverSet).sort().forEach(u => { 
+                let sel = (currentVal && u.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
+                html += `<option value="${u}" ${sel}>${u}</option>`; 
+            });
+            
+            if (document.getElementById('topWeaverName')) {
+                document.getElementById('topWeaverName').innerHTML = html;
+                if(currentVal) document.getElementById('topWeaverName').value = currentVal;
+            }
+        }
 
         function openModal(modalId) {
             let modal = document.getElementById(modalId);
@@ -571,7 +658,7 @@
             return null;
         }
 
-        // 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
+        // 🚀 Load HD Bitmap
         function loadBitmapImage(designNumOverride) {
             let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value || localStorage.getItem('selected_design_number');
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -685,6 +772,17 @@
             return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
         }
 
+        // 🌟 AUTO CALCULATION OF WARPING MTRS BASED ON CRIMP
+        function calcWarpingMts() {
+            let dyeingMts = parseFloat(document.getElementById('warpDyeingMts').value) || 0;
+            let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
+            if (dyeingMts > 0) {
+                let result = dyeingMts - (dyeingMts * (crimp / 100));
+                document.getElementById('weavingMts').value = result.toFixed(2);
+                recalculateWeights();
+            }
+        }
+
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
@@ -710,9 +808,13 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                let baseOrderMtr = parseFloat(found.orderMtr) || 100;
-                let warpingMts = baseOrderMtr - (baseOrderMtr * 0.05);
-                document.getElementById('weavingMts').value = warpingMts.toFixed(2);
+                // 🌟 Fetch Warp Dyeing Order Mtrs from Specs and Apply 5% Default Crimp
+                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 0;
+                document.getElementById('warpDyeingMts').value = yarnCalcOrderMtr > 0 ? yarnCalcOrderMtr.toFixed(2) : '';
+                document.getElementById('crimpPerc').value = "5";
+                
+                let warpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
+                document.getElementById('weavingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
                 let defaultWeftCount = found.weftCount || specs.weft || '40';
@@ -760,7 +862,9 @@
                 document.getElementById('warpCount').value = '';
                 document.getElementById('warpCount2').value = '';
                 document.getElementById('weftCount').value = '';
-                document.getElementById('weavingMts').value = '100';
+                document.getElementById('warpDyeingMts').value = '';
+                document.getElementById('crimpPerc').value = '5';
+                document.getElementById('weavingMts').value = '';
                 
                 document.querySelector('#warpRowsTable tbody').innerHTML = `<tr>
                     <td><input type="text" placeholder="Count" class="w-count" required></td>
@@ -1061,6 +1165,8 @@
             
             document.getElementById('topDesignNo').value = '';
             document.getElementById('topWeaverName').value = '';
+            document.getElementById('warpDyeingMts').value = '';
+            document.getElementById('weavingMts').value = '';
             document.getElementById('warpCount').value = '';
             document.getElementById('warpCount2').value = '';
             document.getElementById('weftCount').value = '';
@@ -1347,6 +1453,5 @@
         }
     </script>
    <script src="config.js"></script> 
-    </script>
 </body>
 </html>
