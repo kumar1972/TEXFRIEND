@@ -10,6 +10,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
+        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
@@ -24,6 +25,7 @@
             align-items: center;
         }
 
+        /* 📌 Main Container */
         .container {
             width: 100%;
             max-width: 900px;
@@ -45,6 +47,7 @@
             margin-bottom: 5px;
         }
 
+        /* 📌 Smart Back Button */
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -61,6 +64,7 @@
         }
         .back-link:hover { background: #000000; transform: translateY(-2px); }
 
+        /* Checkbox Styling */
         .completed-checkbox {
             display: flex;
             align-items: center;
@@ -143,8 +147,18 @@
             display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 12px;
         }
         
-        .form-grid-row-7 {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 10px; margin-bottom: 12px;
+        .form-grid-row-5 {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 12px;
+        }
+
+        .form-grid-row-3 {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+        }
+
+        /* 📌 EXTRA TAB FOR WARPING BEAM DETAILS */
+        .warping-beam-tab {
+            background: #F0FDF4; border: 1px dashed #10B981; padding: 15px; 
+            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.05);
         }
 
         .line-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
@@ -176,31 +190,42 @@
         .report-btn:hover { transform: translateY(-2px); }
 
         .popup-trigger-btn {
-            background: linear-gradient(135deg, #6366F1, #4338CA); color: white; border: none; padding: 14px; border-radius: 10px;
-            font-size: 13px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+            background: linear-gradient(135deg, #6366F1, #4338CA);
+            color: white; border: none; padding: 14px; border-radius: 10px;
+            font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
             transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
+        /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
         .overlay-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
             z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
         }
         .overlay-modal.show { opacity: 1; }
         
         .modal-content {
             background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-            display: flex; flex-direction: column; box-shadow: none; overflow: hidden; transform: scale(1);
+            display: flex; flex-direction: column; box-shadow: none;
+            overflow: hidden; transform: scale(1);
         }
 
         .modal-header {
-            padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0;
+            padding: 15px 20px; background: #F4F7F4; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+            flex-shrink: 0;
         }
         .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
         .modal-actions { display: flex; gap: 8px; }
         
         .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; transition: all 0.2s ease; }
+        .close-btn {
+            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
+            transition: all 0.2s ease;
+        }
         .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
@@ -215,13 +240,18 @@
         .excel-table tbody tr:hover { background: #F8FAF8; }
 
         .fullscreen-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+            padding: 20px; flex-direction: column;
         }
         .fullscreen-modal img {
-            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
         }
         .close-fullscreen {
-            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         @media print {
@@ -280,15 +310,11 @@
                 </div>
             </div>
 
-            <!-- 🌟 Updated Grid: Warp Dyeing Mts, Warping Mts, Crimp %, Fabric Mtrs -->
-            <div class="form-grid-row-7">
+            <!-- 🌟 Auto Calculated Metrics -->
+            <div class="form-grid-row-5">
                 <div class="form-group">
                     <label>Warp Dyeing Mts</label>
-                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" readonly style="background:#EAF0EA;">
-                </div>
-                <div class="form-group">
-                    <label>Warping Mts</label>
-                    <input type="number" step="0.01" id="warpingMts" placeholder="Mtrs" oninput="calcFabricMts()" required>
+                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" style="background:#FFFFFF;" oninput="calcFabricMts()">
                 </div>
                 <div class="form-group">
                     <label>Crimp %</label>
@@ -296,19 +322,40 @@
                 </div>
                 <div class="form-group">
                     <label>Fabric Mtrs</label>
-                    <input type="number" step="0.01" id="fabricMts" placeholder="Net Mtrs" readonly style="background:#F4F7F4;">
+                    <input type="number" step="0.01" id="weavingMts" placeholder="Net Mtrs" oninput="recalculateWeights()" required>
                 </div>
                 <div class="form-group">
-                    <label>Warp 1 (Grnd)</label>
-                    <input type="text" id="warpCount" placeholder="C1" readonly style="background:#F4F7F4;">
-                </div>
-                <div class="form-group">
-                    <label>Warp 2 (Top)</label>
-                    <input type="text" id="warpCount2" placeholder="C2" readonly style="background:#F4F7F4;">
+                    <label>Warp Count</label>
+                    <input type="text" id="warpCount" placeholder="C1" readonly style="background:#EAF0EA;">
                 </div>
                 <div class="form-group">
                     <label>Weft Count</label>
-                    <input type="text" id="weftCount" placeholder="Weft" readonly style="background:#F4F7F4;">
+                    <input type="text" id="weftCount" placeholder="Weft" readonly style="background:#EAF0EA;">
+                </div>
+            </div>
+
+            <!-- 📌 EXTRA TAB FOR WARPING BEAM DETAILS -->
+            <div class="warping-beam-tab">
+                <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #059669; display: flex; align-items: center; gap: 6px;">
+                    <span>🧵</span> Warping Beam Details (From Warping Unit)
+                </h4>
+                <div class="form-grid-row-3">
+                    <div class="form-group">
+                        <label>Warping Name (Unit)</label>
+                        <div class="input-group-btn">
+                            <select id="warpingUnitName"><option value="">Select Warping Unit</option></select>
+                            <button type="button" class="btn-add-inline" onclick="addWarpingUnit()">+ Add</button>
+                            <button type="button" class="btn-del-inline" onclick="deleteWarpingUnit()" title="Delete Unit">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>No. of Beams</label>
+                        <input type="number" id="noOfBeams" placeholder="e.g. 2">
+                    </div>
+                    <div class="form-group">
+                        <label>Beam Mtrs</label>
+                        <input type="number" step="0.01" id="beamMtrs" placeholder="Total Beam Mtrs">
+                    </div>
                 </div>
             </div>
 
@@ -325,9 +372,7 @@
                                 <th style="width: 35px;"></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Auto-filled -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -345,9 +390,7 @@
                                 <th style="width: 35px;"></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Auto-filled -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -466,9 +509,7 @@
                     <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
                 </div>
             </div>
-            <div class="modal-body" id="previewContent">
-                <!-- Preview content injects here -->
-            </div>
+            <div class="modal-body" id="previewContent"></div>
         </div>
     </div>
 
@@ -487,11 +528,12 @@
             document.getElementById('topDate').valueAsDate = new Date();
             document.getElementById('botDate').valueAsDate = new Date();
             loadWeaverSuggestions();
+            loadWarpingUnitSuggestions();
             loadTopDesignDropdown();
             loadBottomOrderDropdown();
         });
 
-        // 🌟 ADD / DELETE WEAVER LOGIC
+        // 🌟 WEAVER LOGIC
         function addWeaver() {
             let val = prompt("புதிய Weaver / Party பெயரை உள்ளிடவும் (Enter new Weaver Name):");
             if(val) {
@@ -503,16 +545,13 @@
                     localStorage.setItem('tex_master_weavers', JSON.stringify(masterWeavers));
                     loadWeaverSuggestions();
                     alert(`Weaver '${val}' added successfully! ✅`);
-                } else {
-                    alert("This Weaver Name is already in the Master List!");
                 }
                 document.getElementById('topWeaverName').value = val;
             }
         }
-
         function deleteWeaver() {
             let masterList = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
-            if(masterList.length === 0) { alert(`No manually added Weavers found to delete.`); return; }
+            if(masterList.length === 0) return;
             let listStr = masterList.map((m, i) => `${i + 1}. ${m}`).join('\n');
             let idxStr = prompt(`எந்த Weaver பெயரை நீக்க வேண்டும்? அதற்கான எண்ணை டைப் செய்யவும்:\n\n${listStr}`);
             if(idxStr) {
@@ -522,12 +561,9 @@
                     localStorage.setItem('tex_master_weavers', JSON.stringify(masterList));
                     loadWeaverSuggestions();
                     alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
-                } else {
-                    alert("தவறான எண் (Invalid Number)!");
                 }
             }
         }
-
         function loadWeaverSuggestions() {
             let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
             let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
@@ -548,32 +584,68 @@
             }
         }
 
-        function openModal(modalId) {
-            let modal = document.getElementById(modalId);
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('show'), 10);
+        // 🌟 WARPING UNIT LOGIC
+        function addWarpingUnit() {
+            let val = prompt("புதிய Warping Unit பெயரை உள்ளிடவும்:");
+            if(val) {
+                val = val.trim();
+                if(!val) return;
+                let masterUnits = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
+                if(!masterUnits.includes(val)) {
+                    masterUnits.push(val);
+                    localStorage.setItem('tex_master_warping_units', JSON.stringify(masterUnits));
+                    loadWarpingUnitSuggestions();
+                    alert(`Unit '${val}' added successfully! ✅`);
+                }
+                document.getElementById('warpingUnitName').value = val;
+            }
+        }
+        function deleteWarpingUnit() {
+            let masterList = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
+            if(masterList.length === 0) return;
+            let listStr = masterList.map((m, i) => `${i + 1}. ${m}`).join('\n');
+            let idxStr = prompt(`எந்த Unit பெயரை நீக்க வேண்டும்? அதற்கான எண்ணை டைப் செய்யவும்:\n\n${listStr}`);
+            if(idxStr) {
+                let idx = parseInt(idxStr) - 1;
+                if(idx >= 0 && idx < masterList.length) {
+                    let deleted = masterList.splice(idx, 1);
+                    localStorage.setItem('tex_master_warping_units', JSON.stringify(masterList));
+                    loadWarpingUnitSuggestions();
+                    alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
+                }
+            }
+        }
+        function loadWarpingUnitSuggestions() {
+            let masterUnits = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
+            let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+            let warpingIssues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+            
+            let unitSet = new Set([...masterUnits]);
+            weavingMasterData.forEach(item => { if(item.warpingUnitName) unitSet.add(item.warpingUnitName.trim()); });
+            warpingIssues.forEach(item => { if(item.unit) unitSet.add(item.unit.trim()); });
+
+            let currentVal = document.getElementById('warpingUnitName') ? document.getElementById('warpingUnitName').value : '';
+            let html = '<option value="">Select Warping Unit</option>';
+            Array.from(unitSet).sort().forEach(u => { 
+                let sel = (currentVal && u.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
+                html += `<option value="${u}" ${sel}>${u}</option>`; 
+            });
+            if (document.getElementById('warpingUnitName')) {
+                document.getElementById('warpingUnitName').innerHTML = html;
+                if(currentVal) document.getElementById('warpingUnitName').value = currentVal;
+            }
         }
 
-        function closeModal(modalId) {
-            let modal = document.getElementById(modalId);
-            modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 300);
-        }
-
-        function cleanDesignName(str) {
-            return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
-        }
+        function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
+        function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
+        function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
         function parseYarnCount(countStr) {
             if (!countStr) return 0;
             let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
             if (str.includes('/')) {
                 let parts = str.split('/');
-                if (parts.length === 2) {
-                    let ply = parseFloat(parts[0]) || 1;
-                    let singleCount = parseFloat(parts[1]) || 1;
-                    return singleCount / ply; 
-                }
+                if (parts.length === 2) { return (parseFloat(parts[1]) || 1) / (parseFloat(parts[0]) || 1); }
             }
             return parseFloat(str) || 0;
         }
@@ -581,20 +653,11 @@
         function getDyeingReceivedWt(dNo, color, yarnType) {
             let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
             let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
-            let cleanDNo = cleanDesignName(dNo);
-            let cleanColor = color.trim().toLowerCase();
-            
-            let dIssue = issues.slice().reverse().find(r => 
-                cleanDesignName(r.designNo) === cleanDNo && 
-                r.yarnType === yarnType && 
-                r.color.trim().toLowerCase() === cleanColor
-            );
-            
+            let cleanDNo = cleanDesignName(dNo); let cleanColor = color.trim().toLowerCase();
+            let dIssue = issues.slice().reverse().find(r => cleanDesignName(r.designNo) === cleanDNo && r.yarnType === yarnType && r.color.trim().toLowerCase() === cleanColor);
             if (dIssue) {
                 let dRec = receives.slice().reverse().find(r => String(r.issueId) === String(dIssue.id));
-                if (dRec && parseFloat(dRec.receivedWt) > 0) {
-                    return parseFloat(dRec.receivedWt);
-                }
+                if (dRec && parseFloat(dRec.receivedWt) > 0) return parseFloat(dRec.receivedWt);
             }
             return null;
         }
@@ -603,33 +666,22 @@
             let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value || localStorage.getItem('selected_design_number');
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-            
             let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
             let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
 
             if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
                 let b64 = designSpecs[specKey].bitmap;
                 bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
-            } else {
-                bitmapContainer.innerHTML = '';
-            }
+            } else { bitmapContainer.innerHTML = ''; }
         }
 
         window.openFullscreenImage = function(src) {
             if(!src || src === '' || src === 'null') return;
-            document.getElementById('fullscreenImg').src = src;
-            document.getElementById('fullscreenModal').style.display = 'flex';
+            document.getElementById('fullscreenImg').src = src; document.getElementById('fullscreenModal').style.display = 'flex';
         }
-        window.closeFullscreenImage = function() {
-            document.getElementById('fullscreenModal').style.display = 'none';
-        }
+        window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
-        function formatDecimal(input) {
-            let val = parseFloat(input.value);
-            if (!isNaN(val)) {
-                input.value = val.toFixed(3);
-            }
-        }
+        function formatDecimal(input) { let val = parseFloat(input.value); if (!isNaN(val)) input.value = val.toFixed(3); }
 
         function loadTopDesignDropdown() {
             let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -656,7 +708,6 @@
         function loadBottomOrderDropdown() {
             let select = document.getElementById('botActiveOrderSelect');
             let html = '<option value="">Select Active Order</option>';
-            
             let added = new Set();
             weavingMasterData.slice().reverse().forEach(order => {
                 let key = `${order.designNo}_${order.weaverName}`;
@@ -668,8 +719,7 @@
             select.innerHTML = html;
         }
 
-        let baseWarpWeights = {};
-        let baseWeftWeights = {};
+        let baseWarpWeights = {}; let baseWeftWeights = {};
 
         function resolvePattern(lines, ranges, type, defaultCount) {
             if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
@@ -686,9 +736,7 @@
                     for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
                 });
             }
-            lines.forEach((l, idx) => {
-                if(!covered[idx]) orderedPattern.push({...l});
-            });
+            lines.forEach((l, idx) => { if(!covered[idx]) orderedPattern.push({...l}); });
 
             let exactSequence = [];
             orderedPattern.forEach(item => {
@@ -698,8 +746,7 @@
                 for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
             });
 
-            let summaryMap = new Map();
-            let order = [];
+            let summaryMap = new Map(); let order = [];
             exactSequence.forEach(item => {
                 let key = item.count + "||" + item.color.trim();
                 if(!summaryMap.has(key)) {
@@ -708,20 +755,19 @@
                 }
                 summaryMap.get(key).patternVal++;
             });
-
             return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
         }
 
         // 🌟 AUTO CALCULATION OF FABRIC MTRS
         function calcFabricMts() {
-            let warpingMts = parseFloat(document.getElementById('warpingMts').value) || 0;
+            let dyeingMts = parseFloat(document.getElementById('warpDyeingMts').value) || 0;
             let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
-            if (warpingMts > 0) {
-                let result = warpingMts - (warpingMts * (crimp / 100));
-                document.getElementById('fabricMts').value = result.toFixed(2);
+            if (dyeingMts > 0) {
+                let result = dyeingMts - (dyeingMts * (crimp / 100));
+                document.getElementById('weavingMts').value = result.toFixed(2);
                 recalculateWeights();
             } else {
-                document.getElementById('fabricMts').value = '';
+                document.getElementById('weavingMts').value = '';
             }
         }
 
@@ -739,9 +785,7 @@
 
                 if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
                     document.getElementById('top_completed_status').checked = true;
-                } else {
-                    document.getElementById('top_completed_status').checked = false;
-                }
+                } else { document.getElementById('top_completed_status').checked = false; }
 
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
                 document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || ''; 
@@ -750,42 +794,50 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                // 🌟 Fetch Warp Dyeing Mts from Yarn Calculation properly (Fallback to orderMtr)
-                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || 0;
+                let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
+                let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
                 
-                if (!yarnCalcOrderMtr) {
-                    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-                    let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
-                    if (matchedOrder) {
-                        let pMtr = parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0);
-                        if(pMtr > 0) yarnCalcOrderMtr = pMtr * 1.05; 
-                    }
-                }
+                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 0);
                 
                 document.getElementById('warpDyeingMts').value = yarnCalcOrderMtr > 0 ? yarnCalcOrderMtr.toFixed(2) : '';
+                document.getElementById('crimpPerc').value = "5"; 
                 
-                // 🌟 Fetch Warping Mtrs directly from Warping Page
+                let fabricMtrs = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
+                document.getElementById('weavingMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
+
+                // 🌟 Auto-fetch Warping Beam Info from warping_issue_records
                 let warpingRecords = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
                 let matchedWarping = warpingRecords.slice().reverse().find(w => cleanDesignName(w.designNo) === cleanDNo);
                 
-                let defaultWarpingMts = 0;
-                if (matchedWarping && matchedWarping.warpingMts) {
-                    defaultWarpingMts = parseFloat(matchedWarping.warpingMts);
-                } else if (yarnCalcOrderMtr > 0) {
-                    defaultWarpingMts = yarnCalcOrderMtr * 0.95; // default 5% loss if not found
+                if (matchedWarping) {
+                    if (matchedWarping.unit) {
+                        let sel = document.getElementById('warpingUnitName');
+                        if (!Array.from(sel.options).some(o => o.value === matchedWarping.unit)) {
+                            sel.innerHTML += `<option value="${matchedWarping.unit}">${matchedWarping.unit}</option>`;
+                        }
+                        sel.value = matchedWarping.unit;
+                    }
+                    if (matchedWarping.warpingMts) {
+                        document.getElementById('beamMtrs').value = matchedWarping.warpingMts;
+                    }
+                } else {
+                    document.getElementById('warpingUnitName').value = '';
+                    document.getElementById('beamMtrs').value = '';
                 }
 
-                document.getElementById('warpingMts').value = defaultWarpingMts > 0 ? defaultWarpingMts.toFixed(2) : '';
-                document.getElementById('crimpPerc').value = "5"; 
-                
-                let fabricMtrs = defaultWarpingMts > 0 ? (defaultWarpingMts - (defaultWarpingMts * 0.05)) : 0;
-                document.getElementById('fabricMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
+                // If already saved in Weaving, overwrite with saved values
+                let savedWeaving = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
+                if(savedWeaving) {
+                    if (savedWeaving.warpingUnitName) document.getElementById('warpingUnitName').value = savedWeaving.warpingUnitName;
+                    if (savedWeaving.noOfBeams) document.getElementById('noOfBeams').value = savedWeaving.noOfBeams;
+                    if (savedWeaving.beamMtrs) document.getElementById('beamMtrs').value = savedWeaving.beamMtrs;
+                }
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
                 let defaultWeftCount = found.weftCount || specs.weft || '40';
 
-                baseWarpWeights[val] = [];
-                baseWeftWeights[val] = [];
+                baseWarpWeights[val] = []; baseWeftWeights[val] = [];
 
                 let uiReed = parseFloat(found.reed || specs.reed || specs.baseReed) || 52;
                 let baseWidth = parseFloat(found.width || specs.width || specs.baseWidth) || 66.92;
@@ -824,40 +876,25 @@
 
                 renderWeightsByMeters(val);
             } else {
-                document.getElementById('warpCount').value = '';
-                document.getElementById('warpCount2').value = '';
-                document.getElementById('weftCount').value = '';
-                document.getElementById('warpDyeingMts').value = '';
-                document.getElementById('warpingMts').value = '';
-                document.getElementById('crimpPerc').value = '5';
-                document.getElementById('fabricMts').value = '';
+                document.getElementById('warpCount').value = ''; document.getElementById('warpCount2').value = '';
+                document.getElementById('weftCount').value = ''; document.getElementById('warpDyeingMts').value = '';
+                document.getElementById('crimpPerc').value = '5'; document.getElementById('weavingMts').value = '';
+                document.getElementById('warpingUnitName').value = ''; document.getElementById('noOfBeams').value = ''; document.getElementById('beamMtrs').value = '';
                 
-                document.querySelector('#warpRowsTable tbody').innerHTML = `<tr>
-                    <td><input type="text" placeholder="Count" class="w-count" required></td>
-                    <td><input type="text" placeholder="Colour" class="w-colour" required></td>
-                    <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
-                    <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
-                    <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
-                </tr>`;
-                document.querySelector('#weftRowsTable tbody').innerHTML = `<tr>
-                    <td><input type="text" placeholder="Count" class="wf-count" required></td>
-                    <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
-                    <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
-                    <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
-                    <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
-                </tr>`;
+                document.querySelector('#warpRowsTable tbody').innerHTML = `<tr><td><input type="text" placeholder="Count" class="w-count" required></td><td><input type="text" placeholder="Colour" class="w-colour" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`;
+                document.querySelector('#weftRowsTable tbody').innerHTML = `<tr><td><input type="text" placeholder="Count" class="wf-count" required></td><td><input type="text" placeholder="Colour" class="wf-colour" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`;
             }
         }
 
         function renderWeightsByMeters(val) {
-            let currentWarpingMts = parseFloat(document.getElementById('warpingMts').value) || 100;
-            let currentFabricMts = parseFloat(document.getElementById('fabricMts').value) || currentWarpingMts;
+            let currentFabricMts = parseFloat(document.getElementById('weavingMts').value) || 100;
+            let weftMtrs = currentFabricMts * (0.94 / 0.95);
 
             if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
                 const warpTbody = document.querySelector('#warpRowsTable tbody');
                 warpTbody.innerHTML = '';
                 baseWarpWeights[val].forEach(r => {
-                    let weightKg = (r.ends * currentWarpingMts) / (1693.33 * r.calcCount);
+                    let weightKg = (r.ends * currentFabricMts) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Warp');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
@@ -869,7 +906,8 @@
                 const weftTbody = document.querySelector('#weftRowsTable tbody');
                 weftTbody.innerHTML = '';
                 baseWeftWeights[val].forEach(r => {
-                    let weightKg = (r.tPick * currentFabricMts) / (1693.33 * r.calcCount);
+                    // 🌟 Weft uses Fabric Mtrs (Less Mtrs)
+                    let weightKg = (r.tPick * weftMtrs) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Weft');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
@@ -893,7 +931,6 @@
             let parts = val.split('_');
             let dNo = parts[0];
             let weaver = parts.slice(1).join('_');
-
             document.getElementById('botDesignNo').value = dNo;
             document.getElementById('botWeaverName').value = weaver;
             loadBottomRows();
@@ -902,25 +939,13 @@
         function addWarpRow(c = '', col = '', w = '', iss = '') {
             const table = document.getElementById('warpRowsTable').getElementsByTagName('tbody')[0];
             const row = table.insertRow();
-            row.innerHTML = `
-                <td><input type="text" placeholder="Count" class="w-count" value="${c}" required></td>
-                <td><input type="text" placeholder="Colour" class="w-colour" value="${col}" required></td>
-                <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" value="${w}" onblur="formatDecimal(this)" required></td>
-                <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
-                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
-            `;
+            row.innerHTML = `<td><input type="text" placeholder="Count" class="w-count" value="${c}" required></td><td><input type="text" placeholder="Colour" class="w-colour" value="${col}" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-weight" value="${w}" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-issued" value="${iss}" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>`;
         }
 
         function addWeftRow(c = '', col = '', w = '', iss = '') {
             const table = document.getElementById('weftRowsTable').getElementsByTagName('tbody')[0];
             const row = table.insertRow();
-            row.innerHTML = `
-                <td><input type="text" placeholder="Count" class="wf-count" value="${c}" required></td>
-                <td><input type="text" placeholder="Colour" class="wf-colour" value="${col}" required></td>
-                <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" value="${w}" onblur="formatDecimal(this)" required></td>
-                <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
-                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
-            `;
+            row.innerHTML = `<td><input type="text" placeholder="Count" class="wf-count" value="${c}" required></td><td><input type="text" placeholder="Colour" class="wf-colour" value="${col}" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" value="${w}" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" value="${iss}" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>`;
         }
 
         async function quickCompleteToggle() {
@@ -934,7 +959,6 @@
             }
 
             let statusText = isCompleted ? 'completed' : 'running';
-
             let weaverName = document.getElementById('topWeaverName').value.trim() || 'Direct Weaver';
             let index = weavingMasterData.findIndex(x => x.designNo === dNo);
 
@@ -946,20 +970,13 @@
                     date: document.getElementById('topDate').value || new Date().toISOString().split('T')[0],
                     weaverName: weaverName,
                     designNo: dNo,
-                    warpingMts: document.getElementById('warpingMts').value || '100',
-                    fabricMts: document.getElementById('fabricMts').value || '95',
-                    warpRows: [],
-                    weftRows: [],
+                    weavingMts: document.getElementById('weavingMts').value || '100',
                     status: statusText
                 });
             }
 
-            warpTransactions.forEach(x => {
-                if(x.designNo === dNo) x.status = statusText;
-            });
-            weftTransactions.forEach(x => {
-                if(x.designNo === dNo) x.status = statusText;
-            });
+            warpTransactions.forEach(x => { if(x.designNo === dNo) x.status = statusText; });
+            weftTransactions.forEach(x => { if(x.designNo === dNo) x.status = statusText; });
 
             localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
@@ -969,9 +986,7 @@
             let cleanDNo = cleanDesignName(dNo);
             let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
 
-            if(!designSpecs[specKey]) {
-                designSpecs[specKey] = {};
-            }
+            if(!designSpecs[specKey]) designSpecs[specKey] = {};
             designSpecs[specKey].status = statusText;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
@@ -982,12 +997,8 @@
                     await window.firebaseSave('weaving_weft_trans', weftTransactions);
                     await window.firebaseSave('design_specs', designSpecs);
                 }
-                if (window.firebaseSaveIndividual) {
-                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-                }
-            } catch(e) {
-                console.error("Firebase Sync Error: ", e);
-            }
+                if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+            } catch(e) {}
 
             updateTables();
             alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
@@ -998,9 +1009,13 @@
             const designNo = document.getElementById('topDesignNo').value.trim();
             const weaverName = document.getElementById('topWeaverName').value.trim();
             const topDate = document.getElementById('topDate').value;
-            const warpingMts = document.getElementById('warpingMts').value;
-            const fabricMts = document.getElementById('fabricMts').value;
-            const crimpPerc = document.getElementById('crimpPerc').value;
+            const weavingMts = document.getElementById('weavingMts').value;
+            
+            // 🌟 Fetch Warping Beam Details
+            const warpingUnitName = document.getElementById('warpingUnitName').value.trim();
+            const noOfBeams = document.getElementById('noOfBeams').value.trim();
+            const beamMtrs = document.getElementById('beamMtrs').value.trim();
+            
             const isCompleted = document.getElementById('top_completed_status').checked;
 
             if(!designNo || !weaverName) {
@@ -1013,9 +1028,7 @@
             let alreadyExists = weavingMasterData.some(x => cleanDesignName(x.designNo || x.designNumber) === cleanDNo);
             if(alreadyExists) {
                 let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Weaving Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-                if(!confirmReEntry) {
-                    return; 
-                }
+                if(!confirmReEntry) return; 
                 weavingMasterData = weavingMasterData.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
                 warpTransactions = warpTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
                 weftTransactions = weftTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
@@ -1031,9 +1044,7 @@
                 const col = tr.querySelector('.w-colour').value;
                 const w = parseFloat(tr.querySelector('.w-weight').value || 0).toFixed(3);
                 const iss = parseFloat(tr.querySelector('.w-issued').value || 0).toFixed(3);
-                if(c || col || w || iss) {
-                    warpRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
-                }
+                if(c || col || w || iss) warpRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
             });
 
             let weftRows = [];
@@ -1042,9 +1053,7 @@
                 const col = tr.querySelector('.wf-colour').value;
                 const w = parseFloat(tr.querySelector('.wf-weight').value || 0).toFixed(3);
                 const iss = parseFloat(tr.querySelector('.wf-issued').value || 0).toFixed(3);
-                if(c || col || w || iss) {
-                    weftRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
-                }
+                if(c || col || w || iss) weftRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
             });
 
             if(warpRows.length === 0 && weftRows.length === 0) {
@@ -1058,9 +1067,10 @@
                 date: topDate,
                 weaverName: weaverName,
                 designNo: designNo,
-                warpingMts: warpingMts,
-                fabricMts: fabricMts,
-                crimpPerc: crimpPerc,
+                weavingMts: weavingMts,
+                warpingUnitName: warpingUnitName, // 🌟 Saving Beam Details
+                noOfBeams: noOfBeams,
+                beamMtrs: beamMtrs,
                 warpRows: warpRows,
                 weftRows: weftRows,
                 status: isCompleted ? 'completed' : 'running'
@@ -1077,33 +1087,11 @@
             weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
 
             warpRows.forEach((r, idx) => {
-                warpTransactions.push({
-                    id: Date.now() + idx,
-                    designNo: designNo,
-                    weaverName: weaverName,
-                    count: r.count,
-                    colour: r.colour,
-                    orderWt: parseFloat(r.weight) || 0,
-                    issuedWt: parseFloat(r.issuedWt) || 0,
-                    returnWt: '',
-                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                    status: isCompleted ? 'completed' : 'running'
-                });
+                warpTransactions.push({ id: Date.now() + idx, designNo: designNo, weaverName: weaverName, count: r.count, colour: r.colour, orderWt: parseFloat(r.weight) || 0, issuedWt: parseFloat(r.issuedWt) || 0, returnWt: '', diff: '-' + (parseFloat(r.weight) || 0).toFixed(2), status: isCompleted ? 'completed' : 'running' });
             });
 
             weftRows.forEach((r, idx) => {
-                weftTransactions.push({
-                    id: Date.now() + 1000 + idx,
-                    designNo: designNo,
-                    weaverName: weaverName,
-                    count: r.count,
-                    colour: r.colour,
-                    orderWt: parseFloat(r.weight) || 0,
-                    issuedWt: parseFloat(r.issuedWt) || 0,
-                    returnWt: '',
-                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
-                    status: isCompleted ? 'completed' : 'running'
-                });
+                weftTransactions.push({ id: Date.now() + 1000 + idx, designNo: designNo, weaverName: weaverName, count: r.count, colour: r.colour, orderWt: parseFloat(r.weight) || 0, issuedWt: parseFloat(r.issuedWt) || 0, returnWt: '', diff: '-' + (parseFloat(r.weight) || 0).toFixed(2), status: isCompleted ? 'completed' : 'running' });
             });
 
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -1123,26 +1111,18 @@
                 await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 await window.firebaseSave('design_specs', designSpecs);
             }
-            if(window.firebaseSaveIndividual) {
-                await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-            }
+            if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
 
-            updateTables();
-            loadBottomOrderDropdown();
+            updateTables(); loadBottomOrderDropdown();
             alert("Top Weaving Order Saved to Cloud Successfully! ✅☁️");
             
-            document.getElementById('topDesignNo').value = '';
-            document.getElementById('topWeaverName').value = '';
-            document.getElementById('warpDyeingMts').value = '';
-            document.getElementById('crimpPerc').value = '5';
-            document.getElementById('warpingMts').value = '';
-            document.getElementById('fabricMts').value = '';
-            document.getElementById('warpCount').value = '';
-            document.getElementById('warpCount2').value = '';
-            document.getElementById('weftCount').value = '';
+            document.getElementById('topDesignNo').value = ''; document.getElementById('topWeaverName').value = '';
+            document.getElementById('warpDyeingMts').value = ''; document.getElementById('crimpPerc').value = '5';
+            document.getElementById('weavingMts').value = ''; document.getElementById('warpCount').value = '';
+            document.getElementById('warpCount2').value = ''; document.getElementById('weftCount').value = '';
+            document.getElementById('warpingUnitName').value = ''; document.getElementById('noOfBeams').value = ''; document.getElementById('beamMtrs').value = '';
             document.getElementById('top_completed_status').checked = false;
-            loadBitmapImage();
-            btn.innerText = origText;
+            loadBitmapImage(); btn.innerText = origText;
         }
 
         function loadBottomRows() {
