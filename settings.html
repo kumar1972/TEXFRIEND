@@ -201,6 +201,7 @@
             font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
             box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); text-transform: uppercase;
             letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px;
+            text-decoration: none; text-align: center;
         }
         .btn-action:hover { transform: translateY(-2px); }
         .btn-action:active { transform: translateY(1px); }
@@ -253,7 +254,7 @@
                 <label class="checkbox-item"><input type="checkbox" id="perm_yarn_calc" checked> yarn_calc.html (Yarn Calculation)</label>
             </div>
         </div>
-        <button class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
+        <button type="button" class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
     </div>
 
     <!-- 📌 Section: User Management -->
@@ -276,7 +277,7 @@
                 <option value="Administrator">Administrator</option>
             </select>
         </div>
-        <button class="btn-action btn-info" style="width: 100%; margin-top: 10px;" onclick="addNewUserAccount()">Create New User Account</button>
+        <button type="button" class="btn-action btn-info" style="width: 100%; margin-top: 10px;" onclick="addNewUserAccount()">Create New User Account</button>
         
         <div class="users-table-container">
             <table class="users-table">
@@ -355,8 +356,8 @@
             </div>
         </div>
         <div class="action-row">
-            <button class="btn-action btn-success" onclick="savePartyMaster()">💾 Save / Add Party</button>
-            <button class="btn-action btn-danger" onclick="deletePartyMaster()">🗑️ Delete Party</button>
+            <button type="button" class="btn-action btn-success" onclick="savePartyMaster()">💾 Save / Add Party</button>
+            <button type="button" class="btn-action btn-danger" onclick="deletePartyMaster()">🗑️ Delete Party</button>
         </div>
     </div>
 
@@ -375,103 +376,61 @@
 
     <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn-action btn-primary" onclick="saveSettings()">✅ Save All Settings & Exit</button>
-        <button class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
+        <button type="button" class="btn-action btn-primary" id="saveBtnMain">✅ Save All Settings & Exit</button>
+        <button type="button" class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
         
         <div class="action-row">
-            <button class="btn-action btn-warning" onclick="resetLocalStorageOnly()">🧹 Clear Local Cache</button>
-            <button class="btn-action btn-danger" onclick="resetCloudDataOnly()">⚠️ Factory Reset Cloud</button>
+            <button type="button" class="btn-action btn-warning" onclick="resetLocalStorageOnly()">🧹 Clear Local Cache</button>
+            <button type="button" class="btn-action btn-danger" onclick="resetCloudDataOnly()">⚠️ Factory Reset Cloud</button>
         </div>
     </div>
 </div>
-
-<!-- Firebase SDK & Script -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
-        authDomain: "texfriend.firebaseapp.com",
-        projectId: "texfriend",
-        storageBucket: "texfriend.appspot.com",
-        messagingSenderId: "331673079578",
-        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
-        measurementId: "G-2NP13ZTKCN"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.resetLocalStorageOnly = function() {
-        if(confirm("⚠️ WARNING: This will clear temporary local cache, but your saved Users, Permissions and Settings will remain safe. Continue?")) {
-            let savedUsers = localStorage.getItem('erp_system_users');
-            let savedPermissions = localStorage.getItem('user_permissions');
-            let appHeading = localStorage.getItem('app_heading_name');
-            let compAddress = localStorage.getItem('company_full_address');
-            let compLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
-
-            localStorage.clear();
-
-            if(savedUsers) localStorage.setItem('erp_system_users', savedUsers);
-            if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
-            if(appHeading) localStorage.setItem('app_heading_name', appHeading);
-            if(compAddress) localStorage.setItem('company_full_address', compAddress);
-            if(compLogo) {
-                localStorage.setItem('company_logo_base64', compLogo);
-                localStorage.setItem('company_logo', compLogo);
-                localStorage.setItem('logo', compLogo);
-            }
-
-            alert("Local cache cleared successfully! (Users and settings are safely preserved) ✅");
-            location.reload();
-        }
-    }
-
-    window.resetCloudDataOnly = async function() {
-        if(confirm("⚠️ CRITICAL WARNING: This will permanently format/reset all Design and Party data on the Cloud Server! Are you absolutely sure?")) {
-            try {
-                await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify([]) });
-                await setDoc(doc(db, "texfriend_erp", "design_specs"), { content: JSON.stringify({}) });
-                await setDoc(doc(db, "texfriend_erp", "party_master_db"), { content: JSON.stringify({}) });
-                
-                alert("Cloud data factory reset successful! ☁️🗑️");
-                location.reload();
-            } catch(e) {
-                alert("Cloud Reset Error: " + e.message);
-            }
-        }
-    }
-</script>
 
 <script>
 let tempLogoData = "";
 let tempDesignBitmapData = "";
 
-window.onload = function() {
-    let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
-    document.getElementById('set_heading').value = heading;
+window.addEventListener('DOMContentLoaded', function() {
+    try {
+        let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
+        let hEl = document.getElementById('set_heading');
+        if(hEl) hEl.value = heading;
 
-    let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
-    document.getElementById('set_comp_addr').value = compAddr;
+        let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
+        let aEl = document.getElementById('set_comp_addr');
+        if(aEl) aEl.value = compAddr;
 
-    let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
-    if(logo) {
-        tempLogoData = logo;
-        let imgTag = document.getElementById('logoImgTag');
-        imgTag.src = logo;
-        document.getElementById('logoPreviewBox').style.display = 'flex';
+        let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
+        if(logo) {
+            tempLogoData = logo;
+            let imgTag = document.getElementById('logoImgTag');
+            if(imgTag) imgTag.src = logo;
+            let pBox = document.getElementById('logoPreviewBox');
+            if(pBox) pBox.style.display = 'flex';
+        }
+
+        loadDesignDropdownInSettings();
+        loadPartyDropdown();
+        loadUserPermissions();
+        renderUsersTable();
+    } catch(e) {
+        console.error("Init Error: ", e);
     }
 
-    loadDesignDropdownInSettings();
-    loadPartyDropdown();
-    loadUserPermissions();
-    renderUsersTable();
-}
+    // Direct Event Listener for Save Button
+    let btn = document.getElementById('saveBtnMain');
+    if(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            executeSaveAll();
+        });
+    }
+});
 
 function loadDesignDropdownInSettings() {
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let select = document.getElementById('settingDesignSelect');
+    if(!select) return;
     let html = '<option value="">Select Design Number</option>';
     preDesigns.forEach(d => {
         html += `<option value="${d}">${d}</option>`;
@@ -482,17 +441,21 @@ function loadDesignDropdownInSettings() {
 function loadDesignBitmap(designNo) {
     if(!designNo) {
         tempDesignBitmapData = "";
-        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+        let pBox = document.getElementById('designBitmapPreviewBox');
+        if(pBox) pBox.style.display = 'none';
         return;
     }
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     if(designSpecs[designNo] && designSpecs[designNo].bitmap) {
         tempDesignBitmapData = designSpecs[designNo].bitmap;
-        document.getElementById('designBitmapImgTag').src = tempDesignBitmapData;
-        document.getElementById('designBitmapPreviewBox').style.display = 'flex';
+        let imgTag = document.getElementById('designBitmapImgTag');
+        if(imgTag) imgTag.src = tempDesignBitmapData;
+        let pBox = document.getElementById('designBitmapPreviewBox');
+        if(pBox) pBox.style.display = 'flex';
     } else {
         tempDesignBitmapData = "";
-        document.getElementById('designBitmapPreviewBox').style.display = 'none';
+        let pBox = document.getElementById('designBitmapPreviewBox');
+        if(pBox) pBox.style.display = 'none';
     }
 }
 
@@ -502,8 +465,9 @@ function previewLogo(input) {
         reader.onload = function(e) {
             tempLogoData = e.target.result;
             let imgTag = document.getElementById('logoImgTag');
-            imgTag.src = tempLogoData;
-            document.getElementById('logoPreviewBox').style.display = 'flex';
+            if(imgTag) imgTag.src = tempLogoData;
+            let pBox = document.getElementById('logoPreviewBox');
+            if(pBox) pBox.style.display = 'flex';
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -515,8 +479,9 @@ function previewDesignBitmap(input) {
         reader.onload = function(e) {
             tempDesignBitmapData = e.target.result;
             let imgTag = document.getElementById('designBitmapImgTag');
-            imgTag.src = tempDesignBitmapData;
-            document.getElementById('designBitmapPreviewBox').style.display = 'flex';
+            if(imgTag) imgTag.src = tempDesignBitmapData;
+            let pBox = document.getElementById('designBitmapPreviewBox');
+            if(pBox) pBox.style.display = 'flex';
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -533,6 +498,7 @@ function getPartyDatabase() {
 function loadPartyDropdown() {
     let db = getPartyDatabase();
     let select = document.getElementById('partyListSelect');
+    if(!select) return;
     let html = '<option value="">Select Party to Edit/View</option>';
     Object.keys(db).forEach(p => {
         html += `<option value="${p}">${p}</option>`;
@@ -572,6 +538,7 @@ function savePartyMaster() {
 
 function deletePartyMaster() {
     let select = document.getElementById('partyListSelect');
+    if(!select) return;
     let val = select.value;
     if(!val) {
         alert("Please select a Party to delete!");
@@ -590,7 +557,6 @@ function deletePartyMaster() {
     }
 }
 
-// User Access Control Functions
 function updateUserPermissions() {
     let permissions = {
         dashboard: document.getElementById('perm_dashboard').checked,
@@ -622,30 +588,14 @@ function loadUserPermissions() {
     if(saved) {
         try {
             let p = JSON.parse(saved);
-            if(p.dashboard !== undefined) document.getElementById('perm_dashboard').checked = p.dashboard;
-            if(p.design_list !== undefined) document.getElementById('perm_design_list').checked = p.design_list;
-            if(p.design_master !== undefined) document.getElementById('perm_design_master').checked = p.design_master;
-            if(p.despatch !== undefined) document.getElementById('perm_despatch').checked = p.despatch;
-            if(p.dyeing_issue !== undefined) document.getElementById('perm_dyeing_issue').checked = p.dyeing_issue;
-            if(p.dyeing_receive !== undefined) document.getElementById('perm_dyeing_receive').checked = p.dyeing_receive;
-            if(p.index !== undefined) document.getElementById('perm_index').checked = p.index;
-            if(p.invoice !== undefined) document.getElementById('perm_invoice').checked = p.invoice;
-            if(p.kora_yarn !== undefined) document.getElementById('perm_kora_yarn').checked = p.kora_yarn;
-            if(p.party_orders !== undefined) document.getElementById('perm_party_orders').checked = p.party_orders;
-            if(p.process_matrix !== undefined) document.getElementById('perm_process_matrix').checked = p.process_matrix;
-            if(p.report !== undefined) document.getElementById('perm_report').checked = p.report;
-            if(p.settings !== undefined) document.getElementById('perm_settings').checked = p.settings;
-            if(p.warp_entry !== undefined) document.getElementById('perm_warp_entry').checked = p.warp_entry;
-            if(p.warping !== undefined) document.getElementById('perm_warping').checked = p.warping;
-            if(p.washing !== undefined) document.getElementById('perm_washing').checked = p.washing;
-            if(p.weaving !== undefined) document.getElementById('perm_weaving').checked = p.weaving;
-            if(p.weft_entry !== undefined) document.getElementById('perm_weft_entry').checked = p.weft_entry;
-            if(p.yarn_calc !== undefined) document.getElementById('perm_yarn_calc').checked = p.yarn_calc;
+            Object.keys(p).forEach(k => {
+                let el = document.getElementById('perm_' + k);
+                if(el) el.checked = p[k];
+            });
         } catch(e) {}
     }
 }
 
-// User Management Functions
 function addNewUserAccount() {
     let uName = document.getElementById('newUsername').value.trim();
     let uPass = document.getElementById('newPassword').value.trim();
@@ -673,6 +623,7 @@ function addNewUserAccount() {
 function renderUsersTable() {
     let users = JSON.parse(localStorage.getItem('erp_system_users')) || [];
     let tbody = document.getElementById('usersTableBody');
+    if(!tbody) return;
     tbody.innerHTML = '';
     users.forEach((usr, idx) => {
         tbody.innerHTML += `
@@ -680,7 +631,7 @@ function renderUsersTable() {
                 <td><b>${usr.username}</b></td>
                 <td>${usr.password}</td>
                 <td>${usr.role}</td>
-                <td><button class="btn-action btn-danger" style="padding: 4px 8px; font-size:9px;" onclick="deleteUserAccount(${idx})">Del</button></td>
+                <td><button type="button" class="btn-action btn-danger" style="padding: 4px 8px; font-size:9px;" onclick="deleteUserAccount(${idx})">Del</button></td>
             </tr>
         `;
     });
@@ -701,18 +652,20 @@ function deleteUserAccount(index) {
     }
 }
 
-// General Settings Save & Exit
-function saveSettings() {
-    let heading = document.getElementById('set_heading').value.trim();
-    if(heading) {
-        localStorage.setItem('app_heading_name', heading);
-        if(window.firebaseSave) window.firebaseSave('app_heading_name', heading);
+// 🌟 GUARANTEED SAVE EXECUTION
+function executeSaveAll() {
+    let headingEl = document.getElementById('set_heading');
+    if(headingEl && headingEl.value.trim()) {
+        let val = headingEl.value.trim();
+        localStorage.setItem('app_heading_name', val);
+        if(window.firebaseSave) window.firebaseSave('app_heading_name', val);
     }
 
-    let compAddr = document.getElementById('set_comp_addr').value.trim();
-    if(compAddr) {
-        localStorage.setItem('company_full_address', compAddr);
-        if(window.firebaseSave) window.firebaseSave('company_full_address', compAddr);
+    let addrEl = document.getElementById('set_comp_addr');
+    if(addrEl && addrEl.value.trim()) {
+        let val = addrEl.value.trim();
+        localStorage.setItem('company_full_address', val);
+        if(window.firebaseSave) window.firebaseSave('company_full_address', val);
     }
 
     if(tempLogoData) {
@@ -726,8 +679,9 @@ function saveSettings() {
         }
     }
 
-    let designNo = document.getElementById('settingDesignSelect').value;
-    if(designNo && tempDesignBitmapData) {
+    let designSelect = document.getElementById('settingDesignSelect');
+    if(designSelect && designSelect.value && tempDesignBitmapData) {
+        let designNo = designSelect.value;
         let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
         if(!designSpecs[designNo]) designSpecs[designNo] = {};
         designSpecs[designNo].bitmap = tempDesignBitmapData;
@@ -738,10 +692,7 @@ function saveSettings() {
     }
 
     alert("All Settings Saved Successfully! ✅");
-    
-    setTimeout(function() {
-        window.location.href = "dashboard.html";
-    }, 300);
+    window.location.href = "dashboard.html";
 }
 
 function backupAllData() {
@@ -765,12 +716,15 @@ function loadStorageDataToEditor() {
         let key = localStorage.key(i);
         allData[key] = localStorage.getItem(key);
     }
-    document.getElementById('advancedJsonEditor').value = JSON.stringify(allData, null, 2);
+    let editor = document.getElementById('advancedJsonEditor');
+    if(editor) editor.value = JSON.stringify(allData, null, 2);
     alert("Database Loaded into JSON Editor! 📥");
 }
 
 function saveStorageDataFromEditor() {
-    let raw = document.getElementById('advancedJsonEditor').value;
+    let editor = document.getElementById('advancedJsonEditor');
+    if(!editor) return;
+    let raw = editor.value;
     try {
         let parsed = JSON.parse(raw);
         if(confirm("⚠️ Are you sure you want to overwrite local database with these JSON changes?")) {
