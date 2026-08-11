@@ -10,6 +10,7 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
+        /* 📌 Smart Background */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
@@ -24,6 +25,7 @@
             align-items: center; 
         }
 
+        /* 📌 Main Container */
         .container { 
             width: 100%; 
             max-width: 900px; 
@@ -45,6 +47,7 @@
             margin-bottom: 5px; 
         }
 
+        /* 📌 Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -73,6 +76,7 @@
             padding-bottom: 12px;
         }
 
+        /* 📌 Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -119,6 +123,7 @@
             border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
 
+        /* 📌 Checkbox Group */
         .checkbox-group-container {
             background: #FFFFFF;
             border: 1px solid #D1DED1;
@@ -145,6 +150,7 @@
             cursor: pointer;
         }
 
+        /* 📌 Users Table */
         .users-table-container {
             margin-top: 15px;
             background: #FFFFFF;
@@ -196,6 +202,7 @@
         }
         #advancedJsonEditor:focus { box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.2); border-color: #34D399; }
 
+        /* 📌 Action Buttons */
         .btn-action { 
             color: white; border: none; padding: 12px 16px; border-radius: 8px; 
             font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
@@ -227,7 +234,6 @@
 
     <h2 class="page-title">ERP Master Settings</h2>
 
-    <!-- 📌 Section: User Access Control -->
     <div class="form-section" style="border-left: 4px solid #EF4444;">
         <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
         <div class="form-group">
@@ -257,7 +263,6 @@
         <button type="button" class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
     </div>
 
-    <!-- 📌 Section: User Management -->
     <div class="form-section" style="border-left: 4px solid #3B82F6;">
         <div class="section-badge blue">👤 User Management</div>
         <div class="form-grid">
@@ -294,7 +299,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 1: General Settings -->
     <div class="form-section">
         <div class="section-badge">General Profile</div>
         <div class="form-grid">
@@ -316,7 +320,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 2: Design Assets -->
     <div class="form-section">
         <div class="section-badge blue">Design Assets</div>
         <div class="form-grid">
@@ -336,7 +339,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 3: Party Master -->
     <div class="form-section">
         <div class="section-badge amber">Party Directory</div>
         <div class="form-group">
@@ -361,7 +363,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 4: Advanced Editor -->
     <div class="form-section">
         <div class="section-badge danger">Advanced Config</div>
         <div class="form-group">
@@ -374,7 +375,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
         <button type="button" class="btn-action btn-primary" onclick="executeSaveAll()">✅ Save All Settings & Exit</button>
         <button type="button" class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
@@ -390,7 +390,7 @@
 let tempLogoData = "";
 let tempDesignBitmapData = "";
 
-// 🧼 Helper function to clean text inputs from corrupt backslashes & quotes
+// 🧼 Clean text helper to remove corrupt slashes & quotes
 function cleanInputText(val) {
     if (!val) return "";
     return val.toString().replace(/\\/g, '').replace(/"/g, '').trim();
@@ -526,7 +526,6 @@ function loadDesignBitmap(designNo) {
 
 function previewLogo(input) {
     if (input.files && input.files[0]) {
-        // Compress logo image to 300x300 max with 0.7 quality to save local storage quota
         compressImage(input.files[0], 300, 300, 0.7, function(base64) {
             tempLogoData = base64;
             let imgTag = document.getElementById('logoImgTag');
@@ -539,7 +538,6 @@ function previewLogo(input) {
 
 function previewDesignBitmap(input) {
     if (input.files && input.files[0]) {
-        // Compress bitmap image to 600x600 max with 0.7 quality
         compressImage(input.files[0], 600, 600, 0.7, function(base64) {
             tempDesignBitmapData = base64;
             let imgTag = document.getElementById('designBitmapImgTag');
@@ -595,6 +593,10 @@ function savePartyMaster() {
     localStorage.setItem('party_master_db', JSON.stringify(db));
     localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
 
+    if (window.firebaseSaveIndividual) {
+        window.firebaseSaveIndividual("party_master_db", db);
+    }
+
     loadPartyDropdown();
     showSuccessToast("Party Details Saved Successfully!");
 }
@@ -612,6 +614,10 @@ function deletePartyMaster() {
         delete db[val];
         localStorage.setItem('party_master_db', JSON.stringify(db));
         localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
+
+        if (window.firebaseSaveIndividual) {
+            window.firebaseSaveIndividual("party_master_db", db);
+        }
 
         document.getElementById('partyNameInput').value = '';
         document.getElementById('partyAddressInput').value = '';
@@ -643,6 +649,11 @@ function updateUserPermissions() {
         yarn_calc: document.getElementById('perm_yarn_calc').checked
     };
     localStorage.setItem('user_permissions', JSON.stringify(permissions));
+
+    if (window.firebaseSaveIndividual) {
+        window.firebaseSaveIndividual('user_permissions', permissions);
+    }
+
     showSuccessToast("All Pages User Permissions Updated!");
 }
 
@@ -673,8 +684,8 @@ function addNewUserAccount() {
     users.push({ username: uName, password: uPass, role: uRole });
     localStorage.setItem('erp_system_users', JSON.stringify(users));
     
-    if (window.firebaseSave) {
-        window.firebaseSave('erp_system_users', users);
+    if (window.firebaseSaveIndividual) {
+        window.firebaseSaveIndividual('erp_system_users', users);
     }
 
     document.getElementById('newUsername').value = '';
@@ -706,8 +717,8 @@ function deleteUserAccount(index) {
         users.splice(index, 1);
         localStorage.setItem('erp_system_users', JSON.stringify(users));
         
-        if (window.firebaseSave) {
-            window.firebaseSave('erp_system_users', users);
+        if (window.firebaseSaveIndividual) {
+            window.firebaseSaveIndividual('erp_system_users', users);
         }
 
         renderUsersTable();
@@ -715,7 +726,7 @@ function deleteUserAccount(index) {
     }
 }
 
-// 🌟 ULTIMATE SAFE SAVE ALL WITH COMPRESSION, CLEANING AND TOAST NOTIFICATION
+// 🌟 ULTIMATE SAFE SAVE ALL WITH INDIVIDUAL FIREBASE SYNC
 function executeSaveAll() {
     try {
         let headingEl = document.getElementById('set_heading');
@@ -723,7 +734,7 @@ function executeSaveAll() {
             let val = cleanInputText(headingEl.value);
             if (val) {
                 localStorage.setItem('app_heading_name', val);
-                if (window.firebaseSave) window.firebaseSave('app_heading_name', val);
+                if (window.firebaseSaveIndividual) window.firebaseSaveIndividual('app_heading_name', val);
             }
         }
 
@@ -732,7 +743,7 @@ function executeSaveAll() {
             let val = cleanInputText(addrEl.value);
             if (val) {
                 localStorage.setItem('company_full_address', val);
-                if (window.firebaseSave) window.firebaseSave('company_full_address', val);
+                if (window.firebaseSaveIndividual) window.firebaseSaveIndividual('company_full_address', val);
             }
         }
 
@@ -740,10 +751,9 @@ function executeSaveAll() {
             localStorage.setItem('company_logo_base64', tempLogoData);
             localStorage.setItem('company_logo', tempLogoData);
             localStorage.setItem('logo', tempLogoData);
-            if (window.firebaseSave) {
-                window.firebaseSave('company_logo_base64', tempLogoData);
-                window.firebaseSave('company_logo', tempLogoData);
-                window.firebaseSave('logo', tempLogoData);
+            if (window.firebaseSaveIndividual) {
+                window.firebaseSaveIndividual('company_logo_base64', tempLogoData);
+                window.firebaseSaveIndividual('company_logo', tempLogoData);
             }
         }
 
@@ -754,8 +764,9 @@ function executeSaveAll() {
             if (!designSpecs[designNo]) designSpecs[designNo] = {};
             designSpecs[designNo].bitmap = tempDesignBitmapData;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            
             if (window.firebaseSaveIndividual) {
-                window.firebaseSaveIndividual(designNo, designSpecs[designNo]);
+                window.firebaseSaveIndividual(`design_bitmap_${designNo}`, tempDesignBitmapData);
             }
         }
 
@@ -834,8 +845,8 @@ function saveStorageDataFromEditor() {
         if (confirm("⚠️ Are you sure you want to overwrite local database with these JSON changes?")) {
             for (let key in parsed) {
                 localStorage.setItem(key, parsed[key]);
-                if (window.firebaseSave) {
-                    window.firebaseSave(key, JSON.parse(parsed[key]));
+                if (window.firebaseSaveIndividual) {
+                    window.firebaseSaveIndividual(key, JSON.parse(parsed[key]));
                 }
             }
             showSuccessToast("Database Updated Successfully!", function() {
