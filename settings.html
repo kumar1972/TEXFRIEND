@@ -375,7 +375,7 @@
 
     <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn-action btn-primary" id="saveAllSettingsBtn" type="button">✅ Save All Settings & Exit</button>
+        <button class="btn-action btn-primary" onclick="saveSettings()">✅ Save All Settings & Exit</button>
         <button class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
         
         <div class="action-row">
@@ -467,15 +467,6 @@ window.onload = function() {
     loadPartyDropdown();
     loadUserPermissions();
     renderUsersTable();
-
-    // 🌟 Direct event binding for save button
-    let saveBtn = document.getElementById('saveAllSettingsBtn');
-    if(saveBtn) {
-        saveBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            saveSettings();
-        });
-    }
 }
 
 function loadDesignDropdownInSettings() {
@@ -710,7 +701,7 @@ function deleteUserAccount(index) {
     }
 }
 
-// General Settings Save & Exit Fix
+// General Settings Save & Exit
 function saveSettings() {
     let heading = document.getElementById('set_heading').value.trim();
     if(heading) {
@@ -750,7 +741,7 @@ function saveSettings() {
     
     setTimeout(function() {
         window.location.href = "dashboard.html";
-    }, 300);
+    }, 200);
 }
 
 function backupAllData() {
