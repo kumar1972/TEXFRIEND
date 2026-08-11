@@ -10,11 +10,12 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
+        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
             background: #030712; 
-            color: #1E2B23; 
+            color: #1E2B23; /* Deep Dark Green */
         }
         
         body { 
@@ -24,6 +25,7 @@
             align-items: center; 
         }
 
+        /* 📌 Main Container */
         .container { 
             width: 100%; 
             max-width: 900px; 
@@ -45,6 +47,7 @@
             margin-bottom: 5px; 
         }
 
+        /* 📌 Smart Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -73,6 +76,7 @@
             padding-bottom: 12px;
         }
 
+        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -108,6 +112,7 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
         .form-group label { font-size: 11px; font-weight: 700; color: #4A554A; }
 
+        /* 📌 Smart 3D Inputs */
         input, select, textarea {
             width: 100%; padding: 12px 14px; border-radius: 8px;
             border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
@@ -119,6 +124,7 @@
             border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
 
+        /* 📌 Checkbox Group Styling */
         .checkbox-group-container {
             background: #FFFFFF;
             border: 1px solid #D1DED1;
@@ -145,6 +151,7 @@
             cursor: pointer;
         }
 
+        /* 📌 Users Table Styling */
         .users-table-container {
             margin-top: 15px;
             background: #FFFFFF;
@@ -170,6 +177,7 @@
             text-transform: uppercase;
         }
 
+        /* 📌 Premium File Input Styling */
         input[type="file"] {
             padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; cursor: pointer;
         }
@@ -187,6 +195,7 @@
         }
         .preview-box img { max-height: 70px; border-radius: 6px; }
 
+        /* 📌 Smart Code Editor (For JSON) */
         #advancedJsonEditor {
             background: #1A2421; 
             color: #A7F3D0; 
@@ -196,6 +205,7 @@
         }
         #advancedJsonEditor:focus { box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.2); border-color: #34D399; }
 
+        /* 📌 Smart Buttons */
         .btn-action { 
             color: white; border: none; padding: 12px 16px; border-radius: 8px; 
             font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
@@ -215,6 +225,7 @@
         .btn-danger { background: linear-gradient(135deg, #EF4444, #DC2626); }
 
         .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+
     </style>
 </head>
 <body>
@@ -227,7 +238,6 @@
 
     <h2 class="page-title">ERP Master Settings</h2>
 
-    <!-- 📌 Section: User Access Control -->
     <div class="form-section" style="border-left: 4px solid #EF4444;">
         <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
         <div class="form-group">
@@ -257,7 +267,6 @@
         <button type="button" class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
     </div>
 
-    <!-- 📌 Section: User Management -->
     <div class="form-section" style="border-left: 4px solid #3B82F6;">
         <div class="section-badge blue">👤 User Management</div>
         <div class="form-grid">
@@ -289,12 +298,12 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="usersTableBody"></tbody>
+                <tbody id="usersTableBody">
+                    </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 📌 Section 1: General Settings -->
     <div class="form-section">
         <div class="section-badge">General Profile</div>
         <div class="form-grid">
@@ -316,7 +325,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 2: Design Assets -->
     <div class="form-section">
         <div class="section-badge blue">Design Assets</div>
         <div class="form-grid">
@@ -336,7 +344,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 3: Party Master -->
     <div class="form-section">
         <div class="section-badge amber">Party Directory</div>
         <div class="form-group">
@@ -361,7 +368,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 4: Advanced Editor -->
     <div class="form-section">
         <div class="section-badge danger">Advanced Config</div>
         <div class="form-group">
@@ -374,7 +380,6 @@
         </div>
     </div>
 
-    <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
         <button type="button" class="btn-action btn-primary" id="saveBtnMain">✅ Save All Settings & Exit</button>
         <button type="button" class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
@@ -385,6 +390,65 @@
         </div>
     </div>
 </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
+        authDomain: "texfriend.firebaseapp.com",
+        projectId: "texfriend",
+        storageBucket: "texfriend.appspot.com",
+        messagingSenderId: "331673079578",
+        appId: "1:331673079578:web:e8c2ea6c41e6359d3f66a3",
+        measurementId: "G-2NP13ZTKCN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🛡️ பாதுகாப்பான Clear Cache (யூசர்கள் மற்றும் செட்டிங்ஸ் அழியாது)
+    window.resetLocalStorageOnly = function() {
+        if(confirm("⚠️ WARNING: This will clear temporary local cache, but your saved Users, Permissions and Settings will remain safe. Continue?")) {
+            let savedUsers = localStorage.getItem('erp_system_users');
+            let savedPermissions = localStorage.getItem('user_permissions');
+            let appHeading = localStorage.getItem('app_heading_name');
+            let compAddress = localStorage.getItem('company_full_address');
+            let compLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
+
+            localStorage.clear();
+
+            if(savedUsers) localStorage.setItem('erp_system_users', savedUsers);
+            if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
+            if(appHeading) localStorage.setItem('app_heading_name', appHeading);
+            if(compAddress) localStorage.setItem('company_full_address', compAddress);
+            if(compLogo) {
+                localStorage.setItem('company_logo_base64', compLogo);
+                localStorage.setItem('company_logo', compLogo);
+                localStorage.setItem('logo', compLogo);
+            }
+
+            alert("Local cache cleared successfully! (Users and settings are safely preserved) ✅");
+            location.reload();
+        }
+    }
+
+    window.resetCloudDataOnly = async function() {
+        if(confirm("⚠️ CRITICAL WARNING: This will permanently format/reset all Design and Party data on the Cloud Server! Are you absolutely sure?")) {
+            try {
+                await setDoc(doc(db, "texfriend_erp", "pre_design_numbers"), { content: JSON.stringify([]) });
+                await setDoc(doc(db, "texfriend_erp", "design_specs"), { content: JSON.stringify({}) });
+                await setDoc(doc(db, "texfriend_erp", "party_master_db"), { content: JSON.stringify({}) });
+                
+                alert("Cloud data factory reset successful! ☁️🗑️");
+                location.reload();
+            } catch(e) {
+                alert("Cloud Reset Error: " + e.message);
+            }
+        }
+    }
+</script>
 
 <script>
 let tempLogoData = "";
