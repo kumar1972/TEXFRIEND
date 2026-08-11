@@ -75,6 +75,17 @@
         .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
         .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
 
+        /* 📌 Design Thumbnail Style next to Design Number */
+        .design-row-cell {
+            display: flex; align-items: center; gap: 10px; text-align: left; padding-left: 15px;
+        }
+        .design-thumb {
+            width: 32px; height: 32px; object-fit: cover; border-radius: 6px;
+            border: 1px solid #4A7C59; cursor: zoom-in; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s; background: #F4F7F4; flex-shrink: 0;
+        }
+        .design-thumb:hover { transform: scale(1.15); }
+
         /* Fullscreen Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -134,8 +145,18 @@
 </div>
 
 <script>
+window.openFullscreenImage = function(src) {
+    if(!src || src === '' || src === 'null') return;
+    document.getElementById('fullscreenImg').src = src;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+}
+window.closeFullscreenImage = function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+}
+
 window.addEventListener('DOMContentLoaded', function() {
     let designs = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let tbody = document.getElementById('matrixTableBody');
 
     if(designs.length === 0) {
@@ -146,9 +167,23 @@ window.addEventListener('DOMContentLoaded', function() {
     let html = '';
     designs.forEach((dNo, index) => {
         let cleanDNo = dNo.toString().replace(/#+/g, '').trim();
+        let cleanLower = cleanDNo.toLowerCase();
+
+        let specKey = Object.keys(designSpecs).find(k => k && k.toString().replace(/#+/g, '').trim().toLowerCase() === cleanLower) || dNo;
+        let bitmapHtml = '';
+        
+        if (designSpecs[specKey] && designSpecs[specKey].bitmap) {
+            let b64 = designSpecs[specKey].bitmap;
+            bitmapHtml = `<img src="${b64}" class="design-thumb" onclick="openFullscreenImage('${b64}')" title="View Fullscreen">`;
+        }
 
         html += `<tr>
-            <td style="text-align: left; padding-left: 15px; font-weight:700; color:#2F4F38;">${index + 1}. #${cleanDNo}</td>
+            <td style="text-align: left; padding-left: 15px;">
+                <div class="design-row-cell">
+                    ${bitmapHtml}
+                    <span style="font-weight:700; color:#2F4F38;">${index + 1}. #${cleanDNo}</span>
+                </div>
+            </td>
             <td><span class="status-badge run">Running</span></td>
             <td><span class="status-badge none">Pending</span></td>
             <td><span class="status-badge none">Pending</span></td>
