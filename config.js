@@ -1,4 +1,4 @@
-// config.js - TEXFRIEND ERP (Final Clean Version without Dashboard Conflicts)
+// config.js - TEXFRIEND ERP (Final Clean Version with Cross-Page Universal Loaders)
 
 window.isDemo = false; 
 
@@ -46,6 +46,28 @@ window.firebaseSave = function(key, data) {
 
 window.firebaseSaveIndividual = function(key, data) {
     window.firebaseSave("design_" + key, data);
+};
+
+// 🌟 UNIVERSAL CROSS-PAGE DATA FETCH UTILITY (New Addition for Warping/Weaving sync)
+window.getCrossPageData = function(designNo, recordKey) {
+    let cleanTarget = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
+    if (!cleanTarget) return null;
+
+    let records = JSON.parse(localStorage.getItem(recordKey)) || [];
+    let match = records.slice().reverse().find(r => {
+        let d = r.designNo || r.designNumber || r.design || r.name || "";
+        return d.toString().replace('#', '').trim().toLowerCase() === cleanTarget;
+    });
+
+    if (match) return match;
+
+    // Fallback: check design specs if direct record not found
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let specKey = Object.keys(specs).find(k => k.toString().replace('#', '').trim().toLowerCase() === cleanTarget);
+    if (specKey && specs[specKey]) {
+        return specs[specKey];
+    }
+    return null;
 };
 
 // 🌟 TEXFRIEND - Master Data List (No Dummies)
@@ -112,7 +134,7 @@ window.addEventListener('DOMContentLoaded', function() {
         let existingDatalist = document.getElementById('globalUniversalSuggestions');
         if(!existingDatalist) {
             existingDatalist = document.createElement('datalist');
-            existingDatalist.id = 'globalUniversalSuggestions';
+            existingDdatalist.id = 'globalUniversalSuggestions';
             document.body.appendChild(existingDatalist);
         }
 
