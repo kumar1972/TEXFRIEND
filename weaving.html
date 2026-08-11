@@ -171,9 +171,10 @@
             gap: 12px; margin-bottom: 12px;
         }
         
-        .form-grid-row-4 {
+        /* 📌 Updated Grid for Order Mtrs, Crimp %, Fabrics Mtrs, Warp 1, Warp 2, Weft Count */
+        .form-grid-row-6 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
             gap: 10px; margin-bottom: 12px;
         }
 
@@ -339,10 +340,19 @@
                 </div>
             </div>
 
-            <div class="form-grid-row-4">
+            <!-- 🌟 Updated Grid: Order Mtrs (Warping), Crimp %, Fabrics Mtrs, Warp 1, Warp 2, Weft Count -->
+            <div class="form-grid-row-6">
                 <div class="form-group">
                     <label>Order Mtrs (Warping)</label>
-                    <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="recalculateWeights()" required>
+                    <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="calcFabricMts()" required>
+                </div>
+                <div class="form-group">
+                    <label>Crimp %</label>
+                    <input type="number" step="0.01" id="crimpPerc" placeholder="%" value="5" oninput="calcFabricMts()">
+                </div>
+                <div class="form-group">
+                    <label>Fabric Mtrs</label>
+                    <input type="number" step="0.01" id="fabricMts" placeholder="Net Mtrs" readonly style="background:#F4F7F4;">
                 </div>
                 <div class="form-group">
                     <label>Warp 1 (Grnd)</label>
@@ -720,6 +730,19 @@
             return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
         }
 
+        // 🌟 AUTO CALCULATION OF FABRIC MTRS FROM ORDER MTRS (LESS CRIMP %)
+        function calcFabricMts() {
+            let orderMtrs = parseFloat(document.getElementById('weavingMts').value) || 0;
+            let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
+            if (orderMtrs > 0) {
+                let result = orderMtrs - (orderMtrs * (crimp / 100));
+                document.getElementById('fabricMts').value = result.toFixed(2);
+                recalculateWeights();
+            } else {
+                document.getElementById('fabricMts').value = '';
+            }
+        }
+
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
@@ -745,9 +768,12 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                // 🌟 Pulling Yarn Order Mtr from Yarn Calculation (specs.yarnOrderMtr)
                 let baseOrderMtr = parseFloat(specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 100;
                 document.getElementById('weavingMts').value = baseOrderMtr.toFixed(2);
+                document.getElementById('crimpPerc').value = "5";
+                
+                let fabricMtrs = baseOrderMtr - (baseOrderMtr * 0.05);
+                document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
                 let defaultWeftCount = found.weftCount || specs.weft || '40';
@@ -781,7 +807,7 @@
                 let weftWidth = parseFloat(found.weftWidth || specs.weftWidth) || (baseWidth + 3);
                 let totalFabricPick = weftWidth * uiPick;
 
-                let weftData = resolvePattern(found.weftLines || [], found.weftRanges || [], 'weft', defaultWeftCount);
+                let weftData = resolvePattern(found.weftLines || [], found.weftRanges || [], 'weft', defaultWarpCount);
                 if (weftData.totalPatternVal > 0) {
                     weftData.summary.forEach(obj => {
                         let calcCount = parseYarnCount(obj.count) || parseYarnCount(defaultWeftCount) || 40;
@@ -796,6 +822,8 @@
                 document.getElementById('warpCount2').value = '';
                 document.getElementById('weftCount').value = '';
                 document.getElementById('weavingMts').value = '100';
+                document.getElementById('fabricMts').value = '95';
+                document.getElementById('crimpPerc').value = '5';
                 document.getElementById('warpingUnitName').value = '';
                 document.getElementById('noOfBeams').value = '';
                 document.getElementById('beamMtrs').value = '';
@@ -818,14 +846,15 @@
         }
 
         function renderWeightsByMeters(val) {
-            let currentWeavingMts = parseFloat(document.getElementById('weavingMts').value) || 100;
-            let weftMtrs = currentWeavingMts * (0.94 / 0.95);
+            let currentOrderMts = parseFloat(document.getElementById('weavingMts').value) || 100;
+            let currentFabricMts = parseFloat(document.getElementById('fabricMts').value) || currentOrderMts;
+            let weftMtrs = currentFabricMts * (0.94 / 0.95);
 
             if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
                 const warpTbody = document.querySelector('#warpRowsTable tbody');
                 warpTbody.innerHTML = '';
                 baseWarpWeights[val].forEach(r => {
-                    let weightKg = (r.ends * currentWeavingMts) / (1693.33 * r.calcCount);
+                    let weightKg = (r.ends * currentOrderMts) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Warp');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
@@ -847,10 +876,7 @@
         }
 
         function recalculateWeights() {
-            let activeDesign = document.getElementById('topDesignNo').value;
-            if(activeDesign && baseWarpWeights[activeDesign]) {
-                renderWeightsByMeters(activeDesign);
-            }
+            calcFabricMts();
         }
 
         function onBottomOrderSelect(val) {
@@ -969,6 +995,8 @@
             const weaverName = document.getElementById('topWeaverName').value.trim();
             const topDate = document.getElementById('topDate').value;
             const weavingMts = document.getElementById('weavingMts').value;
+            const fabricMts = document.getElementById('fabricMts').value;
+            const crimpPerc = document.getElementById('crimpPerc').value;
             const isCompleted = document.getElementById('top_completed_status').checked;
 
             // 🌟 Capture Warping Beam Details
@@ -1032,6 +1060,8 @@
                 weaverName: weaverName,
                 designNo: designNo,
                 weavingMts: weavingMts,
+                fabricMts: fabricMts,
+                crimpPerc: crimpPerc,
                 warpingUnitName: warpingUnitName,
                 noOfBeams: noOfBeams,
                 beamMtrs: beamMtrs,
@@ -1107,6 +1137,9 @@
             
             document.getElementById('topDesignNo').value = '';
             document.getElementById('topWeaverName').value = '';
+            document.getElementById('weavingMts').value = '';
+            document.getElementById('fabricMts').value = '';
+            document.getElementById('crimpPerc').value = '5';
             document.getElementById('warpCount').value = '';
             document.getElementById('warpCount2').value = '';
             document.getElementById('weftCount').value = '';
