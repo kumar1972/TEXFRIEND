@@ -234,6 +234,7 @@
 
     <h2 class="page-title">ERP Master Settings</h2>
 
+    <!-- 📌 Section: User Access Control -->
     <div class="form-section" style="border-left: 4px solid #EF4444;">
         <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
         <div class="form-group">
@@ -263,6 +264,7 @@
         <button type="button" class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
     </div>
 
+    <!-- 📌 Section: User Management -->
     <div class="form-section" style="border-left: 4px solid #3B82F6;">
         <div class="section-badge blue">👤 User Management</div>
         <div class="form-grid">
@@ -299,6 +301,7 @@
         </div>
     </div>
 
+    <!-- 📌 Section 1: General Settings -->
     <div class="form-section">
         <div class="section-badge">General Profile</div>
         <div class="form-grid">
@@ -320,6 +323,7 @@
         </div>
     </div>
 
+    <!-- 📌 Section 2: Design Assets -->
     <div class="form-section">
         <div class="section-badge blue">Design Assets</div>
         <div class="form-grid">
@@ -339,6 +343,7 @@
         </div>
     </div>
 
+    <!-- 📌 Section 3: Party Master -->
     <div class="form-section">
         <div class="section-badge amber">Party Directory</div>
         <div class="form-group">
@@ -363,6 +368,7 @@
         </div>
     </div>
 
+    <!-- 📌 Section 4: Advanced Editor -->
     <div class="form-section">
         <div class="section-badge danger">Advanced Config</div>
         <div class="form-group">
@@ -375,6 +381,7 @@
         </div>
     </div>
 
+    <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
         <button type="button" class="btn-action btn-primary" onclick="executeSaveAll()">✅ Save All Settings & Exit</button>
         <button type="button" class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
@@ -390,7 +397,7 @@
 let tempLogoData = "";
 let tempDesignBitmapData = "";
 
-// 🧼 Clean text helper to remove corrupt slashes & quotes
+// 🧼 Helper function to clean text inputs from corrupt backslashes & quotes
 function cleanInputText(val) {
     if (!val) return "";
     return val.toString().replace(/\\/g, '').replace(/"/g, '').trim();
@@ -427,7 +434,7 @@ function showSuccessToast(message, callback) {
     }, 1500);
 }
 
-// 🚀 Automatic Image Compression function to prevent LocalStorage Quota Exceeded error
+// 🚀 HD Quality Canvas Compression (800x800 Max & 0.9 HD Quality)
 function compressImage(file, maxWidth, maxHeight, quality, callback) {
     let reader = new FileReader();
     reader.onload = function(e) {
@@ -452,6 +459,9 @@ function compressImage(file, maxWidth, maxHeight, quality, callback) {
             canvas.width = width;
             canvas.height = height;
             let ctx = canvas.getContext('2d');
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, width, height);
 
             let compressedBase64 = canvas.toDataURL('image/jpeg', quality);
@@ -526,7 +536,8 @@ function loadDesignBitmap(designNo) {
 
 function previewLogo(input) {
     if (input.files && input.files[0]) {
-        compressImage(input.files[0], 300, 300, 0.7, function(base64) {
+        // HD Quality logo compression (800x800, quality 0.9)
+        compressImage(input.files[0], 800, 800, 0.9, function(base64) {
             tempLogoData = base64;
             let imgTag = document.getElementById('logoImgTag');
             if (imgTag) imgTag.src = tempLogoData;
@@ -538,7 +549,8 @@ function previewLogo(input) {
 
 function previewDesignBitmap(input) {
     if (input.files && input.files[0]) {
-        compressImage(input.files[0], 600, 600, 0.7, function(base64) {
+        // HD Quality bitmap compression (800x800, quality 0.9)
+        compressImage(input.files[0], 800, 800, 0.9, function(base64) {
             tempDesignBitmapData = base64;
             let imgTag = document.getElementById('designBitmapImgTag');
             if (imgTag) imgTag.src = tempDesignBitmapData;
