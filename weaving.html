@@ -8,7 +8,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+        }
 
         /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
@@ -62,7 +67,10 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
         }
-        .back-link:hover { background: #000000; transform: translateY(-2px); }
+        .back-link:hover { 
+            background: #000000; 
+            transform: translateY(-2px); 
+        }
 
         /* Checkbox Styling */
         .completed-checkbox {
@@ -77,188 +85,519 @@
         }
         
         .completed-checkbox input[type="checkbox"] {
-            width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0;
+            width: 16px; 
+            height: 16px; 
+            cursor: pointer; 
+            accent-color: #526E51; 
+            margin: 0;
         }
+        
         .completed-checkbox label {
-            margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700;
+            margin: 0; 
+            color: #3F5A3E; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: 700;
         }
 
-        #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
-        #bitmapDisplayContainer img {
-            max-height: 45px; border-radius: 6px; border: 2px solid #4A7C59;
-            box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); cursor: zoom-in; transition: transform 0.3s;
+        #bitmapDisplayContainer { 
+            text-align: right; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
         }
-        #bitmapDisplayContainer img:hover { transform: scale(1.1); }
+        
+        #bitmapDisplayContainer img {
+            max-height: 45px; 
+            border-radius: 6px; 
+            border: 2px solid #4A7C59;
+            box-shadow: 0 4px 10px rgba(47, 79, 56, 0.15); 
+            cursor: zoom-in; 
+            transition: transform 0.3s;
+        }
+        
+        #bitmapDisplayContainer img:hover { 
+            transform: scale(1.1); 
+        }
 
         h2 {
-            font-size: 16px; margin-bottom: 5px; font-weight: 800; color: #2F4F38;
-            text-align: left; position: relative; padding-left: 12px; border: none;
+            font-size: 16px; 
+            margin-bottom: 5px; 
+            font-weight: 800; 
+            color: #2F4F38;
+            text-align: left; 
+            position: relative; 
+            padding-left: 12px; 
+            border: none;
         }
         h2::before {
-            content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
-            background: #4A7C59; border-radius: 4px;
+            content: ''; 
+            position: absolute; 
+            left: 0; 
+            top: 10%; 
+            height: 80%; 
+            width: 4px;
+            background: #4A7C59; 
+            border-radius: 4px;
         }
 
+        /* 📌 Smart Sectioning */
         .form-section {
-            background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
-            padding: 22px 15px 15px 15px; margin-bottom: 5px; position: relative;
+            background: #F8FAF8; 
+            border: 1px solid #E2E8E2; 
+            border-radius: 14px;
+            padding: 22px 15px 15px 15px; 
+            margin-bottom: 5px; 
+            position: relative;
         }
         
         .section-badge {
-            position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
-            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
-            letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+            position: absolute; 
+            top: -12px; 
+            left: 15px; 
+            background: #4A7C59; 
+            color: #FFF;
+            font-size: 10px; 
+            font-weight: 700; 
+            padding: 4px 12px; 
+            border-radius: 12px;
+            letter-spacing: 0.5px; 
+            text-transform: uppercase; 
+            box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
         }
-        .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+        .section-badge.blue { 
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8); 
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); 
+        }
 
-        .form-group { margin-bottom: 10px; }
+        .form-group { 
+            margin-bottom: 10px; 
+        }
         .form-group label {
-            display: block; font-size: 10px; color: #4A554A; font-weight: 600; margin-bottom: 4px; white-space: nowrap;
+            display: block; 
+            font-size: 10px; 
+            color: #4A554A; 
+            font-weight: 600; 
+            margin-bottom: 4px; 
+            white-space: nowrap;
         }
 
-        .input-group-btn { display: flex; gap: 6px; width: 100%; }
-        .input-group-btn select, .input-group-btn input { flex: 1; }
+        .input-group-btn { 
+            display: flex; 
+            gap: 6px; 
+            width: 100%; 
+        }
+        .input-group-btn select, .input-group-btn input { 
+            flex: 1; 
+        }
+        
         .btn-add-inline {
-            background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 8px;
-            font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); white-space: nowrap;
+            background: #10B981; 
+            color: white; 
+            border: none; 
+            padding: 6px 10px; 
+            border-radius: 8px;
+            font-weight: 700; 
+            font-size: 10px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); 
+            white-space: nowrap;
         }
-        .btn-add-inline:hover { background: #059669; }
+        .btn-add-inline:hover { 
+            background: #059669; 
+        }
+        
         .btn-del-inline {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px;
-            border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2); display: flex; align-items: center; justify-content: center;
+            background: #FEE2E2; 
+            color: #DC2626; 
+            border: none; 
+            padding: 6px 10px;
+            border-radius: 8px; 
+            font-size: 12px; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
         }
-        .btn-del-inline:hover { background: #FECACA; }
+        .btn-del-inline:hover { 
+            background: #FECACA; 
+        }
 
         input[type="text"], input[type="date"], input[type="number"], select {
-            width: 100%; padding: 10px 12px; border: 1px solid #D1DED1;
-            border-radius: 8px; box-sizing: border-box; font-size: 11px; background: #FFFFFF;
-            color: #1E2B23; font-weight: 600; transition: all 0.3s ease;
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #D1DED1;
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 11px; 
+            background: #FFFFFF;
+            color: #1E2B23; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
             box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
         }
-
         input:focus, select:focus {
-            border-color: #4A7C59; outline: none; background: #FFFFFF;
+            border-color: #4A7C59; 
+            outline: none; 
+            background: #FFFFFF;
             box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
-        input::placeholder { color: #A0AFA0; font-weight: 400; }
+        input::placeholder { 
+            color: #A0AFA0; 
+            font-weight: 400; 
+        }
 
         .form-grid-row {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 12px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 12px;
         }
         
         .form-grid-row-5 {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 12px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
+            gap: 10px; 
+            margin-bottom: 12px;
         }
 
         .form-grid-row-3 {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 12px;
         }
 
         /* 📌 EXTRA TAB FOR WARPING BEAM DETAILS */
         .warping-beam-tab {
-            background: #F0FDF4; border: 1px dashed #10B981; padding: 15px; 
-            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.05);
+            background: #F0FDF4; 
+            border: 1px dashed #10B981; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.05);
         }
 
-        .line-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
-        .line-table th { font-size: 10px; color: #2F4F38; text-align: center; padding-bottom: 6px; font-weight: 700; text-transform: uppercase; }
-        .line-table td { padding: 4px; text-align: center; }
-        .line-table input { text-align: center; }
+        .line-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 5px; 
+        }
+        .line-table th { 
+            font-size: 10px; 
+            color: #2F4F38; 
+            text-align: center; 
+            padding-bottom: 6px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        }
+        .line-table td { 
+            padding: 4px; 
+            text-align: center; 
+        }
+        .line-table input { 
+            text-align: center; 
+        }
 
         .section-sub-title {
-            font-size: 11px; font-weight: 700; color: #2F4F38; margin-top: 12px; margin-bottom: 6px;
-            background: #EAF0EA; padding: 6px 10px; border-radius: 8px; border: 1px solid #D1DED1;
-            text-transform: uppercase; letter-spacing: 0.5px;
+            font-size: 11px; 
+            font-weight: 700; 
+            color: #2F4F38; 
+            margin-top: 12px; 
+            margin-bottom: 6px;
+            background: #EAF0EA; 
+            padding: 6px 10px; 
+            border-radius: 8px; 
+            border: 1px solid #D1DED1;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
         }
 
         .btn-weave {
-            background: linear-gradient(135deg, #4A7C59, #33593D); color: white; border: none; padding: 14px; border-radius: 10px;
-            font-weight: 700; cursor: pointer; width: 100%; font-size: 13px; margin-top: 10px;
-            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #4A7C59, #33593D); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 10px;
+            font-weight: 700; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 13px; 
+            margin-top: 10px;
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); 
+            transition: all 0.3s ease; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
         }
-        .btn-weave:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+        .btn-weave:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); 
+        }
 
-        .action-del { background: #FEE2E2; color: #DC2626; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.2s; }
-        .action-del:hover { background: #FECACA; transform: scale(1.05); }
+        .action-del { 
+            background: #FEE2E2; 
+            color: #DC2626; 
+            border: none; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: bold; 
+            transition: all 0.2s; 
+        }
+        .action-del:hover { 
+            background: #FECACA; 
+            transform: scale(1.05); 
+        }
         
-        .action-complete { background: #526E51; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
-        .action-running { background: #D97706; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; margin-right: 4px; transition: all 0.2s; }
+        .action-complete { 
+            background: #526E51; 
+            color: white; 
+            border: none; 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 10px; 
+            font-weight: bold; 
+            margin-right: 4px; 
+            transition: all 0.2s; 
+        }
+        .action-running { 
+            background: #D97706; 
+            color: white; 
+            border: none; 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 10px; 
+            font-weight: bold; 
+            margin-right: 4px; 
+            transition: all 0.2s; 
+        }
 
-        .report-btn-group { display: flex; gap: 8px; }
-        .report-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
-        .report-btn:hover { transform: translateY(-2px); }
+        .report-btn-group { 
+            display: flex; 
+            gap: 8px; 
+        }
+        .report-btn { 
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8); 
+            color: white; 
+            border: none; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 11px; 
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); 
+            transition: transform 0.2s; 
+        }
+        .report-btn:hover { 
+            transform: translateY(-2px); 
+        }
 
         .popup-trigger-btn {
             background: linear-gradient(135deg, #6366F1, #4338CA);
-            color: white; border: none; padding: 14px; border-radius: 10px;
-            font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 10px;
+            font-size: 13px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%;
             box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
-            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+            transition: all 0.3s ease; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
         }
-        .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
+        .popup-trigger-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); 
+        }
 
-        /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
         .overlay-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
-            z-index: 99999; flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s ease;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(18, 25, 20, 0.95); 
+            backdrop-filter: blur(6px); 
+            z-index: 99999; 
+            flex-direction: column; 
+            padding: 0; 
+            opacity: 0; 
+            transition: opacity 0.3s ease;
         }
-        .overlay-modal.show { opacity: 1; }
+        .overlay-modal.show { 
+            opacity: 1; 
+        }
         
         .modal-content {
-            background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0;
-            display: flex; flex-direction: column; box-shadow: none;
-            overflow: hidden; transform: scale(1);
+            background: #FFFFFF; 
+            width: 100vw; 
+            height: 100vh; 
+            margin: 0; 
+            border-radius: 0;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: none; 
+            overflow: hidden; 
+            transform: scale(1);
         }
 
         .modal-header {
-            padding: 15px 20px; background: #F4F7F4; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+            padding: 15px 20px; 
+            background: #F4F7F4; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #E2E8E2; 
             flex-shrink: 0;
         }
-        .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
-        .modal-actions { display: flex; gap: 8px; }
+        .modal-header h3 { 
+            margin: 0; 
+            font-size: 16px; 
+            color: #1E2B23; 
+            font-weight: 800; 
+            border:none; 
+            padding:0; 
+        }
+        .modal-actions { 
+            display: flex; 
+            gap: 8px; 
+        }
         
-        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .print-btn { 
+            background: linear-gradient(135deg, #10B981, #059669); 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 12px; 
+        }
         .close-btn {
-            background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;
+            background: #FEE2E2; 
+            color: #DC2626; 
+            border: none; 
+            padding: 8px 16px;
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 12px;
             transition: all 0.2s ease;
         }
-        .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+        .close-btn:hover { 
+            background: #FECACA; 
+            transform: scale(1.05); 
+        }
 
-        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
+        .modal-body { 
+            padding: 20px; 
+            overflow-y: auto; 
+            flex: 1; 
+            background: #FAFCFA; 
+            width: 100%; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
 
         .excel-table {
-            width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center;
-            background: #FFFFFF; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2;
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            font-size: 11px; 
+            text-align: center;
+            background: #FFFFFF; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+            border: 1px solid #E2E8E2;
         }
-        .excel-table th, .excel-table td { padding: 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; white-space: nowrap; }
-        .excel-table th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
-        .excel-table tr:last-child td { border-bottom: none; }
-        .excel-table tbody tr:hover { background: #F8FAF8; }
+        .excel-table th, .excel-table td { 
+            padding: 10px; 
+            text-align: center; 
+            border-bottom: 1px solid #E2E8E2; 
+            color: #1E2B23; 
+            white-space: nowrap; 
+        }
+        .excel-table th { 
+            background: #EAF0EA; 
+            color: #2F4F38; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            font-size: 10px; 
+            letter-spacing: 0.5px; 
+        }
+        .excel-table tr:last-child td { 
+            border-bottom: none; 
+        }
+        .excel-table tbody tr:hover { 
+            background: #F8FAF8; 
+        }
 
         .fullscreen-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-            padding: 20px; flex-direction: column;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.9); 
+            z-index: 999999; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+            flex-direction: column;
         }
         .fullscreen-modal img {
-            max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+            max-width: 100%; 
+            max-height: 85vh; 
+            object-fit: contain; 
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(255,255,255,0.2);
         }
         .close-fullscreen {
-            position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-            border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background: #EF4444; 
+            color: white;
+            border: none; 
+            padding: 10px 18px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 14px;
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         @media print {
             body * { visibility: hidden; }
             .overlay-modal, .overlay-modal * { visibility: visible; }
-            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; z-index: 99999; background: #FFFFFF; }
-            .modal-content { max-height: none !important; height: auto !important; overflow: visible !important; box-shadow: none; border: none; border-radius: 0; }
+            .overlay-modal { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                padding: 0; 
+                z-index: 99999; 
+                background: #FFFFFF; 
+            }
+            .modal-content { 
+                max-height: none !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                box-shadow: none; 
+                border: none; 
+                border-radius: 0; 
+            }
             .no-print { display: none !important; }
             .modal-body { padding: 0; background: #FFFFFF; }
         }
@@ -296,8 +635,11 @@
                 </div>
                 <div class="form-group">
                     <label>Weaver Name</label>
+                    <!-- 🌟 New Weaver Dropdown with Add/Del Buttons -->
                     <div class="input-group-btn">
-                        <select id="topWeaverName" required><option value="">Select Weaver</option></select>
+                        <select id="topWeaverName" required>
+                            <option value="">Select Weaver</option>
+                        </select>
                         <button type="button" class="btn-add-inline" onclick="addWeaver()">+ Add</button>
                         <button type="button" class="btn-del-inline" onclick="deleteWeaver()" title="Delete Weaver">🗑️</button>
                     </div>
@@ -310,11 +652,11 @@
                 </div>
             </div>
 
-            <!-- 🌟 Auto Calculated Metrics -->
+            <!-- 🌟 Sync Mtrs Logic: Warping Mts -> Fabric Mts -->
             <div class="form-grid-row-5">
                 <div class="form-group">
-                    <label>Warp Dyeing Mts</label>
-                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" style="background:#FFFFFF;" oninput="calcFabricMts()">
+                    <label>Warping Mts</label>
+                    <input type="number" step="0.01" id="warpingMts" placeholder="Mtrs" oninput="syncMtrs('warpingMts')" required>
                 </div>
                 <div class="form-group">
                     <label>Crimp %</label>
@@ -322,15 +664,15 @@
                 </div>
                 <div class="form-group">
                     <label>Fabric Mtrs</label>
-                    <input type="number" step="0.01" id="weavingMts" placeholder="Net Mtrs" oninput="recalculateWeights()" required>
+                    <input type="number" step="0.01" id="fabricMts" placeholder="Net Mtrs" readonly style="background:#F4F7F4;">
                 </div>
                 <div class="form-group">
                     <label>Warp Count</label>
-                    <input type="text" id="warpCount" placeholder="C1" readonly style="background:#EAF0EA;">
+                    <input type="text" id="warpCount" placeholder="C1" readonly style="background:#F4F7F4;">
                 </div>
                 <div class="form-group">
                     <label>Weft Count</label>
-                    <input type="text" id="weftCount" placeholder="Weft" readonly style="background:#EAF0EA;">
+                    <input type="text" id="weftCount" placeholder="Weft" readonly style="background:#F4F7F4;">
                 </div>
             </div>
 
@@ -343,7 +685,9 @@
                     <div class="form-group">
                         <label>Warping Name (Unit)</label>
                         <div class="input-group-btn">
-                            <select id="warpingUnitName"><option value="">Select Warping Unit</option></select>
+                            <select id="warpingUnitName">
+                                <option value="">Select Warping Unit</option>
+                            </select>
                             <button type="button" class="btn-add-inline" onclick="addWarpingUnit()">+ Add</button>
                             <button type="button" class="btn-del-inline" onclick="deleteWarpingUnit()" title="Delete Unit">🗑️</button>
                         </div>
@@ -354,7 +698,8 @@
                     </div>
                     <div class="form-group">
                         <label>Beam Mtrs</label>
-                        <input type="number" step="0.01" id="beamMtrs" placeholder="Total Beam Mtrs">
+                        <!-- Syncing with Warping Mts above -->
+                        <input type="number" step="0.01" id="beamMtrs" placeholder="Total Beam Mtrs" oninput="syncMtrs('beamMtrs')">
                     </div>
                 </div>
             </div>
@@ -372,7 +717,9 @@
                                 <th style="width: 35px;"></th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <!-- Auto-filled by Javascript -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -390,7 +737,9 @@
                                 <th style="width: 35px;"></th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <!-- Auto-filled by Javascript -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -509,7 +858,9 @@
                     <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
                 </div>
             </div>
-            <div class="modal-body" id="previewContent"></div>
+            <div class="modal-body" id="previewContent">
+                <!-- Content inserted by Javascript -->
+            </div>
         </div>
     </div>
 
@@ -545,15 +896,22 @@
                     localStorage.setItem('tex_master_weavers', JSON.stringify(masterWeavers));
                     loadWeaverSuggestions();
                     alert(`Weaver '${val}' added successfully! ✅`);
+                } else {
+                    alert("This Weaver Name is already in the Master List!");
                 }
                 document.getElementById('topWeaverName').value = val;
             }
         }
+
         function deleteWeaver() {
             let masterList = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
-            if(masterList.length === 0) return;
+            if(masterList.length === 0) { 
+                alert(`No manually added Weavers found to delete.`); 
+                return; 
+            }
             let listStr = masterList.map((m, i) => `${i + 1}. ${m}`).join('\n');
             let idxStr = prompt(`எந்த Weaver பெயரை நீக்க வேண்டும்? அதற்கான எண்ணை டைப் செய்யவும்:\n\n${listStr}`);
+            
             if(idxStr) {
                 let idx = parseInt(idxStr) - 1;
                 if(idx >= 0 && idx < masterList.length) {
@@ -561,15 +919,20 @@
                     localStorage.setItem('tex_master_weavers', JSON.stringify(masterList));
                     loadWeaverSuggestions();
                     alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
+                } else {
+                    alert("தவறான எண் (Invalid Number)!");
                 }
             }
         }
+
         function loadWeaverSuggestions() {
             let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
             let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
             
             let weaverSet = new Set([...masterWeavers]);
-            weavingMasterData.forEach(item => { if(item.weaverName) weaverSet.add(item.weaverName.trim()); });
+            weavingMasterData.forEach(item => { 
+                if(item.weaverName) weaverSet.add(item.weaverName.trim()); 
+            });
 
             let currentVal = document.getElementById('topWeaverName') ? document.getElementById('topWeaverName').value : '';
             let html = '<option value="">Select Weaver / Party</option>';
@@ -600,6 +963,7 @@
                 document.getElementById('warpingUnitName').value = val;
             }
         }
+
         function deleteWarpingUnit() {
             let masterList = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
             if(masterList.length === 0) return;
@@ -615,14 +979,19 @@
                 }
             }
         }
+
         function loadWarpingUnitSuggestions() {
             let masterUnits = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
             let weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
             let warpingIssues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
             
             let unitSet = new Set([...masterUnits]);
-            weavingMasterData.forEach(item => { if(item.warpingUnitName) unitSet.add(item.warpingUnitName.trim()); });
-            warpingIssues.forEach(item => { if(item.unit) unitSet.add(item.unit.trim()); });
+            weavingMasterData.forEach(item => { 
+                if(item.warpingUnitName) unitSet.add(item.warpingUnitName.trim()); 
+            });
+            warpingIssues.forEach(item => { 
+                if(item.unit) unitSet.add(item.unit.trim()); 
+            });
 
             let currentVal = document.getElementById('warpingUnitName') ? document.getElementById('warpingUnitName').value : '';
             let html = '<option value="">Select Warping Unit</option>';
@@ -630,22 +999,37 @@
                 let sel = (currentVal && u.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
                 html += `<option value="${u}" ${sel}>${u}</option>`; 
             });
+            
             if (document.getElementById('warpingUnitName')) {
                 document.getElementById('warpingUnitName').innerHTML = html;
                 if(currentVal) document.getElementById('warpingUnitName').value = currentVal;
             }
         }
 
-        function openModal(modalId) { let modal = document.getElementById(modalId); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); }
-        function closeModal(modalId) { let modal = document.getElementById(modalId); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
-        function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+        function openModal(modalId) { 
+            let modal = document.getElementById(modalId); 
+            modal.style.display = 'flex'; 
+            setTimeout(() => modal.classList.add('show'), 10); 
+        }
+
+        function closeModal(modalId) { 
+            let modal = document.getElementById(modalId); 
+            modal.classList.remove('show'); 
+            setTimeout(() => modal.style.display = 'none', 300); 
+        }
+
+        function cleanDesignName(str) { 
+            return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; 
+        }
 
         function parseYarnCount(countStr) {
             if (!countStr) return 0;
             let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
             if (str.includes('/')) {
                 let parts = str.split('/');
-                if (parts.length === 2) { return (parseFloat(parts[1]) || 1) / (parseFloat(parts[0]) || 1); }
+                if (parts.length === 2) { 
+                    return (parseFloat(parts[1]) || 1) / (parseFloat(parts[0]) || 1); 
+                }
             }
             return parseFloat(str) || 0;
         }
@@ -653,8 +1037,15 @@
         function getDyeingReceivedWt(dNo, color, yarnType) {
             let issues = JSON.parse(localStorage.getItem('dyeing_issue_records')) || [];
             let receives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
-            let cleanDNo = cleanDesignName(dNo); let cleanColor = color.trim().toLowerCase();
-            let dIssue = issues.slice().reverse().find(r => cleanDesignName(r.designNo) === cleanDNo && r.yarnType === yarnType && r.color.trim().toLowerCase() === cleanColor);
+            let cleanDNo = cleanDesignName(dNo); 
+            let cleanColor = color.trim().toLowerCase();
+            
+            let dIssue = issues.slice().reverse().find(r => 
+                cleanDesignName(r.designNo) === cleanDNo && 
+                r.yarnType === yarnType && 
+                r.color.trim().toLowerCase() === cleanColor
+            );
+            
             if (dIssue) {
                 let dRec = receives.slice().reverse().find(r => String(r.issueId) === String(dIssue.id));
                 if (dRec && parseFloat(dRec.receivedWt) > 0) return parseFloat(dRec.receivedWt);
@@ -666,22 +1057,32 @@
             let activeDesign = designNumOverride || document.getElementById('topDesignNo').value || document.getElementById('botDesignNo').value || localStorage.getItem('selected_design_number');
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             let bitmapContainer = document.getElementById('bitmapDisplayContainer');
+            
             let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
             let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
 
             if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
                 let b64 = designSpecs[specKey].bitmap;
                 bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
-            } else { bitmapContainer.innerHTML = ''; }
+            } else { 
+                bitmapContainer.innerHTML = ''; 
+            }
         }
 
         window.openFullscreenImage = function(src) {
             if(!src || src === '' || src === 'null') return;
-            document.getElementById('fullscreenImg').src = src; document.getElementById('fullscreenModal').style.display = 'flex';
+            document.getElementById('fullscreenImg').src = src; 
+            document.getElementById('fullscreenModal').style.display = 'flex';
         }
-        window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
-
-        function formatDecimal(input) { let val = parseFloat(input.value); if (!isNaN(val)) input.value = val.toFixed(3); }
+        
+        window.closeFullscreenImage = function() { 
+            document.getElementById('fullscreenModal').style.display = 'none'; 
+        }
+        
+        function formatDecimal(input) { 
+            let val = parseFloat(input.value); 
+            if (!isNaN(val)) input.value = val.toFixed(3); 
+        }
 
         function loadTopDesignDropdown() {
             let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -695,7 +1096,9 @@
 
             let select = document.getElementById('topDesignNo');
             let html = '<option value="">Select Design</option>';
-            [...allDesigns].forEach(d => { if(d) html += `<option value="${d}">${d}</option>`; });
+            [...allDesigns].forEach(d => { 
+                if(d) html += `<option value="${d}">${d}</option>`; 
+            });
             select.innerHTML = html;
 
             let activeDesign = localStorage.getItem('selected_design_number');
@@ -709,6 +1112,7 @@
             let select = document.getElementById('botActiveOrderSelect');
             let html = '<option value="">Select Active Order</option>';
             let added = new Set();
+            
             weavingMasterData.slice().reverse().forEach(order => {
                 let key = `${order.designNo}_${order.weaverName}`;
                 if(!added.has(key)) {
@@ -719,7 +1123,8 @@
             select.innerHTML = html;
         }
 
-        let baseWarpWeights = {}; let baseWeftWeights = {};
+        let baseWarpWeights = {}; 
+        let baseWeftWeights = {};
 
         function resolvePattern(lines, ranges, type, defaultCount) {
             if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
@@ -736,7 +1141,10 @@
                     for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
                 });
             }
-            lines.forEach((l, idx) => { if(!covered[idx]) orderedPattern.push({...l}); });
+            
+            lines.forEach((l, idx) => { 
+                if(!covered[idx]) orderedPattern.push({...l}); 
+            });
 
             let exactSequence = [];
             orderedPattern.forEach(item => {
@@ -746,7 +1154,9 @@
                 for(let k=0; k<val; k++) exactSequence.push({ count: cDisplay, color: clr });
             });
 
-            let summaryMap = new Map(); let order = [];
+            let summaryMap = new Map(); 
+            let order = [];
+            
             exactSequence.forEach(item => {
                 let key = item.count + "||" + item.color.trim();
                 if(!summaryMap.has(key)) {
@@ -755,19 +1165,37 @@
                 }
                 summaryMap.get(key).patternVal++;
             });
-            return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
+            
+            return { 
+                sequence: exactSequence, 
+                summary: order.map(k => summaryMap.get(k)), 
+                totalPatternVal: exactSequence.length 
+            };
+        }
+
+        // 🌟 SYNC WARPING MTRS & BEAM MTRS
+        function syncMtrs(source) {
+            let val = document.getElementById(source).value;
+            if(source === 'warpingMts') {
+                document.getElementById('beamMtrs').value = val;
+            }
+            if(source === 'beamMtrs') {
+                document.getElementById('warpingMts').value = val;
+            }
+            calcFabricMts();
         }
 
         // 🌟 AUTO CALCULATION OF FABRIC MTRS
         function calcFabricMts() {
-            let dyeingMts = parseFloat(document.getElementById('warpDyeingMts').value) || 0;
+            let wMts = parseFloat(document.getElementById('warpingMts').value) || 0;
             let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
-            if (dyeingMts > 0) {
-                let result = dyeingMts - (dyeingMts * (crimp / 100));
-                document.getElementById('weavingMts').value = result.toFixed(2);
+            
+            if (wMts > 0) {
+                let result = wMts - (wMts * (crimp / 100));
+                document.getElementById('fabricMts').value = result.toFixed(2);
                 recalculateWeights();
             } else {
-                document.getElementById('weavingMts').value = '';
+                document.getElementById('fabricMts').value = '';
             }
         }
 
@@ -785,7 +1213,9 @@
 
                 if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
                     document.getElementById('top_completed_status').checked = true;
-                } else { document.getElementById('top_completed_status').checked = false; }
+                } else { 
+                    document.getElementById('top_completed_status').checked = false; 
+                }
 
                 document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
                 document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || ''; 
@@ -794,23 +1224,15 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-                let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
-                let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
-                
-                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 0);
-                
-                document.getElementById('warpDyeingMts').value = yarnCalcOrderMtr > 0 ? yarnCalcOrderMtr.toFixed(2) : '';
-                document.getElementById('crimpPerc').value = "5"; 
-                
-                let fabricMtrs = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
-                document.getElementById('weavingMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
-
-                // 🌟 Auto-fetch Warping Beam Info from warping_issue_records
+                // 🌟 Fetch Warping Mtrs directly from Warping Page
                 let warpingRecords = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
                 let matchedWarping = warpingRecords.slice().reverse().find(w => cleanDesignName(w.designNo) === cleanDNo);
                 
-                if (matchedWarping) {
+                let defaultWarpingMts = 0;
+                
+                if (matchedWarping && matchedWarping.warpingMts) {
+                    defaultWarpingMts = parseFloat(matchedWarping.warpingMts);
+                    
                     if (matchedWarping.unit) {
                         let sel = document.getElementById('warpingUnitName');
                         if (!Array.from(sel.options).some(o => o.value === matchedWarping.unit)) {
@@ -818,26 +1240,54 @@
                         }
                         sel.value = matchedWarping.unit;
                     }
-                    if (matchedWarping.warpingMts) {
-                        document.getElementById('beamMtrs').value = matchedWarping.warpingMts;
-                    }
                 } else {
+                    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                    let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
+                    let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
+                    
+                    let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 0);
+                    defaultWarpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr * 0.95) : 0;
+                    
                     document.getElementById('warpingUnitName').value = '';
-                    document.getElementById('beamMtrs').value = '';
                 }
+
+                document.getElementById('warpingMts').value = defaultWarpingMts > 0 ? defaultWarpingMts.toFixed(2) : '';
+                document.getElementById('beamMtrs').value = defaultWarpingMts > 0 ? defaultWarpingMts.toFixed(2) : '';
+                document.getElementById('crimpPerc').value = "5"; 
+                
+                let fabricMtrs = defaultWarpingMts > 0 ? (defaultWarpingMts - (defaultWarpingMts * 0.05)) : 0;
+                document.getElementById('fabricMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
 
                 // If already saved in Weaving, overwrite with saved values
                 let savedWeaving = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
                 if(savedWeaving) {
+                    if (savedWeaving.weaverName) {
+                        let wSel = document.getElementById('topWeaverName');
+                        if (!Array.from(wSel.options).some(o => o.value === savedWeaving.weaverName)) {
+                            wSel.innerHTML += `<option value="${savedWeaving.weaverName}">${savedWeaving.weaverName}</option>`;
+                        }
+                        wSel.value = savedWeaving.weaverName;
+                    }
                     if (savedWeaving.warpingUnitName) document.getElementById('warpingUnitName').value = savedWeaving.warpingUnitName;
                     if (savedWeaving.noOfBeams) document.getElementById('noOfBeams').value = savedWeaving.noOfBeams;
-                    if (savedWeaving.beamMtrs) document.getElementById('beamMtrs').value = savedWeaving.beamMtrs;
+                    
+                    if (savedWeaving.beamMtrs) {
+                        document.getElementById('beamMtrs').value = savedWeaving.beamMtrs;
+                        document.getElementById('warpingMts').value = savedWeaving.warpingMts || savedWeaving.beamMtrs;
+                    } else if (savedWeaving.warpingMts) {
+                        document.getElementById('warpingMts').value = savedWeaving.warpingMts;
+                        document.getElementById('beamMtrs').value = savedWeaving.warpingMts;
+                    }
+                    
+                    if (savedWeaving.fabricMts) document.getElementById('fabricMts').value = savedWeaving.fabricMts;
+                    if (savedWeaving.crimpPerc) document.getElementById('crimpPerc').value = savedWeaving.crimpPerc;
                 }
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
                 let defaultWeftCount = found.weftCount || specs.weft || '40';
 
-                baseWarpWeights[val] = []; baseWeftWeights[val] = [];
+                baseWarpWeights[val] = []; 
+                baseWeftWeights[val] = [];
 
                 let uiReed = parseFloat(found.reed || specs.reed || specs.baseReed) || 52;
                 let baseWidth = parseFloat(found.width || specs.width || specs.baseWidth) || 66.92;
@@ -876,25 +1326,45 @@
 
                 renderWeightsByMeters(val);
             } else {
-                document.getElementById('warpCount').value = ''; document.getElementById('warpCount2').value = '';
-                document.getElementById('weftCount').value = ''; document.getElementById('warpDyeingMts').value = '';
-                document.getElementById('crimpPerc').value = '5'; document.getElementById('weavingMts').value = '';
-                document.getElementById('warpingUnitName').value = ''; document.getElementById('noOfBeams').value = ''; document.getElementById('beamMtrs').value = '';
+                document.getElementById('warpCount').value = ''; 
+                document.getElementById('warpCount2').value = '';
+                document.getElementById('weftCount').value = ''; 
+                document.getElementById('crimpPerc').value = '5';
+                document.getElementById('warpingMts').value = ''; 
+                document.getElementById('fabricMts').value = '';
+                document.getElementById('warpingUnitName').value = ''; 
+                document.getElementById('noOfBeams').value = ''; 
+                document.getElementById('beamMtrs').value = '';
                 
-                document.querySelector('#warpRowsTable tbody').innerHTML = `<tr><td><input type="text" placeholder="Count" class="w-count" required></td><td><input type="text" placeholder="Colour" class="w-colour" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`;
-                document.querySelector('#weftRowsTable tbody').innerHTML = `<tr><td><input type="text" placeholder="Count" class="wf-count" required></td><td><input type="text" placeholder="Colour" class="wf-colour" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`;
+                document.querySelector('#warpRowsTable tbody').innerHTML = `
+                    <tr>
+                        <td><input type="text" placeholder="Count" class="w-count" required></td>
+                        <td><input type="text" placeholder="Colour" class="w-colour" required></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" onblur="formatDecimal(this)" required></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" onblur="formatDecimal(this)" required></td>
+                        <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+                    </tr>`;
+                
+                document.querySelector('#weftRowsTable tbody').innerHTML = `
+                    <tr>
+                        <td><input type="text" placeholder="Count" class="wf-count" required></td>
+                        <td><input type="text" placeholder="Colour" class="wf-colour" required></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" onblur="formatDecimal(this)" required></td>
+                        <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" onblur="formatDecimal(this)" required></td>
+                        <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+                    </tr>`;
             }
         }
 
         function renderWeightsByMeters(val) {
-            let currentFabricMts = parseFloat(document.getElementById('weavingMts').value) || 100;
-            let weftMtrs = currentFabricMts * (0.94 / 0.95);
+            let currentWarpingMts = parseFloat(document.getElementById('warpingMts').value) || 100;
+            let currentFabricMts = parseFloat(document.getElementById('fabricMts').value) || currentWarpingMts;
 
             if(baseWarpWeights[val] && baseWarpWeights[val].length > 0) {
                 const warpTbody = document.querySelector('#warpRowsTable tbody');
                 warpTbody.innerHTML = '';
                 baseWarpWeights[val].forEach(r => {
-                    let weightKg = (r.ends * currentFabricMts) / (1693.33 * r.calcCount);
+                    let weightKg = (r.ends * currentWarpingMts) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Warp');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
@@ -907,7 +1377,7 @@
                 weftTbody.innerHTML = '';
                 baseWeftWeights[val].forEach(r => {
                     // 🌟 Weft uses Fabric Mtrs (Less Mtrs)
-                    let weightKg = (r.tPick * weftMtrs) / (1693.33 * r.calcCount);
+                    let weightKg = (r.tPick * currentFabricMts) / (1693.33 * r.calcCount);
                     let calculatedWt = weightKg.toFixed(3);
                     let dyeingRcvWt = getDyeingReceivedWt(val, r.colour, 'Weft');
                     let issWgt = dyeingRcvWt !== null ? dyeingRcvWt.toFixed(3) : calculatedWt;
@@ -931,6 +1401,7 @@
             let parts = val.split('_');
             let dNo = parts[0];
             let weaver = parts.slice(1).join('_');
+
             document.getElementById('botDesignNo').value = dNo;
             document.getElementById('botWeaverName').value = weaver;
             loadBottomRows();
@@ -939,13 +1410,25 @@
         function addWarpRow(c = '', col = '', w = '', iss = '') {
             const table = document.getElementById('warpRowsTable').getElementsByTagName('tbody')[0];
             const row = table.insertRow();
-            row.innerHTML = `<td><input type="text" placeholder="Count" class="w-count" value="${c}" required></td><td><input type="text" placeholder="Colour" class="w-colour" value="${col}" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-weight" value="${w}" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="w-issued" value="${iss}" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>`;
+            row.innerHTML = `
+                <td><input type="text" placeholder="Count" class="w-count" value="${c}" required></td>
+                <td><input type="text" placeholder="Colour" class="w-colour" value="${col}" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="w-weight" value="${w}" onblur="formatDecimal(this)" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="w-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
+                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+            `;
         }
 
         function addWeftRow(c = '', col = '', w = '', iss = '') {
             const table = document.getElementById('weftRowsTable').getElementsByTagName('tbody')[0];
             const row = table.insertRow();
-            row.innerHTML = `<td><input type="text" placeholder="Count" class="wf-count" value="${c}" required></td><td><input type="text" placeholder="Colour" class="wf-colour" value="${col}" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" value="${w}" onblur="formatDecimal(this)" required></td><td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" value="${iss}" onblur="formatDecimal(this)" required></td><td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>`;
+            row.innerHTML = `
+                <td><input type="text" placeholder="Count" class="wf-count" value="${c}" required></td>
+                <td><input type="text" placeholder="Colour" class="wf-colour" value="${col}" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="wf-weight" value="${w}" onblur="formatDecimal(this)" required></td>
+                <td><input type="number" step="0.001" placeholder="0.000" class="wf-issued" value="${iss}" onblur="formatDecimal(this)" required></td>
+                <td style="width: 35px;"><button type="button" class="action-del" onclick="this.closest('tr').remove()">✕</button></td>
+            `;
         }
 
         async function quickCompleteToggle() {
@@ -970,13 +1453,20 @@
                     date: document.getElementById('topDate').value || new Date().toISOString().split('T')[0],
                     weaverName: weaverName,
                     designNo: dNo,
-                    weavingMts: document.getElementById('weavingMts').value || '100',
+                    warpingMts: document.getElementById('warpingMts').value || '100',
+                    fabricMts: document.getElementById('fabricMts').value || '95',
+                    warpRows: [],
+                    weftRows: [],
                     status: statusText
                 });
             }
 
-            warpTransactions.forEach(x => { if(x.designNo === dNo) x.status = statusText; });
-            weftTransactions.forEach(x => { if(x.designNo === dNo) x.status = statusText; });
+            warpTransactions.forEach(x => {
+                if(x.designNo === dNo) x.status = statusText;
+            });
+            weftTransactions.forEach(x => {
+                if(x.designNo === dNo) x.status = statusText;
+            });
 
             localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
             localStorage.setItem('weaving_warp_trans', JSON.stringify(warpTransactions));
@@ -986,7 +1476,9 @@
             let cleanDNo = cleanDesignName(dNo);
             let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
 
-            if(!designSpecs[specKey]) designSpecs[specKey] = {};
+            if(!designSpecs[specKey]) {
+                designSpecs[specKey] = {};
+            }
             designSpecs[specKey].status = statusText;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
@@ -997,8 +1489,12 @@
                     await window.firebaseSave('weaving_weft_trans', weftTransactions);
                     await window.firebaseSave('design_specs', designSpecs);
                 }
-                if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-            } catch(e) {}
+                if (window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                }
+            } catch(e) {
+                console.error("Firebase Sync Error: ", e);
+            }
 
             updateTables();
             alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
@@ -1009,14 +1505,15 @@
             const designNo = document.getElementById('topDesignNo').value.trim();
             const weaverName = document.getElementById('topWeaverName').value.trim();
             const topDate = document.getElementById('topDate').value;
-            const weavingMts = document.getElementById('weavingMts').value;
-            
+            const warpingMts = document.getElementById('warpingMts').value;
+            const fabricMts = document.getElementById('fabricMts').value;
+            const crimpPerc = document.getElementById('crimpPerc').value;
+            const isCompleted = document.getElementById('top_completed_status').checked;
+
             // 🌟 Fetch Warping Beam Details
             const warpingUnitName = document.getElementById('warpingUnitName').value.trim();
             const noOfBeams = document.getElementById('noOfBeams').value.trim();
             const beamMtrs = document.getElementById('beamMtrs').value.trim();
-            
-            const isCompleted = document.getElementById('top_completed_status').checked;
 
             if(!designNo || !weaverName) {
                 alert("Please fill Weaver Name and Design Number!");
@@ -1028,7 +1525,9 @@
             let alreadyExists = weavingMasterData.some(x => cleanDesignName(x.designNo || x.designNumber) === cleanDNo);
             if(alreadyExists) {
                 let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Weaving Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-                if(!confirmReEntry) return; 
+                if(!confirmReEntry) {
+                    return; 
+                }
                 weavingMasterData = weavingMasterData.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
                 warpTransactions = warpTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
                 weftTransactions = weftTransactions.filter(x => cleanDesignName(x.designNo || x.designNumber) !== cleanDNo);
@@ -1044,7 +1543,9 @@
                 const col = tr.querySelector('.w-colour').value;
                 const w = parseFloat(tr.querySelector('.w-weight').value || 0).toFixed(3);
                 const iss = parseFloat(tr.querySelector('.w-issued').value || 0).toFixed(3);
-                if(c || col || w || iss) warpRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                if(c || col || w || iss) {
+                    warpRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                }
             });
 
             let weftRows = [];
@@ -1053,7 +1554,9 @@
                 const col = tr.querySelector('.wf-colour').value;
                 const w = parseFloat(tr.querySelector('.wf-weight').value || 0).toFixed(3);
                 const iss = parseFloat(tr.querySelector('.wf-issued').value || 0).toFixed(3);
-                if(c || col || w || iss) weftRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                if(c || col || w || iss) {
+                    weftRows.push({ count: c, colour: col, weight: w, issuedWt: iss });
+                }
             });
 
             if(warpRows.length === 0 && weftRows.length === 0) {
@@ -1067,8 +1570,10 @@
                 date: topDate,
                 weaverName: weaverName,
                 designNo: designNo,
-                weavingMts: weavingMts,
-                warpingUnitName: warpingUnitName, // 🌟 Saving Beam Details
+                warpingMts: warpingMts,
+                fabricMts: fabricMts,
+                crimpPerc: crimpPerc,
+                warpingUnitName: warpingUnitName, 
                 noOfBeams: noOfBeams,
                 beamMtrs: beamMtrs,
                 warpRows: warpRows,
@@ -1087,11 +1592,33 @@
             weftTransactions = weftTransactions.filter(x => !(x.designNo === designNo && x.weaverName === weaverName && x.status === 'running'));
 
             warpRows.forEach((r, idx) => {
-                warpTransactions.push({ id: Date.now() + idx, designNo: designNo, weaverName: weaverName, count: r.count, colour: r.colour, orderWt: parseFloat(r.weight) || 0, issuedWt: parseFloat(r.issuedWt) || 0, returnWt: '', diff: '-' + (parseFloat(r.weight) || 0).toFixed(2), status: isCompleted ? 'completed' : 'running' });
+                warpTransactions.push({
+                    id: Date.now() + idx,
+                    designNo: designNo,
+                    weaverName: weaverName,
+                    count: r.count,
+                    colour: r.colour,
+                    orderWt: parseFloat(r.weight) || 0,
+                    issuedWt: parseFloat(r.issuedWt) || 0,
+                    returnWt: '',
+                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                    status: isCompleted ? 'completed' : 'running'
+                });
             });
 
             weftRows.forEach((r, idx) => {
-                weftTransactions.push({ id: Date.now() + 1000 + idx, designNo: designNo, weaverName: weaverName, count: r.count, colour: r.colour, orderWt: parseFloat(r.weight) || 0, issuedWt: parseFloat(r.issuedWt) || 0, returnWt: '', diff: '-' + (parseFloat(r.weight) || 0).toFixed(2), status: isCompleted ? 'completed' : 'running' });
+                weftTransactions.push({
+                    id: Date.now() + 1000 + idx,
+                    designNo: designNo,
+                    weaverName: weaverName,
+                    count: r.count,
+                    colour: r.colour,
+                    orderWt: parseFloat(r.weight) || 0,
+                    issuedWt: parseFloat(r.issuedWt) || 0,
+                    returnWt: '',
+                    diff: '-' + (parseFloat(r.weight) || 0).toFixed(2),
+                    status: isCompleted ? 'completed' : 'running'
+                });
             });
 
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -1111,18 +1638,28 @@
                 await window.firebaseSave('weaving_weft_trans', weftTransactions);
                 await window.firebaseSave('design_specs', designSpecs);
             }
-            if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+            if(window.firebaseSaveIndividual) {
+                await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+            }
 
-            updateTables(); loadBottomOrderDropdown();
+            updateTables();
+            loadBottomOrderDropdown();
             alert("Top Weaving Order Saved to Cloud Successfully! ✅☁️");
             
-            document.getElementById('topDesignNo').value = ''; document.getElementById('topWeaverName').value = '';
-            document.getElementById('warpDyeingMts').value = ''; document.getElementById('crimpPerc').value = '5';
-            document.getElementById('weavingMts').value = ''; document.getElementById('warpCount').value = '';
-            document.getElementById('warpCount2').value = ''; document.getElementById('weftCount').value = '';
-            document.getElementById('warpingUnitName').value = ''; document.getElementById('noOfBeams').value = ''; document.getElementById('beamMtrs').value = '';
+            document.getElementById('topDesignNo').value = '';
+            document.getElementById('topWeaverName').value = '';
+            document.getElementById('crimpPerc').value = '5';
+            document.getElementById('warpingMts').value = '';
+            document.getElementById('fabricMts').value = '';
+            document.getElementById('warpCount').value = '';
+            document.getElementById('warpCount2').value = '';
+            document.getElementById('weftCount').value = '';
+            document.getElementById('warpingUnitName').value = ''; 
+            document.getElementById('noOfBeams').value = ''; 
+            document.getElementById('beamMtrs').value = '';
             document.getElementById('top_completed_status').checked = false;
-            loadBitmapImage(); btn.innerText = origText;
+            loadBitmapImage();
+            btn.innerText = origText;
         }
 
         function loadBottomRows() {
@@ -1130,6 +1667,7 @@
             const selectedWeaver = document.getElementById('botWeaverName').value;
             const warpTable = document.getElementById('botWarpTable');
             const weftTable = document.getElementById('botWeftTable');
+            
             warpTable.innerHTML = '';
             weftTable.innerHTML = '';
 
@@ -1366,11 +1904,13 @@
             let table = document.getElementById(tableId);
             if(!table) return;
             
-            let html = `<div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">
-                            <h2 style="color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${titleText}</h2>
-                        </div>
-                        <div style="overflow-x:auto;">
-                        <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center; background:#FFF; color:#1E2B23; border:1px solid #D1DED1;">`;
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #E2E8E2; padding-bottom: 15px;">
+                    <h2 style="color: #2F4F38; font-family: sans-serif; margin-bottom: 5px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${titleText}</h2>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center; background:#FFF; color:#1E2B23; border:1px solid #D1DED1;">
+            `;
             
             let headers = table.querySelectorAll('thead th');
             html += `<tr style="background:#EAF0EA;">`;
