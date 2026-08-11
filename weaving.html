@@ -308,7 +308,7 @@
                 </div>
             </div>
 
-            <!-- 📌 EXTRA TAB FOR WARPING BEAM DETAILS (Restored & Fixed) -->
+            <!-- 📌 EXTRA TAB FOR WARPING BEAM DETAILS -->
             <div class="warping-beam-tab">
                 <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #059669; display: flex; align-items: center; gap: 6px;">
                     <span>🧵</span> Warping Beam Details (From Warping Unit)
@@ -747,57 +747,70 @@
             }
         }
 
+        // 🌟 ULTRA ROBUST WARPING MTRS FETCHING
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
                 localStorage.setItem('selected_design_number', val);
                 let cleanDNo = cleanDesignName(val);
+                
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || val;
-                let specs = designSpecs[specKey] || { warp: '', warp2: '', weft: '', reed: '', pick: '' };
-                
-                let specStatus = (specs && specs.status) ? specs.status.toLowerCase() : '';
+                let sp = designSpecs[specKey] || {};
+
+                let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+                let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+
+                let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
                 let rec = weavingMasterData.find(r => (r.designNo === val || r.designNumber === val));
 
                 if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
                     document.getElementById('top_completed_status').checked = true;
                 } else { document.getElementById('top_completed_status').checked = false; }
 
-                document.getElementById('warpCount').value = specs.warp || specs.count1 || '';
-                document.getElementById('warpCount2').value = specs.warp2 || specs.count2 || ''; 
-                document.getElementById('weftCount').value = specs.weft || '';
+                document.getElementById('warpCount').value = sp.warp || sp.count1 || found.count1 || '';
+                document.getElementById('warpCount2').value = sp.warp2 || sp.count2 || ''; 
+                document.getElementById('weftCount').value = sp.weft || found.weftCount || '';
 
-                let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-                let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
-                
+                // 🌟 AGGRESSIVE SEARCH ACROSS ALL STORAGE FOR WARPING MTRS
+                let foundWarpingMts = 0;
+                let warpingUnit = "";
+
+                // 1. Check warping_issue_records
                 let warpingRecords = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
                 let matchedWarping = warpingRecords.slice().reverse().find(w => cleanDesignName(w.designNo || w.designNumber) === cleanDNo);
-                
-                let defaultWarpingMts = 0;
                 if (matchedWarping) {
-                    defaultWarpingMts = parseFloat(matchedWarping.warpingMts || matchedWarping.issueWt || matchedWarping.orderWt || 0);
-                    if (matchedWarping.unit) {
-                        let sel = document.getElementById('warpingUnitName');
-                        if (!Array.from(sel.options).some(o => o.value === matchedWarping.unit)) {
-                            sel.innerHTML += `<option value="${matchedWarping.unit}">${matchedWarping.unit}</option>`;
-                        }
-                        sel.value = matchedWarping.unit;
-                    }
+                    foundWarpingMts = parseFloat(matchedWarping.warpingMts || matchedWarping.issueWt || matchedWarping.orderWt || 0);
+                    if (matchedWarping.unit) warpingUnit = matchedWarping.unit;
                 }
-                
-                if (!defaultWarpingMts || defaultWarpingMts <= 0) {
+
+                // 2. Check design_specs
+                if (!foundWarpingMts && sp) {
+                    foundWarpingMts = parseFloat(sp.warpingMts || sp.warpMts || 0);
+                }
+
+                // 3. Fallback to calculation
+                if (!foundWarpingMts || foundWarpingMts <= 0) {
                     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                     let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
                     let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
-                    let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 100);
-                    defaultWarpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr * 0.95) : 100;
+                    let yarnCalcOrderMtr = parseFloat(sp.yarnOrderMtr) || parseFloat(sp.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 100);
+                    foundWarpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr * 0.95) : 100;
                 }
 
-                document.getElementById('warpingMts').value = defaultWarpingMts > 0 ? defaultWarpingMts.toFixed(2) : '100.00';
-                document.getElementById('beamMtrs').value = defaultWarpingMts > 0 ? defaultWarpingMts.toFixed(2) : '100.00';
+                document.getElementById('warpingMts').value = foundWarpingMts > 0 ? foundWarpingMts.toFixed(2) : '100.00';
+                document.getElementById('beamMtrs').value = foundWarpingMts > 0 ? foundWarpingMts.toFixed(2) : '100.00';
                 document.getElementById('crimpPerc').value = "5"; 
                 
-                let fabricMtrs = defaultWarpingMts > 0 ? (defaultWarpingMts - (defaultWarpingMts * 0.05)) : 95;
+                if (warpingUnit) {
+                    let sel = document.getElementById('warpingUnitName');
+                    if (!Array.from(sel.options).some(o => o.value === warpingUnit)) {
+                        sel.innerHTML += `<option value="${warpingUnit}">${warpingUnit}</option>`;
+                    }
+                    sel.value = warpingUnit;
+                }
+
+                let fabricMtrs = foundWarpingMts > 0 ? (foundWarpingMts - (foundWarpingMts * 0.05)) : 95;
                 document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
 
                 let savedWeaving = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
@@ -819,14 +832,14 @@
                     if (savedWeaving.crimpPerc) document.getElementById('crimpPerc').value = savedWeaving.crimpPerc;
                 }
 
-                let defaultWarpCount = found.count1 || specs.warp || '20';
-                let defaultWeftCount = found.weftCount || specs.weft || '40';
+                let defaultWarpCount = found.count1 || sp.warp || '20';
+                let defaultWeftCount = found.weftCount || sp.weft || '40';
 
                 baseWarpWeights[val] = []; 
                 baseWeftWeights[val] = [];
 
-                let uiReed = parseFloat(found.reed || specs.reed || specs.baseReed) || 52;
-                let baseWidth = parseFloat(found.width || specs.width || specs.baseWidth) || 66.92;
+                let uiReed = parseFloat(found.reed || sp.reed || sp.baseReed) || 52;
+                let baseWidth = parseFloat(found.width || sp.width || sp.baseWidth) || 66.92;
                 let totalWarpEnds = Math.round(uiReed * baseWidth);
                 
                 let warpData = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
@@ -847,8 +860,8 @@
                     });
                 }
 
-                let uiPick = parseFloat(found.pick || specs.pick || specs.basePick) || 56;
-                let weftWidth = parseFloat(found.weftWidth || specs.weftWidth) || (baseWidth + 3);
+                let uiPick = parseFloat(found.pick || sp.pick || sp.basePick) || 56;
+                let weftWidth = parseFloat(found.weftWidth || sp.weftWidth) || (baseWidth + 3);
                 let totalFabricPick = weftWidth * uiPick;
 
                 let weftData = resolvePattern(found.weftLines || [], found.weftRanges || [], 'weft', defaultWeftCount);
