@@ -10,11 +10,12 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
+    /* 📌 Smart Background - STRICTLY NO BLACK */
     html, body { 
         width: 100%; 
         min-height: 100vh; 
         background: #030712; 
-        color: #1E2B23; 
+        color: #1E2B23; /* Deep Dark Green */
     }
 
     body { 
@@ -24,6 +25,7 @@
         align-items: center;
     }
 
+    /* 📌 Main Container */
     .main-card {
         width: 100%;
         max-width: 900px;
@@ -38,63 +40,140 @@
         gap: 15px;
     }
 
-    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .top-nav { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 5px; 
+    }
 
+    /* 📌 Smart Back Button */
     .back-btn {
-        display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
-        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
-        padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFFFFF;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+        background: #1A2421; 
+        padding: 8px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         transition: all 0.3s ease;
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
     #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
     #bitmapDisplayContainer img {
-        max-height: 45px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.2);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08); cursor: zoom-in; transition: transform 0.3s;
+        max-height: 45px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.2);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        cursor: zoom-in;
+        transition: transform 0.3s;
     }
     #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
+    /* Checkbox Styling */
     .completed-checkbox {
-        display: flex; align-items: center; gap: 6px; background: #D8DFD6;
-        padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(82, 110, 81, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #D8DFD6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(82, 110, 81, 0.4);
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .completed-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #526E51; margin: 0; }
-    .completed-checkbox label { margin: 0; color: #3F5A3E; cursor: pointer; font-size: 12px; font-weight: 700; }
+    
+    .completed-checkbox input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #526E51;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .completed-checkbox label {
+        margin: 0;
+        color: #3F5A3E;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+    }
 
     .page-title {
-        font-size: 16px; margin-bottom: 5px; font-weight: 700; color: #2F4F38;
-        text-align: left; position: relative; padding-left: 12px;
+        font-size: 16px;
+        margin-bottom: 5px;
+        font-weight: 700;
+        color: #2F4F38;
+        text-align: left;
+        position: relative;
+        padding-left: 12px;
     }
     .page-title::before {
         content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
         background: #4A7C59; border-radius: 4px;
     }
 
+    /* 📌 Smart Sectioning */
     .form-section {
-        background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
-        padding: 22px 15px 15px 15px; margin-bottom: 5px; position: relative;
+        background: #F8FAF8;
+        border: 1px solid #E2E8E2;
+        border-radius: 14px;
+        padding: 22px 15px 15px 15px;
+        margin-bottom: 5px;
+        position: relative;
     }
     
     .section-badge {
-        position: absolute; top: -12px; left: 15px; background: #4A7C59; color: #FFF;
-        font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
-        letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
+        position: absolute;
+        top: -12px;
+        left: 15px;
+        background: #4A7C59;
+        color: #FFF;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
     }
     .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
 
-    .form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
-    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+    /* 📌 Clean Multi-Row Grid Layout */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
+    /* 📌 Smart 3D Inputs */
     input, select {
-        width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
-        background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; transition: all 0.3s ease;
+        width: 100%; padding: 10px 12px; border-radius: 8px;
+        border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
+        font-size: 11px; font-weight: 600; transition: all 0.3s ease;
         box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
     }
-    input:focus, select:focus { border-color: #4A7C59; outline: none; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
+    input:focus, select:focus {
+        border-color: #4A7C59; outline: none; background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+    }
     input::placeholder { color: #A0AFA0; font-weight: 400; }
     input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
 
@@ -114,17 +193,40 @@
     .btn-del-inline:hover { background: #FECACA; }
 
     /* 📌 Advanced Grids */
-    .grid-header { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px; gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px; }
-    .grid-header-bot { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px; gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px; }
-    .grid-header div, .grid-header-bot div { font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
+    .grid-header {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+    }
+    .grid-header-bot {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px;
+        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+    }
 
-    .line-row { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px; gap: 6px; align-items: center; margin-bottom: 8px; }
-    .line-row-bot { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px; gap: 6px; align-items: center; margin-bottom: 8px; }
+    .grid-header div, .grid-header-bot div {
+        font-size: 10px; font-weight: 700; color: #2F4F38;
+        text-align: center; text-transform: uppercase;
+    }
+
+    .line-row {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
+        gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+    .line-row-bot {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px;
+        gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+
     .line-row input, .line-row-bot input { padding: 10px 4px; font-size: 11px; text-align: center; }
 
     .del-btn {
-        color: white; border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;
-        display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1);
+        color: white; border: none; width: 35px; height: 35px; border-radius: 8px;
+        cursor: pointer; font-size: 16px; font-weight: bold; display: flex;
+        align-items: center; justify-content: center; transition: all 0.2s ease;
+        background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1);
     }
     .del-btn:hover { background: #FECACA; transform: scale(1.05); }
 
@@ -136,7 +238,8 @@
 
     /* 📌 Smart Buttons */
     .btn-main {
-        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px; color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
+        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
         transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
@@ -146,45 +249,76 @@
     .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
 
     .popup-trigger-btn {
-        background: linear-gradient(135deg, #6366F1, #4338CA); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
-        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+        background: linear-gradient(135deg, #6366F1, #4338CA);
+        color: white; border: none; padding: 14px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
     }
     .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
     /* 📌 Advanced Pop-up Modal Styling */
     .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px); z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
+        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
     }
     .overlay-modal.show { opacity: 1; }
     
     .modal-content {
-        background: #FFFFFF; width: 100%; max-width: 950px; margin: auto; height: 90vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
+        background: #FFFFFF; width: 100%; max-width: 950px; margin: auto; height: 90vh; border-radius: 16px;
+        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
     }
     .overlay-modal.show .modal-content { transform: scale(1); }
 
-    .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; }
+    .modal-header {
+        padding: 15px 20px; background: #F4F7F4; display: flex;
+        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
+    }
     .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
     
-    .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; transition: all 0.2s ease; }
+    .close-btn {
+        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        transition: all 0.2s ease;
+    }
     .close-btn:hover { background: #FECACA; transform: scale(1.05); }
 
     .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; display: flex; flex-direction: column; gap: 12px; }
 
     /* 📌 Saved Warping Card Layout */
     .saved-warp-card {
-        background: #FFFFFF; border: 1px solid #D1DED1; border-radius: 12px; padding: 14px; box-shadow: 0 4px 12px rgba(30,43,35,0.04); display: flex; flex-direction: column; gap: 10px;
+        background: #FFFFFF; border: 1px solid #D1DED1; border-radius: 12px; padding: 14px;
+        box-shadow: 0 4px 12px rgba(30,43,35,0.04); display: flex; flex-direction: column; gap: 10px;
     }
-    .saved-warp-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #E2E8E2; padding-bottom: 8px; }
-    .warp-card-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #4A7C59; cursor: zoom-in; }
+    .saved-warp-top {
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #E2E8E2; padding-bottom: 8px;
+    }
+    .warp-card-img {
+        width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #4A7C59; cursor: zoom-in;
+    }
     
-    .table-container { width: 100%; border-radius: 8px; overflow-x: auto; border: 1px solid #E2E8E2; background: #FFFFFF; }
-    .warp-sub-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto; }
-    .warp-sub-table th, .warp-sub-table td { padding: 9px 8px; border: 1px solid #E2E8E2; text-align: center; white-space: nowrap; }
-    .warp-sub-table th { background: #EAF0EA; color: #2F4F38; font-weight: 700; font-size: 10px; text-transform: uppercase; }
+    .table-container {
+        width: 100%; border-radius: 8px; overflow-x: auto; border: 1px solid #E2E8E2; background: #FFFFFF;
+    }
+    .warp-sub-table {
+        width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto;
+    }
+    .warp-sub-table th, .warp-sub-table td {
+        padding: 9px 8px; border: 1px solid #E2E8E2; text-align: center; white-space: nowrap;
+    }
+    .warp-sub-table th {
+        background: #EAF0EA; color: #2F4F38; font-weight: 700; font-size: 10px; text-transform: uppercase;
+    }
     .warp-sub-table td { color: #1E2B23; }
 
-    .action-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid #F4F7F4; padding-top: 8px; }
-    .action-row button { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
+    .action-row {
+        display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid #F4F7F4; padding-top: 8px;
+    }
+    .action-row button {
+        padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none;
+    }
     .btn-card-edit { background: #64748B; color: white; }
     .btn-card-del { background: #EF4444; color: white; }
     .btn-card-complete { background: #526E51; color: white; }
@@ -193,9 +327,21 @@
     .excess-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
     .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
 
-    .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center; padding: 20px; flex-direction: column; }
-    .fullscreen-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
-    .close-fullscreen { position: absolute; top: 20px; right: 20px; background: #EF4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    /* 📌 Fullscreen Image Popup Modal */
+    .fullscreen-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
+        padding: 20px; flex-direction: column;
+    }
+    .fullscreen-modal img {
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+    }
+    .close-fullscreen {
+        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
+        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
 </style>
 </head>
 <body>
@@ -225,7 +371,6 @@
             </div>
             <div class="form-group">
                 <label>Warping Name (Unit)</label>
-                <!-- 🌟 Dropdown added for Warping Name -->
                 <div class="input-group-btn">
                     <select id="topUnit"><option value="">Select Unit</option></select>
                     <button type="button" class="btn-add-inline" onclick="addWarpingUnit()">+ Add</button>
@@ -251,14 +396,18 @@
             </div>
             <div class="form-group">
                 <label>Warping Mts</label>
-                <!-- 🌟 Warping Mts (Auto-fill 5% less than Warp Dyeing Mtrs) -->
-                <input type="number" id="topWarpingMts" placeholder="Mtrs" step="0.01" onchange="loadTopYarnLines()">
+                <input type="number" id="topWarpingMts" placeholder="100" step="0.01" onchange="loadTopYarnLines()">
             </div>
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
             <label>Weaver To</label>
-            <input type="text" id="topWeaverTo" placeholder="Enter Weaver To / Party Name">
+            <!-- 🌟 Weaver Dropdown with Add/Del Buttons -->
+            <div class="input-group-btn">
+                <select id="topWeaverTo"><option value="">Select Weaver / Party</option></select>
+                <button type="button" class="btn-add-inline" onclick="addWeaver()">+ Add</button>
+                <button type="button" class="btn-del-inline" onclick="deleteWeaver()" title="Delete Weaver">🗑️</button>
+            </div>
         </div>
 
         <div style="overflow-x: auto; margin-top: 10px;">
@@ -299,14 +448,13 @@
         </div>
 
         <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
-            <div style="min-width: 600px;">
+            <div style="min-width: 550px;">
                 <div class="grid-header-bot">
                     <div>Count</div>
                     <div>Colour</div>
-                    <div>Iss Wt</div>
-                    <div>Bal Wt</div>
+                    <div>Order Wt</div>
+                    <div>Issued Wt</div>
                     <div>Rcvd Wt</div>
-                    <div>Action</div>
                 </div>
                 <div id="botLinesContainer"></div>
             </div>
@@ -344,6 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('topDate').valueAsDate = new Date();
     document.getElementById('botDate').valueAsDate = new Date();
     loadWarpingUnitSuggestions();
+    loadWeaverSuggestions();
     loadTopDesignDropdown();
     loadBottomOrderDropdown();
 });
@@ -363,6 +512,7 @@ function closeModal(modalId) {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
+// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
@@ -385,17 +535,24 @@ function loadBitmapImage() {
         let b64 = designSpecs[specKey].bitmap;
         imgHtml = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
     }
+    
     bitmapContainer.innerHTML = imgHtml;
 }
 
-function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
+function cleanDesignName(str) {
+    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+}
 
 function parseYarnCount(countStr) {
     if (!countStr) return 0;
     let str = String(countStr).trim().toLowerCase().replace(/s/g, ''); 
     if (str.includes('/')) {
         let parts = str.split('/');
-        if (parts.length === 2) { return (parseFloat(parts[1]) || 1) / (parseFloat(parts[0]) || 1); }
+        if (parts.length === 2) {
+            let ply = parseFloat(parts[0]) || 1;
+            let singleCount = parseFloat(parts[1]) || 1;
+            return singleCount / ply; 
+        }
     }
     return parseFloat(str) || 0;
 }
@@ -415,7 +572,9 @@ function resolvePattern(lines, ranges, type, defaultCount) {
             for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
         });
     }
-    lines.forEach((l, idx) => { if(!covered[idx]) orderedPattern.push({...l}); });
+    lines.forEach((l, idx) => {
+        if(!covered[idx]) orderedPattern.push({...l});
+    });
 
     let exactSequence = [];
     orderedPattern.forEach(item => {
@@ -493,6 +652,63 @@ function loadWarpingUnitSuggestions() {
     if(currentVal) document.getElementById('topUnit').value = currentVal;
 }
 
+// 📌 NEW: WEAVER TO DROPDOWN MANAGEMENT
+function addWeaver() {
+    let val = prompt("புதிய Weaver / Party பெயரை உள்ளிடவும்:");
+    if(val) {
+        val = val.trim();
+        if(!val) return;
+        let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+        if(!masterWeavers.includes(val)) {
+            masterWeavers.push(val);
+            localStorage.setItem('tex_master_weavers', JSON.stringify(masterWeavers));
+            loadWeaverSuggestions();
+            alert(`Weaver '${val}' added successfully! ✅`);
+        } else {
+            alert("This Weaver Name is already in the Master List!");
+        }
+        document.getElementById('topWeaverTo').value = val;
+    }
+}
+
+function deleteWeaver() {
+    let masterList = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+    if(masterList.length === 0) { alert(`No manually added Weavers found to delete.`); return; }
+    let listStr = masterList.map((m, i) => `${i + 1}. ${m}`).join('\n');
+    let idxStr = prompt(`எந்த Weaver பெயரை நீக்க வேண்டும்? அதற்கான எண்ணை டைப் செய்யவும்:\n\n${listStr}`);
+    if(idxStr) {
+        let idx = parseInt(idxStr) - 1;
+        if(idx >= 0 && idx < masterList.length) {
+            let deleted = masterList.splice(idx, 1);
+            localStorage.setItem('tex_master_weavers', JSON.stringify(masterList));
+            loadWeaverSuggestions();
+            alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
+        } else {
+            alert("தவறான எண் (Invalid Number)!");
+        }
+    }
+}
+
+function loadWeaverSuggestions() {
+    let masterWeavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    
+    let weaverSet = new Set([...masterWeavers]);
+    issues.forEach(item => { if(item.weaverTo) weaverSet.add(item.weaverTo.trim()); });
+
+    let currentVal = document.getElementById('topWeaverTo') ? document.getElementById('topWeaverTo').value : '';
+    let html = '<option value="">Select Weaver / Party</option>';
+    Array.from(weaverSet).sort().forEach(u => { 
+        let sel = (currentVal && u.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
+        html += `<option value="${u}" ${sel}>${u}</option>`; 
+    });
+    
+    if (document.getElementById('topWeaverTo')) {
+        document.getElementById('topWeaverTo').innerHTML = html;
+        if(currentVal) document.getElementById('topWeaverTo').value = currentVal;
+    }
+}
+
 function loadTopDesignDropdown() {
     let allDesignSet = new Set();
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
@@ -550,7 +766,12 @@ function loadTopDesignSpecs(dNo) {
     let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
     if (existingIssues.length > 0) {
         if(existingIssues[0].unit) document.getElementById('topUnit').value = existingIssues[0].unit;
-        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) {
+            document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+            // Ensure option is selected or visually active
+            loadWeaverSuggestions();
+            document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+        }
         if(existingIssues[0].warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = existingIssues[0].warpingMts;
     } else {
         document.getElementById('topWarpingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
@@ -592,7 +813,9 @@ function loadTopYarnLines() {
 
     if (existingIssues.length > 0) {
         if(existingIssues[0].unit) document.getElementById('topUnit').value = existingIssues[0].unit;
-        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) {
+            document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
+        }
     }
 
     if(warpList.length > 0) {
@@ -695,7 +918,9 @@ async function saveTopOrder() {
     let alreadyExists = issues.some(i => cleanDesignName(i.designNo) === cleanDNo);
     if(alreadyExists) {
         let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Warping Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-        if(!confirmReEntry) return;
+        if(!confirmReEntry) {
+            return;
+        }
         issues = issues.filter(i => cleanDesignName(i.designNo) !== cleanDNo);
     }
 
@@ -756,6 +981,7 @@ async function saveTopOrder() {
         document.getElementById('topLinesContainer').innerHTML = '';
         document.getElementById('topDesignNo').value = '';
         document.getElementById('topUnit').value = '';
+        document.getElementById('topWeaverTo').value = '';
         document.getElementById('topReed').value = '';
         document.getElementById('topCount').value = '';
         if(cb) cb.checked = false;
@@ -770,7 +996,6 @@ async function saveTopOrder() {
     btn.innerText = origText;
 }
 
-// 📌 3. BOTTOM SECTION: MULTIPLE RECEIVE ENTRY
 function loadBottomOrderDropdown() {
     let select = document.getElementById('botActiveOrderSelect');
     let html = '<option value="">Select Pending Order</option>';
@@ -779,9 +1004,8 @@ function loadBottomOrderDropdown() {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        let rcvdTotal = receives.filter(r => r.issueId == issue.id).reduce((sum, r) => sum + parseFloat(r.receivedWt||0), 0);
-        let bal = parseFloat(issue.issueWt) - rcvdTotal;
-        return bal > 0.005; 
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive; 
     });
 
     let uniqueMap = new Map();
@@ -829,11 +1053,8 @@ function loadBottomRows() {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        if (issue.designNo !== dNo || issue.unit !== uName) return false;
-        let rcvdTotal = receives.filter(r => r.issueId == issue.id).reduce((sum, r) => sum + parseFloat(r.receivedWt||0), 0);
-        let bal = parseFloat(issue.issueWt) - rcvdTotal;
-        issue.balanceWt = bal;
-        return bal > 0.005; 
+        let hasReceive = receives.some(r => r.issueId == issue.id);
+        return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
     });
 
     pendingItems.forEach(item => {
@@ -844,24 +1065,12 @@ function loadBottomRows() {
         row.innerHTML = `
             <input type="text" class="b-count" value="${item.count}" readonly>
             <input type="text" class="b-color" value="${item.color}" readonly>
-            <input type="text" class="b-isswt" value="${parseFloat(item.issueWt).toFixed(3)}" readonly>
-            <input type="text" class="b-balwt" value="${item.balanceWt.toFixed(3)}" readonly style="color:#D97706; font-weight:bold;">
+            <input type="text" class="b-orderwt" value="${item.orderWt}" readonly>
+            <input type="text" class="b-isswt" value="${item.issueWt}" readonly>
             <input type="number" class="b-received" placeholder="Rcvd Wt" step="0.001">
-            <div style="display:flex; gap:4px;">
-                <button type="button" class="btn-split-row" onclick="duplicateBotRow(this)" title="Split Receive">➕</button>
-                <button type="button" class="del-btn" style="width:30px; height:30px; font-size:14px;" onclick="this.closest('.line-row-bot').remove()">✕</button>
-            </div>
         `;
         container.appendChild(row);
     });
-}
-
-// 🌟 Splitting the bottom receive row to allow multiple receives for the same line
-window.duplicateBotRow = function(btn) {
-    let currentRow = btn.closest('.line-row-bot');
-    let newRow = currentRow.cloneNode(true);
-    newRow.querySelector('.b-received').value = '';
-    currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
 }
 
 async function saveBottomEntry() {
@@ -917,79 +1126,128 @@ async function saveBottomEntry() {
     btn.innerText = origText;
 }
 
-// 📌 4. SAVED DATA CARD & STATUS TOGGLE
-async function toggleStatusForGroup(dNo, unitName, newStatus) {
-    let msg = newStatus === 'completed' ? "Change this design order to Completed?" : "Change this design order to Running?";
+async function toggleStatus(id, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
     if(confirm(msg)) {
         let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-        issues.forEach(r => {
-            if(cleanDesignName(r.designNo) === cleanDesignName(dNo) && r.unit === unitName) {
-                r.status = newStatus;
+        let index = issues.findIndex(r => r.id == id);
+        
+        if(index > -1) {
+            issues[index].status = newStatus;
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            
+            let dNo = issues[index].designNo;
+            if(dNo) {
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+                if(!designSpecs[dNo]) designSpecs[dNo] = {};
+                designSpecs[dNo].status = newStatus;
+                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+                if(window.firebaseSave) {
+                    await window.firebaseSave('design_specs', designSpecs);
+                }
             }
-        });
 
-        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
-        
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
-        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
-
-        if(!designSpecs[specKey]) designSpecs[specKey] = {};
-        designSpecs[specKey].status = newStatus;
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-        if(window.firebaseSave) {
-            await window.firebaseSave('warping_issue_records', issues);
-            await window.firebaseSave('design_specs', designSpecs);
+            if(window.firebaseSave) {
+                await window.firebaseSave('warping_issue_records', issues);
+            }
+            renderCards();
         }
-        if (window.firebaseSaveIndividual) {
-            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-        }
-        renderCards();
     }
 }
 
-async function editWarpingGroup(dNo, unitName) {
+async function editWarpingRecord(issueId, isReceived) {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-    let targetIssue = issues.find(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName);
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     
-    if(targetIssue) {
-        document.getElementById('topDate').value = targetIssue.date;
-        document.getElementById('topUnit').value = targetIssue.unit;
-        document.getElementById('topDesignNo').value = targetIssue.designNo;
-        if(targetIssue.weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = targetIssue.weaverTo;
-        if(targetIssue.warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = targetIssue.warpingMts;
-        
-        let cb = document.getElementById('top_completed_status');
-        if(cb) cb.checked = (targetIssue.status === 'completed');
-        
-        loadTopDesignSpecs(targetIssue.designNo);
-        closeModal('savedListModal');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) {
+            let recRecord = receives[recIndex];
+            receives.splice(recIndex, 1);
+            localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+            if (window.firebaseSave) window.firebaseSave('warping_receive_records', receives);
+            
+            document.getElementById('botDate').value = recRecord.botDate;
+            document.getElementById('botActiveOrderSelect').value = `${recRecord.designNo}_${recRecord.unit}`;
+            document.getElementById('botDesignNo').value = recRecord.designNo;
+            document.getElementById('botUnitName').value = recRecord.unit;
+            closeModal('savedListModal');
+            loadBottomRows();
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
+                rows.forEach(row => {
+                    if(row.getAttribute('data-id') == issueId) {
+                        row.querySelector('.b-received').value = recRecord.receivedWt;
+                    }
+                });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }, 100);
+            renderCards();
+        }
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) {
+            let issRecord = issues[issueIndex];
+            issues.splice(issueIndex, 1);
+            localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+            if (window.firebaseSave) window.firebaseSave('warping_issue_records', issues);
+            
+            document.getElementById('topDate').value = issRecord.date;
+            document.getElementById('topUnit').value = issRecord.unit;
+            document.getElementById('topDesignNo').value = issRecord.designNo;
+            if(issRecord.weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = issRecord.weaverTo;
+            if(issRecord.warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = issRecord.warpingMts;
+            
+            let cb = document.getElementById('top_completed_status');
+            if(cb) cb.checked = (issRecord.status === 'completed');
+            
+            loadTopDesignSpecs(issRecord.designNo);
+            
+            setTimeout(() => {
+                let rows = document.querySelectorAll('#topLinesContainer .line-row');
+                rows.forEach(row => {
+                    if(row.querySelector('.t-count').value === issRecord.count && row.querySelector('.t-color').value === issRecord.color) {
+                        row.querySelector('.t-isswt').value = issRecord.issueWt;
+                    }
+                });
+            }, 100);
+
+            closeModal('savedListModal');
+            renderCards();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 }
 
-async function deleteWarpingGroup(dNo, unitName) {
-    if(!confirm("Are you sure you want to delete this entire warping entry?")) return;
+async function deleteWarpingRecord(issueId, isReceived) {
+    if(!confirm("Are you sure you want to delete this record?")) return;
     
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     
-    let targetIds = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName).map(i => i.id);
+    if (isReceived) {
+        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        if(recIndex !== -1) receives.splice(recIndex, 1);
+    } else {
+        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        if(issueIndex !== -1) issues.splice(issueIndex, 1);
+    }
     
-    issues = issues.filter(i => !(cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName));
-    receives = receives.filter(r => !targetIds.includes(parseFloat(r.issueId)));
-    
-    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
     localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
     
     if (window.firebaseSave) {
-        await window.firebaseSave('warping_issue_records', issues);
         await window.firebaseSave('warping_receive_records', receives);
+        await window.firebaseSave('warping_issue_records', issues);
     }
     
     loadBottomOrderDropdown();
     renderCards();
+    document.getElementById('botLinesContainer').innerHTML = '';
+    document.getElementById('botGridWrapper').style.display = 'none';
+    document.getElementById('botActiveOrderSelect').value = '';
 }
 
 function renderCards() {
@@ -1053,7 +1311,7 @@ function renderCards() {
             let excessStr = "-";
             if(rcvdTotal > 0) {
                 let diff = issWtNum - rcvdTotal;
-                if(Math.abs(diff) > 0.005) {
+                if(Math.abs(diff) > 0.001) {
                     excessStr = `<span class="excess-text">${diff.toFixed(3)}</span>`;
                 } else {
                     excessStr = `<span style="color:#10B981; font-weight:bold;">0.000</span>`;
@@ -1126,6 +1384,80 @@ function renderCards() {
         `;
         container.appendChild(card);
     });
+}
+
+async function toggleStatusForGroup(dNo, unitName, newStatus) {
+    let msg = newStatus === 'completed' ? "Change this design order to Completed?" : "Change this design order to Running?";
+    if(confirm(msg)) {
+        let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+        issues.forEach(r => {
+            if(cleanDesignName(r.designNo) === cleanDesignName(dNo) && r.unit === unitName) {
+                r.status = newStatus;
+            }
+        });
+
+        localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+        
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
+        let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
+
+        if(!designSpecs[specKey]) designSpecs[specKey] = {};
+        designSpecs[specKey].status = newStatus;
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+
+        if(window.firebaseSave) {
+            await window.firebaseSave('warping_issue_records', issues);
+            await window.firebaseSave('design_specs', designSpecs);
+        }
+        if (window.firebaseSaveIndividual) {
+            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        }
+        renderCards();
+    }
+}
+
+async function editWarpingGroup(dNo, unitName) {
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let targetIssue = issues.find(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName);
+    
+    if(targetIssue) {
+        document.getElementById('topDate').value = targetIssue.date;
+        document.getElementById('topUnit').value = targetIssue.unit;
+        document.getElementById('topDesignNo').value = targetIssue.designNo;
+        if(targetIssue.weaverTo && document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = targetIssue.weaverTo;
+        if(targetIssue.warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = targetIssue.warpingMts;
+        
+        let cb = document.getElementById('top_completed_status');
+        if(cb) cb.checked = (targetIssue.status === 'completed');
+        
+        loadTopDesignSpecs(targetIssue.designNo);
+        closeModal('savedListModal');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+async function deleteWarpingGroup(dNo, unitName) {
+    if(!confirm("Are you sure you want to delete this entire warping entry?")) return;
+    
+    let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+    let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
+    
+    let targetIds = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName).map(i => i.id);
+    
+    issues = issues.filter(i => !(cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName));
+    receives = receives.filter(r => !targetIds.includes(parseFloat(r.issueId)));
+    
+    localStorage.setItem('warping_issue_records', JSON.stringify(issues));
+    localStorage.setItem('warping_receive_records', JSON.stringify(receives));
+    
+    if (window.firebaseSave) {
+        await window.firebaseSave('warping_issue_records', issues);
+        await window.firebaseSave('warping_receive_records', receives);
+    }
+    
+    loadBottomOrderDropdown();
+    renderCards();
 }
 </script>
 <script src="config.js"></script>
