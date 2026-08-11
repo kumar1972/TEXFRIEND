@@ -10,11 +10,12 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
+        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
             background: #030712; 
-            color: #1E2B23; 
+            color: #1E2B23; /* Deep Dark Green */
         }
         
         body { 
@@ -24,6 +25,7 @@
             align-items: center; 
         }
 
+        /* 📌 Main Container */
         .container { 
             width: 100%; 
             max-width: 900px; 
@@ -45,6 +47,7 @@
             margin-bottom: 5px; 
         }
 
+        /* 📌 Smart Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -73,6 +76,7 @@
             padding-bottom: 12px;
         }
 
+        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -108,6 +112,7 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
         .form-group label { font-size: 11px; font-weight: 700; color: #4A554A; }
 
+        /* 📌 Smart 3D Inputs */
         input, select, textarea {
             width: 100%; padding: 12px 14px; border-radius: 8px;
             border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
@@ -119,6 +124,7 @@
             border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
 
+        /* 📌 Checkbox Group Styling */
         .checkbox-group-container {
             background: #FFFFFF;
             border: 1px solid #D1DED1;
@@ -145,6 +151,7 @@
             cursor: pointer;
         }
 
+        /* 📌 Users Table Styling */
         .users-table-container {
             margin-top: 15px;
             background: #FFFFFF;
@@ -170,6 +177,7 @@
             text-transform: uppercase;
         }
 
+        /* 📌 Premium File Input Styling */
         input[type="file"] {
             padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; cursor: pointer;
         }
@@ -187,6 +195,7 @@
         }
         .preview-box img { max-height: 70px; border-radius: 6px; }
 
+        /* 📌 Smart Code Editor (For JSON) */
         #advancedJsonEditor {
             background: #1A2421; 
             color: #A7F3D0; 
@@ -196,6 +205,7 @@
         }
         #advancedJsonEditor:focus { box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.2); border-color: #34D399; }
 
+        /* 📌 Smart Buttons */
         .btn-action { 
             color: white; border: none; padding: 12px 16px; border-radius: 8px; 
             font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
@@ -227,7 +237,7 @@
 
     <h2 class="page-title">ERP Master Settings</h2>
 
-    <!-- 📌 User Access Control -->
+    <!-- 📌 Section: User Access Control -->
     <div class="form-section" style="border-left: 4px solid #EF4444;">
         <div class="section-badge danger">🔒 User Access Control (All Pages)</div>
         <div class="form-group">
@@ -257,7 +267,7 @@
         <button type="button" class="btn-action btn-danger" style="width: 100%; margin-top: 10px;" onclick="updateUserPermissions()">Update User Permissions</button>
     </div>
 
-    <!-- 📌 User Management -->
+    <!-- 📌 Section: User Management -->
     <div class="form-section" style="border-left: 4px solid #3B82F6;">
         <div class="section-badge blue">👤 User Management</div>
         <div class="form-grid">
@@ -294,7 +304,7 @@
         </div>
     </div>
 
-    <!-- 📌 General Profile -->
+    <!-- 📌 Section 1: General Settings -->
     <div class="form-section">
         <div class="section-badge">General Profile</div>
         <div class="form-grid">
@@ -316,7 +326,7 @@
         </div>
     </div>
 
-    <!-- 📌 Design Assets -->
+    <!-- 📌 Section 2: Design Assets -->
     <div class="form-section">
         <div class="section-badge blue">Design Assets</div>
         <div class="form-grid">
@@ -336,7 +346,7 @@
         </div>
     </div>
 
-    <!-- 📌 Party Directory -->
+    <!-- 📌 Section 3: Party Master -->
     <div class="form-section">
         <div class="section-badge amber">Party Directory</div>
         <div class="form-group">
@@ -361,7 +371,7 @@
         </div>
     </div>
 
-    <!-- 📌 Advanced Config -->
+    <!-- 📌 Section 4: Advanced Editor -->
     <div class="form-section">
         <div class="section-badge danger">Advanced Config</div>
         <div class="form-group">
@@ -374,7 +384,7 @@
         </div>
     </div>
 
-    <!-- 📌 System Actions -->
+    <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
         <button type="button" class="btn-action btn-primary" onclick="executeSaveAll()">✅ Save All Settings & Exit</button>
         <button type="button" class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
@@ -394,6 +404,37 @@ let tempDesignBitmapData = "";
 function cleanInputText(val) {
     if(!val) return "";
     return val.toString().replace(/\\/g, '').replace(/"/g, '').trim();
+}
+
+// 🌟 Custom Toast Alert Popup Component
+function showSuccessToast(message, callback) {
+    let existingToast = document.getElementById('customToast');
+    if(existingToast) existingToast.remove();
+
+    let toast = document.createElement('div');
+    toast.id = 'customToast';
+    toast.style.position = 'fixed';
+    toast.style.top = '20px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.backgroundColor = '#10B981';
+    toast.style.color = '#FFFFFF';
+    toast.style.padding = '14px 24px';
+    toast.style.borderRadius = '10px';
+    toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+    toast.style.zIndex = '999999';
+    toast.style.fontWeight = '700';
+    toast.style.fontSize = '14px';
+    toast.style.textAlign = 'center';
+    toast.style.minWidth = '280px';
+    toast.innerHTML = `✅ ${message}`;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+        if(callback) callback();
+    }, 1500);
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -521,7 +562,7 @@ function savePartyMaster() {
     let pAddr = document.getElementById('partyAddressInput').value.trim();
 
     if(!pName) {
-        alert("Please enter a Party Name!");
+        showSuccessToast("Please enter a Party Name!");
         return;
     }
 
@@ -532,7 +573,7 @@ function savePartyMaster() {
     localStorage.setItem('party_master_list', JSON.stringify(Object.keys(db)));
 
     loadPartyDropdown();
-    alert("Party Details Saved Successfully! ✅");
+    showSuccessToast("Party Details Saved Successfully!");
 }
 
 function deletePartyMaster() {
@@ -540,7 +581,7 @@ function deletePartyMaster() {
     if(!select) return;
     let val = select.value;
     if(!val) {
-        alert("Please select a Party to delete!");
+        showSuccessToast("Please select a Party to delete!");
         return;
     }
     if(confirm(`Are you sure you want to delete party: ${val}?`)) {
@@ -552,7 +593,7 @@ function deletePartyMaster() {
         document.getElementById('partyNameInput').value = '';
         document.getElementById('partyAddressInput').value = '';
         loadPartyDropdown();
-        alert("Party deleted successfully! 🗑️");
+        showSuccessToast("Party deleted successfully!");
     }
 }
 
@@ -579,7 +620,7 @@ function updateUserPermissions() {
         yarn_calc: document.getElementById('perm_yarn_calc').checked
     };
     localStorage.setItem('user_permissions', JSON.stringify(permissions));
-    alert("All Pages User Permissions Updated Successfully! ✅");
+    showSuccessToast("All Pages User Permissions Updated!");
 }
 
 function loadUserPermissions() {
@@ -601,7 +642,7 @@ function addNewUserAccount() {
     let uRole = document.getElementById('newUserRole').value;
 
     if(!uName || !uPass) {
-        alert("Please enter both Username and Password!");
+        showSuccessToast("Please enter Username and Password!");
         return;
     }
 
@@ -616,7 +657,7 @@ function addNewUserAccount() {
     document.getElementById('newUsername').value = '';
     document.getElementById('newPassword').value = '';
     renderUsersTable();
-    alert("New User Account Created Successfully! ✅");
+    showSuccessToast("New User Account Created!");
 }
 
 function renderUsersTable() {
@@ -647,55 +688,62 @@ function deleteUserAccount(index) {
         }
 
         renderUsersTable();
-        alert("User deleted successfully! 🗑️");
+        showSuccessToast("User deleted successfully!");
     }
 }
 
-// 🌟 FIX FOR SAVE ALL SETTINGS AND EXIT
+// 🌟 ULTIMATE GUARANTEED SAVE WITH TOAST NOTIFICATION
 function executeSaveAll() {
-    let headingEl = document.getElementById('set_heading');
-    if(headingEl) {
-        let val = cleanInputText(headingEl.value);
-        if(val) {
-            localStorage.setItem('app_heading_name', val);
-            if(window.firebaseSave) window.firebaseSave('app_heading_name', val);
+    try {
+        let headingEl = document.getElementById('set_heading');
+        if(headingEl) {
+            let val = cleanInputText(headingEl.value);
+            if(val) {
+                localStorage.setItem('app_heading_name', val);
+                if(window.firebaseSave) window.firebaseSave('app_heading_name', val);
+            }
         }
-    }
 
-    let addrEl = document.getElementById('set_comp_addr');
-    if(addrEl) {
-        let val = cleanInputText(addrEl.value);
-        if(val) {
-            localStorage.setItem('company_full_address', val);
-            if(window.firebaseSave) window.firebaseSave('company_full_address', val);
+        let addrEl = document.getElementById('set_comp_addr');
+        if(addrEl) {
+            let val = cleanInputText(addrEl.value);
+            if(val) {
+                localStorage.setItem('company_full_address', val);
+                if(window.firebaseSave) window.firebaseSave('company_full_address', val);
+            }
         }
-    }
 
-    if(tempLogoData) {
-        localStorage.setItem('company_logo_base64', tempLogoData);
-        localStorage.setItem('company_logo', tempLogoData);
-        localStorage.setItem('logo', tempLogoData);
-        if(window.firebaseSave) {
-            window.firebaseSave('company_logo_base64', tempLogoData);
-            window.firebaseSave('company_logo', tempLogoData);
-            window.firebaseSave('logo', tempLogoData);
+        if(tempLogoData) {
+            localStorage.setItem('company_logo_base64', tempLogoData);
+            localStorage.setItem('company_logo', tempLogoData);
+            localStorage.setItem('logo', tempLogoData);
+            if(window.firebaseSave) {
+                window.firebaseSave('company_logo_base64', tempLogoData);
+                window.firebaseSave('company_logo', tempLogoData);
+                window.firebaseSave('logo', tempLogoData);
+            }
         }
-    }
 
-    let designSelect = document.getElementById('settingDesignSelect');
-    if(designSelect && designSelect.value && tempDesignBitmapData) {
-        let designNo = designSelect.value;
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        if(!designSpecs[designNo]) designSpecs[designNo] = {};
-        designSpecs[designNo].bitmap = tempDesignBitmapData;
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-        if(window.firebaseSaveIndividual) {
-            window.firebaseSaveIndividual(designNo, designSpecs[designNo]);
+        let designSelect = document.getElementById('settingDesignSelect');
+        if(designSelect && designSelect.value && tempDesignBitmapData) {
+            let designNo = designSelect.value;
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+            if(!designSpecs[designNo]) designSpecs[designNo] = {};
+            designSpecs[designNo].bitmap = tempDesignBitmapData;
+            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+            if(window.firebaseSaveIndividual) {
+                window.firebaseSaveIndividual(designNo, designSpecs[designNo]);
+            }
         }
-    }
 
-    alert("All Settings Saved Successfully! ✅");
-    window.location.href = "dashboard.html";
+        showSuccessToast("All Settings Saved Successfully!", function() {
+            window.location.href = "dashboard.html";
+        });
+
+    } catch(err) {
+        console.error("Save Error: ", err);
+        alert("Save Error: " + err.message);
+    }
 }
 
 function resetLocalStorageOnly() {
@@ -718,8 +766,9 @@ function resetLocalStorageOnly() {
             localStorage.setItem('logo', compLogo);
         }
 
-        alert("Local cache cleared successfully! ✅");
-        location.reload();
+        showSuccessToast("Local cache cleared successfully!", function() {
+            location.reload();
+        });
     }
 }
 
@@ -750,7 +799,7 @@ function loadStorageDataToEditor() {
     }
     let editor = document.getElementById('advancedJsonEditor');
     if(editor) editor.value = JSON.stringify(allData, null, 2);
-    alert("Database Loaded into JSON Editor! 📥");
+    showSuccessToast("Database Loaded into JSON Editor!");
 }
 
 function saveStorageDataFromEditor() {
@@ -766,8 +815,9 @@ function saveStorageDataFromEditor() {
                     window.firebaseSave(key, JSON.parse(parsed[key]));
                 }
             }
-            alert("Database Updated Successfully from JSON Editor! ✅");
-            location.reload();
+            showSuccessToast("Database Updated Successfully!", function() {
+                location.reload();
+            });
         }
     } catch(e) {
         alert("Invalid JSON format! Please correct before saving. ❌\nError: " + e.message);
