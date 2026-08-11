@@ -156,7 +156,7 @@
             display: flex;
             gap: 6px;
         }
-        .input-group-btn input {
+        .input-group-btn select, .input-group-btn input {
             flex: 1;
         }
         .btn-add-inline {
@@ -314,7 +314,10 @@
             <div class="form-group">
                 <label id="supplierLabel">Source / Mill Name</label>
                 <div class="input-group-btn">
-                    <input type="text" id="supplierName" list="millSuggestions" placeholder="Type or Select Mill">
+                    <!-- 🌟 Native Select for Dropdown -->
+                    <select id="supplierName">
+                        <option value="">Select Mill</option>
+                    </select>
                     <button type="button" class="btn-add-inline" onclick="addMasterMill('supplierName')">+ Add</button>
                 </div>
             </div>
@@ -344,7 +347,10 @@
             <div class="form-group">
                 <label>Dyeing / Unit Name</label>
                 <div class="input-group-btn">
-                    <input type="text" id="dyeingName" list="unitSuggestions" placeholder="Type or Select Unit">
+                    <!-- 🌟 Native Select for Dropdown -->
+                    <select id="dyeingName">
+                        <option value="">Select Unit</option>
+                    </select>
                     <button type="button" class="btn-add-inline" onclick="addMasterUnit('dyeingName')">+ Add</button>
                 </div>
             </div>
@@ -353,14 +359,14 @@
             <div class="form-group">
                 <label>Mill Name (From where yarn is taken)</label>
                 <div class="input-group-btn">
-                    <input type="text" id="issueMillName" list="millSuggestions" placeholder="Type or Select Mill">
+                    <!-- 🌟 Native Select for Dropdown -->
+                    <select id="issueMillName">
+                        <option value="">Select Mill</option>
+                    </select>
                     <button type="button" class="btn-add-inline" onclick="addMasterMill('issueMillName')">+ Add</button>
                 </div>
             </div>
         </div>
-
-        <datalist id="millSuggestions"></datalist>
-        <datalist id="unitSuggestions"></datalist>
 
         <div class="form-row full">
             <div class="form-group">
@@ -484,34 +490,41 @@ document.addEventListener('DOMContentLoaded', function() {
     refreshAllTables();
 });
 
-function addMasterMill(inputId) {
-    let val = document.getElementById(inputId).value.trim();
-    if(!val) { alert("Please type a Mill Name to add!"); return; }
-    let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
-    if(!masterMills.includes(val)) {
-        masterMills.push(val);
-        localStorage.setItem('tex_master_mills', JSON.stringify(masterMills));
-        loadMillSuggestions();
-        alert(`Mill '${val}' added to Master List successfully! ✅`);
-    } else {
-        alert("This Mill Name is already in the Master List!");
+// 🚀 Fixed Add Logic for Mills via Prompt
+function addMasterMill(selectId) {
+    let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
+    if(val) {
+        val = val.trim();
+        if(!val) return;
+        let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+        if(!masterMills.includes(val)) {
+            masterMills.push(val);
+            localStorage.setItem('tex_master_mills', JSON.stringify(masterMills));
+            loadMillSuggestions();
+            alert(`Mill '${val}' added to Master List successfully! ✅`);
+        }
+        document.getElementById(selectId).value = val;
     }
 }
 
-function addMasterUnit(inputId) {
-    let val = document.getElementById(inputId).value.trim();
-    if(!val) { alert("Please type a Unit Name to add!"); return; }
-    let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
-    if(!masterUnits.includes(val)) {
-        masterUnits.push(val);
-        localStorage.setItem('tex_master_units', JSON.stringify(masterUnits));
-        loadUnitSuggestions();
-        alert(`Unit '${val}' added to Master List successfully! ✅`);
-    } else {
-        alert("This Unit Name is already in the Master List!");
+// 🚀 Fixed Add Logic for Units via Prompt
+function addMasterUnit(selectId) {
+    let val = prompt("புதிய யூனிட் பெயரை உள்ளிடவும் (Enter new Dyeing/Unit Name):");
+    if(val) {
+        val = val.trim();
+        if(!val) return;
+        let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
+        if(!masterUnits.includes(val)) {
+            masterUnits.push(val);
+            localStorage.setItem('tex_master_units', JSON.stringify(masterUnits));
+            loadUnitSuggestions();
+            alert(`Unit '${val}' added to Master List successfully! ✅`);
+        }
+        document.getElementById(selectId).value = val;
     }
 }
 
+// 🚀 Load Options directly into <select> elements
 function loadMillSuggestions() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
@@ -533,9 +546,17 @@ function loadMillSuggestions() {
         });
     }
 
-    let datalist = document.getElementById('millSuggestions');
-    datalist.innerHTML = '';
-    millsSet.forEach(mill => { datalist.innerHTML += `<option value="${mill}">`; });
+    let supVal = document.getElementById('supplierName').value;
+    let issMillVal = document.getElementById('issueMillName').value;
+
+    let html = '<option value="">Select Mill</option>';
+    Array.from(millsSet).sort().forEach(mill => { html += `<option value="${mill}">${mill}</option>`; });
+    
+    document.getElementById('supplierName').innerHTML = html;
+    document.getElementById('issueMillName').innerHTML = html;
+
+    if(supVal) document.getElementById('supplierName').value = supVal;
+    if(issMillVal) document.getElementById('issueMillName').value = issMillVal;
 }
 
 function loadUnitSuggestions() {
@@ -546,9 +567,13 @@ function loadUnitSuggestions() {
     
     issues.forEach(item => { if(item.dyeingName) unitSet.add(item.dyeingName.trim()); });
 
-    let datalist = document.getElementById('unitSuggestions');
-    datalist.innerHTML = '';
-    unitSet.forEach(u => { datalist.innerHTML += `<option value="${u}">`; });
+    let dyeVal = document.getElementById('dyeingName').value;
+
+    let html = '<option value="">Select Unit</option>';
+    Array.from(unitSet).sort().forEach(u => { html += `<option value="${u}">${u}</option>`; });
+    
+    document.getElementById('dyeingName').innerHTML = html;
+    if(dyeVal) document.getElementById('dyeingName').value = dyeVal;
 }
 
 function openModal(modalId) {
@@ -692,7 +717,9 @@ async function quickCompleteToggle() {
     let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
 
-    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+    if(!designSpecs[specKey]) {
+        designSpecs[specKey] = {};
+    }
     designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
@@ -732,7 +759,6 @@ async function saveInward() {
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let cleanSupplier = supplier.replace('#', '').trim().toLowerCase();
 
-    // 🌟 FIXED DUPLICATE CHECK: Warns but DOES NOT DELETE old entry if user proceeds.
     if(editingInwardId === null && cleanSupplier) {
         let alreadyExists = records.some(r => {
             let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
@@ -743,7 +769,6 @@ async function saveInward() {
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த சப்ளையர் மற்றும் கவுண்டிற்கு ஏற்கனவே என்ட்ரி உள்ளது. கூடுதலாக இன்னொரு என்ட்ரி சேர்க்க வேண்டுமா?");
             if(!confirmReEntry) return; 
-            // Removed the records.filter() deletion logic here so it appends naturally.
         }
     }
 
@@ -812,8 +837,6 @@ async function saveIssue() {
     let cleanDNo = cleanDesignName(dNo);
     let cleanDyeing = dyeingName.toLowerCase().trim();
 
-    // 🌟 FIXED DUPLICATE CHECK: Only warns if exactly the SAME Dyeing unit is given. 
-    // DOES NOT DELETE old records, just appends as a new issue row.
     if(editingIssueId === null && cleanDNo) {
         let exactDuplicate = issues.some(r => {
             let rDno = cleanDesignName(r.designNo || r.designNumber);
@@ -825,7 +848,6 @@ async function saveIssue() {
         if(exactDuplicate) {
             let confirmReEntry = confirm("இதே டிசைன் மற்றும் கவுண்ட் ஏற்கனவே இதே டையிங் யூனிட்டிற்கு (Dyeing Party) என்ட்ரி செய்யப்பட்டுள்ளது. கூடுதலாக இன்னொரு என்ட்ரி சேர்க்க வேண்டுமா?");
             if(!confirmReEntry) return; 
-            // Removed the issues.filter() deletion logic here so it handles multiple party issues beautifully.
         }
     }
 
