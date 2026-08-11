@@ -10,12 +10,11 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
             background: #030712; 
-            color: #1E2B23; /* Deep Dark Green */
+            color: #1E2B23; 
         }
         
         body { 
@@ -25,7 +24,6 @@
             align-items: center; 
         }
 
-        /* 📌 Main Container */
         .container { 
             width: 100%; 
             max-width: 900px; 
@@ -47,7 +45,6 @@
             margin-bottom: 5px; 
         }
 
-        /* 📌 Smart Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -76,7 +73,6 @@
             padding-bottom: 12px;
         }
 
-        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -112,7 +108,6 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
         .form-group label { font-size: 11px; font-weight: 700; color: #4A554A; }
 
-        /* 📌 Smart 3D Inputs */
         input, select, textarea {
             width: 100%; padding: 12px 14px; border-radius: 8px;
             border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
@@ -124,7 +119,6 @@
             border-color: #4A7C59; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
         }
 
-        /* 📌 Checkbox Group Styling */
         .checkbox-group-container {
             background: #FFFFFF;
             border: 1px solid #D1DED1;
@@ -151,7 +145,6 @@
             cursor: pointer;
         }
 
-        /* 📌 Users Table Styling */
         .users-table-container {
             margin-top: 15px;
             background: #FFFFFF;
@@ -177,7 +170,6 @@
             text-transform: uppercase;
         }
 
-        /* 📌 Premium File Input Styling */
         input[type="file"] {
             padding: 8px; background: #F4F7F4; border: 1px dashed #4A7C59; cursor: pointer;
         }
@@ -195,7 +187,6 @@
         }
         .preview-box img { max-height: 70px; border-radius: 6px; }
 
-        /* 📌 Smart Code Editor (For JSON) */
         #advancedJsonEditor {
             background: #1A2421; 
             color: #A7F3D0; 
@@ -205,7 +196,6 @@
         }
         #advancedJsonEditor:focus { box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.2); border-color: #34D399; }
 
-        /* 📌 Smart Buttons */
         .btn-action { 
             color: white; border: none; padding: 12px 16px; border-radius: 8px; 
             font-weight: 700; cursor: pointer; font-size: 11px; transition: all 0.3s ease; 
@@ -400,16 +390,16 @@
 let tempLogoData = "";
 let tempDesignBitmapData = "";
 
-// 🧼 Clean text helper to remove corrupt slashes & quotes
+// 🧼 Helper function to clean text inputs from corrupt backslashes & quotes
 function cleanInputText(val) {
-    if(!val) return "";
+    if (!val) return "";
     return val.toString().replace(/\\/g, '').replace(/"/g, '').trim();
 }
 
-// 🌟 Custom Toast Alert Popup Component
+// 🌟 Custom Toast Notification Helper
 function showSuccessToast(message, callback) {
     let existingToast = document.getElementById('customToast');
-    if(existingToast) existingToast.remove();
+    if (existingToast) existingToast.remove();
 
     let toast = document.createElement('div');
     toast.id = 'customToast';
@@ -433,8 +423,43 @@ function showSuccessToast(message, callback) {
 
     setTimeout(() => {
         toast.remove();
-        if(callback) callback();
+        if (callback) callback();
     }, 1500);
+}
+
+// 🚀 Automatic Image Compression function to prevent LocalStorage Quota Exceeded error
+function compressImage(file, maxWidth, maxHeight, quality, callback) {
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let img = new Image();
+        img.onload = function() {
+            let canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            let compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+            callback(compressedBase64);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -442,27 +467,27 @@ window.addEventListener('DOMContentLoaded', function() {
         let heading = localStorage.getItem('app_heading_name') || "TEXFRIEND ERP";
         heading = cleanInputText(heading);
         let hEl = document.getElementById('set_heading');
-        if(hEl) hEl.value = heading;
+        if (hEl) hEl.value = heading;
 
         let compAddr = localStorage.getItem('company_full_address') || "TEXFRIEND ERP SOLUTIONS\nSalem, Tamil Nadu.";
         compAddr = cleanInputText(compAddr);
         let aEl = document.getElementById('set_comp_addr');
-        if(aEl) aEl.value = compAddr;
+        if (aEl) aEl.value = compAddr;
 
         let logo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo');
-        if(logo) {
+        if (logo) {
             tempLogoData = logo;
             let imgTag = document.getElementById('logoImgTag');
-            if(imgTag) imgTag.src = logo;
+            if (imgTag) imgTag.src = logo;
             let pBox = document.getElementById('logoPreviewBox');
-            if(pBox) pBox.style.display = 'flex';
+            if (pBox) pBox.style.display = 'flex';
         }
 
         loadDesignDropdownInSettings();
         loadPartyDropdown();
         loadUserPermissions();
         renderUsersTable();
-    } catch(e) {
+    } catch (e) {
         console.error("Init Error: ", e);
     }
 });
@@ -470,7 +495,7 @@ window.addEventListener('DOMContentLoaded', function() {
 function loadDesignDropdownInSettings() {
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let select = document.getElementById('settingDesignSelect');
-    if(!select) return;
+    if (!select) return;
     let html = '<option value="">Select Design Number</option>';
     preDesigns.forEach(d => {
         html += `<option value="${d}">${d}</option>`;
@@ -479,58 +504,56 @@ function loadDesignDropdownInSettings() {
 }
 
 function loadDesignBitmap(designNo) {
-    if(!designNo) {
+    if (!designNo) {
         tempDesignBitmapData = "";
         let pBox = document.getElementById('designBitmapPreviewBox');
-        if(pBox) pBox.style.display = 'none';
+        if (pBox) pBox.style.display = 'none';
         return;
     }
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    if(designSpecs[designNo] && designSpecs[designNo].bitmap) {
+    if (designSpecs[designNo] && designSpecs[designNo].bitmap) {
         tempDesignBitmapData = designSpecs[designNo].bitmap;
         let imgTag = document.getElementById('designBitmapImgTag');
-        if(imgTag) imgTag.src = tempDesignBitmapData;
+        if (imgTag) imgTag.src = tempDesignBitmapData;
         let pBox = document.getElementById('designBitmapPreviewBox');
-        if(pBox) pBox.style.display = 'flex';
+        if (pBox) pBox.style.display = 'flex';
     } else {
         tempDesignBitmapData = "";
         let pBox = document.getElementById('designBitmapPreviewBox');
-        if(pBox) pBox.style.display = 'none';
+        if (pBox) pBox.style.display = 'none';
     }
 }
 
 function previewLogo(input) {
     if (input.files && input.files[0]) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            tempLogoData = e.target.result;
+        // Compress logo image to 300x300 max with 0.7 quality to save local storage quota
+        compressImage(input.files[0], 300, 300, 0.7, function(base64) {
+            tempLogoData = base64;
             let imgTag = document.getElementById('logoImgTag');
-            if(imgTag) imgTag.src = tempLogoData;
+            if (imgTag) imgTag.src = tempLogoData;
             let pBox = document.getElementById('logoPreviewBox');
-            if(pBox) pBox.style.display = 'flex';
-        }
-        reader.readAsDataURL(input.files[0]);
+            if (pBox) pBox.style.display = 'flex';
+        });
     }
 }
 
 function previewDesignBitmap(input) {
     if (input.files && input.files[0]) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            tempDesignBitmapData = e.target.result;
+        // Compress bitmap image to 600x600 max with 0.7 quality
+        compressImage(input.files[0], 600, 600, 0.7, function(base64) {
+            tempDesignBitmapData = base64;
             let imgTag = document.getElementById('designBitmapImgTag');
-            if(imgTag) imgTag.src = tempDesignBitmapData;
+            if (imgTag) imgTag.src = tempDesignBitmapData;
             let pBox = document.getElementById('designBitmapPreviewBox');
-            if(pBox) pBox.style.display = 'flex';
-        }
-        reader.readAsDataURL(input.files[0]);
+            if (pBox) pBox.style.display = 'flex';
+        });
     }
 }
 
 function getPartyDatabase() {
     let raw = localStorage.getItem('party_master_db');
-    if(raw) {
-        try { return JSON.parse(raw); } catch(e) {}
+    if (raw) {
+        try { return JSON.parse(raw); } catch (e) {}
     }
     return {};
 }
@@ -538,7 +561,7 @@ function getPartyDatabase() {
 function loadPartyDropdown() {
     let db = getPartyDatabase();
     let select = document.getElementById('partyListSelect');
-    if(!select) return;
+    if (!select) return;
     let html = '<option value="">Select Party to Edit/View</option>';
     Object.keys(db).forEach(p => {
         html += `<option value="${p}">${p}</option>`;
@@ -547,7 +570,7 @@ function loadPartyDropdown() {
 }
 
 function selectPartyToEdit(partyName) {
-    if(!partyName) {
+    if (!partyName) {
         document.getElementById('partyNameInput').value = '';
         document.getElementById('partyAddressInput').value = '';
         return;
@@ -561,7 +584,7 @@ function savePartyMaster() {
     let pName = document.getElementById('partyNameInput').value.trim();
     let pAddr = document.getElementById('partyAddressInput').value.trim();
 
-    if(!pName) {
+    if (!pName) {
         showSuccessToast("Please enter a Party Name!");
         return;
     }
@@ -578,13 +601,13 @@ function savePartyMaster() {
 
 function deletePartyMaster() {
     let select = document.getElementById('partyListSelect');
-    if(!select) return;
+    if (!select) return;
     let val = select.value;
-    if(!val) {
+    if (!val) {
         showSuccessToast("Please select a Party to delete!");
         return;
     }
-    if(confirm(`Are you sure you want to delete party: ${val}?`)) {
+    if (confirm(`Are you sure you want to delete party: ${val}?`)) {
         let db = getPartyDatabase();
         delete db[val];
         localStorage.setItem('party_master_db', JSON.stringify(db));
@@ -625,14 +648,14 @@ function updateUserPermissions() {
 
 function loadUserPermissions() {
     let saved = localStorage.getItem('user_permissions');
-    if(saved) {
+    if (saved) {
         try {
             let p = JSON.parse(saved);
             Object.keys(p).forEach(k => {
                 let el = document.getElementById('perm_' + k);
-                if(el) el.checked = p[k];
+                if (el) el.checked = p[k];
             });
-        } catch(e) {}
+        } catch (e) {}
     }
 }
 
@@ -641,7 +664,7 @@ function addNewUserAccount() {
     let uPass = document.getElementById('newPassword').value.trim();
     let uRole = document.getElementById('newUserRole').value;
 
-    if(!uName || !uPass) {
+    if (!uName || !uPass) {
         showSuccessToast("Please enter Username and Password!");
         return;
     }
@@ -650,7 +673,7 @@ function addNewUserAccount() {
     users.push({ username: uName, password: uPass, role: uRole });
     localStorage.setItem('erp_system_users', JSON.stringify(users));
     
-    if(window.firebaseSave) {
+    if (window.firebaseSave) {
         window.firebaseSave('erp_system_users', users);
     }
 
@@ -663,7 +686,7 @@ function addNewUserAccount() {
 function renderUsersTable() {
     let users = JSON.parse(localStorage.getItem('erp_system_users')) || [];
     let tbody = document.getElementById('usersTableBody');
-    if(!tbody) return;
+    if (!tbody) return;
     tbody.innerHTML = '';
     users.forEach((usr, idx) => {
         tbody.innerHTML += `
@@ -678,12 +701,12 @@ function renderUsersTable() {
 }
 
 function deleteUserAccount(index) {
-    if(confirm("Are you sure you want to delete this user?")) {
+    if (confirm("Are you sure you want to delete this user?")) {
         let users = JSON.parse(localStorage.getItem('erp_system_users')) || [];
         users.splice(index, 1);
         localStorage.setItem('erp_system_users', JSON.stringify(users));
         
-        if(window.firebaseSave) {
+        if (window.firebaseSave) {
             window.firebaseSave('erp_system_users', users);
         }
 
@@ -692,32 +715,32 @@ function deleteUserAccount(index) {
     }
 }
 
-// 🌟 ULTIMATE GUARANTEED SAVE WITH TOAST NOTIFICATION
+// 🌟 ULTIMATE SAFE SAVE ALL WITH COMPRESSION, CLEANING AND TOAST NOTIFICATION
 function executeSaveAll() {
     try {
         let headingEl = document.getElementById('set_heading');
-        if(headingEl) {
+        if (headingEl) {
             let val = cleanInputText(headingEl.value);
-            if(val) {
+            if (val) {
                 localStorage.setItem('app_heading_name', val);
-                if(window.firebaseSave) window.firebaseSave('app_heading_name', val);
+                if (window.firebaseSave) window.firebaseSave('app_heading_name', val);
             }
         }
 
         let addrEl = document.getElementById('set_comp_addr');
-        if(addrEl) {
+        if (addrEl) {
             let val = cleanInputText(addrEl.value);
-            if(val) {
+            if (val) {
                 localStorage.setItem('company_full_address', val);
-                if(window.firebaseSave) window.firebaseSave('company_full_address', val);
+                if (window.firebaseSave) window.firebaseSave('company_full_address', val);
             }
         }
 
-        if(tempLogoData) {
+        if (tempLogoData) {
             localStorage.setItem('company_logo_base64', tempLogoData);
             localStorage.setItem('company_logo', tempLogoData);
             localStorage.setItem('logo', tempLogoData);
-            if(window.firebaseSave) {
+            if (window.firebaseSave) {
                 window.firebaseSave('company_logo_base64', tempLogoData);
                 window.firebaseSave('company_logo', tempLogoData);
                 window.firebaseSave('logo', tempLogoData);
@@ -725,13 +748,13 @@ function executeSaveAll() {
         }
 
         let designSelect = document.getElementById('settingDesignSelect');
-        if(designSelect && designSelect.value && tempDesignBitmapData) {
+        if (designSelect && designSelect.value && tempDesignBitmapData) {
             let designNo = designSelect.value;
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-            if(!designSpecs[designNo]) designSpecs[designNo] = {};
+            if (!designSpecs[designNo]) designSpecs[designNo] = {};
             designSpecs[designNo].bitmap = tempDesignBitmapData;
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-            if(window.firebaseSaveIndividual) {
+            if (window.firebaseSaveIndividual) {
                 window.firebaseSaveIndividual(designNo, designSpecs[designNo]);
             }
         }
@@ -740,14 +763,14 @@ function executeSaveAll() {
             window.location.href = "dashboard.html";
         });
 
-    } catch(err) {
+    } catch (err) {
         console.error("Save Error: ", err);
         alert("Save Error: " + err.message);
     }
 }
 
 function resetLocalStorageOnly() {
-    if(confirm("⚠️ WARNING: Local cache clear? Saved users and settings will be preserved.")) {
+    if (confirm("⚠️ WARNING: Local cache clear? Saved users and settings will be preserved.")) {
         let savedUsers = localStorage.getItem('erp_system_users');
         let savedPermissions = localStorage.getItem('user_permissions');
         let appHeading = localStorage.getItem('app_heading_name');
@@ -756,11 +779,11 @@ function resetLocalStorageOnly() {
 
         localStorage.clear();
 
-        if(savedUsers) localStorage.setItem('erp_system_users', savedUsers);
-        if(savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
-        if(appHeading) localStorage.setItem('app_heading_name', cleanInputText(appHeading));
-        if(compAddress) localStorage.setItem('company_full_address', cleanInputText(compAddress));
-        if(compLogo) {
+        if (savedUsers) localStorage.setItem('erp_system_users', savedUsers);
+        if (savedPermissions) localStorage.setItem('user_permissions', savedPermissions);
+        if (appHeading) localStorage.setItem('app_heading_name', cleanInputText(appHeading));
+        if (compAddress) localStorage.setItem('company_full_address', cleanInputText(compAddress));
+        if (compLogo) {
             localStorage.setItem('company_logo_base64', compLogo);
             localStorage.setItem('company_logo', compLogo);
             localStorage.setItem('logo', compLogo);
@@ -798,20 +821,20 @@ function loadStorageDataToEditor() {
         allData[key] = localStorage.getItem(key);
     }
     let editor = document.getElementById('advancedJsonEditor');
-    if(editor) editor.value = JSON.stringify(allData, null, 2);
+    if (editor) editor.value = JSON.stringify(allData, null, 2);
     showSuccessToast("Database Loaded into JSON Editor!");
 }
 
 function saveStorageDataFromEditor() {
     let editor = document.getElementById('advancedJsonEditor');
-    if(!editor) return;
+    if (!editor) return;
     let raw = editor.value;
     try {
         let parsed = JSON.parse(raw);
-        if(confirm("⚠️ Are you sure you want to overwrite local database with these JSON changes?")) {
+        if (confirm("⚠️ Are you sure you want to overwrite local database with these JSON changes?")) {
             for (let key in parsed) {
                 localStorage.setItem(key, parsed[key]);
-                if(window.firebaseSave) {
+                if (window.firebaseSave) {
                     window.firebaseSave(key, JSON.parse(parsed[key]));
                 }
             }
@@ -819,7 +842,7 @@ function saveStorageDataFromEditor() {
                 location.reload();
             });
         }
-    } catch(e) {
+    } catch (e) {
         alert("Invalid JSON format! Please correct before saving. ❌\nError: " + e.message);
     }
 }
