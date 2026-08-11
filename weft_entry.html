@@ -93,7 +93,31 @@
         }
         input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
-        /* 📌 Updated Grid for Insert (+) Button */
+        /* 📌 Copy Design Button Styles */
+        .input-group-btn { display: flex; gap: 10px; width: 100%; }
+        .input-group-btn select { flex: 1; }
+        .btn-copy-design {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9); color: white; border: none;
+            padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer;
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.25); white-space: nowrap; transition: all 0.2s;
+        }
+        .btn-copy-design:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(139, 92, 246, 0.35); }
+
+        /* 📌 Bulk Color Changer Styling */
+        .bulk-color-box {
+            background: #EAF0EA; border: 1px dashed #4A7C59; border-radius: 10px;
+            padding: 10px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .bulk-color-box label { font-size: 11px; font-weight: 700; color: #2F4F38; white-space: nowrap; }
+        .bulk-color-box select, .bulk-color-box input { flex: 1; min-width: 100px; padding: 8px 10px; font-size: 11px; }
+        .btn-bulk-change {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none;
+            padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); white-space: nowrap; transition: all 0.2s;
+        }
+        .btn-bulk-change:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(59, 130, 246, 0.35); }
+
         .header-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 65px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
         .row-grid { display: grid; grid-template-columns: 30px 1fr 1.2fr 1fr 65px; gap: 6px; margin-bottom: 8px; align-items: center; }
         .header-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
@@ -104,7 +128,6 @@
 
         .btn-add-small { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
         
-        /* 📌 Action Buttons (+ and x) */
         .action-cell-row { display: flex; gap: 4px; width: 100%; }
         .btn-insert-small { background: #D1FAE5; color: #059669; border: none; width: 100%; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.2s ease; display:flex; align-items:center; justify-content:center; }
         .btn-insert-small:hover { background: #A7F3D0; transform: scale(1.05); }
@@ -151,7 +174,6 @@
         }
         #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-        /* 🔥 CLEAN PRINT & ALWAYS TWO COLUMNS SETTINGS */
         @media print {
             @page { size: A4 portrait; margin: 5mm 8mm; }
             body * { visibility: hidden; }
@@ -188,19 +210,23 @@
 <div class="container">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div id="bitmapDisplayContainer">
-            <!-- Checkbox and Image will be loaded here -->
-        </div>
+        <div id="bitmapDisplayContainer"></div>
     </div>
 
     <h2 class="page-title">🧶 Weft Pattern Entry</h2>
 
     <div class="form-section" style="margin-top: 5px;">
         <div class="section-badge">Weft Specs</div>
+        
         <div class="form-group" style="margin-bottom: 15px;">
             <label>Select Design Number</label>
-            <select id="designNo" onchange="loadWeftDesignData()"><option value="">Select Design No</option></select>
+            <!-- 📌 1. NEW COPY DESIGN BUTTON -->
+            <div class="input-group-btn">
+                <select id="designNo" onchange="loadWeftDesignData()"><option value="">Select Design No</option></select>
+                <button class="btn-copy-design" onclick="copyToNewDesign()" title="Copy current pattern to a new design">📋 Copy Design</button>
+            </div>
         </div>
+
         <div class="compact-top-grid">
             <div class="form-group"><label>Weft Width</label><input type="text" id="infoWeftWidth" placeholder="Width" oninput="calculateWeftValues()"></div>
             <div class="form-group"><label>Weft Count</label><input type="text" id="infoWeftCount" placeholder="Count"></div>
@@ -211,6 +237,18 @@
 
     <div class="form-section">
         <div class="section-badge blue">Weft Thread Pattern</div>
+
+        <!-- 📌 2. BULK COLOR CHANGER SECTION -->
+        <div class="bulk-color-box">
+            <label>🎨 Bulk Color Changer:</label>
+            <select id="bulkOldColor">
+                <option value="">Select Old Color</option>
+            </select>
+            <label>To ➔</label>
+            <input type="text" id="bulkNewColor" placeholder="Type New Color">
+            <button class="btn-bulk-change" onclick="applyBulkColorChange()">Change Color</button>
+        </div>
+
         <div style="font-size: 9px; color: #10B981; font-weight: 600; text-align: right; margin-bottom: 5px;">(Press Enter in Picks to add new line below)</div>
         <div style="overflow-x: auto;">
             <div style="min-width: 400px;">
@@ -264,27 +302,22 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
 <script>
-// 🔒 Universal Permission Checker Function for Weft Entry Page
 function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
         let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        if (permissions['weft_entry.html'] === false || permissions['weft_entry'] === false) {
-            return false;
-        }
+        if (permissions['weft_entry.html'] === false || permissions['weft_entry'] === false) return false;
     }
     return true;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 🔒 Page Access Check on Load
     if (!checkUserPermission()) {
         authorizationAlert();
         window.location.href = "dashboard.html";
@@ -354,7 +387,7 @@ function loadWeftDesignData() {
     document.getElementById('displayTotalPicks').innerText = '0'; document.getElementById('displayTotalCalc').innerText = 'Total Pick: 0';
     if(document.getElementById('top_completed_status')) document.getElementById('top_completed_status').checked = false;
 
-    if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); return; }
+    if(!dNo) { saveBtn.innerText = "💾 Save"; loadDefaultRow(); refreshBulkColorDropdown(); return; }
 
     let cleanDNo = cleanDesignName(dNo);
     
@@ -404,10 +437,86 @@ function loadWeftDesignData() {
         document.getElementById('infoWeave').value = sp.weave || '';
         loadDefaultRow();
     }
-    updateLineNumbers(); calculateWeftValues();
+    updateLineNumbers(); calculateWeftValues(); refreshBulkColorDropdown();
 }
 
-function loadDefaultRow() { document.getElementById('weftLinesContainer').innerHTML = ''; addWeftLine(); }
+function loadDefaultRow() { document.getElementById('weftLinesContainer').innerHTML = ''; addWeftLine(); refreshBulkColorDropdown(); }
+
+// 📌 3. COPY DESIGN LOGIC
+async function copyToNewDesign() {
+    let currentDNo = document.getElementById('designNo').value;
+    if(!currentDNo) {
+        alert("முதலில் எந்த டிசைனை காப்பி செய்ய வேண்டுமோ அதை செலக்ட் செய்யுங்கள் ப்ரோ!");
+        return;
+    }
+
+    let newDNo = prompt(`'${currentDNo}' டிசைனை காப்பி செய்கிறீர்கள்.\n\nபுதிய டிசைன் நம்பரை (New Design Number) உள்ளிடவும்:`);
+    if(!newDNo || newDNo.trim() === '') return;
+    
+    newDNo = newDNo.trim();
+    
+    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    if(!preDesignList.includes(newDNo)) {
+        preDesignList.push(newDNo);
+        localStorage.setItem('pre_design_numbers', JSON.stringify(preDesignList));
+        if(window.firebaseSave) await window.firebaseSave('pre_design_numbers', preDesignList);
+    } else {
+        alert("இந்த டிசைன் நம்பர் ஏற்கனவே உள்ளது! வேறு நம்பரை கொடுக்கவும்.");
+        return;
+    }
+
+    let select = document.getElementById('designNo');
+    let option = document.createElement("option");
+    option.text = newDNo; option.value = newDNo;
+    select.add(option); select.value = newDNo;
+
+    localStorage.setItem('selected_design_number', newDNo);
+
+    document.getElementById('saveBtnTxt').innerText = "💾 Save";
+    let cb = document.getElementById('top_completed_status'); if(cb) cb.checked = false;
+
+    alert(`✅ '${newDNo}' டிசைனுக்கு வெற்றிகரமாக காப்பி செய்யப்பட்டது!\n\nஇப்போது நீங்கள் 'Bulk Color Changer' மூலம் கலரை மாற்றிவிட்டு 'Save' பட்டனை அழுத்தவும்.`);
+}
+
+// 📌 4. BULK COLOR CHANGER LOGIC
+function refreshBulkColorDropdown() {
+    let colorsSet = new Set();
+    document.querySelectorAll('.inp-color').forEach(inp => {
+        let val = inp.value.trim();
+        if(val) colorsSet.add(val);
+    });
+    
+    let select = document.getElementById('bulkOldColor');
+    select.innerHTML = '<option value="">Select Old Color</option>';
+    colorsSet.forEach(c => {
+        select.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+}
+
+function applyBulkColorChange() {
+    let oldColor = document.getElementById('bulkOldColor').value;
+    let newColor = document.getElementById('bulkNewColor').value.trim();
+
+    if(!oldColor || !newColor) {
+        alert("Please select the Old Color and type the New Color!");
+        return;
+    }
+
+    if(confirm(`Are you sure you want to change all '${oldColor}' to '${newColor}'?`)) {
+        let changedCount = 0;
+        document.querySelectorAll('.inp-color').forEach(inp => {
+            if(inp.value.trim() === oldColor) {
+                inp.value = newColor;
+                changedCount++;
+            }
+        });
+        
+        document.getElementById('bulkOldColor').value = '';
+        document.getElementById('bulkNewColor').value = '';
+        refreshBulkColorDropdown();
+        alert(`${changedCount} rows updated successfully! ✅`);
+    }
+}
 
 // 📌 Updated Add Weft Line Function (Supports Insert Below)
 function addWeftLine(count = '', color = '', picks = '', insertAfterElem = null) {
@@ -416,13 +525,13 @@ function addWeftLine(count = '', color = '', picks = '', insertAfterElem = null)
     row.innerHTML = `
         <div class="line-no"></div>
         <input type="text" class="inp-count" placeholder="Count" value="${count}">
-        <input type="text" class="inp-color" placeholder="Colour" value="${color}">
+        <input type="text" class="inp-color" placeholder="Colour" value="${color}" onblur="refreshBulkColorDropdown()">
         <input type="number" class="inp-picks" placeholder="Picks" value="${picks}" 
                oninput="calculateWeftValues()"
                onkeydown="if(event.key==='Enter'){ event.preventDefault(); addWeftLine('', '', '', this.parentElement); setTimeout(()=>{let ins=this.parentElement.nextElementSibling.querySelector('.inp-count'); if(ins) ins.focus();},50); }">
         <div class="action-cell-row">
             <button class="btn-insert-small" onclick="addWeftLine('', '', '', this.parentElement.parentElement);" title="Insert row below">+</button>
-            <button class="btn-del-small" onclick="this.parentElement.parentElement.remove(); updateLineNumbers(); calculateWeftValues();" title="Delete row">×</button>
+            <button class="btn-del-small" onclick="this.parentElement.parentElement.remove(); updateLineNumbers(); calculateWeftValues(); refreshBulkColorDropdown();" title="Delete row">×</button>
         </div>
     `;
     
@@ -431,8 +540,7 @@ function addWeftLine(count = '', color = '', picks = '', insertAfterElem = null)
     } else {
         container.appendChild(row);
     }
-    updateLineNumbers();
-    calculateWeftValues();
+    updateLineNumbers(); calculateWeftValues(); refreshBulkColorDropdown();
 }
 
 function addWeftRange(start = '', end = '', set = '') {
@@ -720,7 +828,6 @@ function previewWeftPattern() {
     let tdStyle = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:center; color:#1E2B23; font-size:11px;";
     let tdStyleColor = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; text-align:left; color:#1E2B23; font-size:11px; white-space:nowrap;";
     
-    // 🔥 Weft-க்கும் Set பகுதி இடது பக்கத்தில் தெரிய மற்றும் Bold ஆக இருக்க ஸ்டைல் மாற்றம் செய்யப்பட்டுள்ளது
     let tdStyleLast = "padding:4px 6px; border-bottom:1px dashed #A0AFA0; vertical-align:middle; color:#1E2B23; text-align:left; padding-left:10px; font-size:16px;";
 
     while (i < weftLines.length) {
