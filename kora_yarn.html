@@ -152,7 +152,6 @@
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-        /* 📌 Add Button Style & Input Group */
         .input-group-btn {
             display: flex;
             gap: 6px;
@@ -360,7 +359,6 @@
             </div>
         </div>
 
-        <!-- 📌 Smart Hybrid Datalists -->
         <datalist id="millSuggestions"></datalist>
         <datalist id="unitSuggestions"></datalist>
 
@@ -486,13 +484,9 @@ document.addEventListener('DOMContentLoaded', function() {
     refreshAllTables();
 });
 
-// 🚀 Manual "+ Add" Logic for Mills
 function addMasterMill(inputId) {
     let val = document.getElementById(inputId).value.trim();
-    if(!val) {
-        alert("Please type a Mill Name to add!");
-        return;
-    }
+    if(!val) { alert("Please type a Mill Name to add!"); return; }
     let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
     if(!masterMills.includes(val)) {
         masterMills.push(val);
@@ -504,13 +498,9 @@ function addMasterMill(inputId) {
     }
 }
 
-// 🚀 Manual "+ Add" Logic for Units
 function addMasterUnit(inputId) {
     let val = document.getElementById(inputId).value.trim();
-    if(!val) {
-        alert("Please type a Unit Name to add!");
-        return;
-    }
+    if(!val) { alert("Please type a Unit Name to add!"); return; }
     let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
     if(!masterUnits.includes(val)) {
         masterUnits.push(val);
@@ -522,7 +512,6 @@ function addMasterUnit(inputId) {
     }
 }
 
-// 🚀 Hybrid Mill Datalist Loader
 function loadMillSuggestions() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
@@ -546,33 +535,24 @@ function loadMillSuggestions() {
 
     let datalist = document.getElementById('millSuggestions');
     datalist.innerHTML = '';
-    millsSet.forEach(mill => {
-        datalist.innerHTML += `<option value="${mill}">`;
-    });
+    millsSet.forEach(mill => { datalist.innerHTML += `<option value="${mill}">`; });
 }
 
-// 🚀 Hybrid Unit Datalist Loader
 function loadUnitSuggestions() {
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
     
     let unitSet = new Set([...masterUnits]);
     
-    issues.forEach(item => {
-        if(item.dyeingName) unitSet.add(item.dyeingName.trim());
-    });
+    issues.forEach(item => { if(item.dyeingName) unitSet.add(item.dyeingName.trim()); });
 
     let datalist = document.getElementById('unitSuggestions');
     datalist.innerHTML = '';
-    unitSet.forEach(u => {
-        datalist.innerHTML += `<option value="${u}">`;
-    });
+    unitSet.forEach(u => { datalist.innerHTML += `<option value="${u}">`; });
 }
 
 function openModal(modalId) {
-    if(modalId === 'inwardModal' || modalId === 'issueModal') {
-        refreshAllTables();
-    }
+    if(modalId === 'inwardModal' || modalId === 'issueModal') refreshAllTables();
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
@@ -617,9 +597,7 @@ function loadBitmapImage() {
     
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
     
-    if(wasChecked) {
-        document.getElementById('top_completed_status').checked = true;
-    }
+    if(wasChecked) document.getElementById('top_completed_status').checked = true;
 }
 
 function loadDesignDropdown() {
@@ -651,11 +629,10 @@ function onDesignSelect(val) {
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
 
+    let cb = document.getElementById('top_completed_status');
     if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
-        let cb = document.getElementById('top_completed_status');
         if(cb) cb.checked = true;
     } else {
-        let cb = document.getElementById('top_completed_status');
         if(cb) cb.checked = false;
     }
 }
@@ -715,9 +692,7 @@ async function quickCompleteToggle() {
     let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
 
-    if(!designSpecs[specKey]) {
-        designSpecs[specKey] = {};
-    }
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
@@ -729,9 +704,7 @@ async function quickCompleteToggle() {
         if (window.firebaseSaveIndividual) {
             await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
         }
-    } catch(e) {
-        console.error("Firebase Sync Error: ", e);
-    }
+    } catch(e) { console.error("Firebase Sync Error: ", e); }
 
     refreshAllTables();
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
@@ -748,9 +721,8 @@ async function saveInward() {
     let count = document.getElementById('inwardCount').value.trim();
     let weight = parseFloat(document.getElementById('inwardWt').value) || 0;
     
-    let isCompleted = false;
     let cb = document.getElementById('top_completed_status');
-    if(cb) isCompleted = cb.checked;
+    let isCompleted = cb ? cb.checked : false;
 
     if(!supplier || !count || weight <= 0) {
         alert("Please enter or select Mill Name, Count, and valid Weight!");
@@ -760,6 +732,7 @@ async function saveInward() {
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let cleanSupplier = supplier.replace('#', '').trim().toLowerCase();
 
+    // 🌟 FIXED DUPLICATE CHECK: Warns but DOES NOT DELETE old entry if user proceeds.
     if(editingInwardId === null && cleanSupplier) {
         let alreadyExists = records.some(r => {
             let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
@@ -768,15 +741,9 @@ async function saveInward() {
         });
 
         if(alreadyExists) {
-            let confirmReEntry = confirm("இந்த சப்ளையர் மற்றும் கவுண்டிற்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) {
-                return; 
-            }
-            records = records.filter(r => {
-                let rSup = r.supplier ? r.supplier.replace('#', '').trim().toLowerCase() : '';
-                let rCount = r.count ? r.count.trim().toLowerCase() : '';
-                return !(rSup === cleanSupplier && rCount === count.trim().toLowerCase());
-            });
+            let confirmReEntry = confirm("இந்த சப்ளையர் மற்றும் கவுண்டிற்கு ஏற்கனவே என்ட்ரி உள்ளது. கூடுதலாக இன்னொரு என்ட்ரி சேர்க்க வேண்டுமா?");
+            if(!confirmReEntry) return; 
+            // Removed the records.filter() deletion logic here so it appends naturally.
         }
     }
 
@@ -808,10 +775,7 @@ async function saveInward() {
     }
 
     localStorage.setItem('kora_stock_records', JSON.stringify(records));
-    
-    if (window.firebaseSave) {
-        await window.firebaseSave('kora_stock_records', records);
-    }
+    if (window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
     
     document.getElementById('supplierName').value = '';
     document.getElementById('inwardCount').value = '';
@@ -836,9 +800,8 @@ async function saveIssue() {
     let count = document.getElementById('issueCount').value.trim();
     let issueWt = parseFloat(document.getElementById('issueWt').value) || 0;
     
-    let isCompleted = false;
     let cb = document.getElementById('top_completed_status');
-    if(cb) isCompleted = cb.checked;
+    let isCompleted = cb ? cb.checked : false;
 
     if(!dyeingName || !dNo || !count || issueWt <= 0 || !issueMillName) {
         alert("Please fill all details to issue yarn (including Mill Name)!");
@@ -847,24 +810,22 @@ async function saveIssue() {
 
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let cleanDNo = cleanDesignName(dNo);
+    let cleanDyeing = dyeingName.toLowerCase().trim();
 
+    // 🌟 FIXED DUPLICATE CHECK: Only warns if exactly the SAME Dyeing unit is given. 
+    // DOES NOT DELETE old records, just appends as a new issue row.
     if(editingIssueId === null && cleanDNo) {
-        let alreadyExists = issues.some(r => {
+        let exactDuplicate = issues.some(r => {
             let rDno = cleanDesignName(r.designNo || r.designNumber);
             let rCount = r.count ? r.count.trim().toLowerCase() : '';
-            return rDno === cleanDNo && rCount === count.trim().toLowerCase();
+            let rDyeing = r.dyeingName ? r.dyeingName.toLowerCase().trim() : '';
+            return rDno === cleanDNo && rCount === count.trim().toLowerCase() && rDyeing === cleanDyeing;
         });
 
-        if(alreadyExists) {
-            let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Kora Issue என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) {
-                return; 
-            }
-            issues = issues.filter(r => {
-                let rDno = cleanDesignName(r.designNo || r.designNumber);
-                let rCount = r.count ? r.count.trim().toLowerCase() : '';
-                return !(rDno === cleanDNo && rCount === count.trim().toLowerCase());
-            });
+        if(exactDuplicate) {
+            let confirmReEntry = confirm("இதே டிசைன் மற்றும் கவுண்ட் ஏற்கனவே இதே டையிங் யூனிட்டிற்கு (Dyeing Party) என்ட்ரி செய்யப்பட்டுள்ளது. கூடுதலாக இன்னொரு என்ட்ரி சேர்க்க வேண்டுமா?");
+            if(!confirmReEntry) return; 
+            // Removed the issues.filter() deletion logic here so it handles multiple party issues beautifully.
         }
     }
 
@@ -943,9 +904,7 @@ async function toggleInwardStatus(id, newStatus) {
             records[index].status = newStatus;
             localStorage.setItem('kora_stock_records', JSON.stringify(records));
             
-            if(window.firebaseSave) {
-                await window.firebaseSave('kora_stock_records', records);
-            }
+            if(window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
             refreshAllTables();
         }
     }
@@ -975,17 +934,11 @@ async function toggleIssueStatus(id, newStatus) {
                 designSpecs[specKey].status = newStatus;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
                 
-                if(window.firebaseSave) {
-                    await window.firebaseSave('design_specs', designSpecs);
-                }
-                if(window.firebaseSaveIndividual) {
-                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-                }
+                if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
+                if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
             }
 
-            if(window.firebaseSave) {
-                await window.firebaseSave('kora_issue_records', records);
-            }
+            if(window.firebaseSave) await window.firebaseSave('kora_issue_records', records);
             refreshAllTables();
         }
     }
@@ -1096,9 +1049,7 @@ async function deleteInward(id) {
     records = records.filter(r => r.id != id);
     localStorage.setItem('kora_stock_records', JSON.stringify(records));
     
-    if (window.firebaseSave) {
-        await window.firebaseSave('kora_stock_records', records);
-    }
+    if (window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
     
     loadMillSuggestions();
     refreshAllTables();
@@ -1142,10 +1093,7 @@ async function deleteIssue(id) {
     records = records.filter(r => r.id != id);
     localStorage.setItem('kora_issue_records', JSON.stringify(records));
     
-    if (window.firebaseSave) {
-        await window.firebaseSave('kora_issue_records', records);
-    }
-
+    if (window.firebaseSave) await window.firebaseSave('kora_issue_records', records);
     refreshAllTables();
 }
 </script>
