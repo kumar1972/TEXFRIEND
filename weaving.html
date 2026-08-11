@@ -287,7 +287,7 @@
 
             <div class="form-grid-row-5">
                 <div class="form-group">
-                    <label>Warping Mts (Editable)</label>
+                    <label>Warping Mts</label>
                     <input type="number" step="0.01" id="warpingMts" placeholder="Mtrs" oninput="syncMtrs('warpingMts')" required>
                 </div>
                 <div class="form-group">
@@ -747,7 +747,7 @@
             }
         }
 
-        // 🌟 ABSOLUTE GUARANTEED WARPING MTRS FETCHER FROM ALL STORAGE OBJECTS
+        // 🌟 ABSOLUTE DEEP RECURSIVE SEARCH FOR WARPING MTRS ACROSS ALL TABLES
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
@@ -772,46 +772,46 @@
                 document.getElementById('warpCount2').value = sp.warp2 || sp.count2 || ''; 
                 document.getElementById('weftCount').value = sp.weft || found.weftCount || '';
 
-                // 🌟 CHECK 1: warping_issue_records
-                let foundMts = 0;
+                let targetMts = 0;
                 let warpingUnitName = "";
-                
-                let warpingRecords = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-                let matchedW = warpingRecords.slice().reverse().find(w => cleanDesignName(w.designNo || w.designNumber) === cleanDNo);
-                if (matchedW) {
-                    foundMts = parseFloat(matchedW.warpingMts || matchedW.beamMtrs || matchedW.issueWt || matchedW.orderWt || 0);
-                    if (matchedW.unit) warpingUnitName = matchedW.unit;
-                }
 
-                // 🌟 CHECK 2: design_specs
-                if ((!foundMts || foundMts <= 0) && sp) {
-                    foundMts = parseFloat(sp.warpingMts || sp.warpMts || sp.beamMtrs || 0);
-                }
-
-                // 🌟 CHECK 3: weaving_master_data (previous entries)
-                if ((!foundMts || foundMts <= 0)) {
-                    let prevWeave = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
-                    if (prevWeave) {
-                        foundMts = parseFloat(prevWeave.warpingMts || prevWeave.beamMtrs || 0);
-                        if (prevWeave.warpingUnitName) warpingUnitName = prevWeave.warpingUnitName;
+                // 1. Scan warping_issue_records thoroughly
+                let allWarpKeys = ['warping_issue_records', 'warp_order_records', 'warping_master_data'];
+                for (let k of allWarpKeys) {
+                    let records = JSON.parse(localStorage.getItem(k)) || [];
+                    let match = records.slice().reverse().find(r => cleanDesignName(r.designNo || r.designNumber || r.designName) === cleanDNo);
+                    if (match) {
+                        let m = parseFloat(match.warpingMts || match.beamMtrs || match.issueWt || match.orderWt || match.mtrs || match.productionMeter || 0);
+                        if (m > 0) {
+                            targetMts = m;
+                            if (match.unit || match.warpingUnitName) warpingUnitName = match.unit || match.warpingUnitName;
+                            break;
+                        }
                     }
                 }
 
-                // 🌟 CHECK 4: party_orders_data (production meter fallback)
-                if ((!foundMts || foundMts <= 0)) {
+                // 2. Scan design_specs
+                if (!targetMts && sp) {
+                    targetMts = parseFloat(sp.warpingMts || sp.warpMts || sp.beamMtrs || sp.orderMtr || 0);
+                }
+
+                // 3. Scan party_orders_data
+                if (!targetMts) {
                     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                     let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
-                    let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
-                    if (prodMtrVal > 0) foundMtr = prodMtrVal * 1.05;
+                    if (matchedOrder) {
+                        let pMtr = parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || matchedOrder.orderMtr || 0);
+                        if (pMtr > 0) targetMts = pMtr * 0.95; 
+                    }
                 }
 
-                // 🌟 CHECK 5: absolute default fallback if nothing is found anywhere
-                if (!foundMts || foundMts <= 0) {
-                    foundMts = 400.00;
+                // 4. Default Fallback
+                if (!targetMts || targetMts <= 0) {
+                    targetMts = 400.00; 
                 }
 
-                document.getElementById('warpingMts').value = foundMts.toFixed(2);
-                document.getElementById('beamMtrs').value = foundMts.toFixed(2);
+                document.getElementById('warpingMts').value = targetMts.toFixed(2);
+                document.getElementById('beamMtrs').value = targetMts.toFixed(2);
                 document.getElementById('crimpPerc').value = "5"; 
                 
                 if (warpingUnitName) {
@@ -822,7 +822,7 @@
                     sel.value = warpingUnitName;
                 }
 
-                let fabricMtrs = foundMts - (foundMts * 0.05);
+                let fabricMtrs = targetMts - (targetMts * 0.05);
                 document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
 
                 let savedWeaving = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
