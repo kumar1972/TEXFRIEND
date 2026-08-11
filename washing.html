@@ -170,6 +170,16 @@
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
+    /* Inline Select + Add Button Group */
+    .input-group-btn { display: flex; gap: 6px; width: 100%; }
+    .input-group-btn select { flex: 1; }
+    .btn-add-inline {
+        background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 8px;
+        font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+    }
+    .btn-add-inline:hover { background: #059669; }
+
     /* 📌 Smart 3D Inputs */
     input, select {
         width: 100%; padding: 10px 12px; border-radius: 8px;
@@ -402,7 +412,12 @@
             </div>
             <div class="form-group">
                 <label>Washing Unit Name</label>
-                <input type="text" id="topUnit" placeholder="Enter Unit Name">
+                <div class="input-group-btn">
+                    <select id="topUnit">
+                        <option value="">Select Washing Unit</option>
+                    </select>
+                    <button type="button" class="btn-add-inline" onclick="addWashingUnit()">+ Add</button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Design Number</label>
@@ -544,7 +559,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('topDate').valueAsDate = new Date();
     document.getElementById('botDate').valueAsDate = new Date();
-    // Dropdowns and renderTable handled in Firebase window load
+    loadWashingUnitDropdown();
+    loadDesignDropdowns();
+    renderTable();
 });
 
 function openModal(modalId) {
@@ -589,6 +606,41 @@ function loadBitmapImage() {
     }
     
     bitmapContainer.innerHTML = imgHtml;
+}
+
+// 🌟 WASHING UNIT DROPDOWN & ADD LOGIC
+function loadWashingUnitDropdown() {
+    let masterUnits = JSON.parse(localStorage.getItem('tex_master_washing_units')) || [];
+    let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
+    let unitSet = new Set([...masterUnits]);
+    issues.forEach(i => { if(i.unit) unitSet.add(i.unit.trim()); });
+
+    let select = document.getElementById('topUnit');
+    let currentVal = select.value;
+    let html = '<option value="">Select Washing Unit</option>';
+    Array.from(unitSet).sort().forEach(u => {
+        let sel = (currentVal && u.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
+        html += `<option value="${u}" ${sel}>${u}</option>`;
+    });
+    select.innerHTML = html;
+    if(currentVal) select.value = currentVal;
+}
+
+function addWashingUnit() {
+    let name = prompt("புதிய Washing Unit பெயரை உள்ளிடவும்:");
+    if(name) {
+        name = name.trim();
+        if(!name) return;
+        let masterUnits = JSON.parse(localStorage.getItem('tex_master_washing_units')) || [];
+        if(!masterUnits.includes(name)) {
+            masterUnits.push(name);
+            localStorage.setItem('tex_master_washing_units', JSON.stringify(masterUnits));
+            if(window.firebaseSave) window.firebaseSave('tex_master_washing_units', masterUnits);
+            loadWashingUnitDropdown();
+            alert(`Washing Unit '${name}' added successfully! ✅`);
+        }
+        document.getElementById('topUnit').value = name;
+    }
 }
 
 function openDesignModal() {
@@ -938,7 +990,6 @@ async function saveBottomEntry() {
         let recId = row.getAttribute('data-id');
         let rcvMtr = parseFloat(row.querySelector('.b-received').value);
         
-        // If it's a dynamically added reprocessing row (doesn't have data-id or is extra)
         if (!recId) {
             let slip = row.querySelector('.b-slip').value.trim();
             let piece = parseInt(row.querySelector('.b-piece').value) || 0;
@@ -946,7 +997,6 @@ async function saveBottomEntry() {
             let process = row.querySelector('.b-process').value.trim() || 'Reprocessing';
 
             if(rcvMtr > 0) {
-                // Create dummy issue entry for reprocessing
                 let newIssueId = Date.now() + Math.random();
                 issues.push({
                     id: newIssueId,
@@ -1269,6 +1319,5 @@ function printReport() {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>
