@@ -171,7 +171,6 @@
             gap: 12px; margin-bottom: 12px;
         }
         
-        /* 📌 Updated Grid for Order Mtrs, Crimp %, Fabrics Mtrs, Warp 1, Warp 2, Weft Count */
         .form-grid-row-6 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
@@ -183,6 +182,16 @@
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
         }
+
+        /* Inline Input + Add Button Group */
+        .input-group-btn { display: flex; gap: 6px; width: 100%; }
+        .input-group-btn select { flex: 1; }
+        .btn-add-inline {
+            background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 8px;
+            font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+        }
+        .btn-add-inline:hover { background: #059669; }
 
         /* 📌 EXTRA TAB FOR WARPING BEAM DETAILS */
         .warping-beam-tab {
@@ -330,7 +339,10 @@
                 </div>
                 <div class="form-group">
                     <label>Weaver Name</label>
-                    <input type="text" id="topWeaverName" placeholder="Enter Weaver Name" required>
+                    <div class="input-group-btn">
+                        <select id="topWeaverName" required><option value="">Select Weaver</option></select>
+                        <button type="button" class="btn-add-inline" onclick="addWeaver()">+ Add</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Design Number</label>
@@ -368,7 +380,7 @@
                 </div>
             </div>
 
-            <!-- 📌 WARPING BEAM DETAILS (Extra Tab Added) -->
+            <!-- 📌 WARPING BEAM DETAILS (With Unit Dropdown + Add Button) -->
             <div class="warping-beam-tab">
                 <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #059669; display: flex; align-items: center; gap: 6px;">
                     <span>🧵</span> Warping Beam Details (From Warping Unit)
@@ -376,7 +388,10 @@
                 <div class="form-grid-row-3">
                     <div class="form-group">
                         <label>Warping Name (Unit)</label>
-                        <input type="text" id="warpingUnitName" placeholder="Enter Warping Unit">
+                        <div class="input-group-btn">
+                            <select id="warpingUnitName"><option value="">Select Unit</option></select>
+                            <button type="button" class="btn-add-inline" onclick="addWarpingUnit()">+ Add</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>No. of Beams</label>
@@ -646,6 +661,66 @@
             let val = parseFloat(input.value);
             if (!isNaN(val)) {
                 input.value = val.toFixed(3);
+            }
+        }
+
+        // 🌟 WEAVER DROPDOWN & ADD LOGIC
+        function loadWeaverDropdown() {
+            let weavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+            let select = document.getElementById('topWeaverName');
+            let currentVal = select.value;
+            let html = '<option value="">Select Weaver</option>';
+            weavers.forEach(w => {
+                html += `<option value="${w}">${w}</option>`;
+            });
+            select.innerHTML = html;
+            if(currentVal) select.value = currentVal;
+        }
+
+        function addWeaver() {
+            let name = prompt("புதிய Weaver / Party பெயரை உள்ளிடவும்:");
+            if(name) {
+                name = name.trim();
+                if(!name) return;
+                let weavers = JSON.parse(localStorage.getItem('tex_master_weavers')) || [];
+                if(!weavers.includes(name)) {
+                    weavers.push(name);
+                    localStorage.setItem('tex_master_weavers', JSON.stringify(weavers));
+                    if(window.firebaseSave) window.firebaseSave('tex_master_weavers', weavers);
+                    loadWeaverDropdown();
+                    alert(`Weaver '${name}' added successfully! ✅`);
+                }
+                document.getElementById('topWeaverName').value = name;
+            }
+        }
+
+        // 🌟 WARPING UNIT DROPDOWN & ADD LOGIC
+        function loadWarpingUnitDropdown() {
+            let units = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
+            let select = document.getElementById('warpingUnitName');
+            let currentVal = select.value;
+            let html = '<option value="">Select Unit</option>';
+            units.forEach(u => {
+                html += `<option value="${u}">${u}</option>`;
+            });
+            select.innerHTML = html;
+            if(currentVal) select.value = currentVal;
+        }
+
+        function addWarpingUnit() {
+            let name = prompt("புதிய Warping Unit பெயரை உள்ளிடவும்:");
+            if(name) {
+                name = name.trim();
+                if(!name) return;
+                let units = JSON.parse(localStorage.getItem('tex_master_warping_units')) || [];
+                if(!units.includes(name)) {
+                    units.push(name);
+                    localStorage.setItem('tex_master_warping_units', JSON.stringify(units));
+                    if(window.firebaseSave) window.firebaseSave('tex_master_warping_units', units);
+                    loadWarpingUnitDropdown();
+                    alert(`Warping Unit '${name}' added successfully! ✅`);
+                }
+                document.getElementById('warpingUnitName').value = name;
             }
         }
 
@@ -999,7 +1074,6 @@
             const crimpPerc = document.getElementById('crimpPerc').value;
             const isCompleted = document.getElementById('top_completed_status').checked;
 
-            // 🌟 Capture Warping Beam Details
             const warpingUnitName = document.getElementById('warpingUnitName').value.trim();
             const noOfBeams = document.getElementById('noOfBeams').value.trim();
             const beamMtrs = document.getElementById('beamMtrs').value.trim();
@@ -1430,6 +1504,8 @@
 
         loadTopDesignDropdown();
         loadBottomOrderDropdown();
+        loadWeaverDropdown();
+        loadWarpingUnitDropdown();
         updateTables();
     </script>
     <script src="config.js"></script>
