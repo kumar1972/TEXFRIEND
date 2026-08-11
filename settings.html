@@ -467,7 +467,6 @@ window.onload = function() {
     loadUserPermissions();
     renderUsersTable();
 
-    // Ensure save button listener is properly attached
     let saveBtn = document.getElementById('saveAllSettingsBtn');
     if(saveBtn) {
         saveBtn.onclick = function() {
@@ -708,18 +707,29 @@ function deleteUserAccount(index) {
     }
 }
 
-// General Settings Save & Backup
+// General Settings Save & Exit Fix
 function saveSettings() {
     let heading = document.getElementById('set_heading').value.trim();
-    if(heading) localStorage.setItem('app_heading_name', heading);
+    if(heading) {
+        localStorage.setItem('app_heading_name', heading);
+        if(window.firebaseSave) window.firebaseSave('app_heading_name', heading);
+    }
 
     let compAddr = document.getElementById('set_comp_addr').value.trim();
-    if(compAddr) localStorage.setItem('company_full_address', compAddr);
+    if(compAddr) {
+        localStorage.setItem('company_full_address', compAddr);
+        if(window.firebaseSave) window.firebaseSave('company_full_address', compAddr);
+    }
 
     if(tempLogoData) {
         localStorage.setItem('company_logo_base64', tempLogoData);
         localStorage.setItem('company_logo', tempLogoData);
         localStorage.setItem('logo', tempLogoData);
+        if(window.firebaseSave) {
+            window.firebaseSave('company_logo_base64', tempLogoData);
+            window.firebaseSave('company_logo', tempLogoData);
+            window.firebaseSave('logo', tempLogoData);
+        }
     }
 
     let designNo = document.getElementById('settingDesignSelect').value;
@@ -733,15 +743,11 @@ function saveSettings() {
         }
     }
 
-    // Sync settings to firebase if function is available
-    if(window.firebaseSave) {
-        if(heading) window.firebaseSave('app_heading_name', heading);
-        if(compAddr) window.firebaseSave('company_full_address', compAddr);
-        if(tempLogoData) window.firebaseSave('company_logo', tempLogoData);
-    }
-
     alert("All Settings Saved Successfully! ✅");
-    window.location.href = "dashboard.html";
+    
+    setTimeout(function() {
+        window.location.href = "dashboard.html";
+    }, 300);
 }
 
 function backupAllData() {
