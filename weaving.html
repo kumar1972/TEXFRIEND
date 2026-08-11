@@ -308,7 +308,7 @@
                 </div>
             </div>
 
-            <!-- 📌 WARPING BEAM DETAILS (Restored Perfectly) -->
+            <!-- 📌 EXTRA TAB FOR WARPING BEAM DETAILS -->
             <div class="warping-beam-tab">
                 <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #059669; display: flex; align-items: center; gap: 6px;">
                     <span>🧵</span> Warping Beam Details (From Warping Unit)
@@ -747,7 +747,7 @@
             }
         }
 
-        // 🌟 DESIGN SELECT & WARPING MTRS AUTO-LOAD (USING CROSS-PAGE UNIVERSAL HELPER)
+        // 🌟 FETCH MTRS DIRECTLY FROM YARN CALCULATION (design_specs -> yarnOrderMtr)
         function onDesignSelect(val) {
             loadBitmapImage(val);
             if(val) {
@@ -772,52 +772,25 @@
                 document.getElementById('warpCount2').value = sp.warp2 || sp.count2 || ''; 
                 document.getElementById('weftCount').value = sp.weft || found.weftCount || '';
 
-                // 🌟 FETCH WARPING MTRS FROM WARPING PAGE (USING GLOBAL CROSS PAGE LOADER)
+                // 🌟 PULLING DIRECTLY FROM YARN CALCULATION PAGE SPECS (yarnOrderMtr or orderMtr)
                 let targetMts = 0;
                 let warpingUnitName = "";
 
-                let warpingData = window.getCrossPageData ? window.getCrossPageData(val, 'warping_issue_records') : null;
-                if (warpingData) {
-                    targetMts = parseFloat(warpingData.warpingMts || warpingData.beamMtrs || warpingData.issueWt || warpingData.orderWt || warpingData.mtrs || 0);
-                    if (warpingData.unit || warpingData.warpingUnitName) {
-                        warpingUnitName = warpingData.unit || warpingData.warpingUnitName;
-                    }
-                }
-
-                if (!targetMts || targetMts <= 0) {
-                    let warpingRecords = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-                    let matchedW = warpingRecords.slice().reverse().find(w => cleanDesignName(w.designNo || w.designNumber) === cleanDNo);
-                    if (matchedW) {
-                        targetMts = parseFloat(matchedW.warpingMts || matchedW.beamMtrs || matchedW.issueWt || matchedW.orderWt || 0);
-                        if (matchedW.unit) warpingUnitName = matchedW.unit;
-                    }
-                }
-
-                if ((!targetMts || targetMts <= 0) && sp) {
-                    targetMts = parseFloat(sp.warpingMts || sp.warpMts || sp.beamMtrs || 0);
-                }
-
-                if (!targetMts || targetMts <= 0) {
+                let yarnCalcMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr || 0);
+                if (yarnCalcMtr > 0) {
+                    targetMts = yarnCalcMtr; // Yarn calculation order mtr (e.g. warp dyeing order mtr)
+                } else {
                     let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                     let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
                     let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
-                    let yarnCalcOrderMtr = parseFloat(sp.yarnOrderMtr) || parseFloat(sp.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 400);
-                    targetMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr * 0.95) : 400;
+                    targetMts = prodMtrVal > 0 ? (prodMtrVal * 1.05) : 400;
                 }
 
                 document.getElementById('warpingMts').value = targetMts > 0 ? targetMts.toFixed(2) : '400.00';
                 document.getElementById('beamMtrs').value = targetMts > 0 ? targetMts.toFixed(2) : '400.00';
                 document.getElementById('crimpPerc').value = "5"; 
                 
-                if (warpingUnitName) {
-                    let sel = document.getElementById('warpingUnitName');
-                    if (!Array.from(sel.options).some(o => o.value === warpingUnitName)) {
-                        sel.innerHTML += `<option value="${warpingUnitName}">${warpingUnitName}</option>`;
-                    }
-                    sel.value = warpingUnitName;
-                }
-
-                let fabricMtrs = targetMts - (targetMts * 0.05);
+                let fabricMtrs = targetMts > 0 ? (targetMts - (targetMts * 0.05)) : 380;
                 document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
 
                 let savedWeaving = weavingMasterData.find(x => cleanDesignName(x.designNo) === cleanDNo);
