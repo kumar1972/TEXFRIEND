@@ -766,36 +766,45 @@
         return parseFloat(str) || 0;
     }
 
+    // 🌟 FIXED STRICT SEQUENTIAL PATTERN RESOLVER LOGIC
     function resolvePattern(lines, ranges, type, defaultCount) {
         if(!lines || lines.length === 0) return { sequence: [], summary: [], totalPatternVal: 0 };
-        let covered = new Array(lines.length).fill(false);
-        let orderedPattern = [];
+        
+        let exactSequence = [];
+        let i = 0;
 
-        if(ranges && ranges.length > 0) {
-            ranges.forEach(r => {
-                for(let s=0; s<r.set; s++) {
-                    for(let j = r.start; j <= r.end; j++) {
-                        if(lines[j-1]) orderedPattern.push({...lines[j-1]});
+        while (i < lines.length) {
+            let lineNum = i + 1;
+            let range = ranges ? ranges.find(r => r.start === lineNum) : null;
+
+            if (range && range.end >= range.start) {
+                for (let s = 0; s < range.set; s++) {
+                    for (let j = range.start - 1; j < range.end; j++) {
+                        if (lines[j]) {
+                            let val = parseFloat(type === 'warp' ? lines[j].ends : lines[j].picks) || 0;
+                            let cDisplay = (lines[j].count !== undefined && lines[j].count !== '') ? String(lines[j].count).trim() : String(defaultCount);
+                            let clr = lines[j].color ? String(lines[j].color).trim() : '-';
+                            let bm = lines[j].beam || 'Ground';
+                            for (let k = 0; k < val; k++) {
+                                exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+                            }
+                        }
                     }
                 }
-                for(let j = r.start; j <= r.end; j++) covered[j-1] = true;
-            });
-        }
-        lines.forEach((l, idx) => {
-            if(!covered[idx]) orderedPattern.push({...l});
-        });
-
-        let exactSequence = [];
-        orderedPattern.forEach(item => {
-            let val = parseFloat(type === 'warp' ? item.ends : item.picks) || 0;
-            let cDisplay = (item.count !== undefined && item.count !== '') ? String(item.count).trim() : String(defaultCount);
-            let clr = item.color ? String(item.color).trim() : '-';
-            let bm = item.beam || 'Ground'; 
-            
-            for(let k=0; k<val; k++) {
-                exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+                i = range.end;
+            } else {
+                if (lines[i]) {
+                    let val = parseFloat(type === 'warp' ? lines[i].ends : lines[i].picks) || 0;
+                    let cDisplay = (lines[i].count !== undefined && lines[i].count !== '') ? String(lines[i].count).trim() : String(defaultCount);
+                    let clr = lines[i].color ? String(lines[i].color).trim() : '-';
+                    let bm = lines[i].beam || 'Ground';
+                    for (let k = 0; k < val; k++) {
+                        exactSequence.push({ count: cDisplay, color: clr, beam: bm });
+                    }
+                }
+                i++;
             }
-        });
+        }
 
         let summaryMap = new Map();
         let order = [];
