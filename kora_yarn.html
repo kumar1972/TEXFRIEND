@@ -167,7 +167,6 @@
         }
         .btn-add-inline:hover { background: #059669; }
         
-        /* 📌 New Delete Button Style */
         .btn-del-inline {
             background: #FEE2E2; color: #DC2626; border: none; padding: 0 8px;
             border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;
@@ -303,7 +302,6 @@
 
     <div class="page-title">🧵 Kora Yarn Management</div>
 
-    <!-- 📌 1. KORA STOCK INWARD -->
     <div class="form-section" style="margin-top: 10px;">
         <div class="section-badge">📥 Inward Stock</div>
         
@@ -338,7 +336,6 @@
         <button class="btn-main" id="saveInwardBtn" onclick="saveInward()">✅ Save Kora Stock</button>
     </div>
 
-    <!-- 📌 2. KORA ISSUE -->
     <div class="form-section">
         <div class="section-badge issue">📤 Outward Issue</div>
         
@@ -392,7 +389,6 @@
         <button class="btn-main btn-issue" id="saveIssueBtn" onclick="saveIssue()">➕ Add Kora Issue</button>
     </div>
 
-    <!-- 📌 3. HISTORY POPUP BUTTONS -->
     <div class="history-btn-group">
         <button class="popup-trigger-btn" onclick="openModal('inwardModal')">📋 View Inward History (வரவு)</button>
         <button class="popup-trigger-btn popup-btn-secondary" onclick="openModal('issueModal')">📋 View Issue History (செலவு)</button>
@@ -400,7 +396,6 @@
 
 </div>
 
-<!-- 📌 Full-Screen Pop-up Modal for Inward History -->
 <div id="inwardModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -427,7 +422,6 @@
     </div>
 </div>
 
-<!-- 📌 Full-Screen Pop-up Modal for Issue History -->
 <div id="issueModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -456,7 +450,6 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
@@ -494,6 +487,17 @@ document.addEventListener('DOMContentLoaded', function() {
     refreshAllTables();
 });
 
+// 🚀 Safe Firebase Save Helper
+function syncDataToCloud(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+    if (window.firebaseSave) {
+        window.firebaseSave(key, data);
+    }
+    if (window.firebaseSaveIndividual) {
+        window.firebaseSaveIndividual(key, data);
+    }
+}
+
 // 🚀 Manual "+ Add" Logic via Prompt
 function addMasterMill(selectId) {
     let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
@@ -503,9 +507,9 @@ function addMasterMill(selectId) {
         let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
         if(!masterMills.includes(val)) {
             masterMills.push(val);
-            localStorage.setItem('tex_master_mills', JSON.stringify(masterMills));
+            syncDataToCloud('tex_master_mills', masterMills);
             loadMillSuggestions();
-            alert(`Mill '${val}' added successfully! ✅`);
+            alert(`Mill '${val}' added & saved to Cloud successfully! ✅`);
         }
         document.getElementById(selectId).value = val;
     }
@@ -519,9 +523,9 @@ function addMasterUnit(selectId) {
         let masterUnits = JSON.parse(localStorage.getItem('tex_master_units')) || [];
         if(!masterUnits.includes(val)) {
             masterUnits.push(val);
-            localStorage.setItem('tex_master_units', JSON.stringify(masterUnits));
+            syncDataToCloud('tex_master_units', masterUnits);
             loadUnitSuggestions();
-            alert(`Unit '${val}' added successfully! ✅`);
+            alert(`Unit '${val}' added & saved to Cloud successfully! ✅`);
         }
         document.getElementById(selectId).value = val;
     }
@@ -535,9 +539,9 @@ function addMasterCount(selectId) {
         let masterCounts = JSON.parse(localStorage.getItem('tex_master_counts')) || [];
         if(!masterCounts.includes(val)) {
             masterCounts.push(val);
-            localStorage.setItem('tex_master_counts', JSON.stringify(masterCounts));
+            syncDataToCloud('tex_master_counts', masterCounts);
             loadCountSuggestions();
-            alert(`Count '${val}' added successfully! ✅`);
+            alert(`Count '${val}' added & saved to Cloud successfully! ✅`);
         }
         document.getElementById(selectId).value = val;
     }
@@ -560,7 +564,7 @@ function deleteMasterItem(type) {
         let idx = parseInt(idxStr) - 1;
         if(idx >= 0 && idx < masterList.length) {
             let deleted = masterList.splice(idx, 1);
-            localStorage.setItem(storageKey, JSON.stringify(masterList));
+            syncDataToCloud(storageKey, masterList);
             if(type === 'mill') loadMillSuggestions();
             if(type === 'unit') loadUnitSuggestions();
             if(type === 'count') loadCountSuggestions();
@@ -737,7 +741,7 @@ async function quickCompleteToggle() {
         issues.push({ id: Date.now(), date: dateVal, dyeingName: dyeingName, millName: issueMillName, designNo: dNo, count: count, issueWt: issueWt.toFixed(3), status: statusText });
     }
 
-    localStorage.setItem('kora_issue_records', JSON.stringify(issues));
+    syncDataToCloud('kora_issue_records', issues);
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
@@ -745,12 +749,7 @@ async function quickCompleteToggle() {
 
     if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = statusText;
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-    try {
-        if (window.firebaseSave) { await window.firebaseSave('kora_issue_records', issues); await window.firebaseSave('design_specs', designSpecs); }
-        if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-    } catch(e) {}
+    syncDataToCloud('design_specs', designSpecs);
 
     refreshAllTables();
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
@@ -797,8 +796,7 @@ async function saveInward() {
         alert("Kora Stock Added to Cloud Successfully! ✅☁️");
     }
 
-    localStorage.setItem('kora_stock_records', JSON.stringify(records));
-    if (window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
+    syncDataToCloud('kora_stock_records', records);
     
     document.getElementById('supplierName').value = ''; document.getElementById('inwardCount').value = ''; document.getElementById('inwardWt').value = '';
     if(cb) cb.checked = false; 
@@ -857,12 +855,9 @@ async function saveIssue() {
 
     if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+    syncDataToCloud('design_specs', designSpecs);
 
-    localStorage.setItem('kora_issue_records', JSON.stringify(issues));
-    
-    if (window.firebaseSave) { await window.firebaseSave('kora_issue_records', issues); await window.firebaseSave('design_specs', designSpecs); }
-    if (window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+    syncDataToCloud('kora_issue_records', issues);
 
     document.getElementById('dyeingName').value = ''; document.getElementById('issueMillName').value = ''; 
     document.getElementById('designNo').value = ''; document.getElementById('issueCount').value = ''; document.getElementById('issueWt').value = '';
@@ -878,8 +873,8 @@ async function toggleInwardStatus(id, newStatus) {
         let records = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
         let index = records.findIndex(r => r.id == id);
         if(index > -1) {
-            records[index].status = newStatus; localStorage.setItem('kora_stock_records', JSON.stringify(records));
-            if(window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
+            records[index].status = newStatus; 
+            syncDataToCloud('kora_stock_records', records);
             refreshAllTables();
         }
     }
@@ -891,17 +886,16 @@ async function toggleIssueStatus(id, newStatus) {
         let records = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
         let index = records.findIndex(r => r.id == id);
         if(index > -1) {
-            records[index].status = newStatus; localStorage.setItem('kora_issue_records', JSON.stringify(records));
+            records[index].status = newStatus; 
             let dNo = records[index].designNo;
             if(dNo) {
                 let cleanDNo = cleanDesignName(dNo); let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
                 let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
                 if(!designSpecs[specKey]) designSpecs[specKey] = {};
-                designSpecs[specKey].status = newStatus; localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-                if(window.firebaseSave) await window.firebaseSave('design_specs', designSpecs);
-                if(window.firebaseSaveIndividual) await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                designSpecs[specKey].status = newStatus; 
+                syncDataToCloud('design_specs', designSpecs);
             }
-            if(window.firebaseSave) await window.firebaseSave('kora_issue_records', records);
+            syncDataToCloud('kora_issue_records', records);
             refreshAllTables();
         }
     }
@@ -951,8 +945,7 @@ async function deleteInward(id) {
     if (!checkUserPermission()) { alert("Access Denied! You do not have permission to delete entries. ❌"); return; }
     if(!confirm("Are you sure you want to delete this Inward record?")) return;
     let records = JSON.parse(localStorage.getItem('kora_stock_records')) || []; records = records.filter(r => r.id != id);
-    localStorage.setItem('kora_stock_records', JSON.stringify(records));
-    if (window.firebaseSave) await window.firebaseSave('kora_stock_records', records);
+    syncDataToCloud('kora_stock_records', records);
     loadMillSuggestions(); loadCountSuggestions(); refreshAllTables();
 }
 
@@ -972,8 +965,7 @@ async function deleteIssue(id) {
     if (!checkUserPermission()) { alert("Access Denied! You do not have permission to delete entries. ❌"); return; }
     if(!confirm("Are you sure you want to delete this Issue record?")) return;
     let records = JSON.parse(localStorage.getItem('kora_issue_records')) || []; records = records.filter(r => r.id != id);
-    localStorage.setItem('kora_issue_records', JSON.stringify(records));
-    if (window.firebaseSave) await window.firebaseSave('kora_issue_records', records);
+    syncDataToCloud('kora_issue_records', records);
     loadUnitSuggestions(); loadCountSuggestions(); refreshAllTables();
 }
 </script>

@@ -39,7 +39,10 @@ import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((fireba
             'design_specs', 'pre_design_numbers', 'design_masters_data', 
             'warping_issue_records', 'weaving_master_data', 'weaving_warp_trans', 
             'weaving_weft_trans', 'party_orders_data', 'dyeing_issue_records', 
-            'dyeing_receive_records', 'tex_master_weavers', 'tex_master_warping_units'
+            'dyeing_receive_records', 'tex_master_weavers', 'tex_master_warping_units',
+            'washing_issue_records', 'washing_receive_records', 'tex_master_washing_units',
+            'kora_stock_records', 'kora_issue_records', 'tex_master_mills', 
+            'tex_master_units', 'tex_master_counts', 'party_master_db', 'user_permissions', 'erp_system_users'
         ];
 
         mainKeys.forEach(key => {
@@ -66,13 +69,13 @@ window.firebaseLoad = function(key) {
 // 🚀 Cloud Save (Saves to both Local & Firebase Firestore instantly)
 window.firebaseSave = function(key, data) {
     window.localSave(key, data);
-    if (window.db && window._setDoc && window._doc) {
-        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log("Save error:", e));
+    if (window.db) {
+        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log("Save error for", key, e));
     }
 };
 
 window.firebaseSaveIndividual = function(key, data) {
-    window.firebaseSave("design_" + key, data);
+    window.firebaseSave(key, data);
 };
 
 // 🌟 UNIVERSAL CROSS-PAGE DATA FETCH UTILITY
@@ -146,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 400);
 });
 
-// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS
+// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS & UNITS
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         let namesSet = new Set();
@@ -156,6 +159,9 @@ window.addEventListener('DOMContentLoaded', function() {
         
         let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
         issues.forEach(i => { if(i.millName) namesSet.add(i.millName.trim()); if(i.dyeingName) namesSet.add(i.dyeingName.trim()); });
+
+        let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+        masterMills.forEach(m => namesSet.add(m.trim()));
 
         let existingDatalist = document.getElementById('globalUniversalSuggestions');
         if(!existingDatalist) {
