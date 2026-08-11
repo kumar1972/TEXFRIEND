@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ERP Master Settings</title>
+    <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
@@ -374,7 +375,7 @@
 
     <!-- 📌 Section 5: System Actions -->
     <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn-action btn-primary" id="saveAllSettingsBtn" onclick="saveSettings()">✅ Save All Settings & Exit</button>
+        <button class="btn-action btn-primary" id="saveAllSettingsBtn" type="button">✅ Save All Settings & Exit</button>
         <button class="btn-action btn-info" style="width: 100%;" onclick="backupAllData()">📥 Backup Entire ERP Data</button>
         
         <div class="action-row">
@@ -467,11 +468,13 @@ window.onload = function() {
     loadUserPermissions();
     renderUsersTable();
 
+    // 🌟 Direct event binding for save button
     let saveBtn = document.getElementById('saveAllSettingsBtn');
     if(saveBtn) {
-        saveBtn.onclick = function() {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             saveSettings();
-        };
+        });
     }
 }
 
