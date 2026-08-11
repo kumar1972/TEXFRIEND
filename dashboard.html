@@ -309,8 +309,7 @@
     <div class="top-header-container">
         <h3>TEXFRIEND PRO</h3>
         
-        <div id="companyLogoContainer" onclick="document.getElementById('quickLogoInput').click()" title="Click to upload logo"></div>
-        <input type="file" id="quickLogoInput" accept="image/*" style="display:none;" onchange="uploadQuickLogo(this)">
+        <div id="companyLogoContainer" onclick="window.location.href='settings.html'" title="Click to open settings"></div>
 
         <div class="header-right-actions">
             <div class="live-clock-box">
@@ -336,6 +335,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let box = document.getElementById('userInfoBox');
     if(box) {
         box.innerHTML = `🟢 Role: <span style="color:#38BDF8;">${role}</span><br>👤 Name: <span style="color:#34D399;">${username}</span>`;
+    }
+
+    // 🌟 UNIFIED LOGO LOADER FOR DASHBOARD
+    let localLogo = localStorage.getItem('company_logo_base64') || localStorage.getItem('company_logo') || localStorage.getItem('logo') || '';
+    let logoContainer = document.getElementById('companyLogoContainer');
+    if (localLogo) {
+        logoContainer.innerHTML = `<img src="${localLogo}" alt="Logo">`;
+    } else {
+        logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
     }
 
     setInterval(() => {
@@ -501,31 +509,15 @@ window.onclick = function(event) {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function firebaseLoad(key) {
-            try {
-                const docSnap = `await getDoc(doc(db, "texfriend_erp", key));`
-                // Safe parsing
-                if (docSnap.exists && docSnap.exists()) { return JSON.parse(docSnap.data().content); }
-            } catch (e) {}
-            return null;
-        }
-
         window.onload = async function() {
-            let localLogo = localStorage.getItem('company_logo') || '';
-            let logoContainer = document.getElementById('companyLogoContainer');
-            if (localLogo) {
-                logoContainer.innerHTML = `<img src="${localLogo}" alt="Logo">`;
-            } else {
-                logoContainer.innerHTML = `<div class="logo-placeholder">+ Logo</div>`;
-            }
-
-            // 🌟 1. Saved Designs Count (சரியான கணக்கு)
+            // 🌟 1. Saved Designs Count
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             let totalDesignsCount = Math.max(Object.keys(designSpecs).length, preDesigns.length);
-            document.getElementById('statDesignsCount').innerText = totalDesignsCount;
+            let designsEl = document.getElementById('statDesignsCount');
+            if(designsEl) designsEl.innerText = totalDesignsCount;
 
-            // 🌟 2. Active Orders & Delayed Orders (உண்மையான மெமரியில் உள்ளவை மட்டும்)
+            // 🌟 2. Active Orders & Delayed Orders
             let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
             let activeOrdersCount = 0;
             let delayedCount = 0;
@@ -544,14 +536,16 @@ window.onclick = function(event) {
                 }
             });
 
-            document.getElementById('statOrdersCount').innerText = activeOrdersCount;
-            document.getElementById('statDelayedCount').innerText = delayedCount;
+            let ordersEl = document.getElementById('statOrdersCount');
+            if(ordersEl) ordersEl.innerText = activeOrdersCount;
+            let delayedEl = document.getElementById('statDelayedCount');
+            if(delayedEl) delayedEl.innerText = delayedCount;
 
             let section = document.getElementById('delayedOrdersSection');
             let tbody = document.getElementById('delayedOrdersBody');
-            tbody.innerHTML = '';
+            if(tbody) tbody.innerHTML = '';
 
-            if(delayedList.length > 0) {
+            if(delayedList.length > 0 && section && tbody) {
                 section.style.display = 'block';
                 delayedList.forEach((item, index) => {
                     tbody.innerHTML += `
@@ -564,7 +558,7 @@ window.onclick = function(event) {
                         </tr>
                     `;
                 });
-            } else {
+            } else if(section) {
                 section.style.display = 'none';
             }
         }
@@ -572,27 +566,29 @@ window.onclick = function(event) {
         window.handleSearchInput = function(val) {
             let suggBox = document.getElementById('searchSuggestions');
             if(!val || val.trim() === '') {
-                suggBox.style.display = 'none';
+                if(suggBox) suggBox.style.display = 'none';
                 return;
             }
             let term = val.trim().toLowerCase();
             let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
             let matches = preDesigns.filter(d => d.toLowerCase().includes(term)).slice(0, 5);
 
-            if(matches.length > 0) {
+            if(matches.length > 0 && suggBox) {
                 suggBox.innerHTML = '';
                 matches.forEach(m => {
                     suggBox.innerHTML += `<div class="search-suggestion-item" onclick="selectSearchSuggestion('${m}')">${m}</div>`;
                 });
                 suggBox.style.display = 'block';
-            } else {
+            } else if(suggBox) {
                 suggBox.style.display = 'none';
             }
         }
 
         window.selectSearchSuggestion = function(val) {
-            document.getElementById('quickSearchInput').value = val;
-            document.getElementById('searchSuggestions').style.display = 'none';
+            let searchInp = document.getElementById('quickSearchInput');
+            let suggBox = document.getElementById('searchSuggestions');
+            if(searchInp) searchInp.value = val;
+            if(suggBox) suggBox.style.display = 'none';
             quickSearchDesign();
         }
     </script>
