@@ -10,12 +10,11 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-        /* 📌 Smart Background - STRICTLY NO BLACK */
         html, body { 
             width: 100%; 
             min-height: 100vh; 
             background: #030712; 
-            color: #1E2B23; /* Deep Dark Green */
+            color: #1E2B23; 
         }
 
         body { 
@@ -25,7 +24,6 @@
             align-items: center;
         }
 
-        /* 📌 Main Container */
         .main-card {
             width: 100%;
             max-width: 900px;
@@ -47,7 +45,6 @@
             margin-bottom: 5px; 
         }
 
-        /* 📌 Smart Back Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -64,7 +61,6 @@
         }
         .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-        /* Checkbox Styling */
         .completed-checkbox {
             display: flex;
             align-items: center;
@@ -119,7 +115,6 @@
             background: #4A7C59; border-radius: 4px;
         }
 
-        /* 📌 Smart Sectioning */
         .form-section {
             background: #F8FAF8;
             border: 1px solid #E2E8E2;
@@ -157,7 +152,6 @@
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-        /* 📌 Smart 3D Inputs */
         input, select {
             width: 100%;
             padding: 10px 12px;
@@ -179,7 +173,6 @@
         
         input::placeholder { color: #A0AFA0; font-weight: 400; }
 
-        /* 📌 Smart Buttons */
         .btn-main {
             width: 100%; padding: 14px; margin: 5px 0 0 0; border: none; border-radius: 10px;
             color: white; font-weight: 700; font-size: 13px; cursor: pointer;
@@ -207,7 +200,6 @@
 
         .history-btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 
-        /* 📌 Advanced Pop-up Modal Styling */
         .overlay-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
@@ -236,7 +228,6 @@
 
         .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
 
-        /* 📌 Fullscreen Image Popup Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -252,7 +243,6 @@
             cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* 📌 Advanced Table Design */
         .table-container {
             width: 100%; border-radius: 10px; overflow-x: auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
@@ -301,7 +291,7 @@
             </div>
             <div class="form-group">
                 <label id="supplierLabel">Source / Mill Name</label>
-                <input type="text" id="supplierName" placeholder="Enter Source Mill Name">
+                <input type="text" id="supplierName" list="millSuggestions" placeholder="Type or Select Mill Name">
             </div>
         </div>
         <div class="form-row">
@@ -334,9 +324,13 @@
         <div class="form-row full">
             <div class="form-group">
                 <label>Mill Name (From where yarn is taken)</label>
-                <input type="text" id="issueMillName" placeholder="Enter Mill Name">
+                <input type="text" id="issueMillName" list="millSuggestions" placeholder="Type or Select Mill Name">
             </div>
         </div>
+
+        <!-- 📌 Smart Hybrid Datalist for Mill Names (Old + New typing allowed) -->
+        <datalist id="millSuggestions"></datalist>
+
         <div class="form-row full">
             <div class="form-group">
                 <label>Design Number</label>
@@ -432,7 +426,6 @@
 let editingInwardId = null;
 let editingIssueId = null;
 
-// 🔒 Universal Permission Checker Function for Kora Yarn Page
 function checkUserPermission() {
     let userRole = localStorage.getItem('user_role');
     if (userRole !== 'Administrator' && userRole !== 'Admin') {
@@ -445,7 +438,6 @@ function checkUserPermission() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 🔒 Page Access Check on Load
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to access this page. ❌");
         window.location.href = "dashboard.html";
@@ -454,10 +446,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('inwardDate').valueAsDate = new Date();
     document.getElementById('issueDate').valueAsDate = new Date();
-    // Dropdowns handled in window.load
+    
+    // 🚀 Load Hybrid Mill Suggestions and Design dropdown on start
+    loadMillSuggestions();
+    loadDesignDropdown();
+    refreshAllTables();
 });
 
+// 🚀 Hybrid Mill Datalist Loader (பழைய பெயர்களைக் காட்டும் + புதிய பெயரை நாமே டைப் செய்து கொள்ளலாம்)
+function loadMillSuggestions() {
+    let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+    let millsSet = new Set();
+    
+    inwards.forEach(item => {
+        if(item.supplier) millsSet.add(item.supplier.trim());
+        if(item.millName) millsSet.add(item.millName.trim());
+    });
+    
+    let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+    issues.forEach(item => {
+        if(item.millName) millsSet.add(item.millName.trim());
+    });
+    
+    if(window.texMasterList && window.texMasterList.mills) {
+        window.texMasterList.mills.forEach(m => {
+            if(m !== "Mill 1" && m !== "Mill 2") millsSet.add(m);
+        });
+    }
+
+    let datalist = document.getElementById('millSuggestions');
+    datalist.innerHTML = '';
+    millsSet.forEach(mill => {
+        datalist.innerHTML += `<option value="${mill}">`;
+    });
+}
+
 function openModal(modalId) {
+    if(modalId === 'inwardModal' || modalId === 'issueModal') {
+        refreshAllTables();
+    }
     let modal = document.getElementById(modalId);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
@@ -471,7 +498,6 @@ function closeModal(modalId) {
 
 function cleanDesignName(str) { return str ? str.toString().replace('#', '').trim().toLowerCase() : ''; }
 
-// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
@@ -481,7 +507,6 @@ window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
 }
 
-// 🚀 FIXED: Load EXACT matching HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -530,7 +555,7 @@ function onDesignSelect(val) {
     if(!val) return;
     localStorage.setItem('selected_design_number', val);
     
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
     let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
 
@@ -547,7 +572,6 @@ function onDesignSelect(val) {
     }
 }
 
-// 📌 Completed Checkbox Quick Toggle
 async function quickCompleteToggle() {
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to modify status on this page. ❌");
@@ -625,7 +649,6 @@ async function quickCompleteToggle() {
     alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 1. SAVE INWARD STOCK
 async function saveInward() {
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to save inward stock on this page. ❌");
@@ -642,7 +665,7 @@ async function saveInward() {
     if(cb) isCompleted = cb.checked;
 
     if(!supplier || !count || weight <= 0) {
-        alert("Please enter Source Name, Count, and valid Weight!");
+        alert("Please enter or select Mill Name, Count, and valid Weight!");
         return;
     }
 
@@ -707,11 +730,11 @@ async function saveInward() {
     document.getElementById('inwardWt').value = '';
     if(cb) cb.checked = false; 
     
+    loadMillSuggestions(); // Refresh suggestions with newly typed mill
     refreshAllTables();
     btn.innerText = "✅ Save Kora Stock";
 }
 
-// 2. SAVE OUTWARD ISSUE
 async function saveIssue() {
     if (!checkUserPermission()) {
         alert("Access Denied! You do not have permission to add kora issue on this page. ❌");
@@ -812,6 +835,7 @@ async function saveIssue() {
     document.getElementById('issueWt').value = '';
     if(cb) cb.checked = false; 
     
+    loadMillSuggestions(); // Refresh suggestions with newly typed mill
     refreshAllTables();
     btn.innerText = "➕ Add Kora Issue";
 }
@@ -987,6 +1011,7 @@ async function deleteInward(id) {
         await window.firebaseSave('kora_stock_records', records);
     }
     
+    loadMillSuggestions();
     refreshAllTables();
 }
 
@@ -1036,6 +1061,5 @@ async function deleteIssue(id) {
 }
 </script>
 <script src="config.js"></script>
-</script>
 </body>
 </html>

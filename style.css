@@ -166,3 +166,27 @@ input:focus, select:focus {
 div[style*="background"], a[style*="background"], button[style*="background"] {
     /* Ignore inline bright colors and blend with theme */
 }
+/* 📌 Universal Page Layout Fix for All Pages */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #030712;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* மேலே இருந்து சரியாகத் தொடங்க */
+    align-items: center;
+    min-height: 100vh;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+/* கண்டெய்னர் அல்லது மெயின் கார்டு சிறிதாக இருந்தாலும் ஸ்கிரீனைப் பொருத்தமாக நிரப்ப */
+.container, .main-card {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: auto; /* கீழே கருப்பு இடம் வீணாகக் காலியாக இருப்பதைத் தவிர்க்க */
+}

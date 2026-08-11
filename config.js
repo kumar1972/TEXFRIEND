@@ -1,8 +1,8 @@
-// config.js - TEXFRIEND ERP (Firebase Live Cloud Version)
+// config.js - TEXFRIEND ERP (Final Clean Version without Dashboard Conflicts)
 
-window.isDemo = false; // Changed to false to enable Cloud Sync
+window.isDemo = false; 
 
-// Local Storage Helper Functions (For instant load and offline backup)
+// 🛠️ Local Storage Helpers
 window.localLoad = function(key) {
     let data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
@@ -11,7 +11,7 @@ window.localSave = function(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
 };
 
-// 🔥 FIREBASE INITIALIZATION & CONFIG
+// 🔥 FIREBASE INITIALIZATION
 const firebaseConfig = {
     apiKey: "AIzaSyDYPLOPZnOlPvCzNeZXuS7yHTf2sUe-SFM",
     authDomain: "texfriend.firebaseapp.com",
@@ -22,122 +22,113 @@ const firebaseConfig = {
     measurementId: "G-2NP13ZTKCN"
 };
 
-window.db = null;
-window._doc = null;
-window._setDoc = null;
-window._getDoc = null;
+window.db = null; window._doc = null; window._setDoc = null; window._getDoc = null;
 
-// Dynamically loading Firebase (Avoids <script type="module"> errors in HTML files)
 import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((firebaseApp) => {
     const app = firebaseApp.initializeApp(firebaseConfig);
     import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then((firebaseFirestore) => {
         window.db = firebaseFirestore.getFirestore(app);
-        window._doc = firebaseFirestore.doc;
-        window._setDoc = firebaseFirestore.setDoc;
-        window._getDoc = firebaseFirestore.getDoc;
-        console.log("🔥 Firebase Cloud Connected Successfully!");
+        window._doc = firebaseFirestore.doc; window._setDoc = firebaseFirestore.setDoc; window._getDoc = firebaseFirestore.getDoc;
+        console.log("🔥 Firebase Connected!");
     });
 });
 
-// ☁️ Cloud Data Functions (Syncs Firebase to LocalStorage)
-window.firebaseLoad = async function(key) {
-    if (window.db && window._getDoc && window._doc) {
-        try {
-            const docSnap = await window._getDoc(window._doc(window.db, "texfriend_erp", key));
-            if (docSnap.exists()) {
-                let data = JSON.parse(docSnap.data().content);
-                window.localSave(key, data); // Sync down to LocalStorage
-                return data;
-            }
-        } catch (e) { console.error("Cloud Load Error: ", e); }
-    }
-    // Fallback to LocalStorage if offline or cloud data missing
+window.firebaseLoad = function(key) {
     return window.localLoad(key); 
 };
 
-window.firebaseSave = async function(key, data) {
-    window.localSave(key, data); // Save locally first for instant UI response
+window.firebaseSave = function(key, data) {
+    window.localSave(key, data);
     if (window.db && window._setDoc && window._doc) {
-        try {
-            await window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) });
-        } catch (e) { console.error("Cloud Save Error: ", e); }
+        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log(e));
     }
 };
 
-window.firebaseSaveIndividual = async function(key, data) {
-    let dbKey = "design_" + key;
-    await window.firebaseSave(dbKey, data);
+window.firebaseSaveIndividual = function(key, data) {
+    window.firebaseSave("design_" + key, data);
 };
 
-// 🚀 Automatic Local Data Loader for Dropdowns & Setup Pages
-window.addEventListener('load', function() {
-    if(!localStorage.getItem('pre_design_numbers')) {
-        localStorage.setItem('pre_design_numbers', JSON.stringify([]));
-    }
-});
+// 🌟 TEXFRIEND - Master Data List (No Dummies)
+window.texMasterList = {
+    mills: [], weavers: [],
+    dyeingNames: [], warpingNames: [],
+    sizingNames: [], washingNames: [],
+    counts: ["2/40s", "2/60s", "30s"], colours: ["White", "Black", "Navy Blue", "Maroon"]
+};
 
-// 🚀 Universal Dropdown Loader for All Pages (Enhanced)
+// 🚀 1. Design Synchronization & Dropdown Loader
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || JSON.parse(localStorage.getItem('tex_master_designs')) || [];
         
+        preDesignList.forEach(d => {
+            let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
+            if(name) {
+                let clean = name.toString().replace('#', '').trim().toLowerCase();
+                let exists = Object.keys(designSpecs).some(k => k.toString().replace('#', '').trim().toLowerCase() === clean);
+                if(!exists) {
+                    designSpecs[name] = { designNumber: name, status: 'running' };
+                }
+            }
+        });
+
+        let keysFromSpecs = Object.keys(designSpecs);
+        let combinedList = Array.from(new Set([...preDesignList, ...keysFromSpecs]));
+        
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
+        localStorage.setItem('pre_design_numbers', JSON.stringify(combinedList));
+
         let dropdowns = document.querySelectorAll('select');
         dropdowns.forEach(function(select) {
             let idOrClass = (select.id + " " + select.className).toLowerCase();
-            if (idOrClass.includes('design') || select.id === 'designNumber' || select.id === 'designSelect' || select.id === 'settingDesignSelect' || select.classList.contains('item-design')) {
+            if (idOrClass.includes('design') || select.id === 'designNumber' || select.id === 'designSelect' || select.classList.contains('item-design')) {
                 if (select.options.length <= 1) {
                     let currentVal = select.value;
-                    let html = '<option value="">Select Design</option>';
-                    preDesignList.forEach(function(d) {
-                        html += '<option value="' + d + '">' + d + '</option>';
+                    let html = '<option value="">Select Design No</option>';
+                    combinedList.forEach(function(d) {
+                        let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
+                        if(name) html += '<option value="' + name + '">' + name + '</option>';
                     });
                     select.innerHTML = html;
                     if (currentVal) select.value = currentVal;
                 }
             }
         });
-    }, 200);
-    
-    // 🚀 Sync & Status Pages Local Data Loader (Updated)
+    }, 400);
+});
+
+// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS (No Dummies)
+window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        // "Loading Cloud Data" அல்லது "SYNCING CLOUD DATA" வாசகங்களை மறைக்க
-        let loadingTexts = document.querySelectorAll('div, h3, h2, p, span');
-        loadingTexts.forEach(function(el) {
-            if (el.innerText && (el.innerText.includes('Loading Cloud Data') || el.innerText.includes('SYNCING CLOUD DATA'))) {
-                el.style.display = 'none';
+        let namesSet = new Set();
+        
+        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+        inwards.forEach(i => { if(i.supplier) namesSet.add(i.supplier.trim()); if(i.millName) namesSet.add(i.millName.trim()); });
+        
+        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        issues.forEach(i => { if(i.millName) namesSet.add(i.millName.trim()); if(i.dyeingName) namesSet.add(i.dyeingName.trim()); });
+
+        let existingDatalist = document.getElementById('globalUniversalSuggestions');
+        if(!existingDatalist) {
+            existingDatalist = document.createElement('datalist');
+            existingDatalist.id = 'globalUniversalSuggestions';
+            document.body.appendChild(existingDatalist);
+        }
+
+        let optionsHtml = '';
+        namesSet.forEach(name => {
+            optionsHtml += `<option value="${name}">`;
+        });
+        existingDatalist.innerHTML = optionsHtml;
+
+        let inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            let idClass = (input.id + " " + input.className + " " + input.placeholder).toLowerCase();
+            if(!idClass.includes('design') && (idClass.includes('mill') || idClass.includes('supplier') || idClass.includes('dyeing') || idClass.includes('weaver') || idClass.includes('washing') || idClass.includes('unit'))) {
+                input.setAttribute('list', 'globalUniversalSuggestions');
             }
         });
 
-        // லோக்கல் ஸ்டோரேஜിൽ உள்ள டேட்டாவை வைத்து டேபிளை உருவாக்குதல்
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-        let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-        
-        let container = document.querySelector('.form-section, .main-card, body');
-        
-        if (preDesignList.length > 0 && container && !document.getElementById('localStatusTable')) {
-            let html = '<div id="localStatusTable" style="margin-top:15px; background:white; padding:15px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05);"><h3 style="color:#2F4F38; margin-bottom:10px; font-size:14px;">📊 Design Status List (Live Cloud)</h3><table border="1" style="width:100%; border-collapse:collapse; background:white; font-size:12px;"><tr><th style="padding:8px; background:#4A7C59; color:white;">Design No</th><th style="padding:8px; background:#4A7C59; color:white;">Process</th><th style="padding:8px; background:#4A7C59; color:white;">Warp / Weft</th></tr>';
-            
-            preDesignList.forEach(function(d) {
-                let spec = designSpecs[d] || designSpecs[Object.keys(designSpecs).find(k => k.toLowerCase() === d.toLowerCase())] || {};
-                html += `<tr><td style="padding:8px; text-align:center;"><b>${d}</b></td><td style="padding:8px; text-align:center;">${spec.typeOfProcess || 'Running'}</td><td style="padding:8px; text-align:center;">${spec.warp || '-'}/${spec.weft || '-'}</td></tr>`;
-            });
-            html += '</table></div>';
-            
-            let displayBox = document.querySelector('.main-card') || document.body;
-            let div = document.createElement('div');
-            div.innerHTML = html;
-            displayBox.appendChild(div);
-        }
-    }, 300);
+    }, 600);
 });
-// 🌟 TEXFRIEND - Master Data List (Mills, Weavers, Counts, Colours, Washing, etc.)
-window.texMasterList = {
-    mills: ["Mill 1", "Mill 2"],
-    weavers: ["Weaver A", "Weaver B"],
-    dyeingNames: ["Dyeing Unit 1", "Dyeing Unit 2"],
-    warpingNames: ["Warping Unit 1"],
-    sizingNames: ["Sizing Unit 1"],
-    washingNames: ["Washing Unit 1", "Washing Unit 2"],
-    counts: ["2/40s", "2/60s", "30s"],
-    colours: ["White", "Black", "Navy Blue", "Maroon"]
-};

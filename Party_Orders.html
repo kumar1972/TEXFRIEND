@@ -8,9 +8,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
+        /* 📌 கீழிருக்கும் கருப்பு இடைவெளியை நீக்க Height திருத்தப்பட்டுள்ளது */
         html, body { 
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             background: #030712; 
             color: #1E2B23; 
         }
@@ -20,6 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
         }
 
         .container {
@@ -419,12 +421,14 @@
             return true;
         }
 
+        // 🔥 மாற்றம் 1: பேஜ் ஓபன் ஆனதும் டேபிளைத் தயார் செய்யும் கோடு
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkUserPermission()) {
                 alert("Access Denied! You do not have permission to access this page. ❌");
                 window.location.href = "dashboard.html";
                 return;
             }
+            updatePartyTable();
         });
 
         function calculateProductionMeter() {
@@ -443,7 +447,11 @@
             }
         }
 
+        // 🔥 மாற்றம் 2: டேபிளைத் திறக்கும் முன் டேட்டாவை லோட் செய்யும் கோடு
         function openModal(modalId) {
+            if(modalId === 'savedOrdersModal') {
+                updatePartyTable(); 
+            }
             let modal = document.getElementById(modalId);
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
