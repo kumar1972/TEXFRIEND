@@ -347,18 +347,18 @@
                 </div>
             </div>
 
-            <!-- 🌟 Updated Grid with Warp Dyeing Mts, Crimp % and Warping Mts -->
+            <!-- 🌟 Updated Grid with Fabric Mtrs instead of Warping Mtrs -->
             <div class="form-grid-row-5">
                 <div class="form-group">
                     <label>Warp Dyeing Mts</label>
-                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" readonly style="background:#EAF0EA;">
+                    <input type="number" step="0.01" id="warpDyeingMts" placeholder="0.00" style="background:#FFFFFF;" oninput="calcFabricMts()">
                 </div>
                 <div class="form-group">
                     <label>Crimp %</label>
-                    <input type="number" step="0.01" id="crimpPerc" placeholder="%" value="5" oninput="calcWarpingMts()">
+                    <input type="number" step="0.01" id="crimpPerc" placeholder="%" value="5" oninput="calcFabricMts()">
                 </div>
                 <div class="form-group">
-                    <label>Warping Mts</label>
+                    <label>Fabric Mtrs</label>
                     <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="recalculateWeights()" required>
                 </div>
                 <div class="form-group">
@@ -772,8 +772,8 @@
             return { sequence: exactSequence, summary: order.map(k => summaryMap.get(k)), totalPatternVal: exactSequence.length };
         }
 
-        // 🌟 AUTO CALCULATION OF WARPING MTRS BASED ON CRIMP
-        function calcWarpingMts() {
+        // 🌟 AUTO CALCULATION OF FABRIC MTRS BASED ON CRIMP
+        function calcFabricMts() {
             let dyeingMts = parseFloat(document.getElementById('warpDyeingMts').value) || 0;
             let crimp = parseFloat(document.getElementById('crimpPerc').value) || 0;
             if (dyeingMts > 0) {
@@ -808,13 +808,18 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                // 🌟 Fetch Warp Dyeing Order Mtrs from Specs and Apply 5% Default Crimp
-                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 0;
-                document.getElementById('warpDyeingMts').value = yarnCalcOrderMtr > 0 ? yarnCalcOrderMtr.toFixed(2) : '';
-                document.getElementById('crimpPerc').value = "5";
+                // 🌟 Fetch Warp Dyeing Order Mtrs from Yarn Calculation Specs (yarnOrderMtr) or fallback to general orderMtr
+                let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+                let matchedOrder = orders.find(o => cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo);
+                let prodMtrVal = matchedOrder ? parseFloat(matchedOrder.productionMeter || matchedOrder.prodMtr || 0) : 0;
                 
-                let warpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
-                document.getElementById('weavingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
+                let yarnCalcOrderMtr = parseFloat(specs.yarnOrderMtr) || parseFloat(specs.orderMtr) || parseFloat(found.orderMtr) || (prodMtrVal > 0 ? (prodMtrVal * 1.05) : 0);
+                
+                document.getElementById('warpDyeingMts').value = yarnCalcOrderMtr > 0 ? yarnCalcOrderMtr.toFixed(2) : '';
+                document.getElementById('crimpPerc').value = "5"; 
+                
+                let fabricMtrs = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr - (yarnCalcOrderMtr * 0.05)) : 0;
+                document.getElementById('weavingMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
                 let defaultWeftCount = found.weftCount || specs.weft || '40';
@@ -1166,6 +1171,7 @@
             document.getElementById('topDesignNo').value = '';
             document.getElementById('topWeaverName').value = '';
             document.getElementById('warpDyeingMts').value = '';
+            document.getElementById('crimpPerc').value = '5';
             document.getElementById('weavingMts').value = '';
             document.getElementById('warpCount').value = '';
             document.getElementById('warpCount2').value = '';
