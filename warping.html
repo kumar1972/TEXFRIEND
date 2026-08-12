@@ -159,6 +159,13 @@
         gap: 12px;
         margin-bottom: 12px;
     }
+    
+    .form-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+    }
 
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
@@ -175,7 +182,7 @@
         box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
     }
     input::placeholder { color: #A0AFA0; font-weight: 400; }
-    input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
+    input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; cursor: not-allowed; }
 
     /* 📌 Input Group for Master Add/Del */
     .input-group-btn { display: flex; gap: 6px; width: 100%; }
@@ -385,7 +392,7 @@
             </div>
         </div>
 
-        <div class="form-grid-3" style="margin-top: 10px;">
+        <div class="form-grid-4" style="margin-top: 10px;">
             <div class="form-group">
                 <label>Reed</label>
                 <input type="text" id="topReed" placeholder="0" readonly>
@@ -395,14 +402,17 @@
                 <input type="text" id="topCount" placeholder="Count" readonly>
             </div>
             <div class="form-group">
-                <label>Warping Mts</label>
-                <input type="number" id="topWarpingMts" placeholder="100" step="0.01" onchange="loadTopYarnLines()">
+                <label>Order Mtrs</label>
+                <input type="text" id="topOrderMtrs" placeholder="0.00" readonly>
+            </div>
+            <div class="form-group">
+                <label>Warping Mtrs</label>
+                <input type="number" id="topWarpingMts" placeholder="0.000" step="0.001" oninput="loadTopYarnLines()">
             </div>
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
             <label>Weaver To</label>
-            <!-- 🌟 Weaver Dropdown with Add/Del Buttons -->
             <div class="input-group-btn">
                 <select id="topWeaverTo"><option value="">Select Weaver / Party</option></select>
                 <button type="button" class="btn-add-inline" onclick="addWeaver()">+ Add</button>
@@ -748,7 +758,18 @@ function loadTopDesignDropdown() {
 
 function loadTopDesignSpecs(dNo) {
     loadBitmapImage();
-    if(!dNo) return;
+    if(!dNo) {
+        document.getElementById('topLinesContainer').innerHTML = '';
+        document.getElementById('topDesignNo').value = '';
+        document.getElementById('topUnit').value = '';
+        document.getElementById('topWeaverTo').value = '';
+        document.getElementById('topReed').value = '';
+        document.getElementById('topCount').value = '';
+        document.getElementById('topOrderMtrs').value = '';
+        document.getElementById('topWarpingMts').value = '';
+        return;
+    }
+    
     localStorage.setItem('selected_design_number', dNo);
     
     let cleanDNo = cleanDesignName(dNo);
@@ -772,8 +793,14 @@ function loadTopDesignSpecs(dNo) {
     let reed = found.reed || sp.reed || sp.baseReed || 52;
     let count1 = found.count1 || sp.warp || '20';
     
-    let yarnCalcOrderMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr) || 0;
-    let warpingMts = yarnCalcOrderMtr > 0 ? (yarnCalcOrderMtr * 0.95) : 0;
+    // 🌟 1. GET MASTER ORDER MTRS (e.g. 450) FROM YARN CALC
+    let masterOrderMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr) || 0;
+    
+    // 🌟 2. SET EXACT ORDER MTRS (WITHOUT DEDUCTION)
+    document.getElementById('topOrderMtrs').value = masterOrderMtr > 0 ? masterOrderMtr.toFixed(2) : '';
+
+    // 🌟 3. CALCULATE WARPING MTRS EXACTLY 5% LESS FROM THE ORIGINAL MTR
+    let warpingMtrsCalc = masterOrderMtr > 0 ? (masterOrderMtr * 0.95) : 0;
 
     let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
     if (existingIssues.length > 0) {
@@ -783,9 +810,11 @@ function loadTopDesignSpecs(dNo) {
             loadWeaverSuggestions();
             document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
         }
-        if(existingIssues[0].warpingMts && document.getElementById('topWarpingMts')) document.getElementById('topWarpingMts').value = existingIssues[0].warpingMts;
+        if(existingIssues[0].warpingMts && document.getElementById('topWarpingMts')) {
+            document.getElementById('topWarpingMts').value = existingIssues[0].warpingMts;
+        }
     } else {
-        document.getElementById('topWarpingMts').value = warpingMts > 0 ? warpingMts.toFixed(2) : '';
+        document.getElementById('topWarpingMts').value = warpingMtrsCalc > 0 ? warpingMtrsCalc.toFixed(3) : '';
         document.getElementById('topUnit').value = '';
         if(document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = '';
     }
@@ -813,7 +842,9 @@ function loadTopYarnLines() {
     let reed = parseFloat(document.getElementById('topReed').value) || parseFloat(found.reed || sp.reed || sp.baseReed) || 52;
     let baseWidth = parseFloat(found.width || sp.width || sp.baseWidth) || 66.92;
     let totalWarpEnds = Math.round(reed * baseWidth);
-    let warpingMts = parseFloat(document.getElementById('topWarpingMts').value) || 100;
+    
+    // Using the editable Warping Mtrs for Weight calculation
+    let warpingMts = parseFloat(document.getElementById('topWarpingMts').value) || 0;
     let defaultWarpCount = found.count1 || sp.warp || '20';
 
     let warpList = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
@@ -821,13 +852,6 @@ function loadTopYarnLines() {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
     let dyeingReceives = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
-
-    if (existingIssues.length > 0) {
-        if(existingIssues[0].unit) document.getElementById('topUnit').value = existingIssues[0].unit;
-        if(existingIssues[0].weaverTo && document.getElementById('topWeaverTo')) {
-            document.getElementById('topWeaverTo').value = existingIssues[0].weaverTo;
-        }
-    }
 
     if(warpList.length > 0) {
         let totalPatternVal = warpList.reduce((a, b) => a + b.patternVal, 0) || 1;
@@ -997,6 +1021,8 @@ async function saveTopOrder() {
         document.getElementById('topWeaverTo').value = '';
         document.getElementById('topReed').value = '';
         document.getElementById('topCount').value = '';
+        document.getElementById('topOrderMtrs').value = '';
+        document.getElementById('topWarpingMts').value = '';
         if(cb) cb.checked = false;
         
         loadTopDesignDropdown();

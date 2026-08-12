@@ -866,11 +866,17 @@
                 let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
                 
-                let baseOrderMtr = parseFloat(specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 100;
-                document.getElementById('weavingMts').value = baseOrderMtr.toFixed(2);
+                // 🌟 MASTER ORDER MTRS
+                let masterOrderMtr = parseFloat(specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 100;
+                
+                // 🌟 CALCULATE WARPING MTRS (-5% FROM MASTER ORDER MTRS)
+                let less5PercentMtrs = masterOrderMtr - (masterOrderMtr * 0.05);
+
+                // Set values
+                document.getElementById('weavingMts').value = less5PercentMtrs.toFixed(2);
                 document.getElementById('crimpPerc').value = "5";
                 
-                let fabricMtrs = baseOrderMtr - (baseOrderMtr * 0.05);
+                let fabricMtrs = less5PercentMtrs - (less5PercentMtrs * 0.05);
                 document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
 
                 let defaultWarpCount = found.count1 || specs.warp || '20';
@@ -919,8 +925,8 @@
                 document.getElementById('warpCount').value = '';
                 document.getElementById('warpCount2').value = '';
                 document.getElementById('weftCount').value = '';
-                document.getElementById('weavingMts').value = '100';
-                document.getElementById('fabricMts').value = '95';
+                document.getElementById('weavingMts').value = '';
+                document.getElementById('fabricMts').value = '';
                 document.getElementById('crimpPerc').value = '5';
                 document.getElementById('warpingUnitName').value = '';
                 document.getElementById('noOfBeams').value = '';
@@ -974,7 +980,8 @@
         }
 
         function recalculateWeights() {
-            calcFabricMts();
+            let val = document.getElementById('topDesignNo').value;
+            if(val) renderWeightsByMeters(val);
         }
 
         function onBottomOrderSelect(val) {

@@ -32,12 +32,16 @@
             font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 10px; text-transform: uppercase;
         }
 
+        /* 🌟 Aligned Form Grid */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
         .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-size: 10px; font-weight: 700; color: #4A554A; white-space: nowrap; }
-        input, select { padding: 9px; border: 1px solid #D1DED1; border-radius: 8px; font-size: 11px; font-weight: 600; background: #FFF; transition: all 0.2s; }
+        .form-group label { font-size: 10px; font-weight: 700; color: #4A554A; line-height: 1.2; }
+        
+        input, select { padding: 9px; border: 1px solid #D1DED1; border-radius: 8px; font-size: 11px; font-weight: 600; background: #FFF; transition: all 0.2s; width: 100%; }
         input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
-        input[readonly] { background: #EAF0EA; color: #2F4F38; cursor: not-allowed; }
+        input[readonly] { background: #EAF0EA; color: #2F4F38; cursor: not-allowed; border: 1px dashed #A0AFA0; }
+        
+        .editable-highlight { border-color: #3B82F6; background: #F0F9FF; }
 
         .btn-main {
             padding: 12px 18px; border: none; border-radius: 10px; color: white;
@@ -60,6 +64,13 @@
         .btn-action-small { padding: 5px 10px; border: none; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; }
         .btn-edit { background: #3B82F6; }
         .btn-del { background: #EF4444; }
+
+        /* Custom Scrollbar for form grids */
+        .scrollable-grid-wrapper { overflow-x: auto; width: 100%; padding-bottom: 10px; }
+        .scrollable-grid-wrapper::-webkit-scrollbar { height: 6px; }
+        .scrollable-grid-wrapper::-webkit-scrollbar-thumb { background: #D1DED1; border-radius: 4px; }
+        
+        .entry-grid-inner { display: grid; grid-template-columns: repeat(8, minmax(110px, 1fr)); gap: 10px; min-width: 950px; }
 
         /* Modal Styles */
         .overlay-modal {
@@ -119,11 +130,28 @@
     <!-- 2. Header Stats -->
     <div class="form-section" id="headerStatsSection" style="display: none; background: #F0F5F0; border-color: #A3C2A4;">
         <div class="section-badge" style="background: #2F4F38;">2. Order Details</div>
+        
         <div class="form-grid">
-            <div class="form-group"><label>Warping Mtrs (Issued)</label><input type="text" id="statWarpMtrs" readonly></div>
-            <div class="form-group"><label>Fabric Mtrs (Order)</label><input type="text" id="statFabricMtrs" readonly></div>
-            <div class="form-group"><label>Total Received Mtrs</label><input type="text" id="statTotalReceived" readonly style="color:#059669;"></div>
-            <div class="form-group"><label>Current Pending Mtrs</label><input type="text" id="statPendingMtrs" readonly style="color:#DC2626; font-weight:800;"></div>
+            <div class="form-group">
+                <label>Warping Mtrs (Issued)</label>
+                <input type="number" step="0.01" id="statWarpMtrs" class="editable-highlight" oninput="recalcHeaderStats()" title="Editable">
+            </div>
+            <div class="form-group">
+                <label>Crimp %</label>
+                <input type="number" step="0.01" id="statCrimp" class="editable-highlight" value="5" oninput="recalcHeaderStats()" title="Editable">
+            </div>
+            <div class="form-group">
+                <label>Fabric Mtrs (Order)</label>
+                <input type="number" step="0.01" id="statFabricMtrs" class="editable-highlight" oninput="onFabricMtrsEdit()" title="Editable">
+            </div>
+            <div class="form-group">
+                <label>Total Received Mtrs</label>
+                <input type="text" id="statTotalReceived" readonly style="color:#059669; font-weight:bold;">
+            </div>
+            <div class="form-group">
+                <label>Current Pending Mtrs</label>
+                <input type="text" id="statPendingMtrs" readonly style="color:#DC2626; font-weight:900;">
+            </div>
         </div>
     </div>
 
@@ -133,17 +161,19 @@
         
         <input type="hidden" id="editEntryId" value="">
 
-        <!-- Requested Tab Order: Date, Slip No, Rcvd Mtrs, Pin%, Pending Mtrs, OK Mtrs, Balance Mtrs, Shortage -->
-        <div class="form-grid" style="grid-template-columns: repeat(8, minmax(80px, 1fr));">
-            <div class="form-group"><label>Date</label><input type="date" id="entDate"></div>
-            <div class="form-group"><label>Slip No</label><input type="text" id="entSlipNo" placeholder="Slip #"></div>
-            <div class="form-group"><label>Received Mtrs</label><input type="number" step="0.01" id="entRecMtrs" placeholder="0.00" oninput="calculateEntry()"></div>
-            <div class="form-group"><label>Pin / Waste %</label><input type="number" step="0.01" id="entPinPct" placeholder="0.00" oninput="calculateEntry()"></div>
-            <div class="form-group"><label>Pending Mtrs</label><input type="number" step="0.01" id="entPending" placeholder="0.00" readonly></div>
-            <div class="form-group"><label>OK Mtrs</label><input type="number" step="0.01" id="entOkMtrs" placeholder="0.00" readonly></div>
-            <div class="form-group"><label>Balance Mtrs</label><input type="number" step="0.01" id="entBalance" placeholder="0.00" readonly></div>
-            <div class="form-group"><label>Shortage Mtrs</label><input type="number" step="0.01" id="entShortage" placeholder="0.00" oninput="calculateEntry()"></div>
+        <div class="scrollable-grid-wrapper">
+            <div class="entry-grid-inner">
+                <div class="form-group"><label>Date</label><input type="date" id="entDate"></div>
+                <div class="form-group"><label>Slip No</label><input type="text" id="entSlipNo" placeholder="Slip #"></div>
+                <div class="form-group"><label>Received Mtrs</label><input type="number" step="0.01" id="entRecMtrs" placeholder="0.00" oninput="calculateEntry()"></div>
+                <div class="form-group"><label>Pin / Waste %</label><input type="number" step="0.01" id="entPinPct" placeholder="0.00" oninput="calculateEntry()"></div>
+                <div class="form-group"><label>Pending Mtrs</label><input type="number" step="0.01" id="entPending" placeholder="0.00" oninput="calculateEntry()"></div>
+                <div class="form-group"><label>OK Mtrs</label><input type="number" step="0.01" id="entOkMtrs" placeholder="0.00" readonly></div>
+                <div class="form-group"><label>Balance Mtrs</label><input type="number" step="0.01" id="entBalance" placeholder="0.00" readonly></div>
+                <div class="form-group"><label>Shortage Mtrs</label><input type="number" step="0.01" id="entShortage" placeholder="0.00" oninput="calculateEntry()"></div>
+            </div>
         </div>
+        
         <button class="btn-main btn-add" id="saveEntryBtn" onclick="saveReceiveEntry()">➕ Add / Save Entry</button>
     </div>
 
@@ -246,6 +276,10 @@
         initDropdowns();
     });
 
+    function cleanDesignName(str) {
+        return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+    }
+
     function initDropdowns() {
         let weaverSelect = document.getElementById('weaverSelect');
         let designSelect = document.getElementById('designSelect');
@@ -276,6 +310,17 @@
         });
     }
 
+    function getValLoose(obj, keys) {
+        if(!obj) return 0;
+        let objKeys = Object.keys(obj);
+        for(let key of objKeys) {
+            if(keys.includes(key.toLowerCase().trim())) {
+                return parseFloat(obj[key]) || 0;
+            }
+        }
+        return 0;
+    }
+
     function onDesignChange() {
         try {
             let design = document.getElementById('designSelect').value;
@@ -290,15 +335,25 @@
             document.getElementById('entrySection').style.display = 'block';
             document.getElementById('tableWrapper').style.display = 'block';
 
-            // 🌟 EXTRACTING EXACT KEYS USED IN WEAVING.HTML
-            let fabricOrderMtrs = parseFloat(order.fabricMts) || parseFloat(order.fabricMtrs) || 0;
             let warpIssuedMtrs = parseFloat(order.weavingMts) || parseFloat(order.weavingMtrs) || 0;
+            let crimp = parseFloat(order.crimpPerc) || 5;
+
+            // 🌟 Auto-reduce Warping Mtrs directly from original order if matching exact amount
+            let cleanDNo = cleanDesignName(design);
+            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+            let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || design;
+            let sp = designSpecs[specKey] || {};
+            
+            let originalOrderMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || 0);
+            if (originalOrderMtr > 0 && Math.abs(warpIssuedMtrs - originalOrderMtr) < 0.1) {
+                warpIssuedMtrs = warpIssuedMtrs * 0.95; 
+            }
 
             document.getElementById('statWarpMtrs').value = warpIssuedMtrs.toFixed(2);
-            document.getElementById('statFabricMtrs').value = fabricOrderMtrs.toFixed(2);
+            document.getElementById('statCrimp').value = crimp;
 
-            calculatePendingStats(order.weaverName, design, fabricOrderMtrs);
-            renderReceiveTable(order.weaverName, design);
+            recalcHeaderStats(true); 
+
             clearEntryForm();
 
         } catch (e) {
@@ -307,15 +362,55 @@
         }
     }
 
+    // 🌟 Recalculate Fabric Mtrs when Warping Mtrs or Crimp changes
+    function recalcHeaderStats(isLoading = false) {
+        let wMtrs = parseFloat(document.getElementById('statWarpMtrs').value) || 0;
+        let crimp = parseFloat(document.getElementById('statCrimp').value) || 0;
+        
+        let fMtrs = wMtrs - (wMtrs * (crimp / 100)); // e.g. 427.50 - 5% = 406.125
+        document.getElementById('statFabricMtrs').value = fMtrs.toFixed(2);
+
+        let weaver = document.getElementById('weaverSelect').value;
+        let design = document.getElementById('designSelect').value;
+        calculatePendingStats(weaver, design, fMtrs);
+
+        if(!isLoading) saveMasterUpdates(wMtrs, crimp, fMtrs);
+    }
+
+    // 🌟 Manual Edit of Fabric Mtrs directly
+    function onFabricMtrsEdit() {
+        let fMtrs = parseFloat(document.getElementById('statFabricMtrs').value) || 0;
+        let weaver = document.getElementById('weaverSelect').value;
+        let design = document.getElementById('designSelect').value;
+        calculatePendingStats(weaver, design, fMtrs);
+        
+        let wMtrs = parseFloat(document.getElementById('statWarpMtrs').value) || 0;
+        let crimp = parseFloat(document.getElementById('statCrimp').value) || 0;
+        saveMasterUpdates(wMtrs, crimp, fMtrs);
+    }
+
+    function saveMasterUpdates(wMtrs, crimp, fMtrs) {
+        let design = document.getElementById('designSelect').value;
+        if(!design) return;
+        let orderIndex = weavingMasterData.findIndex(d => String(d.designNo).trim() === String(design).trim());
+        if(orderIndex > -1) {
+            weavingMasterData[orderIndex].weavingMts = wMtrs;
+            weavingMasterData[orderIndex].crimpPerc = crimp;
+            weavingMasterData[orderIndex].fabricMts = fMtrs;
+            localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
+            if(window.firebaseSave) window.firebaseSave('weaving_master_data', weavingMasterData);
+        }
+    }
+
     function calculatePendingStats(weaver, design, fabricOrderMtrs) {
         let records = receiveRecords.filter(r => r.weaver === weaver && r.designNo === design);
-        let totalReceived = records.reduce((sum, r) => sum + parseFloat(r.receivedMtrs || 0), 0);
+        
+        let totalReceived = records.reduce((sum, r) => sum + parseFloat(r.okMtrs || 0), 0);
         let currentPending = fabricOrderMtrs - totalReceived;
 
         document.getElementById('statTotalReceived').value = totalReceived.toFixed(2);
         document.getElementById('statPendingMtrs').value = currentPending.toFixed(2);
         
-        // Auto-fill entry form pending
         document.getElementById('entPending').value = currentPending.toFixed(2);
         calculateEntry(); 
     }
@@ -328,7 +423,7 @@
 
         let pinMtrs = (recMtrs * pinPct) / 100;
         let okMtrs = recMtrs - pinMtrs;
-        let balanceMtrs = pending - recMtrs - shortage;
+        let balanceMtrs = pending - okMtrs - shortage;
 
         document.getElementById('entOkMtrs').value = okMtrs > 0 ? okMtrs.toFixed(2) : '0.00';
         document.getElementById('entBalance').value = balanceMtrs.toFixed(2);
@@ -351,6 +446,18 @@
 
         if(!weaver || !design || recMtrs <= 0) {
             alert("Please enter valid Received Mtrs!"); return;
+        }
+
+        // Save Edited Mtrs to Weaving Master
+        let newWarpMtrs = document.getElementById('statWarpMtrs').value;
+        let newFabricMtrs = document.getElementById('statFabricMtrs').value;
+        let orderIndex = weavingMasterData.findIndex(d => String(d.designNo).trim() === String(design).trim());
+        
+        if(orderIndex > -1) {
+            weavingMasterData[orderIndex].weavingMts = newWarpMtrs;
+            weavingMasterData[orderIndex].fabricMts = newFabricMtrs;
+            localStorage.setItem('weaving_master_data', JSON.stringify(weavingMasterData));
+            if(window.firebaseSave) window.firebaseSave('weaving_master_data', weavingMasterData);
         }
 
         let entry = {
