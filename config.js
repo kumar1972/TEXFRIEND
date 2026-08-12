@@ -44,7 +44,6 @@ import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((fireba
         window._getDoc = firebaseFirestore.getDoc;
         console.log("🔥 Firebase Connected!");
 
-        // 🌟 Auto sync all main ERP keys from Cloud to LocalStorage if local is empty
         let mainKeys = [
             'design_specs', 'pre_design_numbers', 'design_masters_data', 
             'warping_issue_records', 'weaving_master_data', 'weaving_warp_trans', 
@@ -61,91 +60,62 @@ import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js").then((fireba
                     try {
                         let cloudData = JSON.parse(docSnap.data().content);
                         let localData = localStorage.getItem(key);
-                        // If local data is missing or empty, restore from cloud automatically
                         if (!localData || localData === "[]" || localData === "{}") {
                             localStorage.setItem(key, JSON.stringify(cloudData));
-                            console.log(`☁️ Restored ${key} from Cloud!`);
                         }
-                    } catch(err) {
-                        console.error("JSON parse error on sync for:", key, err);
-                    }
+                    } catch(err) {}
                 }
-            }).catch(e => console.log("Sync error for", key, e));
+            }).catch(e => {});
         });
     });
 });
 
-// 🚀 Cloud Load (Checks Local first, fallback or direct sync)
-window.firebaseLoad = function(key) {
-    return window.localLoad(key); 
-};
-
-// 🚀 Cloud Save (Saves to both Local & Firebase Firestore instantly)
+window.firebaseLoad = function(key) { return window.localLoad(key); };
 window.firebaseSave = function(key, data) {
     window.localSave(key, data);
     if (window.db) {
-        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => console.log("Save error for", key, e));
+        window._setDoc(window._doc(window.db, "texfriend_erp", key), { content: JSON.stringify(data) }).catch(e => {});
     }
 };
-
-window.firebaseSaveIndividual = function(key, data) {
-    window.firebaseSave(key, data);
-};
+window.firebaseSaveIndividual = function(key, data) { window.firebaseSave(key, data); };
 
 // 🌟 UNIVERSAL CROSS-PAGE DATA FETCH UTILITY
 window.getCrossPageData = function(designNo, recordKey) {
     let cleanTarget = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
     if (!cleanTarget) return null;
-
     try {
         let records = JSON.parse(localStorage.getItem(recordKey)) || [];
         let match = records.slice().reverse().find(r => {
             let d = r.designNo || r.designNumber || r.design || r.name || "";
             return d.toString().replace('#', '').trim().toLowerCase() === cleanTarget;
         });
-
         if (match) return match;
-
         let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
         let specKey = Object.keys(specs).find(k => k.toString().replace('#', '').trim().toLowerCase() === cleanTarget);
-        if (specKey && specs[specKey]) {
-            return specs[specKey];
-        }
-    } catch(e) {
-        console.error("Error in getCrossPageData:", e);
-    }
+        if (specKey && specs[specKey]) return specs[specKey];
+    } catch(e) {}
     return null;
 };
 
-// 🌟 TEXFRIEND - Master Data List
 window.texMasterList = {
-    mills: [], weavers: [],
-    dyeingNames: [], warpingNames: [],
-    sizingNames: [], washingNames: [],
-    counts: ["2/40s", "2/60s", "30s"], colours: ["White", "Black", "Navy Blue", "Maroon"]
+    mills: [], weavers: [], dyeingNames: [], warpingNames: [],
+    sizingNames: [], washingNames: [], counts: ["2/40s", "2/60s", "30s"], colours: ["White", "Black", "Navy Blue", "Maroon"]
 };
 
-// 🚀 1. Design Synchronization & Dropdown Loader
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         try {
             let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
             let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || JSON.parse(localStorage.getItem('tex_master_designs')) || [];
-            
             preDesignList.forEach(d => {
                 let name = typeof d === 'object' ? (d.designNo || d.designNumber || '') : d;
                 if(name) {
                     let clean = name.toString().replace('#', '').trim().toLowerCase();
                     let exists = Object.keys(designSpecs).some(k => k.toString().replace('#', '').trim().toLowerCase() === clean);
-                    if(!exists) {
-                        designSpecs[name] = { designNumber: name, status: 'running' };
-                    }
+                    if(!exists) designSpecs[name] = { designNumber: name, status: 'running' };
                 }
             });
-
-            let keysFromSpecs = Object.keys(designSpecs);
-            let combinedList = Array.from(new Set([...preDesignList, ...keysFromSpecs]));
-            
+            let combinedList = Array.from(new Set([...preDesignList, ...Object.keys(designSpecs)]));
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
             localStorage.setItem('pre_design_numbers', JSON.stringify(combinedList));
 
@@ -165,49 +135,211 @@ window.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-        } catch(err) {
-            console.error("Design Loader Error:", err);
-        }
+        } catch(err) {}
     }, 400);
 });
 
-// 🚀 2. SAFE UNIVERSAL AUTO-SUGGEST FOR MILLS & UNITS
-window.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        try {
-            let namesSet = new Set();
-            
-            let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
-            inwards.forEach(i => { if(i.supplier) namesSet.add(i.supplier.trim()); if(i.millName) namesSet.add(i.millName.trim()); });
-            
-            let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-            issues.forEach(i => { if(i.millName) namesSet.add(i.millName.trim()); if(i.dyeingName) namesSet.add(i.dyeingName.trim()); });
 
-            let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
-            masterMills.forEach(m => namesSet.add(m.trim()));
+// 🌟 ========================================================== 🌟
+// 🎨 UNIVERSAL LIGHT & DULL MULTI-THEME ENGINE (SOFT GREEN UNTOUCHED)
+// 🌟 ========================================================== 🌟
+(function() {
+    function applyGlobal3Themes() {
+        let savedMode = localStorage.getItem('erp_theme_mode') || 'softgreen';
+        let oldStyle = document.getElementById('global-perfect-theme');
+        if (oldStyle) oldStyle.remove();
 
-            let existingDatalist = document.getElementById('globalUniversalSuggestions');
-            if(!existingDatalist) {
-                existingDatalist = document.createElement('datalist');
-                existingDatalist.id = 'globalUniversalSuggestions';
-                document.body.appendChild(existingDatalist);
+        // 📐 Universal Responsive Width Rule Matching 2nd Image
+        let commonWidthCSS = `
+            .container, .main-card, .form-container, .card {
+                width: 96% !important;
+                max-width: 1100px !important;
+                margin: 0 auto !important;
             }
+        `;
 
-            let optionsHtml = '';
-            namesSet.forEach(name => {
-                optionsHtml += `<option value="${name}">`;
-            });
-            existingDatalist.innerHTML = optionsHtml;
+        let css = commonWidthCSS;
 
-            let inputs = document.querySelectorAll('input[type="text"]');
-            inputs.forEach(input => {
-                let idClass = (input.id + " " + input.className + " " + input.placeholder).toLowerCase();
-                if(!idClass.includes('design') && (idClass.includes('mill') || idClass.includes('supplier') || idClass.includes('dyeing') || idClass.includes('weaver') || idClass.includes('washing') || idClass.includes('unit'))) {
-                    input.setAttribute('list', 'globalUniversalSuggestions');
+        /* ------------------------------------------------------------- */
+        /* 🌿 1. SOFT GREEN THEME (உங்களின் 1st இமேஜ் - மாற்றவே இல்லை)   */
+        /* ------------------------------------------------------------- */
+        if (savedMode === 'softgreen') {
+            css += `
+                body, html { 
+                    background-color: #D2DCD2 !important; 
+                    color: #1A3320 !important;            
                 }
-            });
-        } catch(err) {
-            console.error("Auto-suggest Loader Error:", err);
+                .top-header-container, .container, .main-card, .form-section, .form-section-box, .warping-beam-tab, .modal-content, .stats-banner, .search-bar-box, .stat-box {
+                    background: #E2EAE2 !important;       
+                    border-color: #B5C6B5 !important;     
+                    color: #1A3320 !important;            
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.06) !important;
+                }
+                .top-header-container h3, h1, h2, h3, h4, label, .section-title, .page-title, .stat-value {
+                    color: #23432B !important;            
+                    background: none !important;
+                    -webkit-text-fill-color: #23432B !important;
+                }
+                input, select {
+                    background-color: #CBD8CB !important; 
+                    color: #112416 !important;            
+                    border: 1px solid #A2B7A2 !important; 
+                }
+                table, .table-container, div[style*="background: white"], div[style*="background:#fff"] {
+                    background-color: #E2EAE2 !important;
+                    color: #1A3320 !important;
+                }
+                th { 
+                    background-color: #CBD8CB !important; 
+                    color: #23432B !important;            
+                    border-color: #B5C6B5 !important;     
+                }
+                td { 
+                    background-color: #E2EAE2 !important;
+                    color: #1A3320 !important;            
+                    border-color: #D2DCD2 !important;     
+                }
+            `;
+        } 
+        
+        /* ------------------------------------------------------------- */
+        /* 🌲 2. DARK GREEN THEME (1st இமேஜ் போல Light & Dull Soft Green)*/
+        /* ------------------------------------------------------------- */
+        else if (savedMode === 'darkgreen') {
+            css += `
+                body, html { 
+                    background-color: #C8D8CE !important; /* Muted Soft Dull Sage Green */
+                    color: #132A1C !important;            
+                }
+                .top-header-container, .container, .main-card, .form-section, .form-section-box, .warping-beam-tab, .modal-content, .stats-banner, .search-bar-box, .stat-box {
+                    background: #D8E5DC !important;       /* Soft Light Green Cards */
+                    border-color: #9EBDAC !important;     
+                    color: #132A1C !important;            
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.05) !important;
+                }
+                .top-header-container h3, h1, h2, h3, h4, label, .section-title, .page-title, .stat-value {
+                    color: #1B3D27 !important;            
+                    background: none !important;
+                    -webkit-text-fill-color: #1B3D27 !important;
+                }
+                input, select {
+                    background-color: #C2D4CC !important; 
+                    color: #0A1C12 !important;            
+                    border: 1px solid #8EAD9C !important; 
+                }
+                table, .table-container, div[style*="background: white"], div[style*="background:#fff"] {
+                    background-color: #D8E5DC !important;
+                    color: #132A1C !important;
+                }
+                th { 
+                    background-color: #C2D4CC !important; 
+                    color: #1B3D27 !important;            
+                    border-color: #9EBDAC !important;     
+                }
+                td { 
+                    background-color: #D8E5DC !important;
+                    color: #132A1C !important;            
+                    border-color: #C8D8CE !important;     
+                }
+            `;
+        } 
+
+        /* ------------------------------------------------------------- */
+        /* 🌄 3. SUNSET GOLD THEME (1st இமேஜ் போல Light & Dull Soft Gold)*/
+        /* ------------------------------------------------------------- */
+        else if (savedMode === 'sunset') {
+            css += `
+                body, html { 
+                    background-color: #E2D9C8 !important; /* Muted Light Dull Sand Gold */
+                    color: #33230F !important; 
+                }
+                .top-header-container, .container, .main-card, .form-section, .form-section-box, .warping-beam-tab, .modal-content, .stats-banner, .search-bar-box, .stat-box {
+                    background: #EEE5D8 !important;       /* Light Warm Gold Cards */
+                    border-color: #C2AF95 !important; 
+                    color: #33230F !important;
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.05) !important;
+                }
+                .top-header-container h3, h1, h2, h3, h4, label, .section-title, .page-title, .stat-value {
+                    color: #4A3315 !important; 
+                    background: none !important;
+                    -webkit-text-fill-color: #4A3315 !important;
+                }
+                input, select {
+                    background-color: #D8CBB7 !important;
+                    color: #211608 !important;
+                    border: 1px solid #B29D7D !important;
+                }
+                table, .table-container, div[style*="background: white"], div[style*="background:#fff"] {
+                    background-color: #EEE5D8 !important;
+                    color: #33230F !important;
+                }
+                th { 
+                    background-color: #D8CBB7 !important; 
+                    color: #4A3315 !important; 
+                    border-color: #C2AF95 !important; 
+                }
+                td { 
+                    background-color: #EEE5D8 !important; 
+                    color: #33230F !important; 
+                    border-color: #E2D9C8 !important; 
+                }
+            `;
         }
-    }, 600);
-});
+
+        /* ------------------------------------------------------------- */
+        /* 🌌 4. DARK NEON THEME (1st இமேஜ் போல Light & Dull Soft Blue)  */
+        /* ------------------------------------------------------------- */
+        else {
+            css += `
+                body, html { 
+                    background-color: #CDD7E2 !important; /* Muted Light Dull Blue Gray */
+                    color: #122133 !important; 
+                }
+                .top-header-container, .container, .main-card, .form-section, .form-section-box, .warping-beam-tab, .modal-content, .stats-banner, .search-bar-box, .stat-box {
+                    background: #DAE3ED !important;       /* Light Soft Slate Cards */
+                    border-color: #A3B8CC !important; 
+                    color: #122133 !important; 
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.05) !important;
+                }
+                .top-header-container h3, h1, h2, h3, h4, label, .section-title, .page-title, .stat-value {
+                    color: #1B334D !important; 
+                    background: none !important;
+                    -webkit-text-fill-color: #1B334D !important;
+                }
+                input, select {
+                    background-color: #BCCCDD !important; 
+                    color: #0A1524 !important; 
+                    border: 1px solid #8FA8C2 !important; 
+                }
+                table, .table-container, div[style*="background: white"], div[style*="background:#fff"] {
+                    background-color: #DAE3ED !important;
+                    color: #122133 !important;
+                }
+                th { 
+                    background-color: #BCCCDD !important; 
+                    color: #1B334D !important; 
+                    border-color: #A3B8CC !important; 
+                }
+                td { 
+                    background-color: #DAE3ED !important; 
+                    color: #122133 !important; 
+                    border-color: #CDD7E2 !important; 
+                }
+            `;
+        }
+
+        let style = document.createElement('style');
+        style.id = 'global-perfect-theme';
+        style.innerHTML = css;
+        document.head.appendChild(style);
+    }
+
+    if(document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyGlobal3Themes);
+    } else {
+        applyGlobal3Themes();
+    }
+
+    window.addEventListener('storage', applyGlobal3Themes);
+    window.applySystemTheme = applyGlobal3Themes;
+})();
