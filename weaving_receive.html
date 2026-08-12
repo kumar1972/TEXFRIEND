@@ -133,7 +133,7 @@
         
         <input type="hidden" id="editEntryId" value="">
 
-        <!-- Tab Order: Date, Slip No, Rcvd Mtrs, Pin%, Pending Mtrs, OK Mtrs, Balance Mtrs, Shortage -->
+        <!-- Requested Tab Order: Date, Slip No, Rcvd Mtrs, Pin%, Pending Mtrs, OK Mtrs, Balance Mtrs, Shortage -->
         <div class="form-grid" style="grid-template-columns: repeat(8, minmax(80px, 1fr));">
             <div class="form-group"><label>Date</label><input type="date" id="entDate"></div>
             <div class="form-group"><label>Slip No</label><input type="text" id="entSlipNo" placeholder="Slip #"></div>
@@ -160,7 +160,7 @@
                         <th>Pending Mtrs</th>
                         <th>OK Mtrs</th>
                         <th>Balance Mtrs</th>
-                        <th>Shortage</th>
+                        <th>Shortage Mtrs</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -210,8 +210,10 @@
                             <th>Slip No</th>
                             <th>Rcvd Mtrs</th>
                             <th>Pin %</th>
+                            <th>Pending Mtrs</th>
                             <th>OK Mtrs</th>
-                            <th>Shortage</th>
+                            <th>Balance Mtrs</th>
+                            <th>Shortage Mtrs</th>
                         </tr>
                     </thead>
                     <tbody id="fullReportBody"></tbody>
@@ -274,18 +276,6 @@
         });
     }
 
-    // Advanced search logic to fetch Mtrs even if keys are different
-    function getValLoose(obj, keys) {
-        if(!obj) return 0;
-        let objKeys = Object.keys(obj);
-        for(let key of objKeys) {
-            if(keys.includes(key.toLowerCase().trim())) {
-                return parseFloat(obj[key]) || 0;
-            }
-        }
-        return 0;
-    }
-
     function onDesignChange() {
         try {
             let design = document.getElementById('designSelect').value;
@@ -300,9 +290,9 @@
             document.getElementById('entrySection').style.display = 'block';
             document.getElementById('tableWrapper').style.display = 'block';
 
-            // Robust fetch for Fabric and Warping Mtrs
-            let fabricOrderMtrs = getValLoose(order, ['fabricmtrs', 'fabricmeter', 'fabricorder', 'fabric_mtrs', 'ordermtr', 'fabric']);
-            let warpIssuedMtrs = getValLoose(order, ['ordermtrs', 'ordermeter', 'warpingmtrs', 'warpingmeter', 'warpmtrs', 'warp_mtrs', 'order_mtrs']);
+            // 🌟 EXTRACTING EXACT KEYS USED IN WEAVING.HTML
+            let fabricOrderMtrs = parseFloat(order.fabricMts) || parseFloat(order.fabricMtrs) || 0;
+            let warpIssuedMtrs = parseFloat(order.weavingMts) || parseFloat(order.weavingMtrs) || 0;
 
             document.getElementById('statWarpMtrs').value = warpIssuedMtrs.toFixed(2);
             document.getElementById('statFabricMtrs').value = fabricOrderMtrs.toFixed(2);
@@ -327,7 +317,7 @@
         
         // Auto-fill entry form pending
         document.getElementById('entPending').value = currentPending.toFixed(2);
-        calculateEntry(); // Trigger calculate to update Balance
+        calculateEntry(); 
     }
 
     function calculateEntry() {
@@ -340,7 +330,7 @@
         let okMtrs = recMtrs - pinMtrs;
         let balanceMtrs = pending - recMtrs - shortage;
 
-        document.getElementById('entOkMtrs').value = okMtrs > 0 ? okMtrs.toFixed(2) : '';
+        document.getElementById('entOkMtrs').value = okMtrs > 0 ? okMtrs.toFixed(2) : '0.00';
         document.getElementById('entBalance').value = balanceMtrs.toFixed(2);
     }
 
@@ -403,12 +393,12 @@
                 <tr>
                     <td>${r.date}</td>
                     <td>${r.slipNo || '-'}</td>
-                    <td style="color:#059669; font-weight:800;">${r.receivedMtrs}</td>
+                    <td style="color:#059669; font-weight:800;">${parseFloat(r.receivedMtrs).toFixed(2)}</td>
                     <td>${r.pinPct || 0}%</td>
-                    <td>${r.pendingMtrs || 0}</td>
-                    <td style="color:#3B82F6; font-weight:800;">${r.okMtrs}</td>
-                    <td>${r.balanceMtrs || 0}</td>
-                    <td style="color:#DC2626;">${r.shortageMtrs || 0}</td>
+                    <td>${parseFloat(r.pendingMtrs || 0).toFixed(2)}</td>
+                    <td style="color:#3B82F6; font-weight:800;">${parseFloat(r.okMtrs).toFixed(2)}</td>
+                    <td>${parseFloat(r.balanceMtrs || 0).toFixed(2)}</td>
+                    <td style="color:#DC2626;">${parseFloat(r.shortageMtrs || 0).toFixed(2)}</td>
                     <td>
                         <button class="btn-action-small btn-edit" onclick="editEntry('${r.id}')">Edit</button>
                         <button class="btn-action-small btn-del" onclick="deleteEntry('${r.id}')">Del</button>
@@ -528,12 +518,12 @@
             html += `<tr>
                 <td style="border:1px solid #ccc; padding:6px;">${r.date}</td>
                 <td style="border:1px solid #ccc; padding:6px;">${r.slipNo || '-'}</td>
-                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${r.receivedMtrs}</td>
+                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${parseFloat(r.receivedMtrs).toFixed(2)}</td>
                 <td style="border:1px solid #ccc; padding:6px;">${r.pinPct || 0}%</td>
-                <td style="border:1px solid #ccc; padding:6px;">${r.pendingMtrs || 0}</td>
-                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${r.okMtrs}</td>
-                <td style="border:1px solid #ccc; padding:6px;">${r.balanceMtrs || 0}</td>
-                <td style="border:1px solid #ccc; padding:6px; color:red;">${r.shortageMtrs || 0}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${parseFloat(r.pendingMtrs || 0).toFixed(2)}</td>
+                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${parseFloat(r.okMtrs).toFixed(2)}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${parseFloat(r.balanceMtrs || 0).toFixed(2)}</td>
+                <td style="border:1px solid #ccc; padding:6px; color:red;">${parseFloat(r.shortageMtrs || 0).toFixed(2)}</td>
             </tr>`;
         });
         
@@ -563,15 +553,18 @@
                 <td>${r.slipNo || '-'}</td>
                 <td style="color:#059669; font-weight:bold;">${parseFloat(r.receivedMtrs).toFixed(2)}</td>
                 <td>${r.pinPct || 0}%</td>
+                <td>${parseFloat(r.pendingMtrs || 0).toFixed(2)}</td>
                 <td style="color:#3B82F6; font-weight:bold;">${parseFloat(r.okMtrs).toFixed(2)}</td>
+                <td>${parseFloat(r.balanceMtrs || 0).toFixed(2)}</td>
                 <td style="color:#DC2626;">${parseFloat(r.shortageMtrs || 0).toFixed(2)}</td>
             </tr>`;
         });
         tbody.innerHTML += `<tr class="total-row">
             <td colspan="4" style="text-align:right;">OVERALL TOTAL:</td>
             <td style="color:#059669;">${totRec.toFixed(2)}</td>
-            <td>-</td>
+            <td colspan="2">-</td>
             <td style="color:#3B82F6;">${totOk.toFixed(2)}</td>
+            <td>-</td>
             <td style="color:#DC2626;">${totShort.toFixed(2)}</td>
         </tr>`;
         openModal('reportModal');
