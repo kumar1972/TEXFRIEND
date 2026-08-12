@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weaving Fabric Receive - TEXFRIEND</title>
+    <script src="translator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        html, body { width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; }
+        body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+
+        .container {
+            width: 100%; max-width: 950px; background: #FFFFFF; border-radius: 20px;
+            padding: 20px; box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06); border: 1px solid #E2E8E2;
+        }
+        
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
+            text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+            padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: all 0.3s;
+        }
+        .back-btn:hover { background: #000000; transform: translateY(-2px); }
+
+        .page-title { font-size: 18px; font-weight: 800; color: #2F4F38; margin-bottom: 15px; border-bottom: 2px solid #EAF0EA; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-section { background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 12px; padding: 15px; margin-bottom: 15px; position: relative; }
+        .section-badge {
+            position: absolute; top: -10px; left: 15px; background: #4A7C59; color: #FFF;
+            font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 10px; text-transform: uppercase;
+        }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 10px; font-weight: 700; color: #4A554A; white-space: nowrap; }
+        input, select { padding: 10px; border: 1px solid #D1DED1; border-radius: 8px; font-size: 11px; font-weight: 600; background: #FFF; transition: all 0.2s; }
+        input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
+        input[readonly] { background: #EAF0EA; color: #2F4F38; cursor: not-allowed; }
+
+        .btn-main {
+            padding: 12px 18px; border: none; border-radius: 10px; color: white;
+            font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.3s;
+            text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-add { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 15px; width: 100%; }
+        .btn-add:hover { transform: translateY(-2px); }
+        
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-print { background: linear-gradient(135deg, #3B82F6, #1D4ED8); flex: 1; }
+        .btn-report { background: linear-gradient(135deg, #F59E0B, #D97706); flex: 1; }
+
+        .table-container { margin-top: 15px; border: 1px solid #E2E8E2; border-radius: 10px; overflow-x: auto; background: #FFF; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+        th { background: #EAF0EA; color: #2F4F38; padding: 10px; text-transform: uppercase; font-size: 10px; border-bottom: 2px solid #D1DED1; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; font-weight: 600; }
+        .total-row td { background: #F4F7F4; font-weight: 800; color: #2F4F38; border-top: 2px solid #D1DED1; }
+
+        .btn-action-small { padding: 5px 10px; border: none; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-edit { background: #3B82F6; }
+        .btn-del { background: #EF4444; }
+
+        /* Modal Styles */
+        .overlay-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px); z-index: 99999;
+            flex-direction: column; padding: 0; opacity: 0; transition: opacity 0.3s;
+        }
+        .overlay-modal.show { opacity: 1; }
+        .modal-content { background: #FFFFFF; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+        .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; }
+        .modal-header h3 { margin: 0; font-size: 16px; font-weight: 800; }
+        .modal-actions { display: flex; gap: 8px; }
+        .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 900px; margin: 0 auto; }
+
+        @media print {
+            body * { visibility: hidden; }
+            .overlay-modal, .overlay-modal * { visibility: visible; }
+            .overlay-modal { position: absolute; left: 0; top: 0; width: 100%; padding: 0; background: #FFF; }
+            .modal-content { height: auto !important; overflow: visible !important; box-shadow: none; border: none; }
+            .no-print { display: none !important; }
+            .modal-body { padding: 0 !important; background: #FFF; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #999; padding: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
+    </div>
+
+    <div class="page-title">🏭 Weaving Fabric Received (துணி வரவு)</div>
+
+    <!-- 1. Selection Header -->
+    <div class="form-section" style="margin-top: 15px;">
+        <div class="section-badge">1. Select Order</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Weaver Name</label>
+                <select id="weaverSelect" onchange="onWeaverChange()">
+                    <option value="">All Weavers</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Design Number</label>
+                <select id="designSelect" onchange="onDesignChange()">
+                    <option value="">Select Design</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Header Stats -->
+    <div class="form-section" id="headerStatsSection" style="display: none; background: #F0F5F0; border-color: #A3C2A4;">
+        <div class="section-badge" style="background: #2F4F38;">2. Order Details</div>
+        <div class="form-grid">
+            <div class="form-group"><label>Warping Mtrs (Issued)</label><input type="text" id="statWarpMtrs" readonly></div>
+            <div class="form-group"><label>Fabric Mtrs (Order)</label><input type="text" id="statFabricMtrs" readonly></div>
+            <div class="form-group"><label>Total Received Mtrs</label><input type="text" id="statTotalReceived" readonly style="color:#059669;"></div>
+            <div class="form-group"><label>Current Pending Mtrs</label><input type="text" id="statPendingMtrs" readonly style="color:#DC2626; font-weight:800;"></div>
+        </div>
+    </div>
+
+    <!-- 3. Entry Form -->
+    <div class="form-section" id="entrySection" style="display: none;">
+        <div class="section-badge" style="background: #3B82F6;">3. Receive Entry</div>
+        
+        <input type="hidden" id="editEntryId" value="">
+
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
+            <div class="form-group"><label>Date</label><input type="date" id="entDate"></div>
+            <div class="form-group"><label>Slip No</label><input type="text" id="entSlipNo" placeholder="Slip #"></div>
+            <div class="form-group"><label>Received Mtrs</label><input type="number" step="0.01" id="entRecMtrs" placeholder="0.00" oninput="calculateEntry()"></div>
+            <div class="form-group"><label>Pin / Waste %</label><input type="number" step="0.01" id="entPinPct" placeholder="0.00" oninput="calculateEntry()"></div>
+            <div class="form-group"><label>OK Mtrs</label><input type="number" step="0.01" id="entOkMtrs" placeholder="0.00"></div>
+            <div class="form-group"><label>Shortage Mtrs</label><input type="number" step="0.01" id="entShortage" placeholder="0.00"></div>
+            <div class="form-group"><label>Balance Mtrs</label><input type="number" step="0.01" id="entBalance" placeholder="0.00" readonly></div>
+        </div>
+        <button class="btn-main btn-add" id="saveEntryBtn" onclick="saveReceiveEntry()">➕ Add / Save Entry</button>
+    </div>
+
+    <!-- 4. Records Table -->
+    <div id="tableWrapper" style="display: none;">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Slip No</th>
+                        <th>Rcvd Mtrs</th>
+                        <th>Pin %</th>
+                        <th>OK Mtrs</th>
+                        <th>Shortage</th>
+                        <th>Balance</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="receiveTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="action-row">
+            <button class="btn-main btn-print" onclick="openPrintPreview()">🖨️ Print Preview</button>
+            <button class="btn-main btn-report" onclick="openReportTab()">📊 Full Report Tab</button>
+        </div>
+    </div>
+</div>
+
+<!-- Print Preview Modal -->
+<div id="printModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header no-print">
+            <h3>🖨️ Weaving Receive - Print Preview</h3>
+            <div class="modal-actions">
+                <button class="print-btn" onclick="window.print()">Print Now</button>
+                <button class="close-btn" onclick="closeModal('printModal')">Close ✕</button>
+            </div>
+        </div>
+        <div class="modal-body" id="printContent"></div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="overlay-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 Fabric Receive Report (All Weavers)</h3>
+            <div class="modal-actions">
+                <button class="close-btn" onclick="closeModal('reportModal')">Close ✕</button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weaver Name</th>
+                            <th>Design No</th>
+                            <th>Slip No</th>
+                            <th>Rcvd Mtrs</th>
+                            <th>OK Mtrs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fullReportBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let weavingMasterData = [];
+    let receiveRecords = [];
+
+    function checkUserPermission() {
+        let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
+        if (userRole !== 'Administrator' && userRole !== 'Admin') {
+            let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+            return permissions['weaving_receive.html'] !== false && permissions['weaving_receive'] !== false;
+        }
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!checkUserPermission()) { alert("Access Denied! ❌"); window.location.href = "dashboard.html"; return; }
+        
+        weavingMasterData = JSON.parse(localStorage.getItem('weaving_master_data')) || [];
+        receiveRecords = JSON.parse(localStorage.getItem('weaving_receive_records')) || [];
+        
+        document.getElementById('entDate').valueAsDate = new Date();
+        initDropdowns();
+    });
+
+    function initDropdowns() {
+        let weaverSelect = document.getElementById('weaverSelect');
+        let designSelect = document.getElementById('designSelect');
+        
+        // Load all unique weavers
+        let weavers = [...new Set(weavingMasterData.map(item => item.weaverName))].filter(w => w);
+        weaverSelect.innerHTML = '<option value="">All Weavers</option>';
+        weavers.forEach(w => { weaverSelect.innerHTML += `<option value="${w}">${w}</option>`; });
+
+        // Load all active designs initially
+        designSelect.innerHTML = '<option value="">Select Design</option>';
+        weavingMasterData.forEach(d => {
+            if(d.status !== 'completed') {
+                designSelect.innerHTML += `<option value="${d.designNo}">${d.designNo}</option>`;
+            }
+        });
+    }
+
+    function onWeaverChange() {
+        let weaver = document.getElementById('weaverSelect').value;
+        let designSelect = document.getElementById('designSelect');
+        
+        designSelect.innerHTML = '<option value="">Select Design</option>';
+        hideSections();
+
+        let filtered = weaver ? weavingMasterData.filter(d => d.weaverName === weaver && d.status !== 'completed') : weavingMasterData.filter(d => d.status !== 'completed');
+        
+        filtered.forEach(d => {
+            designSelect.innerHTML += `<option value="${d.designNo}">${d.designNo}</option>`;
+        });
+    }
+
+    function onDesignChange() {
+        try {
+            let design = document.getElementById('designSelect').value;
+            if(!design) { hideSections(); return; }
+
+            // Find the exact order based on Design Number
+            let order = weavingMasterData.find(d => String(d.designNo).trim() === String(design).trim());
+            
+            if(!order) { 
+                alert("Order details not found! Please check data."); 
+                hideSections();
+                return; 
+            }
+
+            // Auto-select the Weaver if they skipped it
+            if(order.weaverName) {
+                document.getElementById('weaverSelect').value = order.weaverName;
+            }
+
+            // Show sections
+            document.getElementById('headerStatsSection').style.display = 'block';
+            document.getElementById('entrySection').style.display = 'block';
+            document.getElementById('tableWrapper').style.display = 'block';
+
+            let fabricOrderMtrs = parseFloat(order.fabricMtrs || order.fabricMeter || order.orderMtr || 0) || 0;
+            let warpIssuedMtrs = parseFloat(order.orderMtrs || order.orderMtr || order.warpMtrs || 0) || 0;
+
+            document.getElementById('statWarpMtrs').value = warpIssuedMtrs.toFixed(2);
+            document.getElementById('statFabricMtrs').value = fabricOrderMtrs.toFixed(2);
+
+            calculatePendingStats(order.weaverName, design, fabricOrderMtrs);
+            renderReceiveTable(order.weaverName, design);
+            clearEntryForm();
+
+        } catch (e) {
+            console.error(e);
+            alert("Error loading stats: " + e.message);
+        }
+    }
+
+    function calculatePendingStats(weaver, design, fabricOrderMtrs) {
+        let records = receiveRecords.filter(r => r.weaver === weaver && r.designNo === design);
+        let totalReceived = records.reduce((sum, r) => sum + parseFloat(r.receivedMtrs || 0), 0);
+        let currentPending = fabricOrderMtrs - totalReceived;
+
+        document.getElementById('statTotalReceived').value = totalReceived.toFixed(2);
+        document.getElementById('statPendingMtrs').value = currentPending.toFixed(2);
+    }
+
+    function calculateEntry() {
+        let currentPending = parseFloat(document.getElementById('statPendingMtrs').value) || 0;
+        let recMtrs = parseFloat(document.getElementById('entRecMtrs').value) || 0;
+        let pinPct = parseFloat(document.getElementById('entPinPct').value) || 0;
+
+        let pinMtrs = (recMtrs * pinPct) / 100;
+        let okMtrs = recMtrs - pinMtrs;
+        let balanceMtrs = currentPending - recMtrs;
+
+        document.getElementById('entOkMtrs').value = okMtrs > 0 ? okMtrs.toFixed(2) : '';
+        document.getElementById('entBalance').value = balanceMtrs.toFixed(2);
+    }
+
+    async function saveReceiveEntry() {
+        let weaver = document.getElementById('weaverSelect').value;
+        let design = document.getElementById('designSelect').value;
+        
+        let date = document.getElementById('entDate').value;
+        let slipNo = document.getElementById('entSlipNo').value.trim();
+        let recMtrs = parseFloat(document.getElementById('entRecMtrs').value) || 0;
+        let pinPct = parseFloat(document.getElementById('entPinPct').value) || 0;
+        let okMtrs = parseFloat(document.getElementById('entOkMtrs').value) || 0;
+        let shortage = parseFloat(document.getElementById('entShortage').value) || 0;
+        let balance = parseFloat(document.getElementById('entBalance').value) || 0;
+
+        let editId = document.getElementById('editEntryId').value;
+
+        if(!weaver || !design || recMtrs <= 0) {
+            alert("Please enter valid Received Mtrs!"); return;
+        }
+
+        let entry = {
+            id: editId ? editId : Date.now().toString(),
+            weaver, designNo: design, date, slipNo, receivedMtrs: recMtrs,
+            pinPct, okMtrs, shortageMtrs: shortage, balanceMtrs: balance
+        };
+
+        if(editId) {
+            let idx = receiveRecords.findIndex(r => r.id === editId);
+            if(idx > -1) receiveRecords[idx] = entry;
+        } else {
+            receiveRecords.push(entry);
+        }
+
+        localStorage.setItem('weaving_receive_records', JSON.stringify(receiveRecords));
+        if(window.firebaseSave) await window.firebaseSave('weaving_receive_records', receiveRecords);
+
+        alert("Entry Saved Successfully! ✅");
+        
+        let fabricOrderMtrs = parseFloat(document.getElementById('statFabricMtrs').value) || 0;
+        calculatePendingStats(weaver, design, fabricOrderMtrs);
+        renderReceiveTable(weaver, design);
+        clearEntryForm();
+    }
+
+    function renderReceiveTable(weaver, design) {
+        let records = receiveRecords.filter(r => r.weaver === weaver && r.designNo === design);
+        let tbody = document.getElementById('receiveTableBody');
+        tbody.innerHTML = '';
+
+        let totRec = 0, totOk = 0, totShort = 0;
+
+        records.forEach(r => {
+            totRec += parseFloat(r.receivedMtrs || 0);
+            totOk += parseFloat(r.okMtrs || 0);
+            totShort += parseFloat(r.shortageMtrs || 0);
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${r.date}</td>
+                    <td>${r.slipNo || '-'}</td>
+                    <td style="color:#059669; font-weight:800;">${r.receivedMtrs}</td>
+                    <td>${r.pinPct}%</td>
+                    <td style="color:#3B82F6; font-weight:800;">${r.okMtrs}</td>
+                    <td style="color:#DC2626;">${r.shortageMtrs}</td>
+                    <td>${r.balanceMtrs}</td>
+                    <td>
+                        <button class="btn-action-small btn-edit" onclick="editEntry('${r.id}')">Edit</button>
+                        <button class="btn-action-small btn-del" onclick="deleteEntry('${r.id}')">Del</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        if(records.length > 0) {
+            tbody.innerHTML += `
+                <tr class="total-row">
+                    <td colspan="2" style="text-align:right;">TOTAL:</td>
+                    <td style="color:#059669;">${totRec.toFixed(2)}</td>
+                    <td>-</td>
+                    <td style="color:#3B82F6;">${totOk.toFixed(2)}</td>
+                    <td style="color:#DC2626;">${totShort.toFixed(2)}</td>
+                    <td colspan="2">-</td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="8">No fabric received yet for this order.</td></tr>`;
+        }
+    }
+
+    function editEntry(id) {
+        let entry = receiveRecords.find(r => r.id === id);
+        if(!entry) return;
+
+        document.getElementById('editEntryId').value = entry.id;
+        document.getElementById('entDate').value = entry.date;
+        document.getElementById('entSlipNo').value = entry.slipNo;
+        document.getElementById('entRecMtrs').value = entry.receivedMtrs;
+        document.getElementById('entPinPct').value = entry.pinPct || '';
+        document.getElementById('entOkMtrs').value = entry.okMtrs;
+        document.getElementById('entShortage').value = entry.shortageMtrs || '';
+        document.getElementById('entBalance').value = entry.balanceMtrs;
+
+        document.getElementById('saveEntryBtn').innerHTML = "💾 Update Entry";
+        document.getElementById('saveEntryBtn').style.background = "linear-gradient(135deg, #3B82F6, #1D4ED8)";
+    }
+
+    async function deleteEntry(id) {
+        if(confirm("Are you sure you want to delete this entry?")) {
+            receiveRecords = receiveRecords.filter(r => r.id !== id);
+            localStorage.setItem('weaving_receive_records', JSON.stringify(receiveRecords));
+            if(window.firebaseSave) await window.firebaseSave('weaving_receive_records', receiveRecords);
+            
+            let weaver = document.getElementById('weaverSelect').value;
+            let design = document.getElementById('designSelect').value;
+            let fabricOrderMtrs = parseFloat(document.getElementById('statFabricMtrs').value) || 0;
+            
+            calculatePendingStats(weaver, design, fabricOrderMtrs);
+            renderReceiveTable(weaver, design);
+        }
+    }
+
+    function clearEntryForm() {
+        document.getElementById('editEntryId').value = '';
+        document.getElementById('entSlipNo').value = '';
+        document.getElementById('entRecMtrs').value = '';
+        document.getElementById('entPinPct').value = '';
+        document.getElementById('entOkMtrs').value = '';
+        document.getElementById('entShortage').value = '';
+        document.getElementById('entBalance').value = '';
+        document.getElementById('saveEntryBtn').innerHTML = "➕ Add / Save Entry";
+        document.getElementById('saveEntryBtn').style.background = "linear-gradient(135deg, #10B981, #059669)";
+    }
+
+    function hideSections() {
+        document.getElementById('headerStatsSection').style.display = 'none';
+        document.getElementById('entrySection').style.display = 'none';
+        document.getElementById('tableWrapper').style.display = 'none';
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
+
+    function openPrintPreview() {
+        let weaver = document.getElementById('weaverSelect').value;
+        let design = document.getElementById('designSelect').value;
+        let wMtrs = document.getElementById('statWarpMtrs').value;
+        let fMtrs = document.getElementById('statFabricMtrs').value;
+        
+        let records = receiveRecords.filter(r => r.weaver === weaver && r.designNo === design);
+        
+        let html = `
+            <div style="text-align:center; margin-bottom: 20px;">
+                <h2 style="margin:0; font-family:sans-serif;">WEAVING FABRIC RECEIPT</h2>
+                <p style="margin:5px 0; font-family:sans-serif; font-size:14px;"><b>Weaver:</b> ${weaver} &nbsp;|&nbsp; <b>Design No:</b> ${design}</p>
+                <p style="margin:0; font-family:sans-serif; font-size:12px;">Warping Issued: ${wMtrs} Mtrs &nbsp;|&nbsp; Fabric Order: ${fMtrs} Mtrs</p>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-family:sans-serif; font-size:12px; text-align:center;">
+                <thead>
+                    <tr style="background:#f2f2f2;">
+                        <th style="border:1px solid #333; padding:8px;">Date</th>
+                        <th style="border:1px solid #333; padding:8px;">Slip No</th>
+                        <th style="border:1px solid #333; padding:8px;">Rcvd Mtrs</th>
+                        <th style="border:1px solid #333; padding:8px;">Pin %</th>
+                        <th style="border:1px solid #333; padding:8px;">OK Mtrs</th>
+                        <th style="border:1px solid #333; padding:8px;">Shortage</th>
+                        <th style="border:1px solid #333; padding:8px;">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let totRec = 0, totOk = 0;
+        records.forEach(r => {
+            totRec += parseFloat(r.receivedMtrs || 0); totOk += parseFloat(r.okMtrs || 0);
+            html += `<tr>
+                <td style="border:1px solid #ccc; padding:6px;">${r.date}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${r.slipNo || '-'}</td>
+                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${r.receivedMtrs}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${r.pinPct}%</td>
+                <td style="border:1px solid #ccc; padding:6px; font-weight:bold;">${r.okMtrs}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${r.shortageMtrs || '0'}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${r.balanceMtrs}</td>
+            </tr>`;
+        });
+        
+        html += `<tr style="font-weight:bold; background:#e8e8e8;">
+            <td colspan="2" style="border:1px solid #333; padding:8px; text-align:right;">TOTAL:</td>
+            <td style="border:1px solid #333; padding:8px;">${totRec.toFixed(2)}</td>
+            <td style="border:1px solid #333; padding:8px;">-</td>
+            <td style="border:1px solid #333; padding:8px;">${totOk.toFixed(2)}</td>
+            <td colspan="2" style="border:1px solid #333; padding:8px;">-</td>
+        </tr></tbody></table>`;
+
+        document.getElementById('printContent').innerHTML = html;
+        openModal('printModal');
+    }
+
+    function openReportTab() {
+        let tbody = document.getElementById('fullReportBody');
+        tbody.innerHTML = '';
+        let totRec = 0, totOk = 0;
+        receiveRecords.slice().reverse().forEach(r => {
+            totRec += parseFloat(r.receivedMtrs || 0); totOk += parseFloat(r.okMtrs || 0);
+            tbody.innerHTML += `<tr>
+                <td>${r.date}</td>
+                <td><b>${r.weaver}</b></td>
+                <td>${r.designNo}</td>
+                <td>${r.slipNo || '-'}</td>
+                <td style="color:#059669; font-weight:bold;">${parseFloat(r.receivedMtrs).toFixed(2)}</td>
+                <td style="color:#3B82F6; font-weight:bold;">${parseFloat(r.okMtrs).toFixed(2)}</td>
+            </tr>`;
+        });
+        tbody.innerHTML += `<tr class="total-row">
+            <td colspan="4" style="text-align:right;">OVERALL TOTAL:</td>
+            <td style="color:#059669;">${totRec.toFixed(2)}</td>
+            <td style="color:#3B82F6;">${totOk.toFixed(2)}</td>
+        </tr>`;
+        openModal('reportModal');
+    }
+</script>
+<script src="config.js"></script>
+</body>
+</html>
