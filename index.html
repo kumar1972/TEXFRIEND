@@ -13,148 +13,159 @@
         body { 
             width: 100%; 
             min-height: 100vh; 
-            background: #0B130F;
+            background: #030705;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(74, 124, 89, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(30, 43, 35, 0.6) 0%, transparent 50%);
+                radial-gradient(circle at 15% 15%, rgba(74, 124, 89, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(20, 35, 25, 0.8) 0%, transparent 55%),
+                linear-gradient(135deg, #030705 0%, #0B130F 100%);
             display: flex; 
             justify-content: center; 
             align-items: center; 
             padding: 20px; 
         }
 
-        /* 🔥 Perfect sizing for both Mobile & Desktop View */
+        /* 🌈 Multi-color Glow Animation */
+        @keyframes multiColorGlow {
+            0% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), 0 0 50px rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
+            33% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.5), 0 0 50px rgba(168, 85, 247, 0.2); border-color: #A855F7; }
+            66% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.5), 0 0 50px rgba(236, 72, 153, 0.2); border-color: #EC4899; }
+            100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), 0 0 50px rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
+        }
+
         .login-card { 
             width: 100%; 
-            max-width: 600px; 
+            max-width: 480px; 
             min-width: 320px;
-            background: rgba(18, 28, 22, 0.9); 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 36px; 
-            padding: 45px 36px; 
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2); 
-            border: 1.5px solid rgba(82, 110, 81, 0.5); 
+            background: rgba(14, 24, 18, 0.85); 
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 32px; 
+            padding: 40px 32px; 
+            border: 1.5px solid rgba(82, 110, 81, 0.6); 
             display: flex; 
             flex-direction: column; 
-            gap: 26px; 
-            animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 22px; 
+            animation: multiColorGlow 6s infinite alternate, scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: translateY(15px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .logo-area { text-align: center; }
         .logo-badge {
-            width: 90px; height: 90px; 
-            background: linear-gradient(135deg, #4A7C59, #2C4A35); 
-            border-radius: 28px;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 42px;
-            box-shadow: 0 16px 35px rgba(74, 124, 89, 0.55); 
-            margin-bottom: 18px;
-            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            width: 80px; height: 80px; 
+            background: linear-gradient(135deg, #528963, #2C4A35); 
+            border-radius: 24px;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 38px;
+            box-shadow: 0 12px 30px rgba(74, 124, 89, 0.6); 
+            margin-bottom: 14px;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            animation: pulseGlow 3s infinite alternate;
         }
-        .logo-area h2 { font-size: 32px; color: #FFFFFF; font-weight: 800; letter-spacing: 1.5px; }
-        .logo-area p { font-size: 15px; color: #A3C1B2; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 1.2px; }
 
-        /* 📌 Floating Role Tabs */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(74, 124, 89, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(74, 124, 89, 0.8); }
+        }
+
+        .logo-area h2 { font-size: 28px; color: #FFFFFF; font-weight: 800; letter-spacing: 1.8px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .logo-area p { font-size: 13px; color: #A3C1B2; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
+
         .role-tabs { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            background: rgba(255, 255, 255, 0.08); 
-            border-radius: 20px; 
-            padding: 6px; 
-            gap: 8px; 
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(11, 19, 15, 0.9); 
+            border-radius: 16px; 
+            padding: 5px; 
+            gap: 6px; 
+            border: 1px solid rgba(82, 110, 81, 0.4);
         }
         .role-btn { 
             background: transparent; 
             border: none; 
-            padding: 16px; 
-            font-size: 16px; 
+            padding: 12px; 
+            font-size: 14px; 
             font-weight: 700; 
-            color: #A3C1B2; 
-            border-radius: 16px; 
+            color: #8CA899; 
+            border-radius: 12px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
         }
+        /* 👑 Crown / Admin Tab Glow Added */
         .role-btn.active { 
-            background: #4A7C59; 
+            animation: multiColorGlow 3s infinite alternate;
             color: #FFFFFF; 
-            box-shadow: 0 6px 25px rgba(74, 124, 89, 0.6); 
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 9px; }
-        .form-group label { font-size: 15px; font-weight: 700; color: #C2D6CC; letter-spacing: 0.4px; }
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: #C2D6CC; letter-spacing: 0.5px; }
         
         .input-box { 
             width: 100%; 
-            padding: 18px 22px; 
-            border-radius: 20px; 
+            padding: 16px 20px; 
+            border-radius: 16px; 
             border: 1.5px solid rgba(82, 110, 81, 0.55); 
-            background: rgba(11, 19, 15, 0.85); 
+            background: rgba(8, 14, 11, 0.95); 
             color: #FFFFFF; 
-            font-size: 17px; 
+            font-size: 15px; 
             font-weight: 600; 
             outline: none; 
             transition: all 0.3s ease;
         }
-        .input-box::placeholder { color: #5C7A6D; }
+        .input-box::placeholder { color: #4E695D; }
         .input-box:focus {
-            border-color: #4A7C59;
-            background: rgba(11, 19, 15, 0.98);
-            box-shadow: 0 0 0 5px rgba(74, 124, 89, 0.3);
+            border-color: #528963;
+            background: rgba(8, 14, 11, 1);
+            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.35), 0 0 20px rgba(74, 124, 89, 0.2);
         }
 
         .options-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 15px;
+            font-size: 14px;
             color: #A3C1B2;
             font-weight: 600;
-            margin-top: 2px;
         }
         .remember-me {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
         }
         .remember-me input {
-            width: 22px; height: 22px; accent-color: #4A7C59; cursor: pointer; border-radius: 6px;
+            width: 18px; height: 18px; accent-color: #4A7C59; cursor: pointer; border-radius: 4px;
         }
 
         .login-submit-btn { 
             width: 100%; 
-            background: linear-gradient(135deg, #4A7C59, #33593D); 
+            background: linear-gradient(135deg, #528963, #33593D); 
             color: white; 
             border: none; 
-            padding: 20px; 
-            border-radius: 20px; 
-            font-size: 17px; 
+            padding: 18px; 
+            border-radius: 16px; 
+            font-size: 16px; 
             font-weight: 800; 
             cursor: pointer; 
-            box-shadow: 0 12px 35px rgba(74, 124, 89, 0.55); 
+            box-shadow: 0 10px 30px rgba(74, 124, 89, 0.5); 
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1.2px;
-            margin-top: 8px; 
+            margin-top: 4px; 
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .login-submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 42px rgba(74, 124, 89, 0.75);
-            background: linear-gradient(135deg, #528963, #3B6645);
+            animation: multiColorGlow 1.5s infinite;
         }
 
         .error-msg { 
             color: #FF6B6B; 
             background: rgba(255, 107, 107, 0.12); 
-            padding: 15px; 
-            border-radius: 15px; 
-            font-size: 15px; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 14px; 
             text-align: center; 
             font-weight: 700; 
             display: none; 
@@ -165,7 +176,7 @@
 <body>
 <div class="login-card">
     <div class="logo-area">
-        <div class="logo-badge">⚡</div>
+        <div class="logo-badge">👑</div>
         <h2>TEXFRIEND</h2>
         <p id="subtitleText">Secure Access Portal</p>
     </div>
@@ -241,12 +252,10 @@ function validateLogin() {
         localStorage.removeItem('erp_remembered_user');
     }
 
-    // 🔍 Fetch Saved Dynamic Users from settings.html
     let systemUsers = JSON.parse(localStorage.getItem('erp_system_users')) || [];
     let cleanU = u.toLowerCase();
     
     if(currentRole === 'admin') {
-        // Master Admin Check (kumar / 1972) OR Dynamic Admin Check
         let dynamicAdmin = systemUsers.find(usr => 
             usr.username.toLowerCase() === cleanU && 
             usr.password === p && 
@@ -264,7 +273,6 @@ function validateLogin() {
             err.style.display = 'block'; 
         }
     } else {
-        // Dynamic Standard User Check OR Master Admin Fallback
         let validUser = systemUsers.find(usr => 
             usr.username.toLowerCase() === cleanU && 
             usr.password === p

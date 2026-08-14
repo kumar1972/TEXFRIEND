@@ -14,8 +14,8 @@
     html, body { 
         width: 100%; 
         min-height: 100vh; 
-        background: #030712; 
-        color: #1E2B23; 
+        background: #4A7C59; 
+        color: #D8DFD6; 
     }
 
     body { 
@@ -44,11 +44,11 @@
 
     .back-btn {
         display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
-        text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+        text-decoration: none; font-weight: 600; font-size: 11px; background: #4A7C59; 
         padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         transition: all 0.3s ease;
     }
-    .back-btn:hover { background: #0F1713; transform: translateY(-2px); }
+    .back-btn:hover { background: #4A7C59; transform: translateY(-2px); }
 
     #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
     #bitmapDisplayContainer img {
@@ -94,7 +94,7 @@
         flex-wrap: wrap;
     }
     .bulk-color-box label { font-size: 11px; font-weight: 700; color: #2F4F38; white-space: nowrap; }
-    .bulk-color-box select, .bulk-color-box input { flex: 1; min-width: 100px; padding: 8px 10px; font-size: 11px; }
+    .bulk-color-box select, .bulk-color-box input { flex: 1; min-width: 100px; padding: 8px 10px; font-size: 11px; background: #FFFFFF; color: #D8DFD6; }
     .btn-bulk-change {
         background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none;
         padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer;
@@ -108,12 +108,12 @@
 
     input, select {
         width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #D1DED1;
-        background: #FFFFFF; color: #1E2B23; font-size: 11px; font-weight: 600; transition: all 0.3s ease;
+        background: #FFFFFF; color: #4A554A; font-size: 11px; font-weight: 600; transition: all 0.3s ease;
     }
     input:focus, select:focus { border-color: #4A7C59; outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15); }
 
     .input-group-btn { display: flex; gap: 10px; width: 100%; }
-    .input-group-btn select { flex: 1; }
+    .input-group-btn select { flex: 1; background: #FFFFFF; color: #1EFCF23; }
     .btn-copy-design {
         background: linear-gradient(135deg, #8B5CF6, #6D28D9); color: white; border: none;
         padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer;
@@ -125,7 +125,7 @@
     .row-grid { display: grid; grid-template-columns: 25px 1fr 1fr 0.9fr 1fr 65px; gap: 4px; margin-bottom: 8px; align-items: center; }
     .header-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; padding: 5px 0; font-size: 10px; font-weight: 700; color: #2F4F38; text-align: center; text-transform: uppercase; }
     .row-grid-range { display: grid; grid-template-columns: 1fr 1fr 1fr 35px; gap: 6px; margin-bottom: 8px; align-items: center; }
-    .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 2px; font-size: 11px; }
+    .row-grid input, .row-grid select, .row-grid-range input { text-align: center; padding: 8px 2px; font-size: 11px; background: #FFFFFF; color: #EAF0EA; }
 
     .line-no { font-size: 10px; font-weight: 800; color: #4A7C59; text-align: center; background: #EAF0EA; padding: 8px 0; border-radius: 6px; border: 1px solid #D1DED1; }
 
@@ -148,7 +148,7 @@
     .overlay-modal.show { opacity: 1; }
     .modal-content { background: #FFFFFF; width: 100vw; height: 100vh; margin: 0; border-radius: 0; display: flex; flex-direction: column; overflow: hidden; transform: scale(1); }
     .modal-header { padding: 15px 20px; background: #F4F7F4; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2; flex-shrink: 0; }
-    .modal-header h3 { margin: 0; font-size: 16px; color: #1E2B23; font-weight: 800; }
+    .modal-header h3 { margin: 0; font-size: 16px; color: #4A7C59; font-weight: 800; }
     .modal-actions { display: flex; gap: 8px; }
     .close-btn { background: #FEE2E2; color: #DC2626; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
     .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
@@ -204,7 +204,6 @@
         
         <div class="form-group" style="margin-bottom: 15px;">
             <label>Design Number</label>
-            <!-- 📌 1. NEW COPY DESIGN BUTTON -->
             <div class="input-group-btn">
                 <select id="designNo" onchange="loadDesignData()"><option value="">Select Design No</option></select>
                 <button class="btn-copy-design" onclick="copyToNewDesign()" title="Copy current pattern to a new design">📋 Copy Design</button>
@@ -228,7 +227,6 @@
     <div class="form-section">
         <div class="section-badge blue">Warp Thread Pattern</div>
 
-        <!-- 📌 2. BULK COLOR CHANGER SECTION -->
         <div class="bulk-color-box">
             <label>🎨 Bulk Color Changer:</label>
             <select id="bulkOldColor">
@@ -437,7 +435,6 @@ function calculateTopBeam() {
     }
 }
 
-// 📌 3. COPY DESIGN LOGIC
 async function copyToNewDesign() {
     let currentDNo = document.getElementById('designNo').value;
     if(!currentDNo) {
@@ -473,7 +470,6 @@ async function copyToNewDesign() {
     alert(`✅ '${newDNo}' டிசைனுக்கு வெற்றிகரமாக காப்பி செய்யப்பட்டது!\n\nஇப்போது நீங்கள் 'Bulk Color Changer' மூலம் கலரை மாற்றிவிட்டு 'Save' பட்டனை அழுத்தவும்.`);
 }
 
-// 📌 4. BULK COLOR CHANGER LOGIC
 function refreshBulkColorDropdown() {
     let colorsSet = new Set();
     document.querySelectorAll('.inp-color').forEach(inp => {
@@ -519,8 +515,11 @@ function addWarpLine(count = '', color = '', beam = 'Ground', ends = '', insertA
     row.innerHTML = `
         <div class="line-no"></div>
         <input type="text" class="inp-count" placeholder="Count" value="${count}">
-        <input type="text" class="inp-color" placeholder="Colour" value="${color}" onblur="refreshBulkColorDropdown()">
-        <select class="inp-beam">
+        <input type="text" class="inp-color" placeholder="Colour" value="${color}" 
+               onblur="refreshBulkColorDropdown()"
+               onkeydown="if(event.key==='Enter'){ event.preventDefault(); let bm = this.parentElement.querySelector('.inp-beam'); if(bm) bm.focus(); }">
+        <select class="inp-beam" 
+                onkeydown="if(event.key==='Enter'){ event.preventDefault(); this.value = (this.value === 'Ground') ? 'Top Beam' : 'Ground'; let en = this.parentElement.querySelector('.inp-ends'); if(en) en.focus(); }">
             <option value="Ground" ${beam === 'Ground' ? 'selected' : ''}>Ground</option>
             <option value="Top Beam" ${beam === 'Top Beam' ? 'selected' : ''}>Top Beam</option>
         </select>
@@ -818,7 +817,7 @@ function previewPattern() {
                     <td style="${tdStyle} font-weight:bold;">${endsDisplay}</td>`;
                 
                 if (index === 0) { 
-                    blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
+                      blockHtml += `<td rowspan="${blockLines.length}" style="${tdStyleLast}">
                       <div style="display:flex; align-items:center; justify-content:flex-start; gap:4px; font-weight:700; font-size:16px;">
                          <span style="font-size: ${blockLines.length * 18}px; font-weight: 300; line-height: 0.5; display: inline-block;">}</span>
 
