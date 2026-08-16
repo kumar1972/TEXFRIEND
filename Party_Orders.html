@@ -528,35 +528,45 @@
             }
         }
 
-        function onDesignSelect(val) {
+                function onDesignSelect(val) {
             loadBitmapImage();
 
             if(val) {
                 let clean = val.toString().replace('#', '').trim().toLowerCase();
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-                let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
                 
-                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
-                let foundMaster = Array.isArray(designMasters) ? designMasters.find(d => (d.name || d.designNo || '').toString().replace('#','').trim().toLowerCase() === clean) || {} : {};
-
-                let specs = designSpecs[specKey] || {};
+                // Data sources loading
+                let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+                let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
                 let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-                let order = orders.find(x => (x.designNumber || x.designNo || '').toString().replace('#','').trim().toLowerCase() === clean);
 
-                let specStatus = (specs.status || (order && order.status) || '').toLowerCase();
-                if (specStatus === 'completed') {
-                    document.getElementById('orderStatusToggle').checked = true;
-                } else {
-                    document.getElementById('orderStatusToggle').checked = false;
+                // 1. Find from Design Master (Priority 1)
+                let foundMaster = {};
+                if (Array.isArray(designMasters)) {
+                    foundMaster = designMasters.find(d => {
+                        let dName = (d.name || d.designNo || '').toString().replace('#', '').trim().toLowerCase();
+                        return dName === clean;
+                    }) || {};
                 }
 
-                document.getElementById('baseBeamCount').value = foundMaster.warp1 || foundMaster.baseBeamCount || specs.baseBeamCount || foundMaster.baseCount || specs.warp || '2/60';
-                document.getElementById('topBeamCount').value = foundMaster.warp2 || foundMaster.topBeamCount || specs.topBeamCount || '';
-                document.getElementById('weftCount').value = foundMaster.weftCount || specs.weftCount || specs.weft || '40s';
+                // 2. Find from Design Specs
+                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
+                let specs = designSpecs[specKey] || {};
+
+                // Status Toggle update
+                let specStatus = (specs.status || foundMaster.status || '').toLowerCase();
+                document.getElementById('orderStatusToggle').checked = (specStatus === 'completed');
+
+                // Auto-filling fields with Design Master priority
+                document.getElementById('baseBeamCount').value = foundMaster.warp1 || foundMaster.baseBeamCount || specs.warp || specs.baseBeamCount || '2/60';
+                document.getElementById('topBeamCount').value = foundMaster.warp2 || foundMaster.topBeamCount || specs.warp2 || specs.topBeamCount || '';
+                document.getElementById('weftCount').value = foundMaster.weftCount || foundMaster.weft || specs.weftCount || specs.weft || '40s';
+                
+                // Reed, Pick, Width (Directly from Design Master)
                 document.getElementById('reed').value = foundMaster.reed || specs.reed || '';
                 document.getElementById('pick').value = foundMaster.pick || specs.pick || '';
-                document.getElementById('width').value = foundMaster.width || specs.width || '';
-                document.getElementById('weaveType').value = foundMaster.weave || specs.weaveType || specs.weave || '';
+                document.getElementById('width').value = foundMaster.width || specs.width || specs.finishWidth || '58';
+                
+                document.getElementById('weaveType').value = foundMaster.weave || foundMaster.weaveType || specs.weave || specs.weaveType || '';
             } else {
                 document.getElementById('orderStatusToggle').checked = false;
                 document.getElementById('baseBeamCount').value = '';
@@ -564,7 +574,7 @@
                 document.getElementById('weftCount').value = '';
                 document.getElementById('reed').value = '';
                 document.getElementById('pick').value = '';
-                document.getElementById('width').value = '';
+                document.getElementById('width').value = '58';
                 document.getElementById('weaveType').value = '';
             }
         }
@@ -594,6 +604,7 @@
 
             if(index > -1) {
                 orders[index].status = statusText;
+                orders[index].width = document.getElementById('width').value.trim() || '58';
             } else {
                 let newOrder = {
                     id: Date.now(),
@@ -607,7 +618,7 @@
                     weftCount: document.getElementById('weftCount').value.trim() || '-',
                     reed: document.getElementById('reed').value.trim() || '-',
                     pick: document.getElementById('pick').value.trim() || '-',
-                    width: document.getElementById('width').value.trim() || '-',
+                    width: document.getElementById('width').value.trim() || '58',
                     weaveType: document.getElementById('weaveType').value.trim() || '-',
                     orderMtr: document.getElementById('orderMtr').value.trim() || '0',
                     rateMtr: document.getElementById('rateMtr').value.trim() || '0',
@@ -625,6 +636,7 @@
                 designSpecs[specKey] = {};
             }
             designSpecs[specKey].status = statusText;
+            designSpecs[specKey].width = document.getElementById('width').value.trim() || '58';
             localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
             try {
@@ -655,6 +667,7 @@
             let baseBeam = document.getElementById('baseBeamCount').value.trim() || '-';
             let topBeam = document.getElementById('topBeamCount').value.trim() || '-';
             let combinedWarp = (topBeam && topBeam !== '-') ? `${baseBeam}, ${topBeam}` : baseBeam;
+            let currentWidth = document.getElementById('width').value.trim() || '58';
 
             const orderData = {
                 id: editingId !== null ? editingId : Date.now(),
@@ -669,7 +682,8 @@
                 weftCount: document.getElementById('weftCount').value.trim() || '-',
                 reed: document.getElementById('reed').value.trim() || '-',
                 pick: document.getElementById('pick').value.trim() || '-',
-                width: document.getElementById('width').value.trim() || '-',
+                width: currentWidth,
+                finishWidth: currentWidth,
                 weaveType: document.getElementById('weaveType').value.trim() || '-',
                 orderMtr: document.getElementById('orderMtr').value.trim() || '0',
                 productionMeter: document.getElementById('orderMtr').value.trim() || '0',
@@ -711,6 +725,8 @@
                 designSpecs[specKey].baseBeamCount = baseBeam;
                 designSpecs[specKey].topBeamCount = topBeam;
                 designSpecs[specKey].baseCount = combinedWarp;
+                designSpecs[specKey].width = currentWidth;
+                designSpecs[specKey].finishWidth = currentWidth;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
                 
                 if (window.firebaseSave) {
@@ -732,6 +748,7 @@
             document.getElementById('partyOrderForm').reset();
             document.getElementById('orderStatusToggle').checked = false;
             document.getElementById('orderDate').valueAsDate = new Date();
+            document.getElementById('width').value = '58';
             
             loadDesignList();
             btn.innerText = "✅ Save Order Details";
@@ -759,7 +776,7 @@
             document.getElementById('weftCount').value = item.weftCount || '';
             document.getElementById('reed').value = item.reed || '';
             document.getElementById('pick').value = item.pick || '';
-            document.getElementById('width').value = item.width || '';
+            document.getElementById('width').value = item.width || item.finishWidth || '58';
             document.getElementById('weaveType').value = item.weaveType || '';
             document.getElementById('orderMtr').value = item.orderMtr || item.productionMeter || '';
             document.getElementById('rateMtr').value = item.rateMtr || '';
