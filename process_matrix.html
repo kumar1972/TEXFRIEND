@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Matrix - TEXFRIEND ERP</title>
+    <!-- IMPORTANT: config.js must load first -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -38,7 +40,6 @@
             background: #4A7C59; border-radius: 4px;
         }
 
-        /* 📌 Live Matrix Progress Table Styles */
         .matrix-container {
             background: #F8FAF8; border: 1px solid #E2E8E2; border-radius: 14px;
             padding: 15px; display: flex; flex-direction: column; gap: 10px;
@@ -75,7 +76,6 @@
         .status-badge.run { background: #FFFBEB; color: #D97706; border: 1px solid rgba(245,158,11,0.3); }
         .status-badge.none { background: #F1F5F9; color: #64748B; border: 1px solid rgba(100,116,139,0.3); }
 
-        /* 📌 Design Thumbnail Style next to Design Number */
         .design-row-cell {
             display: flex; align-items: center; gap: 10px; text-align: left; padding-left: 15px;
         }
@@ -86,7 +86,6 @@
         }
         .design-thumb:hover { transform: scale(1.15); }
 
-        /* Fullscreen Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -112,7 +111,6 @@
 
     <h2 class="card-header">📊 Live Multi-Design Process Status</h2>
 
-    <!-- 📌 Live Matrix Progress Table -->
     <div class="matrix-container">
         <div class="matrix-header-row">
             <div class="matrix-title">Click on Status Badges to View Details</div>
@@ -138,9 +136,9 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
-    <button class="close-fullscreen" onclick="closeFullscreenImage()">Close ✕</button>
+    <button class="close-fullscreen" onclick="closeFullscreenImage(event)">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
@@ -149,10 +147,12 @@ window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
-window.closeFullscreenImage = function() {
+};
+
+window.closeFullscreenImage = function(event) {
+    if (event) event.stopPropagation();
     document.getElementById('fullscreenModal').style.display = 'none';
-}
+};
 
 function cleanDesignName(str) {
     return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
@@ -167,11 +167,8 @@ function getProcessStatus(recordKey, designNo) {
         return cleanDesignName(d) === cleanTarget;
     });
 
-    if (matched.length === 0) {
-        // Fallback for Despatch Data Structure
-        if (recordKey === 'despatch_data') {
-            matched = records.filter(entry => entry.items && entry.items.some(i => cleanDesignName(i.designNo) === cleanTarget));
-        }
+    if (matched.length === 0 && recordKey === 'despatch_data') {
+        matched = records.filter(entry => entry.items && entry.items.some(i => cleanDesignName(i.designNo) === cleanTarget));
     }
 
     if (matched.length === 0) return { label: 'Pending', cssClass: 'none' };
@@ -184,12 +181,19 @@ function getProcessStatus(recordKey, designNo) {
     }
 }
 
-window.addEventListener('DOMContentLoaded', function() {
+function renderMatrix() {
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
     let tbody = document.getElementById('matrixTableBody');
 
-    let allDesigns = Array.from(new Set([...preDesigns, ...Object.keys(designSpecs)]));
+    let allDesignsSet = new Set([...preDesigns]);
+    if (Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesignsSet.add(d.name || d.designNo); });
+    Object.keys(designSpecs).forEach(k => allDesignsSet.add(k));
+    if (Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesignsSet.add(o.designNumber || o.designNo); });
+
+    let allDesigns = Array.from(allDesignsSet).filter(Boolean);
 
     if(allDesigns.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:#64748B;">No Designs Found! Please add designs in Design Master.</td></tr>`;
@@ -223,19 +227,21 @@ window.addEventListener('DOMContentLoaded', function() {
                     <span style="font-weight:700; color:#2F4F38;">${index + 1}. #${cleanDNo}</span>
                 </div>
             </td>
-            <td><a href="design_list.html?type=kora&design=${cleanDNo}" class="status-badge ${kora.cssClass}">${kora.label}</a></td>
-            <td><a href="design_list.html?type=dyeing&design=${cleanDNo}" class="status-badge ${dyeing.cssClass}">${dyeing.label}</a></td>
-            <td><a href="design_list.html?type=warping&design=${cleanDNo}" class="status-badge ${warping.cssClass}">${warping.label}</a></td>
-            <td><a href="design_list.html?type=weaving&design=${cleanDNo}" class="status-badge ${weaving.cssClass}">${weaving.label}</a></td>
-            <td><a href="design_list.html?type=washing&design=${cleanDNo}" class="status-badge ${washing.cssClass}">${washing.label}</a></td>
-            <td><a href="design_list.html?type=despatch&design=${cleanDNo}" class="status-badge ${despatch.cssClass}">${despatch.label}</a></td>
+            <td><a href="design_list.html?type=kora&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${kora.cssClass}">${kora.label}</a></td>
+            <td><a href="design_list.html?type=dyeing&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${dyeing.cssClass}">${dyeing.label}</a></td>
+            <td><a href="design_list.html?type=warping&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${warping.cssClass}">${warping.label}</a></td>
+            <td><a href="design_list.html?type=weaving&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${weaving.cssClass}">${weaving.label}</a></td>
+            <td><a href="design_list.html?type=washing&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${washing.cssClass}">${washing.label}</a></td>
+            <td><a href="design_list.html?type=despatch&design=${encodeURIComponent(cleanDNo)}" class="status-badge ${despatch.cssClass}">${despatch.label}</a></td>
         </tr>`;
     });
 
     tbody.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderMatrix();
 });
 </script>
-<script src="config.js"></script>
-
 </body>
 </html>

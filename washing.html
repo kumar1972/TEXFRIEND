@@ -4,18 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Washing - TEXFRIEND ERP</title>
+<!-- IMPORTANT: config.js must load first -->
+<script src="config.js"></script>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Background - STRICTLY NO BLACK */
     html, body { 
         width: 100%; 
         min-height: 100vh; 
         background: #030712; 
-        color: #1E2B23; /* Deep Dark Green */
+        color: #1E2B23; 
     }
 
     body { 
@@ -25,7 +26,6 @@
         align-items: center;
     }
 
-    /* 📌 Main Container */
     .main-card {
         width: 100%;
         max-width: 900px;
@@ -47,7 +47,6 @@
         margin-bottom: 5px; 
     }
 
-    /* 📌 Smart Back Button */
     .back-btn {
         display: inline-flex;
         align-items: center;
@@ -75,7 +74,6 @@
     }
     #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    /* Checkbox Styling */
     .completed-checkbox {
         display: flex;
         align-items: center;
@@ -134,7 +132,6 @@
     .print-main-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); transition: transform 0.2s;}
     .print-main-btn:hover { transform: translateY(-2px); }
 
-    /* 📌 Smart Sectioning */
     .form-section {
         background: #F8FAF8;
         border: 1px solid #E2E8E2;
@@ -170,7 +167,6 @@
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-    /* Inline Select + Add Button Group */
     .input-group-btn { display: flex; gap: 6px; width: 100%; }
     .input-group-btn select { flex: 1; }
     .btn-add-inline {
@@ -180,7 +176,6 @@
     }
     .btn-add-inline:hover { background: #059669; }
 
-    /* 📌 Smart 3D Inputs */
     input, select {
         width: 100%; padding: 10px 12px; border-radius: 8px;
         border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
@@ -194,7 +189,6 @@
     input::placeholder { color: #A0AFA0; font-weight: 400; }
     input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; }
 
-    /* 📌 Advanced Grids */
     .grid-header {
         display: grid;
         grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 35px;
@@ -234,7 +228,6 @@
     .del-btn { background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1); }
     .del-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    /* 📌 Smart Buttons */
     .btn-main {
         width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
         color: white; font-weight: 700; font-size: 13px; cursor: pointer;
@@ -255,7 +248,6 @@
     }
     .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
 
-    /* 📌 FULL SCREEN PREVIEW MODAL STYLING */
     .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(18, 25, 20, 0.95); backdrop-filter: blur(6px);
@@ -288,7 +280,6 @@
 
     .modal-body { padding: 20px; overflow-y: auto; flex: 1; background: #FAFCFA; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-    /* 📌 Saved List Modal */
     #savedListModal .modal-content {
         max-width: 1000px;
         height: 90vh;
@@ -299,7 +290,6 @@
     }
     #savedListModal.show .modal-content { transform: scale(1); }
 
-    /* 📌 Fullscreen Image Popup Modal */
     .fullscreen-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -315,7 +305,6 @@
         cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    /* 📌 Advanced Table Design */
     .table-container {
         width: 100%; border-radius: 10px; overflow-x: auto;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
@@ -340,7 +329,6 @@
     .shrink-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
     .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
 
-    /* 📌 Design Selection Modal */
     #designModal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
@@ -401,7 +389,7 @@
         </div>
     </div>
 
-    <!-- 📌 1. TOP SECTION (ORDER DETAILS) -->
+    <!-- 1. TOP SECTION (ORDER DETAILS) -->
     <div class="form-section" id="sectionTop">
         <div class="section-badge">1. Washing Order Info</div>
         
@@ -451,7 +439,7 @@
         <button class="btn-main btn-save" id="saveTopBtnTxt" onclick="saveTopOrder()">✅ Save Washing Order</button>
     </div>
 
-    <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) -->
+    <!-- 2. BOTTOM SECTION (RECEIVED DETAILS) -->
     <div class="form-section" id="sectionBottom">
         <div class="section-badge blue">2. Washing Received & Shrinkage / Reprocessing</div>
         
@@ -484,11 +472,10 @@
         </div>
     </div>
 
-    <!-- 📌 3. SAVED DATA POPUP BUTTON -->
     <button type="button" class="popup-trigger-btn" onclick="openModal('savedListModal')">📊 View Saved Washing Registry</button>
 </div>
 
-<!-- 📌 Selection Modal for Bottom Form -->
+<!-- Selection Modal for Bottom Form -->
 <div id="designModal">
     <div class="design-modal-content">
         <div class="design-modal-header">
@@ -499,7 +486,7 @@
     </div>
 </div>
 
-<!-- 📌 Full Screen Print Preview Modal -->
+<!-- Full Screen Print Preview Modal -->
 <div id="previewModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header no-print">
@@ -509,13 +496,11 @@
                 <button class="close-btn" onclick="closeModal('previewModal')">Close ✕</button>
             </div>
         </div>
-        <div class="modal-body" id="previewContent">
-            <!-- Preview content injects here -->
-        </div>
+        <div class="modal-body" id="previewContent"></div>
     </div>
 </div>
 
-<!-- 📌 Saved List Modal -->
+<!-- Saved List Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -540,16 +525,14 @@
                             <th class="no-print">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="dataTableBody">
-                        <!-- Data populates here -->
-                    </tbody>
+                    <tbody id="dataTableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
@@ -600,10 +583,10 @@ window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
+};
 window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
-}
+};
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
@@ -664,7 +647,7 @@ function openDesignModal() {
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        let hasReceive = receives.some(r => r.issueId == issue.id);
+        let hasReceive = receives.some(r => String(r.issueId) === String(issue.id));
         return !hasReceive; 
     });
 
@@ -707,14 +690,23 @@ function closeDesignModal() {
 }
 
 function loadDesignDropdowns() {
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+    let allDesigns = new Set([...preDesigns]);
+    if (Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
+    Object.keys(designSpecs).forEach(k => allDesigns.add(k));
+    if (Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
+
     let topSelect = document.getElementById('topDesignNo');
     let topHtml = '<option value="">Select Design No</option>';
-    preDesignList.forEach(d => { topHtml += `<option value="${d}">${d}</option>`; });
+    Array.from(allDesigns).filter(Boolean).forEach(d => { topHtml += `<option value="${d}">${d}</option>`; });
     topSelect.innerHTML = topHtml;
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && preDesignList.includes(activeDesign)) {
+    if(activeDesign && allDesigns.has(activeDesign)) {
         topSelect.value = activeDesign;
         onDesignSelect(activeDesign);
     } else {
@@ -728,15 +720,15 @@ function onDesignSelect(val) {
     if(!val) return;
     localStorage.setItem('selected_design_number', val);
 
+    let clean = val.toString().replace('#', '').trim().toLowerCase();
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
 
     let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
+    let rec = issues.find(r => (r.designNo || r.designNumber || '').toString().replace('#','').trim().toLowerCase() === clean);
 
-    if(specStatus === 'completed' || (rec && rec.status.toLowerCase() === 'completed')) {
+    if(specStatus === 'completed' || (rec && (rec.status || '').toLowerCase() === 'completed')) {
         document.getElementById('top_completed_status').checked = true;
     } else {
         document.getElementById('top_completed_status').checked = false;
@@ -785,12 +777,13 @@ async function quickCompleteToggle() {
     }
 
     let statusText = isCompleted ? 'completed' : 'running';
+    let cleanKey = dNo.toString().replace('#', '').trim().toLowerCase();
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
     let updated = false;
 
     issues.forEach(r => {
-        if(r.designNo === dNo || r.designNumber === dNo) {
+        if((r.designNo || r.designNumber || '').toString().replace('#','').trim().toLowerCase() === cleanKey) {
             r.status = statusText;
             updated = true;
         }
@@ -801,7 +794,7 @@ async function quickCompleteToggle() {
         let unit = document.getElementById('topUnit').value.trim() || 'Main Unit';
         let firstRow = document.querySelector('.line-row');
         let slip = firstRow ? firstRow.querySelector('.t-slip').value.trim() : 'S-01';
-        let piece = firstRow ? intval(firstRow.querySelector('.t-piece').value) || 1 : 1;
+        let piece = firstRow ? parseInt(firstRow.querySelector('.t-piece').value) || 1 : 1;
         let mtr = firstRow ? parseFloat(firstRow.querySelector('.t-mtr').value) || 0 : 0;
         let process = firstRow ? firstRow.querySelector('.t-process').value.trim() : 'General';
 
@@ -821,8 +814,7 @@ async function quickCompleteToggle() {
     localStorage.setItem('washing_issue_records', JSON.stringify(issues));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
 
     if(!designSpecs[specKey]) {
         designSpecs[specKey] = {};
@@ -857,15 +849,15 @@ async function saveTopOrder() {
     if(!dNo || !unit) { alert("Please fill Date, Washing Name, and Design Number!"); return; }
 
     let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-    let cleanDNo = cleanDesignName(dNo);
+    let cleanDNo = dNo.toString().replace('#', '').trim().toLowerCase();
 
-    let alreadyExists = issues.some(i => cleanDesignName(i.designNo) === cleanDNo);
+    let alreadyExists = issues.some(i => (i.designNo || '').toString().replace('#','').trim().toLowerCase() === cleanDNo);
     if(alreadyExists) {
         let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே Washing Order என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
         if(!confirmReEntry) {
             return; 
         }
-        issues = issues.filter(i => cleanDesignName(i.designNo) !== cleanDNo);
+        issues = issues.filter(i => (i.designNo || '').toString().replace('#','').trim().toLowerCase() !== cleanDNo);
     }
 
     let btn = document.getElementById('saveTopBtnTxt');
@@ -961,7 +953,7 @@ function loadBottomData() {
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        let hasReceive = receives.some(r => r.issueId == issue.id);
+        let hasReceive = receives.some(r => String(r.issueId) === String(issue.id));
         return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
     });
 
@@ -1047,7 +1039,7 @@ async function saveBottomEntry() {
             }
         } else {
             if(rcvMtr > 0) {
-                let issueIndex = issues.findIndex(r => r.id == recId);
+                let issueIndex = issues.findIndex(r => String(r.id) === String(recId));
                 if(issueIndex !== -1) {
                     let issMtr = parseFloat(issues[issueIndex].mtr);
                     
@@ -1099,7 +1091,7 @@ async function toggleStatus(id, newStatus) {
     let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
     if(confirm(msg)) {
         let issues = JSON.parse(localStorage.getItem('washing_issue_records')) || [];
-        let index = issues.findIndex(r => r.id == id);
+        let index = issues.findIndex(r => String(r.id) === String(id));
         
         if(index > -1) {
             issues[index].status = newStatus;
@@ -1107,8 +1099,8 @@ async function toggleStatus(id, newStatus) {
             
             let dNo = issues[index].designNo;
             if(dNo) {
+                let clean = dNo.toString().replace('#', '').trim().toLowerCase();
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
                 let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
 
                 if(!designSpecs[specKey]) designSpecs[specKey] = {};
@@ -1138,7 +1130,7 @@ async function editWashingRecord(issueId, isReceived) {
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
     
     if (isReceived) {
-        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        let recIndex = receives.findIndex(r => String(r.issueId) === String(issueId));
         if(recIndex !== -1) {
             let recRecord = receives[recIndex];
             
@@ -1159,7 +1151,7 @@ async function editWashingRecord(issueId, isReceived) {
             setTimeout(() => {
                 let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
                 rows.forEach(row => {
-                    if(row.getAttribute('data-id') == issueId) {
+                    if(String(row.getAttribute('data-id')) === String(issueId)) {
                         row.querySelector('.b-received').value = recRecord.receivedMtr;
                     }
                 });
@@ -1168,7 +1160,7 @@ async function editWashingRecord(issueId, isReceived) {
             renderTable();
         }
     } else {
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        let issueIndex = issues.findIndex(iss => String(iss.id) === String(issueId));
         if(issueIndex !== -1) {
             let issRecord = issues[issueIndex];
             issues.splice(issueIndex, 1);
@@ -1209,10 +1201,10 @@ async function deleteWashingRecord(issueId, isReceived) {
     let receives = JSON.parse(localStorage.getItem('washing_receive_records')) || [];
     
     if (isReceived) {
-        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        let recIndex = receives.findIndex(r => String(r.issueId) === String(issueId));
         if(recIndex !== -1) receives.splice(recIndex, 1);
     } else {
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        let issueIndex = issues.findIndex(iss => String(iss.id) === String(issueId));
         if(issueIndex !== -1) issues.splice(issueIndex, 1);
     }
     
@@ -1250,7 +1242,7 @@ function renderTable() {
     }
 
     issues.slice().reverse().forEach(issue => {
-        let matchingRec = receives.find(r => r.issueId == issue.id);
+        let matchingRec = receives.find(r => String(r.issueId) === String(issue.id));
         let isReceived = !!matchingRec;
         
         let botDateStr = "-";
@@ -1343,6 +1335,5 @@ function printReport() {
     }, 300);
 }
 </script>
-<script src="config.js"></script>
 </body>
 </html>

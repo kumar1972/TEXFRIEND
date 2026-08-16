@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Invoice - TEXFRIEND ERP</title>
+    <!-- IMPORTANT: config.js must load first -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -407,7 +409,6 @@
     <div class="form-section" style="background: transparent; border: none; padding: 0;">
         <div class="section-badge" style="top: -15px; left: 0;">Item Entries</div>
         <div id="invoiceItemsContainer" style="margin-top: 15px;">
-            <!-- Row-wise Item Grid -->
             <div class="item-row">
                 <div class="item-col-group">
                     <label>Date</label>
@@ -436,12 +437,10 @@
 
     <button class="btn-main" id="saveInvBtn" onclick="saveInvoice()">✅ Save Invoice Details</button>
     <button class="btn-main print-btn" onclick="showFullPreview()">🖨️ Print / PDF Bill Preview</button>
-
-    <!-- 📌 Popup Trigger Button -->
     <button type="button" class="popup-trigger-btn" onclick="openModal('invoiceListModal')">📊 View Saved Invoices</button>
 </div>
 
-<!-- 📌 Full-Screen Pop-up Modal for Saved Invoices -->
+<!-- Saved Invoices Modal -->
 <div id="invoiceListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -470,7 +469,7 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
@@ -527,10 +526,10 @@ window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
+};
 window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
-}
+};
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('global_design').value || localStorage.getItem('selected_design_number');
@@ -555,16 +554,27 @@ function loadBitmapImage() {
     bitmapContainer.innerHTML = checkboxHtml + imgHtml;
 
     if(wasChecked) {
-        document.getElementById('top_completed_status').checked = true;
+        let newCb = document.getElementById('top_completed_status');
+        if(newCb) newCb.checked = true;
     }
 }
 
 function loadDesignDropdowns() {
     let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+    let allDesigns = new Set();
+    preDesigns.forEach(d => allDesigns.add(d));
+    if(Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
+    Object.keys(designSpecs).forEach(d => allDesigns.add(d));
+    if(Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
+
     let select = document.getElementById('global_design');
     let current = select.value;
     let html = '<option value="">Select Design</option>';
-    preDesigns.forEach(d => {
+    Array.from(allDesigns).filter(Boolean).forEach(d => {
         html += '<option value="' + d + '">' + d + '</option>';
     });
     select.innerHTML = html;
@@ -583,11 +593,18 @@ function applyGlobalDesign(designNo) {
     localStorage.setItem('selected_design_number', designNo);
     loadBitmapImage();
     
-    let clean = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
+    let clean = cleanDesignName(designNo);
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || designNo;
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === clean) || designNo;
+    let sp = designSpecs[specKey] || {};
+
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = Array.isArray(designMasters) ? designMasters.find(d => cleanDesignName(d.name || d.designNo) === clean) || {} : {};
+
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(p => cleanDesignName(p.designNumber || p.designNo) === clean) || {} : {};
     
-    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
+    let specStatus = (sp.status || matchedOrder.status || '').toLowerCase();
     let invs = JSON.parse(localStorage.getItem('saved_invoices_data')) || [];
     let invRec = invs.find(x => cleanDesignName(x.design) === clean);
 
@@ -599,21 +616,22 @@ function applyGlobalDesign(designNo) {
         if(cb) cb.checked = false;
     }
 
-    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let matchedOrder = partyOrders.find(p => cleanDesignName(p.designNumber || p.designNo) === clean);
-    
-    if(matchedOrder) {
-        if(matchedOrder.partyName && !document.getElementById('party_address').value) {
-            document.getElementById('party_address').value = matchedOrder.partyName;
-        }
+    if(matchedOrder.partyName && !document.getElementById('party_address').value) {
+        document.getElementById('party_address').value = matchedOrder.partyName;
     }
 
-    if(designSpecs[specKey]) {
-        document.getElementById('global_reed').value = designSpecs[specKey].reed || '';
-        document.getElementById('global_pick').value = designSpecs[specKey].pick || '';
-        document.getElementById('global_weave').value = designSpecs[specKey].weave || designSpecs[specKey].warp || '';
-        document.getElementById('global_count').value = designSpecs[specKey].warp || designSpecs[specKey].weft || '';
-    }
+    // Resolved Multi-beam and Weft Count
+    let baseCount = matchedOrder.baseBeamCount || sp.baseBeamCount || foundMaster.warp1 || sp.warp || sp.baseCount || '';
+    let topBeam = matchedOrder.topBeamCount || sp.topBeamCount || foundMaster.warp2 || '';
+    let combinedWarp = (topBeam && topBeam !== '-') ? `${baseCount} / ${topBeam}` : baseCount;
+    let weftCountVal = matchedOrder.weftCount || sp.weftCount || foundMaster.weftCount || sp.weft || '';
+
+    let fullCountDisplay = combinedWarp ? (weftCountVal ? `${combinedWarp} x ${weftCountVal}` : combinedWarp) : weftCountVal;
+
+    document.getElementById('global_count').value = fullCountDisplay;
+    document.getElementById('global_reed').value = matchedOrder.reed || sp.reed || foundMaster.reed || '';
+    document.getElementById('global_pick').value = matchedOrder.pick || sp.pick || foundMaster.pick || '';
+    document.getElementById('global_weave').value = matchedOrder.weaveType || sp.weave || foundMaster.weave || sp.weaveType || '';
 }
 
 function addInvoiceRow(date = '', pcs = '', qty = '', rate = '') {
@@ -768,7 +786,6 @@ async function saveInvoice() {
     }
 
     let btn = document.getElementById('saveInvBtn');
-    let origText = btn.innerText;
     btn.innerText = "⏳ Saving to Cloud...";
 
     let compAddress = document.getElementById('comp_address').value;
@@ -837,7 +854,6 @@ async function saveInvoice() {
 
     localStorage.setItem('saved_invoices_data', JSON.stringify(savedInvoices));
     
-    // Cloud Sync
     if (window.firebaseSave) {
         await window.firebaseSave('saved_invoices_data', savedInvoices);
     }
@@ -929,14 +945,18 @@ function updateInvoicesTable() {
             ? `<button class="action-btn action-complete" onclick="toggleStatus(${inv.id}, 'completed')">Complete</button>` 
             : `<button class="action-btn action-running" onclick="toggleStatus(${inv.id}, 'running')">Running</button>`;
 
+        let partyNameDisplay = inv.partyAddress ? inv.partyAddress.split('\n')[0] : '-';
+        let totalQtyDisplay = (typeof inv.totalQty === 'number' ? inv.totalQty : 0).toFixed(2);
+        let grandTotalDisplay = (typeof inv.grandTotal === 'number' ? inv.grandTotal : 0).toFixed(2);
+
         let row = tbody.insertRow();
         row.innerHTML = `
-            <td><b>${inv.invNo}</b></td>
-            <td>${inv.invDate}</td>
-            <td>${inv.partyAddress ? inv.partyAddress.split('\n')[0] : '-'}</td>
+            <td><b>${inv.invNo || '-'}</b></td>
+            <td>${inv.invDate || '-'}</td>
+            <td>${partyNameDisplay}</td>
             <td>${inv.design || '-'}</td>
-            <td>${inv.totalQty.toFixed(2)}</td>
-            <td style="font-weight:bold; color:#10B981;">₹${inv.grandTotal.toFixed(2)}</td>
+            <td>${totalQtyDisplay}</td>
+            <td style="font-weight:bold; color:#10B981;">₹${grandTotalDisplay}</td>
             <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${inv.status}</td>
             <td>
                 <div class="action-cell">
@@ -1132,6 +1152,9 @@ function showFullPreview() {
     let previewContainer = document.getElementById('printPreviewContainer');
     previewContainer.style.display = 'block';
 
+    let safeCompAddr = (compAddr || '').replace(/\n/g, '<br>');
+    let safePartyAddr = (partyAddr || '').replace(/\n/g, '<br>');
+
     previewContainer.innerHTML = 
         '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:2px solid #333; padding-bottom:8px;">' +
             '<div style="flex:1;">' + logoHtml + '</div>' +
@@ -1139,8 +1162,8 @@ function showFullPreview() {
             '<div style="flex:1;"></div>' +
         '</div>' +
         '<div class="invoice-header">' +
-            '<div><strong>From:</strong><br>' + compAddr.replace(/\n/g, '<br>') + '</div>' +
-            '<div style="text-align:right;"><strong>To:</strong><br>' + partyAddr.replace(/\n/g, '<br>') + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
+            '<div><strong>From:</strong><br>' + safeCompAddr + '</div>' +
+            '<div style="text-align:right;"><strong>To:</strong><br>' + safePartyAddr + '<br><br><strong>Inv No:</strong> ' + invNo + '<br><strong>Date:</strong> ' + invDate + '<br><strong>Transport:</strong> ' + transport + ' | <strong>LR:</strong> ' + lr + '</div>' +
         '</div>' +
         '<div style="font-size:11px; margin-bottom:10px; background:#f8fafc; padding:6px; border:1px solid #ccc;"><strong>Design No:</strong> <span style="font-weight:bold;">' + design + '</span>, <strong>Count:</strong> <span style="font-weight:bold;">' + countVal + '</span>, <strong>Reed:</strong> <span style="font-weight:bold;">' + reed + '</span>, <strong>Pick:</strong> <span style="font-weight:bold;">' + pick + '</span>, <strong>Weave:</strong> <span style="font-weight:bold;">' + weave + '</span></div>' +
         '<table class="invoice-table">' +
@@ -1189,6 +1212,5 @@ function goBackToForm() {
     window.scrollTo(0, 0);
 }
 </script>
-<script src="config.js"></script>
 </body>
 </html>

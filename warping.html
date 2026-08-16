@@ -4,69 +4,71 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Warping - TEXFRIEND ERP</title>
+<!-- IMPORTANT: config.js must load first -->
+<script src="config.js"></script>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 
-    /* 📌 Smart Background - STRICTLY NO BLACK */
     html, body { 
         width: 100%; 
         min-height: 100vh; 
         background: #030712; 
-        color: #1E2B23; /* Deep Dark Green */
+        color: #1E2B23; 
+        overflow-x: hidden;
     }
 
     body { 
-        padding: 12px; 
+        padding: 8px; 
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    /* 📌 Main Container */
     .main-card {
         width: 100%;
         max-width: 900px;
         margin: 0;
         background: #FFFFFF;
         border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
+        border-radius: 16px;
+        padding: 12px;
         box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
     }
 
     .top-nav { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        margin-bottom: 5px; 
+        margin-bottom: 4px; 
+        gap: 8px;
     }
 
-    /* 📌 Smart Back Button */
     .back-btn {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
         color: #FFFFFF;
         text-decoration: none;
         font-weight: 600;
         font-size: 11px;
         background: #1A2421; 
-        padding: 8px 16px;
+        padding: 6px 12px;
         border-radius: 8px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         transition: all 0.3s ease;
+        white-space: nowrap;
     }
     .back-btn:hover { background: #000000; transform: translateY(-2px); }
 
-    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 10px; }
+    #bitmapDisplayContainer { text-align: right; display: flex; align-items: center; gap: 8px; }
     #bitmapDisplayContainer img {
-        max-height: 45px;
+        max-height: 35px;
         border-radius: 6px;
         border: 1px solid rgba(82, 110, 81, 0.2);
         box-shadow: 0 4px 8px rgba(0,0,0,0.08);
@@ -75,21 +77,21 @@
     }
     #bitmapDisplayContainer img:hover { transform: scale(1.1); }
 
-    /* Checkbox Styling */
     .completed-checkbox {
         display: flex;
         align-items: center;
         gap: 6px;
         background: #D8DFD6;
-        padding: 6px 12px;
+        padding: 4px 10px;
         border-radius: 6px;
         border: 1px solid rgba(82, 110, 81, 0.4);
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        white-space: nowrap;
     }
     
     .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         cursor: pointer;
         accent-color: #526E51;
         margin: 0;
@@ -101,78 +103,78 @@
         margin: 0;
         color: #3F5A3E;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
     }
 
     .page-title {
-        font-size: 16px;
-        margin-bottom: 5px;
+        font-size: 15px;
+        margin-bottom: 2px;
         font-weight: 700;
         color: #2F4F38;
         text-align: left;
         position: relative;
-        padding-left: 12px;
+        padding-left: 10px;
     }
     .page-title::before {
         content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
         background: #4A7C59; border-radius: 4px;
     }
 
-    /* 📌 Smart Sectioning */
     .form-section {
         background: #F8FAF8;
         border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 22px 15px 15px 15px;
-        margin-bottom: 5px;
+        border-radius: 12px;
+        padding: 16px 10px 10px 10px;
+        margin-bottom: 4px;
         position: relative;
     }
     
     .section-badge {
         position: absolute;
-        top: -12px;
-        left: 15px;
+        top: -10px;
+        left: 12px;
         background: #4A7C59;
         color: #FFF;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
+        padding: 3px 10px;
+        border-radius: 10px;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
     }
     .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
 
-    /* 📌 Clean Multi-Row Grid Layout */
     .form-grid-2 {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: 8px;
+        margin-bottom: 8px;
     }
 
     .form-grid-3 {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: 8px;
+        margin-bottom: 8px;
     }
     
     .form-grid-4 {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 12px;
-        margin-bottom: 12px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    @media (min-width: 600px) {
+        .form-grid-4 { grid-template-columns: repeat(4, 1fr); }
     }
 
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group { display: flex; flex-direction: column; gap: 3px; }
     .form-group label { font-size: 10px; font-weight: 600; color: #4A554A; }
 
-    /* 📌 Smart 3D Inputs */
     input, select {
-        width: 100%; padding: 10px 12px; border-radius: 8px;
+        width: 100%; padding: 8px 10px; border-radius: 8px;
         border: 1px solid #D1DED1; background: #FFFFFF; color: #1E2B23;
         font-size: 11px; font-weight: 600; transition: all 0.3s ease;
         box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
@@ -184,169 +186,157 @@
     input::placeholder { color: #A0AFA0; font-weight: 400; }
     input[readonly] { background: #EAF0EA; color: #4A7C59; border: 1px dashed #A0AFA0; cursor: not-allowed; }
 
-    /* 📌 Input Group for Master Add/Del */
-    .input-group-btn { display: flex; gap: 6px; width: 100%; }
+    .input-group-btn { display: flex; gap: 4px; width: 100%; }
     .input-group-btn select { flex: 1; }
     .btn-add-inline {
-        background: #10B981; color: white; border: none; padding: 6px 10px; border-radius: 8px;
-        font-weight: 700; font-size: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); white-space: nowrap;
+        background: #10B981; color: white; border: none; padding: 6px 8px; border-radius: 6px;
+        font-weight: 700; font-size: 9px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
     }
     .btn-add-inline:hover { background: #059669; }
     .btn-del-inline {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px;
-        border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;
-        box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2); display: flex; align-items: center; justify-content: center;
+        background: #FEE2E2; color: #DC2626; border: none; padding: 6px 8px;
+        border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center;
     }
     .btn-del-inline:hover { background: #FECACA; }
 
-    /* 📌 Advanced Grids */
     .grid-header {
         display: grid;
-        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
-        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 35px;
+        gap: 4px; padding: 0 2px; margin-bottom: 6px; margin-top: 6px;
     }
     .grid-header-bot {
         display: grid;
-        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px;
-        gap: 6px; padding: 0 4px; margin-bottom: 8px; margin-top: 10px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 50px;
+        gap: 4px; padding: 0 2px; margin-bottom: 6px; margin-top: 6px;
     }
 
     .grid-header div, .grid-header-bot div {
-        font-size: 10px; font-weight: 700; color: #2F4F38;
+        font-size: 9px; font-weight: 700; color: #2F4F38;
         text-align: center; text-transform: uppercase;
     }
 
     .line-row {
         display: grid;
-        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 45px;
-        gap: 6px; align-items: center; margin-bottom: 8px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 35px;
+        gap: 4px; align-items: center; margin-bottom: 6px;
     }
     .line-row-bot {
         display: grid;
-        grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 70px;
-        gap: 6px; align-items: center; margin-bottom: 8px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 50px;
+        gap: 4px; align-items: center; margin-bottom: 6px;
     }
 
-    .line-row input, .line-row-bot input { padding: 10px 4px; font-size: 11px; text-align: center; }
+    .line-row input, .line-row-bot input { padding: 8px 2px; font-size: 10px; text-align: center; }
 
     .del-btn {
-        color: white; border: none; width: 35px; height: 35px; border-radius: 8px;
-        cursor: pointer; font-size: 16px; font-weight: bold; display: flex;
+        color: white; border: none; width: 30px; height: 30px; border-radius: 6px;
+        cursor: pointer; font-size: 14px; font-weight: bold; display: flex;
         align-items: center; justify-content: center; transition: all 0.2s ease;
-        background: #FEE2E2; color: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.1);
+        background: #FEE2E2; color: #DC2626;
     }
     .del-btn:hover { background: #FECACA; transform: scale(1.05); }
 
-    .btn-split-row {
-        background: #D1FAE5; color: #059669; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
-        display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
-    }
-    .btn-split-row:hover { background: #A7F3D0; transform: scale(1.05); }
-
-    /* 📌 Smart Buttons */
     .btn-main {
-        width: 100%; padding: 14px; margin: 10px 0 0 0; border: none; border-radius: 10px;
-        color: white; font-weight: 700; font-size: 13px; cursor: pointer;
+        width: 100%; padding: 12px; margin: 8px 0 0 0; border: none; border-radius: 8px;
+        color: white; font-weight: 700; font-size: 12px; cursor: pointer;
         transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25); }
-    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
+    .btn-save { background: linear-gradient(135deg, #4A7C59, #33593D); box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25); }
+    .btn-save:hover { transform: translateY(-2px); }
     
-    .btn-blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25); }
-    .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+    .btn-blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); }
+    .btn-blue:hover { transform: translateY(-2px); }
 
     .popup-trigger-btn {
         background: linear-gradient(135deg, #6366F1, #4338CA);
-        color: white; border: none; padding: 14px; border-radius: 10px;
-        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
-        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.25);
-        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
+        color: white; border: none; padding: 12px; border-radius: 8px;
+        font-size: 12px; font-weight: bold; cursor: pointer; width: 100%;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;
     }
-    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
+    .popup-trigger-btn:hover { transform: translateY(-2px); }
 
-    /* 📌 Advanced Pop-up Modal Styling */
     .overlay-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
+        z-index: 99999; flex-direction: column; padding: 10px; opacity: 0; transition: opacity 0.3s ease;
     }
     .overlay-modal.show { opacity: 1; }
     
     .modal-content {
-        background: #FFFFFF; width: 100%; max-width: 950px; margin: auto; height: 90vh; border-radius: 16px;
+        background: #FFFFFF; width: 100%; max-width: 900px; margin: auto; height: 90vh; border-radius: 14px;
         display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
     }
     .overlay-modal.show .modal-content { transform: scale(1); }
 
     .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
+        padding: 12px 15px; background: #F4F7F4; display: flex;
         justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
     }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
+    .modal-header h3 { margin: 0; font-size: 14px; color: #1E2B23; font-weight: 700; }
     
     .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
+        background: #FEE2E2; color: #DC2626; border: none; padding: 6px 12px;
+        border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px;
         transition: all 0.2s ease;
     }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
+    .close-btn:hover { background: #FECACA; }
 
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; display: flex; flex-direction: column; gap: 12px; }
+    .modal-body { padding: 10px; overflow-y: auto; flex: 1; background: #FAFCFA; display: flex; flex-direction: column; gap: 10px; }
 
-    /* 📌 Saved Warping Card Layout */
     .saved-warp-card {
-        background: #FFFFFF; border: 1px solid #D1DED1; border-radius: 12px; padding: 14px;
-        box-shadow: 0 4px 12px rgba(30,43,35,0.04); display: flex; flex-direction: column; gap: 10px;
+        background: #FFFFFF; border: 1px solid #D1DED1; border-radius: 10px; padding: 10px;
+        box-shadow: 0 4px 12px rgba(30,43,35,0.04); display: flex; flex-direction: column; gap: 8px;
     }
     .saved-warp-top {
-        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #E2E8E2; padding-bottom: 8px;
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #E2E8E2; padding-bottom: 6px;
     }
     .warp-card-img {
-        width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #4A7C59; cursor: zoom-in;
+        width: 38px; height: 38px; object-fit: cover; border-radius: 6px; border: 1px solid #4A7C59; cursor: zoom-in;
     }
     
     .table-container {
-        width: 100%; border-radius: 8px; overflow-x: auto; border: 1px solid #E2E8E2; background: #FFFFFF;
+        width: 100%; border-radius: 6px; overflow-x: auto; border: 1px solid #E2E8E2; background: #FFFFFF;
     }
     .warp-sub-table {
-        width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto;
+        width: 100%; border-collapse: collapse; font-size: 10px; table-layout: auto;
     }
     .warp-sub-table th, .warp-sub-table td {
-        padding: 9px 8px; border: 1px solid #E2E8E2; text-align: center; white-space: nowrap;
+        padding: 7px 6px; border: 1px solid #E2E8E2; text-align: center; white-space: nowrap;
     }
     .warp-sub-table th {
-        background: #EAF0EA; color: #2F4F38; font-weight: 700; font-size: 10px; text-transform: uppercase;
+        background: #EAF0EA; color: #2F4F38; font-weight: 700; font-size: 9px; text-transform: uppercase;
     }
     .warp-sub-table td { color: #1E2B23; }
 
     .action-row {
-        display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid #F4F7F4; padding-top: 8px;
+        display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; border-top: 1px solid #F4F7F4; padding-top: 6px;
     }
     .action-row button {
-        padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none;
+        padding: 5px 10px; border-radius: 6px; font-size: 9px; font-weight: bold; cursor: pointer; border: none;
     }
     .btn-card-edit { background: #64748B; color: white; }
     .btn-card-del { background: #EF4444; color: white; }
     .btn-card-complete { background: #526E51; color: white; }
     .btn-card-running { background: #D97706; color: white; }
 
-    .excess-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; }
-    .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 4px 8px; border-radius: 12px; text-transform: uppercase;}
+    .excess-text { color: #DC2626; font-weight: 800; background: #FEE2E2; padding: 2px 4px; border-radius: 4px; }
+    .status-pending { color: #D97706; font-weight: 800; font-size: 9px; background: rgba(245, 158, 11, 0.1); padding: 3px 6px; border-radius: 10px; text-transform: uppercase;}
 
-    /* 📌 Fullscreen Image Popup Modal */
     .fullscreen-modal {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
+        padding: 15px; flex-direction: column;
     }
     .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
+        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px;
         box-shadow: 0 10px 30px rgba(255,255,255,0.2);
     }
     .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
+        position: absolute; top: 15px; right: 15px; background: #EF4444; color: white;
+        border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 12px;
         cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 </style>
@@ -356,7 +346,7 @@
 <div class="main-card">
     <div class="top-nav">
         <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
             <div class="completed-checkbox">
                 <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
                 <label for="top_completed_status">Completed</label>
@@ -365,9 +355,9 @@
         </div>
     </div>
 
-    <div class="page-title" style="font-size: 18px; font-weight: 800;">Warping Entry System</div>
+    <div class="page-title" style="font-size: 16px; font-weight: 800;">Warping Entry System</div>
 
-    <!-- 📌 1. TOP SECTION (ORDER DETAILS) -->
+    <!-- 1. TOP SECTION (ORDER DETAILS) -->
     <div class="form-section" id="sectionTop">
         <div class="section-badge">1. Warping Order Details (Top)</div>
         
@@ -392,7 +382,7 @@
             </div>
         </div>
 
-        <div class="form-grid-4" style="margin-top: 10px;">
+        <div class="form-grid-4" style="margin-top: 8px;">
             <div class="form-group">
                 <label>Reed</label>
                 <input type="text" id="topReed" placeholder="0" readonly>
@@ -411,7 +401,7 @@
             </div>
         </div>
 
-        <div class="form-group" style="margin-top: 10px;">
+        <div class="form-group" style="margin-top: 8px;">
             <label>Weaver To</label>
             <div class="input-group-btn">
                 <select id="topWeaverTo"><option value="">Select Weaver / Party</option></select>
@@ -420,8 +410,8 @@
             </div>
         </div>
 
-        <div style="overflow-x: auto; margin-top: 10px;">
-            <div style="min-width: 500px;">
+        <div style="overflow-x: auto; margin-top: 8px;">
+            <div style="min-width: 400px;">
                 <div class="grid-header">
                     <div>Count</div>
                     <div>Colour</div>
@@ -429,16 +419,14 @@
                     <div>Issued Wt</div>
                     <div></div>
                 </div>
-                <div id="topLinesContainer">
-                    <!-- Dynamic rows here -->
-                </div>
+                <div id="topLinesContainer"></div>
             </div>
         </div>
 
         <button class="btn-main btn-save" id="saveTopBtnTxt" onclick="saveTopOrder()">Save Top Order</button>
     </div>
 
-    <!-- 📌 2. BOTTOM SECTION (RECEIVED DETAILS) -->
+    <!-- 2. BOTTOM SECTION (RECEIVED DETAILS) -->
     <div class="form-section" id="sectionBottom">
         <div class="section-badge blue">2. Warping Received & Loss (Bottom)</div>
         
@@ -457,8 +445,8 @@
             </div>
         </div>
 
-        <div id="botGridWrapper" style="display: none; margin-top: 10px; overflow-x: auto;">
-            <div style="min-width: 550px;">
+        <div id="botGridWrapper" style="display: none; margin-top: 8px; overflow-x: auto;">
+            <div style="min-width: 450px;">
                 <div class="grid-header-bot">
                     <div>Count</div>
                     <div>Colour</div>
@@ -472,24 +460,21 @@
         </div>
     </div>
 
-    <!-- 📌 3. SAVED DATA POPUP BUTTON -->
     <button type="button" class="popup-trigger-btn" onclick="openModal('savedListModal')">View Saved Warping Data</button>
 </div>
 
-<!-- 📌 Saved List Modal -->
+<!-- Saved List Modal -->
 <div id="savedListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Saved Warping Data</h3>
             <button class="close-btn" onclick="closeModal('savedListModal')">Close ✕</button>
         </div>
-        <div class="modal-body" id="savedCardsContainer">
-            <!-- Cards populate here -->
-        </div>
+        <div class="modal-body" id="savedCardsContainer"></div>
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
@@ -543,10 +528,10 @@ window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
+};
 window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
-}
+};
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('topDesignNo').value || localStorage.getItem('selected_design_number');
@@ -633,6 +618,7 @@ function addWarpingUnit() {
         if(!masterUnits.includes(val)) {
             masterUnits.push(val);
             localStorage.setItem('tex_master_warping_units', JSON.stringify(masterUnits));
+            if (window.firebaseSave) window.firebaseSave('tex_master_warping_units', masterUnits);
             loadWarpingUnitSuggestions();
             alert(`Unit '${val}' added successfully! ✅`);
         } else {
@@ -652,6 +638,7 @@ function deleteWarpingUnit() {
         if(idx >= 0 && idx < masterList.length) {
             let deleted = masterList.splice(idx, 1);
             localStorage.setItem('tex_master_warping_units', JSON.stringify(masterList));
+            if (window.firebaseSave) window.firebaseSave('tex_master_warping_units', masterList);
             loadWarpingUnitSuggestions();
             alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
         } else {
@@ -686,6 +673,7 @@ function addWeaver() {
         if(!masterWeavers.includes(val)) {
             masterWeavers.push(val);
             localStorage.setItem('tex_master_weavers', JSON.stringify(masterWeavers));
+            if (window.firebaseSave) window.firebaseSave('tex_master_weavers', masterWeavers);
             loadWeaverSuggestions();
             alert(`Weaver '${val}' added successfully! ✅`);
         } else {
@@ -705,6 +693,7 @@ function deleteWeaver() {
         if(idx >= 0 && idx < masterList.length) {
             let deleted = masterList.splice(idx, 1);
             localStorage.setItem('tex_master_weavers', JSON.stringify(masterList));
+            if (window.firebaseSave) window.firebaseSave('tex_master_weavers', masterList);
             loadWeaverSuggestions();
             alert(`'${deleted[0]}' நீக்கப்பட்டது! ✅`);
         } else {
@@ -739,14 +728,17 @@ function loadTopDesignDropdown() {
     preDesignList.forEach(d => allDesignSet.add(d));
 
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    designMasters.forEach(d => allDesignSet.add(d.name));
+    if (Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesignSet.add(d.name || d.designNo); });
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
     Object.keys(designSpecs).forEach(d => allDesignSet.add(d));
 
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    if (Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesignSet.add(o.designNumber || o.designNo); });
+
     let select = document.getElementById('topDesignNo');
     let html = '<option value="">Select Design</option>';
-    [...allDesignSet].forEach(d => { if(d) html += `<option value="${d}">${d}</option>`; });
+    Array.from(allDesignSet).filter(Boolean).forEach(d => { html += `<option value="${d}">${d}</option>`; });
     select.innerHTML = html;
 
     let activeDesign = localStorage.getItem('selected_design_number');
@@ -762,7 +754,7 @@ function loadTopDesignSpecs(dNo) {
         document.getElementById('topLinesContainer').innerHTML = '';
         document.getElementById('topDesignNo').value = '';
         document.getElementById('topUnit').value = '';
-        document.getElementById('topWeaverTo').value = '';
+        if(document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = '';
         document.getElementById('topReed').value = '';
         document.getElementById('topCount').value = '';
         document.getElementById('topOrderMtrs').value = '';
@@ -774,32 +766,32 @@ function loadTopDesignSpecs(dNo) {
     
     let cleanDNo = cleanDesignName(dNo);
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let found = Array.isArray(designMastersList) ? designMastersList.find(d => cleanDesignName(d.name || d.designNo) === cleanDNo) || {} : {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    let sp = specKey ? specs[specKey] : {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    let sp = specs[specKey] || {};
 
-    let specStatus = (sp && sp.status) ? sp.status.toLowerCase() : '';
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo) || {} : {};
+
+    let specStatus = (sp.status || matchedOrder.status || '').toLowerCase();
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-    let rec = issues.find(r => (r.designNo === dNo || r.designNumber === dNo));
+    let rec = issues.find(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
 
     let cb = document.getElementById('top_completed_status');
-    if(specStatus === 'completed' || (rec && rec.status.toLowerCase() === 'completed')) {
+    if(specStatus === 'completed' || (rec && (rec.status || '').toLowerCase() === 'completed')) {
         if(cb) cb.checked = true;
     } else {
         if(cb) cb.checked = false;
     }
 
-    let reed = found.reed || sp.reed || sp.baseReed || 52;
-    let count1 = found.count1 || sp.warp || '20';
+    let reed = matchedOrder.reed || found.reed || sp.reed || sp.baseReed || 52;
+    let count1 = matchedOrder.baseBeamCount || found.warp1 || sp.baseBeamCount || sp.warp || found.count1 || '20';
     
-    // 🌟 1. GET MASTER ORDER MTRS (e.g. 450) FROM YARN CALC
-    let masterOrderMtr = parseFloat(sp.yarnOrderMtr || sp.orderMtr || found.orderMtr) || 0;
+    let masterOrderMtr = parseFloat(matchedOrder.orderMtr || matchedOrder.productionMeter || matchedOrder.prodMtr || sp.yarnOrderMtr || sp.orderMtr || found.orderMtr) || 0;
     
-    // 🌟 2. SET EXACT ORDER MTRS (WITHOUT DEDUCTION)
     document.getElementById('topOrderMtrs').value = masterOrderMtr > 0 ? masterOrderMtr.toFixed(2) : '';
 
-    // 🌟 3. CALCULATE WARPING MTRS EXACTLY 5% LESS FROM THE ORIGINAL MTR
     let warpingMtrsCalc = masterOrderMtr > 0 ? (masterOrderMtr * 0.95) : 0;
 
     let existingIssues = issues.filter(i => cleanDesignName(i.designNo) === cleanDNo);
@@ -834,18 +826,20 @@ function loadTopYarnLines() {
 
     let cleanDNo = cleanDesignName(dNo);
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let found = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let found = Array.isArray(designMastersList) ? designMastersList.find(d => cleanDesignName(d.name || d.designNo) === cleanDNo) || {} : {};
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
-    let sp = specKey ? specs[specKey] : {};
+    let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+    let sp = specs[specKey] || {};
 
-    let reed = parseFloat(document.getElementById('topReed').value) || parseFloat(found.reed || sp.reed || sp.baseReed) || 52;
-    let baseWidth = parseFloat(found.width || sp.width || sp.baseWidth) || 66.92;
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo) || {} : {};
+
+    let reed = parseFloat(document.getElementById('topReed').value) || parseFloat(matchedOrder.reed || found.reed || sp.reed || sp.baseReed) || 52;
+    let baseWidth = parseFloat(matchedOrder.width || found.width || sp.width || sp.baseWidth) || 66.92;
     let totalWarpEnds = Math.round(reed * baseWidth);
     
-    // Using the editable Warping Mtrs for Weight calculation
     let warpingMts = parseFloat(document.getElementById('topWarpingMts').value) || 0;
-    let defaultWarpCount = found.count1 || sp.warp || '20';
+    let defaultWarpCount = matchedOrder.baseBeamCount || found.warp1 || sp.baseBeamCount || found.count1 || sp.warp || '20';
 
     let warpList = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
 
@@ -904,16 +898,16 @@ async function quickCompleteToggle() {
     }
 
     let statusText = isCompleted ? 'completed' : 'running';
+    let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
 
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     issues.forEach(r => {
-        if(r.designNo === dNo || r.designNumber === dNo) r.status = statusText;
+        if(cleanDesignName(r.designNo || r.designNumber) === cleanKey) r.status = statusText;
     });
 
     localStorage.setItem('warping_issue_records', JSON.stringify(issues));
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let cleanKey = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNo;
 
     if(!designSpecs[specKey]) designSpecs[specKey] = {};
@@ -1018,7 +1012,7 @@ async function saveTopOrder() {
         document.getElementById('topLinesContainer').innerHTML = '';
         document.getElementById('topDesignNo').value = '';
         document.getElementById('topUnit').value = '';
-        document.getElementById('topWeaverTo').value = '';
+        if(document.getElementById('topWeaverTo')) document.getElementById('topWeaverTo').value = '';
         document.getElementById('topReed').value = '';
         document.getElementById('topCount').value = '';
         document.getElementById('topOrderMtrs').value = '';
@@ -1043,7 +1037,7 @@ function loadBottomOrderDropdown() {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        let hasReceive = receives.some(r => r.issueId == issue.id);
+        let hasReceive = receives.some(r => String(r.issueId) === String(issue.id));
         return !hasReceive; 
     });
 
@@ -1092,7 +1086,7 @@ function loadBottomRows() {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
 
     let pendingItems = issues.filter(issue => {
-        let hasReceive = receives.some(r => r.issueId == issue.id);
+        let hasReceive = receives.some(r => String(r.issueId) === String(issue.id));
         return !hasReceive && issue.designNo === dNo && issue.unit === uName; 
     });
 
@@ -1173,7 +1167,7 @@ async function toggleStatus(id, newStatus) {
     let msg = newStatus === 'completed' ? "Change this order to Completed?" : "Change this order to Running?";
     if(confirm(msg)) {
         let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
-        let index = issues.findIndex(r => r.id == id);
+        let index = issues.findIndex(r => String(r.id) === String(id));
         
         if(index > -1) {
             issues[index].status = newStatus;
@@ -1181,13 +1175,19 @@ async function toggleStatus(id, newStatus) {
             
             let dNo = issues[index].designNo;
             if(dNo) {
+                let cleanDNo = cleanDesignName(dNo);
                 let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                if(!designSpecs[dNo]) designSpecs[dNo] = {};
-                designSpecs[dNo].status = newStatus;
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
+
+                if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                designSpecs[specKey].status = newStatus;
                 localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
                 if(window.firebaseSave) {
                     await window.firebaseSave('design_specs', designSpecs);
+                }
+                if(window.firebaseSaveIndividual) {
+                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
                 }
             }
 
@@ -1206,7 +1206,7 @@ async function editWarpingRecord(issueId, isReceived) {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     
     if (isReceived) {
-        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        let recIndex = receives.findIndex(r => String(r.issueId) === String(issueId));
         if(recIndex !== -1) {
             let recRecord = receives[recIndex];
             receives.splice(recIndex, 1);
@@ -1223,7 +1223,7 @@ async function editWarpingRecord(issueId, isReceived) {
             setTimeout(() => {
                 let rows = document.querySelectorAll('#botLinesContainer .line-row-bot');
                 rows.forEach(row => {
-                    if(row.getAttribute('data-id') == issueId) {
+                    if(String(row.getAttribute('data-id')) === String(issueId)) {
                         row.querySelector('.b-received').value = recRecord.receivedWt;
                     }
                 });
@@ -1232,7 +1232,7 @@ async function editWarpingRecord(issueId, isReceived) {
             renderCards();
         }
     } else {
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        let issueIndex = issues.findIndex(iss => String(iss.id) === String(issueId));
         if(issueIndex !== -1) {
             let issRecord = issues[issueIndex];
             issues.splice(issueIndex, 1);
@@ -1274,10 +1274,10 @@ async function deleteWarpingRecord(issueId, isReceived) {
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     
     if (isReceived) {
-        let recIndex = receives.findIndex(r => r.issueId == issueId);
+        let recIndex = receives.findIndex(r => String(r.issueId) === String(issueId));
         if(recIndex !== -1) receives.splice(recIndex, 1);
     } else {
-        let issueIndex = issues.findIndex(iss => iss.id == issueId);
+        let issueIndex = issues.findIndex(iss => String(iss.id) === String(issueId));
         if(issueIndex !== -1) issues.splice(issueIndex, 1);
     }
     
@@ -1300,7 +1300,7 @@ function renderCards() {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     let activeDesign = document.getElementById('topDesignNo').value;
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
 
     let container = document.getElementById('savedCardsContainer');
     if(!container) return;
@@ -1344,11 +1344,11 @@ function renderCards() {
             bitmapUrl = designSpecs[specKey].bitmap;
         }
 
-        let imgTag = bitmapUrl ? `<img src="${bitmapUrl}" class="warp-card-img" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : `<div style="width:45px; height:45px; background:#EAF0EA; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#4A7C59; font-weight:bold;">No Img</div>`;
+        let imgTag = bitmapUrl ? `<img src="${bitmapUrl}" class="warp-card-img" onclick="openFullscreenImage('${bitmapUrl}')" title="Click to zoom">` : `<div style="width:38px; height:38px; background:#EAF0EA; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:8px; color:#4A7C59; font-weight:bold;">No Img</div>`;
 
         let subTableRows = '';
         group.items.forEach((item, index) => {
-            let matchingRecs = receives.filter(r => r.issueId == item.id);
+            let matchingRecs = receives.filter(r => String(r.issueId) === String(item.id));
             let rcvdTotal = matchingRecs.reduce((sum, r) => sum + parseFloat(r.receivedWt||0), 0);
             
             let rcvWtStr = rcvdTotal > 0 ? `<b style="color:#10B981;">${rcvdTotal.toFixed(3)}</b>` : `<span class="status-pending">Pending</span>`;
@@ -1366,13 +1366,13 @@ function renderCards() {
 
             subTableRows += `
                 <tr>
-                    <td style="width: 45px;">${index + 1}</td>
-                    <td style="width: 70px;"><b>${item.count}</b></td>
+                    <td style="width: 35px;">${index + 1}</td>
+                    <td style="width: 60px;"><b>${item.count}</b></td>
                     <td>${item.color}</td>
-                    <td style="width: 80px;">${item.orderWt}</td>
-                    <td style="width: 85px;"><b>${item.issueWt}</b></td>
-                    <td style="width: 85px;">${rcvWtStr}</td>
-                    <td style="width: 75px;">${excessStr}</td>
+                    <td style="width: 70px;">${item.orderWt}</td>
+                    <td style="width: 75px;"><b>${item.issueWt}</b></td>
+                    <td style="width: 75px;">${rcvWtStr}</td>
+                    <td style="width: 65px;">${excessStr}</td>
                 </tr>
             `;
         });
@@ -1385,19 +1385,19 @@ function renderCards() {
         card.className = 'saved-warp-card';
         card.innerHTML = `
             <div class="saved-warp-top">
-                <div style="display:flex; align-items:center; gap:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
                     ${imgTag}
                     <div>
-                        <div style="font-size:12px; font-weight:800; color:#2F4F38;">${group.designNo}</div>
-                        <div style="font-size:10px; color:#64748B;">Date: ${dateStr}</div>
+                        <div style="font-size:11px; font-weight:800; color:#2F4F38;">${group.designNo}</div>
+                        <div style="font-size:9px; color:#64748B;">Date: ${dateStr}</div>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:10px; font-weight:700; text-transform:uppercase; background:${group.status === 'completed' ? '#ECFDF5' : '#FFFBEB'}; color:${group.status === 'completed' ? '#059669' : '#D97706'}; padding:4px 8px; border-radius:6px; border:1px solid currentColor;">${group.status}</span>
+                    <span style="font-size:9px; font-weight:700; text-transform:uppercase; background:${group.status === 'completed' ? '#ECFDF5' : '#FFFBEB'}; color:${group.status === 'completed' ? '#059669' : '#D97706'}; padding:3px 6px; border-radius:6px; border:1px solid currentColor;">${group.status}</span>
                 </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; color: #1E2B23; background:#F8FAF8; padding:8px; border-radius:8px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 10px; color: #1E2B23; background:#F8FAF8; padding:6px; border-radius:6px;">
                 <div><span>Warping Name:</span> <b>${group.unit || '-'}</b></div>
                 <div><span>Weaver To:</span> <b>${group.weaverTo || '-'}</b></div>
                 <div><span>Warping Mtr:</span> <b>${group.warpingMts || '-'} Mts</b></div>
@@ -1407,13 +1407,13 @@ function renderCards() {
                 <table class="warp-sub-table">
                     <thead>
                         <tr>
-                            <th style="width: 45px;">S.No</th>
-                            <th style="width: 70px;">Count</th>
+                            <th style="width: 35px;">S.No</th>
+                            <th style="width: 60px;">Count</th>
                             <th>Colour</th>
-                            <th style="width: 80px;">Order Wt</th>
-                            <th style="width: 85px;">Issued Wt</th>
-                            <th style="width: 85px;">Rcvd Wt</th>
-                            <th style="width: 75px;">Excess</th>
+                            <th style="width: 70px;">Order Wt</th>
+                            <th style="width: 75px;">Issued Wt</th>
+                            <th style="width: 75px;">Rcvd Wt</th>
+                            <th style="width: 65px;">Excess</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1494,10 +1494,10 @@ async function deleteWarpingGroup(dNo, unitName) {
     let issues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
     let receives = JSON.parse(localStorage.getItem('warping_receive_records')) || [];
     
-    let targetIds = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName).map(i => i.id);
+    let targetIds = issues.filter(i => cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName).map(i => String(i.id));
     
     issues = issues.filter(i => !(cleanDesignName(i.designNo) === cleanDesignName(dNo) && i.unit === unitName));
-    receives = receives.filter(r => !targetIds.includes(parseFloat(r.issueId)));
+    receives = receives.filter(r => !targetIds.includes(String(r.issueId)));
     
     localStorage.setItem('warping_receive_records', JSON.stringify(receives));
     localStorage.setItem('warping_issue_records', JSON.stringify(issues));
@@ -1511,7 +1511,5 @@ async function deleteWarpingGroup(dNo, unitName) {
     renderCards();
 }
 </script>
-<script src="config.js"></script>
-    
 </body>
 </html>

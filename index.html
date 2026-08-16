@@ -3,295 +3,1354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>TEXFRIEND - Premium Portal</title>
+
+    <!-- IMPORTANT:
+         config.js must load before other application scripts -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { 
-            width: 100%; 
-            min-height: 100vh; 
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
             background: #030705;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(74, 124, 89, 0.35) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(20, 35, 25, 0.8) 0%, transparent 55%),
-                linear-gradient(135deg, #030705 0%, #0B130F 100%);
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
+
+            background-image:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(74, 124, 89, 0.35) 0%,
+                    transparent 45%
+                ),
+                radial-gradient(
+                    circle at 85% 85%,
+                    rgba(20, 35, 25, 0.8) 0%,
+                    transparent 55%
+                ),
+                linear-gradient(
+                    135deg,
+                    #030705 0%,
+                    #0B130F 100%
+                );
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
         }
 
-        /* 🌈 Multi-color Glow Animation */
+        /* =====================================================
+           MULTI COLOR GLOW
+        ===================================================== */
+
         @keyframes multiColorGlow {
-            0% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), 0 0 50px rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
-            33% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.5), 0 0 50px rgba(168, 85, 247, 0.2); border-color: #A855F7; }
-            66% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.5), 0 0 50px rgba(236, 72, 153, 0.2); border-color: #EC4899; }
-            100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), 0 0 50px rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
+
+            0% {
+                box-shadow:
+                    0 0 25px rgba(56, 189, 248, 0.5),
+                    0 0 50px rgba(56, 189, 248, 0.2);
+
+                border-color: #38BDF8;
+            }
+
+            33% {
+                box-shadow:
+                    0 0 25px rgba(168, 85, 247, 0.5),
+                    0 0 50px rgba(168, 85, 247, 0.2);
+
+                border-color: #A855F7;
+            }
+
+            66% {
+                box-shadow:
+                    0 0 25px rgba(236, 72, 153, 0.5),
+                    0 0 50px rgba(236, 72, 153, 0.2);
+
+                border-color: #EC4899;
+            }
+
+            100% {
+                box-shadow:
+                    0 0 25px rgba(56, 189, 248, 0.5),
+                    0 0 50px rgba(56, 189, 248, 0.2);
+
+                border-color: #38BDF8;
+            }
         }
 
-        .login-card { 
-            width: 100%; 
-            max-width: 480px; 
+        /* =====================================================
+           LOGIN CARD
+        ===================================================== */
+
+        .login-card {
+            width: 100%;
+            max-width: 480px;
             min-width: 320px;
-            background: rgba(14, 24, 18, 0.85); 
+
+            background: rgba(14, 24, 18, 0.85);
+
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            border-radius: 32px; 
-            padding: 40px 32px; 
-            border: 1.5px solid rgba(82, 110, 81, 0.6); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 22px; 
-            animation: multiColorGlow 6s infinite alternate, scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+            border-radius: 32px;
+
+            padding: 40px 32px;
+
+            border: 1.5px solid rgba(82, 110, 81, 0.6);
+
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+
+            animation:
+                multiColorGlow 6s infinite alternate,
+                scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes scaleIn {
-            from { opacity: 0; transform: translateY(15px) scale(0.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .logo-area { text-align: center; }
+        /* =====================================================
+           LOGO
+        ===================================================== */
+
+        .logo-area {
+            text-align: center;
+        }
+
         .logo-badge {
-            width: 80px; height: 80px; 
-            background: linear-gradient(135deg, #528963, #2C4A35); 
+            width: 80px;
+            height: 80px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #528963,
+                    #2C4A35
+                );
+
             border-radius: 24px;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 38px;
-            box-shadow: 0 12px 30px rgba(74, 124, 89, 0.6); 
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 38px;
+
+            box-shadow:
+                0 12px 30px rgba(74, 124, 89, 0.6);
+
             margin-bottom: 14px;
+
             border: 1.5px solid rgba(255, 255, 255, 0.3);
-            animation: pulseGlow 3s infinite alternate;
+
+            animation:
+                pulseGlow 3s infinite alternate;
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 15px rgba(74, 124, 89, 0.4); }
-            100% { box-shadow: 0 0 30px rgba(74, 124, 89, 0.8); }
+
+            0% {
+                box-shadow:
+                    0 0 15px rgba(74, 124, 89, 0.4);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 30px rgba(74, 124, 89, 0.8);
+            }
         }
 
-        .logo-area h2 { font-size: 28px; color: #FFFFFF; font-weight: 800; letter-spacing: 1.8px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .logo-area p { font-size: 13px; color: #A3C1B2; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .logo-area h2 {
+            font-size: 28px;
+            color: #FFFFFF;
 
-        .role-tabs { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            background: rgba(11, 19, 15, 0.9); 
-            border-radius: 16px; 
-            padding: 5px; 
-            gap: 6px; 
-            border: 1px solid rgba(82, 110, 81, 0.4);
-        }
-        .role-btn { 
-            background: transparent; 
-            border: none; 
-            padding: 12px; 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: #8CA899; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-        }
-        /* 👑 Crown / Admin Tab Glow Added */
-        .role-btn.active { 
-            animation: multiColorGlow 3s infinite alternate;
-            color: #FFFFFF; 
+            font-weight: 800;
+
+            letter-spacing: 1.8px;
+
+            text-shadow:
+                0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 7px; }
-        .form-group label { font-size: 13px; font-weight: 700; color: #C2D6CC; letter-spacing: 0.5px; }
-        
-        .input-box { 
-            width: 100%; 
-            padding: 16px 20px; 
-            border-radius: 16px; 
-            border: 1.5px solid rgba(82, 110, 81, 0.55); 
-            background: rgba(8, 14, 11, 0.95); 
-            color: #FFFFFF; 
-            font-size: 15px; 
-            font-weight: 600; 
-            outline: none; 
-            transition: all 0.3s ease;
+        .logo-area p {
+            font-size: 13px;
+
+            color: #A3C1B2;
+
+            font-weight: 600;
+
+            margin-top: 4px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
         }
-        .input-box::placeholder { color: #4E695D; }
+
+        /* =====================================================
+           ROLE TABS
+        ===================================================== */
+
+        .role-tabs {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            background: rgba(11, 19, 15, 0.9);
+
+            border-radius: 16px;
+
+            padding: 5px;
+
+            gap: 6px;
+
+            border:
+                1px solid rgba(82, 110, 81, 0.4);
+        }
+
+        .role-btn {
+            background: transparent;
+
+            border: none;
+
+            padding: 12px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #8CA899;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .role-btn:hover {
+            color: #FFFFFF;
+
+            background:
+                rgba(82, 137, 99, 0.15);
+        }
+
+        .role-btn.active {
+            animation:
+                multiColorGlow 3s infinite alternate;
+
+            color: #FFFFFF;
+
+            background:
+                rgba(82, 137, 99, 0.12);
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #C2D6CC;
+
+            letter-spacing: 0.5px;
+        }
+
+        .input-box {
+            width: 100%;
+
+            padding: 16px 20px;
+
+            border-radius: 16px;
+
+            border:
+                1.5px solid rgba(82, 110, 81, 0.55);
+
+            background:
+                rgba(8, 14, 11, 0.95);
+
+            color: #FFFFFF;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            outline: none;
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .input-box::placeholder {
+            color: #4E695D;
+        }
+
         .input-box:focus {
             border-color: #528963;
-            background: rgba(8, 14, 11, 1);
-            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.35), 0 0 20px rgba(74, 124, 89, 0.2);
+
+            background:
+                rgba(8, 14, 11, 1);
+
+            box-shadow:
+                0 0 0 4px rgba(74, 124, 89, 0.35),
+                0 0 20px rgba(74, 124, 89, 0.2);
         }
+
+        /* =====================================================
+           OPTIONS
+        ===================================================== */
 
         .options-row {
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             font-size: 14px;
+
             color: #A3C1B2;
+
             font-weight: 600;
         }
+
         .remember-me {
             display: flex;
+
             align-items: center;
+
             gap: 10px;
+
             cursor: pointer;
         }
+
         .remember-me input {
-            width: 18px; height: 18px; accent-color: #4A7C59; cursor: pointer; border-radius: 4px;
+            width: 18px;
+            height: 18px;
+
+            accent-color: #4A7C59;
+
+            cursor: pointer;
+
+            border-radius: 4px;
         }
 
-        .login-submit-btn { 
-            width: 100%; 
-            background: linear-gradient(135deg, #528963, #33593D); 
-            color: white; 
-            border: none; 
-            padding: 18px; 
-            border-radius: 16px; 
-            font-size: 16px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            box-shadow: 0 10px 30px rgba(74, 124, 89, 0.5); 
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-top: 4px; 
+        /* =====================================================
+           LOGIN BUTTON
+        ===================================================== */
+
+        .login-submit-btn {
+            width: 100%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #528963,
+                    #33593D
+                );
+
+            color: white;
+
             border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .login-submit-btn:hover {
-            animation: multiColorGlow 1.5s infinite;
+
+            padding: 18px;
+
+            border-radius: 16px;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 30px rgba(74, 124, 89, 0.5);
+
+            transition:
+                all 0.3s ease;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.2px;
+
+            margin-top: 4px;
         }
 
-        .error-msg { 
-            color: #FF6B6B; 
-            background: rgba(255, 107, 107, 0.12); 
-            padding: 12px; 
-            border-radius: 12px; 
-            font-size: 14px; 
-            text-align: center; 
-            font-weight: 700; 
-            display: none; 
-            border: 1px solid rgba(255, 107, 107, 0.35);
+        .login-submit-btn:hover {
+            transform: translateY(-1px);
+
+            animation:
+                multiColorGlow 1.5s infinite;
+        }
+
+        .login-submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        .login-submit-btn:disabled {
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            animation: none;
+        }
+
+        /* =====================================================
+           ERROR MESSAGE
+        ===================================================== */
+
+        .error-msg {
+            color: #FF6B6B;
+
+            background:
+                rgba(255, 107, 107, 0.12);
+
+            padding: 12px;
+
+            border-radius: 12px;
+
+            font-size: 14px;
+
+            text-align: center;
+
+            font-weight: 700;
+
+            display: none;
+
+            border:
+                1px solid rgba(255, 107, 107, 0.35);
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .login-card {
+                min-width: 0;
+
+                width: 100%;
+
+                padding:
+                    30px 20px;
+
+                border-radius: 26px;
+
+                gap: 19px;
+            }
+
+            .logo-badge {
+                width: 70px;
+                height: 70px;
+
+                font-size: 32px;
+            }
+
+            .logo-area h2 {
+                font-size: 24px;
+            }
+
+            .input-box {
+                padding:
+                    15px 16px;
+            }
+
+            .login-submit-btn {
+                padding: 17px;
+            }
         }
     </style>
 </head>
+
 <body>
+
 <div class="login-card">
+
+    <!-- =====================================================
+         LOGO
+    ====================================================== -->
+
     <div class="logo-area">
-        <div class="logo-badge">👑</div>
+
+        <div class="logo-badge">
+            👑
+        </div>
+
         <h2>TEXFRIEND</h2>
-        <p id="subtitleText">Secure Access Portal</p>
+
+        <p id="subtitleText">
+            Secure Access Portal
+        </p>
+
     </div>
+
+
+    <!-- =====================================================
+         ROLE SELECTOR
+    ====================================================== -->
 
     <div class="role-tabs">
-        <button type="button" class="role-btn active" id="adminTab" onclick="switchRole('admin')">👑 Admin</button>
-        <button type="button" class="role-btn" id="userTab" onclick="switchRole('user')">👤 User</button>
+
+        <button
+            type="button"
+            class="role-btn active"
+            id="adminTab"
+            onclick="switchRole('admin')">
+
+            👑 Admin
+
+        </button>
+
+        <button
+            type="button"
+            class="role-btn"
+            id="userTab"
+            onclick="switchRole('user')">
+
+            👤 User
+
+        </button>
+
     </div>
 
-    <div class="form-group">
-        <label id="usernameLabel">Admin User Name</label>
-        <input type="text" id="loginUser" class="input-box" placeholder="Enter username" autocomplete="username">
-    </div>
+
+    <!-- =====================================================
+         USERNAME
+    ====================================================== -->
 
     <div class="form-group">
-        <label>Password / கடவுச்சொல்</label>
-        <input type="password" id="loginPass" class="input-box" placeholder="Enter password" autocomplete="current-password">
+
+        <label
+            id="usernameLabel"
+            for="loginUser">
+
+            Admin User Name
+
+        </label>
+
+        <input
+            type="text"
+            id="loginUser"
+            class="input-box"
+            placeholder="Enter username"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false">
+
     </div>
+
+
+    <!-- =====================================================
+         PASSWORD
+    ====================================================== -->
+
+    <div class="form-group">
+
+        <label for="loginPass">
+            Password / கடவுச்சொல்
+        </label>
+
+        <input
+            type="password"
+            id="loginPass"
+            class="input-box"
+            placeholder="Enter password"
+            autocomplete="current-password">
+
+    </div>
+
+
+    <!-- =====================================================
+         REMEMBER ME
+    ====================================================== -->
 
     <div class="options-row">
-        <label class="remember-me">
-            <input type="checkbox" id="rememberMe"> Remember Me
+
+        <label
+            class="remember-me"
+            for="rememberMe">
+
+            <input
+                type="checkbox"
+                id="rememberMe">
+
+            Remember Me
+
         </label>
+
     </div>
 
-    <div class="error-msg" id="errorMsg">⚠️ தவறான Username அல்லது Password!</div>
-    <button type="button" class="login-submit-btn" onclick="validateLogin()">Login / உள்நுழை</button>
+
+    <!-- =====================================================
+         ERROR
+    ====================================================== -->
+
+    <div
+        class="error-msg"
+        id="errorMsg"
+        role="alert"
+        aria-live="polite">
+
+        ⚠️ தவறான Username அல்லது Password!
+
+    </div>
+
+
+    <!-- =====================================================
+         LOGIN BUTTON
+    ====================================================== -->
+
+    <button
+        type="button"
+        class="login-submit-btn"
+        id="loginButton"
+        onclick="validateLogin()">
+
+        Login / உள்நுழை
+
+    </button>
+
 </div>
 
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    let savedUser = localStorage.getItem('erp_remembered_user');
-    if(savedUser) {
-        document.getElementById('loginUser').value = savedUser;
-        document.getElementById('rememberMe').checked = true;
-    }
-});
 
-let currentRole = 'admin';
-function switchRole(role) {
-    currentRole = role;
-    let adminBtn = document.getElementById('adminTab');
-    let userBtn = document.getElementById('userTab');
-    let userLabel = document.getElementById('usernameLabel');
-    let subText = document.getElementById('subtitleText');
-    document.getElementById('errorMsg').style.display = 'none';
-    document.getElementById('loginPass').value = '';
-    
-    if(role === 'admin') {
-        adminBtn.classList.add('active'); userBtn.classList.remove('active');
-        userLabel.innerText = "Admin User Name"; subText.innerText = "Administrator Access Portal";
-    } else {
-        userBtn.classList.add('active'); adminBtn.classList.remove('active');
-        userLabel.innerText = "Staff / User Name"; subText.innerText = "Standard Operator Portal";
-    }
-}
+/* ============================================================
+   TEXFRIEND LOGIN SYSTEM
+   SAFE / ERROR-PROTECTED VERSION
+============================================================ */
 
-function validateLogin() {
-    let u = document.getElementById('loginUser').value.trim();
-    let p = document.getElementById('loginPass').value.trim();
-    let err = document.getElementById('errorMsg');
-    let remember = document.getElementById('rememberMe').checked;
-    
-    if(!u || !p) { 
-        err.innerText = "⚠️ அனைத்து விவரங்களையும் நிரப்பவும்!"; 
-        err.style.display = 'block'; 
-        return; 
-    }
+(function () {
 
-    if(remember) {
-        localStorage.setItem('erp_remembered_user', u);
-    } else {
-        localStorage.removeItem('erp_remembered_user');
-    }
+    "use strict";
 
-    let systemUsers = JSON.parse(localStorage.getItem('erp_system_users')) || [];
-    let cleanU = u.toLowerCase();
-    
-    if(currentRole === 'admin') {
-        let dynamicAdmin = systemUsers.find(usr => 
-            usr.username.toLowerCase() === cleanU && 
-            usr.password === p && 
-            (usr.role === 'Administrator' || usr.role === 'Admin')
-        );
 
-        if((cleanU === 'kumar' && p === '1972') || dynamicAdmin) {
-            localStorage.setItem('erp_logged_role', 'Administrator');
-            localStorage.setItem('user_role', 'Administrator');
-            localStorage.setItem('erp_logged_user', u);
-            localStorage.setItem('username', u);
-            window.location.href = "dashboard.html";
-        } else { 
-            err.innerText = "⚠️ தவறான அட்மின் விவரங்கள்!"; 
-            err.style.display = 'block'; 
+    /* ========================================================
+       SAFE LOCAL STORAGE
+    ======================================================== */
+
+    function safeGetItem(key) {
+
+        try {
+            return localStorage.getItem(key);
         }
-    } else {
-        let validUser = systemUsers.find(usr => 
-            usr.username.toLowerCase() === cleanU && 
-            usr.password === p
-        );
 
-        if(validUser || (cleanU === 'kumar' && p === '1972')) { 
-            let assignedRole = validUser ? validUser.role : 'Standard User';
-            localStorage.setItem('erp_logged_role', assignedRole);
-            localStorage.setItem('user_role', assignedRole);
-            localStorage.setItem('erp_logged_user', u);
-            localStorage.setItem('username', u);
-            window.location.href = "dashboard.html";
-        } else { 
-            err.innerText = "⚠️ தவறான யூசர் விவரங்கள்!"; 
-            err.style.display = 'block'; 
+        catch (error) {
+
+            console.warn(
+                "LocalStorage read failed:",
+                error
+            );
+
+            return null;
         }
     }
-}
+
+
+    function safeSetItem(key, value) {
+
+        try {
+
+            localStorage.setItem(
+                key,
+                String(value)
+            );
+
+            return true;
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "LocalStorage write failed:",
+                error
+            );
+
+            return false;
+        }
+    }
+
+
+    function safeRemoveItem(key) {
+
+        try {
+
+            localStorage.removeItem(key);
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "LocalStorage remove failed:",
+                error
+            );
+        }
+    }
+
+
+    /* ========================================================
+       SAFE JSON PARSER
+    ======================================================== */
+
+    function safeParseJSON(value, fallback) {
+
+        if (!value) {
+            return fallback;
+        }
+
+        try {
+
+            const parsed =
+                JSON.parse(value);
+
+            return parsed;
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Invalid stored JSON:",
+                error
+            );
+
+            return fallback;
+        }
+    }
+
+
+    /* ========================================================
+       DOM ELEMENTS
+    ======================================================== */
+
+    function getElement(id) {
+
+        return document.getElementById(id);
+
+    }
+
+
+    /* ========================================================
+       ERROR DISPLAY
+    ======================================================== */
+
+    function showError(message) {
+
+        const errorBox =
+            getElement("errorMsg");
+
+        if (!errorBox) {
+            return;
+        }
+
+        errorBox.textContent =
+            message;
+
+        errorBox.style.display =
+            "block";
+    }
+
+
+    function hideError() {
+
+        const errorBox =
+            getElement("errorMsg");
+
+        if (!errorBox) {
+            return;
+        }
+
+        errorBox.style.display =
+            "none";
+    }
+
+
+    /* ========================================================
+       INITIALIZE LOGIN PAGE
+    ======================================================== */
+
+    function initializeLogin() {
+
+        const savedUser =
+            safeGetItem(
+                "erp_remembered_user"
+            );
+
+        const usernameInput =
+            getElement("loginUser");
+
+        const rememberCheckbox =
+            getElement("rememberMe");
+
+        if (
+            savedUser &&
+            usernameInput &&
+            rememberCheckbox
+        ) {
+
+            usernameInput.value =
+                savedUser;
+
+            rememberCheckbox.checked =
+                true;
+        }
+
+
+        /* Focus username */
+
+        if (
+            usernameInput &&
+            !usernameInput.value
+        ) {
+
+            setTimeout(function () {
+
+                usernameInput.focus();
+
+            }, 200);
+        }
+
+
+        /* Enter key */
+
+        const passwordInput =
+            getElement("loginPass");
+
+        if (passwordInput) {
+
+            passwordInput.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        validateLogin();
+                    }
+
+                }
+            );
+        }
+
+    }
+
+
+    /* ========================================================
+       SWITCH ROLE
+    ======================================================== */
+
+    window.switchRole = function (role) {
+
+        if (
+            role !== "admin" &&
+            role !== "user"
+        ) {
+            return;
+        }
+
+
+        window.currentRole =
+            role;
+
+
+        const adminBtn =
+            getElement("adminTab");
+
+        const userBtn =
+            getElement("userTab");
+
+        const userLabel =
+            getElement("usernameLabel");
+
+        const subText =
+            getElement("subtitleText");
+
+        const passwordInput =
+            getElement("loginPass");
+
+
+        hideError();
+
+
+        if (passwordInput) {
+            passwordInput.value = "";
+        }
+
+
+        if (role === "admin") {
+
+            if (adminBtn) {
+                adminBtn.classList.add("active");
+            }
+
+            if (userBtn) {
+                userBtn.classList.remove("active");
+            }
+
+            if (userLabel) {
+                userLabel.textContent =
+                    "Admin User Name";
+            }
+
+            if (subText) {
+                subText.textContent =
+                    "Administrator Access Portal";
+            }
+
+        }
+
+        else {
+
+            if (userBtn) {
+                userBtn.classList.add("active");
+            }
+
+            if (adminBtn) {
+                adminBtn.classList.remove("active");
+            }
+
+            if (userLabel) {
+                userLabel.textContent =
+                    "Staff / User Name";
+            }
+
+            if (subText) {
+                subText.textContent =
+                    "Standard Operator Portal";
+            }
+        }
+
+    };
+
+
+    /* ========================================================
+       GET SYSTEM USERS
+    ======================================================== */
+
+    function getSystemUsers() {
+
+        const rawUsers =
+            safeGetItem(
+                "erp_system_users"
+            );
+
+        const parsedUsers =
+            safeParseJSON(
+                rawUsers,
+                []
+            );
+
+
+        if (!Array.isArray(parsedUsers)) {
+
+            console.warn(
+                "erp_system_users is not an array."
+            );
+
+            return [];
+        }
+
+
+        return parsedUsers;
+
+    }
+
+
+    /* ========================================================
+       VALIDATE LOGIN
+    ======================================================== */
+
+    window.validateLogin = function () {
+
+        const usernameInput =
+            getElement("loginUser");
+
+        const passwordInput =
+            getElement("loginPass");
+
+        const rememberCheckbox =
+            getElement("rememberMe");
+
+        const loginButton =
+            getElement("loginButton");
+
+
+        if (
+            !usernameInput ||
+            !passwordInput
+        ) {
+
+            console.error(
+                "Login form elements are missing."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Username can safely trim.
+         * Password is intentionally NOT trimmed.
+         */
+
+        const username =
+            usernameInput.value.trim();
+
+        const password =
+            passwordInput.value;
+
+        const remember =
+            rememberCheckbox
+                ? rememberCheckbox.checked
+                : false;
+
+
+        /* ====================================================
+           EMPTY VALIDATION
+        ==================================================== */
+
+        if (!username || !password) {
+
+            showError(
+                "⚠️ அனைத்து விவரங்களையும் நிரப்பவும்!"
+            );
+
+            if (!username) {
+
+                usernameInput.focus();
+
+            }
+
+            else {
+
+                passwordInput.focus();
+
+            }
+
+            return;
+        }
+
+
+        /* ====================================================
+           REMEMBER USER
+        ==================================================== */
+
+        if (remember) {
+
+            safeSetItem(
+                "erp_remembered_user",
+                username
+            );
+
+        }
+
+        else {
+
+            safeRemoveItem(
+                "erp_remembered_user"
+            );
+        }
+
+
+        /* ====================================================
+           PREVENT DOUBLE CLICK
+        ==================================================== */
+
+        if (loginButton) {
+
+            loginButton.disabled = true;
+
+            loginButton.textContent =
+                "Checking... / சரிபார்க்கிறது...";
+        }
+
+
+        const systemUsers =
+            getSystemUsers();
+
+        const cleanUsername =
+            username.toLowerCase();
+
+
+        /* ====================================================
+           ADMIN LOGIN
+        ==================================================== */
+
+        if (
+            window.currentRole === "admin"
+        ) {
+
+            const dynamicAdmin =
+                systemUsers.find(function (usr) {
+
+                    if (!usr || typeof usr !== "object") {
+                        return false;
+                    }
+
+                    const storedUsername =
+                        typeof usr.username === "string"
+                            ? usr.username.toLowerCase()
+                            : "";
+
+                    return (
+                        storedUsername === cleanUsername &&
+                        usr.password === password &&
+                        (
+                            usr.role === "Administrator" ||
+                            usr.role === "Admin"
+                        )
+                    );
+
+                });
+
+
+            /*
+             * Existing master admin login
+             */
+
+            const masterAdmin =
+                cleanUsername === "kumar" &&
+                password === "1972";
+
+
+            if (
+                masterAdmin ||
+                dynamicAdmin
+            ) {
+
+                const loggedRole =
+                    "Administrator";
+
+
+                safeSetItem(
+                    "erp_logged_role",
+                    loggedRole
+                );
+
+                safeSetItem(
+                    "user_role",
+                    loggedRole
+                );
+
+                safeSetItem(
+                    "erp_logged_user",
+                    username
+                );
+
+                safeSetItem(
+                    "username",
+                    username
+                );
+
+
+                /* Redirect */
+
+                window.location.href =
+                    "dashboard.html";
+
+                return;
+            }
+
+
+            /* Invalid Admin */
+
+            showError(
+                "⚠️ தவறான அட்மின் விவரங்கள்!"
+            );
+
+
+            resetLoginButton();
+
+            passwordInput.focus();
+
+            return;
+        }
+
+
+        /* ====================================================
+           USER / STAFF LOGIN
+        ==================================================== */
+
+        const validUser =
+            systemUsers.find(function (usr) {
+
+                if (!usr || typeof usr !== "object") {
+                    return false;
+                }
+
+                const storedUsername =
+                    typeof usr.username === "string"
+                        ? usr.username.toLowerCase()
+                        : "";
+
+                return (
+                    storedUsername === cleanUsername &&
+                    usr.password === password
+                );
+
+            });
+
+
+        /*
+         * Master login also allowed for User tab,
+         * preserving your original behaviour.
+         */
+
+        const masterUser =
+            cleanUsername === "kumar" &&
+            password === "1972";
+
+
+        if (
+            validUser ||
+            masterUser
+        ) {
+
+            const assignedRole =
+                validUser && validUser.role
+                    ? validUser.role
+                    : "Standard User";
+
+
+            safeSetItem(
+                "erp_logged_role",
+                assignedRole
+            );
+
+            safeSetItem(
+                "user_role",
+                assignedRole
+            );
+
+            safeSetItem(
+                "erp_logged_user",
+                username
+            );
+
+            safeSetItem(
+                "username",
+                username
+            );
+
+
+            window.location.href =
+                "dashboard.html";
+
+            return;
+        }
+
+
+        /* Invalid User */
+
+        showError(
+            "⚠️ தவறான யூசர் விவரங்கள்!"
+        );
+
+
+        resetLoginButton();
+
+        passwordInput.focus();
+
+    };
+
+
+    /* ========================================================
+       RESET LOGIN BUTTON
+    ======================================================== */
+
+    function resetLoginButton() {
+
+        const loginButton =
+            getElement("loginButton");
+
+        if (!loginButton) {
+            return;
+        }
+
+        loginButton.disabled =
+            false;
+
+        loginButton.textContent =
+            "Login / உள்நுழை";
+    }
+
+
+    /* ========================================================
+       GLOBAL ROLE
+    ======================================================== */
+
+    window.currentRole =
+        "admin";
+
+
+    /* ========================================================
+       PAGE LOAD
+    ======================================================== */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeLogin
+        );
+
+    }
+
+    else {
+
+        initializeLogin();
+
+    }
+
+})();
 </script>
-<script src="config.js"></script>
+
 </body>
 </html>

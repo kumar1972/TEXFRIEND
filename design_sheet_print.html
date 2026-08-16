@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Design Sheet Print - TEXFRIEND </title>
+<title>Design Sheet Print - TEXFRIEND</title>
+<!-- IMPORTANT: config.js must load first -->
+<script src="config.js"></script>
 <script src="translator.js"></script>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -537,16 +539,22 @@ function translateColorToTamil(colorName) {
 
 function initDropdown() {
     let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    
+    let masterNames = Array.isArray(designMastersList) ? designMastersList.map(d => d.name || d.designNo).filter(Boolean) : [];
+    let combined = Array.from(new Set([...preDesignList, ...masterNames, ...Object.keys(specs)]));
+
     let select = document.getElementById('designNumber');
     let html = '<option value="">டிசைனைத் தேர்ந்தெடுக்கவும்</option>';
     
-    preDesignList.forEach(function(d) {
-        html += `<option value="${d}">${d}</option>`;
+    combined.forEach(function(d) {
+        if(d) html += `<option value="${d}">${d}</option>`;
     });
     select.innerHTML = html;
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && preDesignList.includes(activeDesign)) {
+    if(activeDesign && combined.includes(activeDesign)) {
         select.value = activeDesign;
         loadDesignDetails();
     }
@@ -570,39 +578,44 @@ function loadDesignDetails() {
     let cleanDNo = cleanDesignName(dName);
 
     let designMastersList = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let foundMaster = designMastersList.find(d => cleanDesignName(d.name) === cleanDNo) || {};
+    let foundMaster = Array.isArray(designMastersList) ? designMastersList.find(d => cleanDesignName(d.name || d.designNo) === cleanDNo) || {} : {};
     
     let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
     let specKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanDNo);
     let sp = specKey ? specs[specKey] : {};
 
-    let exactPick = foundMaster.weftPick || sp.weftPick || foundMaster.pick || sp.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || "72";
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let foundOrder = Array.isArray(orders) ? orders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo) || {} : {};
+
+    let exactPick = foundMaster.weftPick || sp.weftPick || foundMaster.pick || sp.pick || sp.basePick || foundMaster.basePick || sp.finishPick || foundMaster.finishPick || foundOrder.pick || "72";
     let actualPick = parseFloat(String(exactPick).replace(/[^0-9.]/g, '')) || 72;
     
-    let widthVal = parseFloat(foundMaster.width || sp.width || 0) || 0;
+    let widthVal = parseFloat(foundMaster.width || sp.width || foundOrder.width || 0) || 0;
     let weftWidthVal = widthVal > 0 ? (widthVal + 3).toFixed(2) : '-';
     let storedWeftWidth = foundMaster.weftWidth || sp.weftWidth;
     let finalWeftWidthDisplay = storedWeftWidth ? storedWeftWidth + '"' : (weftWidthVal !== '-' ? weftWidthVal + '"' : '-');
 
-    // Warp Header Data
+    let baseCount = foundOrder.baseBeamCount || sp.baseBeamCount || foundMaster.warp1 || sp.warp || sp.baseCount || foundMaster.counts || sp.counts || '-';
+    let topBeamCount = foundOrder.topBeamCount || sp.topBeamCount || foundMaster.warp2 || sp.warp2 || sp.topBeam || '-';
+    let orderMeterVal = foundOrder.orderMtr || foundOrder.productionMeter || foundOrder.prodMtr || foundMaster.orderMtr || sp.orderMtr || foundMaster.meters || '-';
+
     document.getElementById('hdrDesign').innerText = dName;
-    document.getElementById('hdrCounts').innerText = foundMaster.counts || sp.counts || '-';
-    document.getElementById('hdrMtr').innerText = foundMaster.orderMtr || sp.orderMtr || foundMaster.meters || '-';
-    document.getElementById('hdrTopBeam').innerText = foundMaster.topBeam || sp.topBeam || '-';
-    document.getElementById('hdrType').innerText = foundMaster.type || sp.type || '-';
-    document.getElementById('hdrReed').innerText = foundMaster.reed || sp.reed || '-';
+    document.getElementById('hdrCounts').innerText = baseCount;
+    document.getElementById('hdrMtr').innerText = orderMeterVal;
+    document.getElementById('hdrTopBeam').innerText = topBeamCount;
+    document.getElementById('hdrType').innerText = foundMaster.type || sp.type || foundOrder.weaveType || sp.weaveType || '-';
+    document.getElementById('hdrReed').innerText = foundMaster.reed || sp.reed || foundOrder.reed || '-';
     document.getElementById('hdrPick').innerText = actualPick || '-';
-    document.getElementById('hdrWidth').innerText = foundMaster.width || sp.width || '-';
+    document.getElementById('hdrWidth').innerText = foundMaster.width || sp.width || foundOrder.width || '-';
     document.getElementById('designHeaderBox').style.display = 'grid';
 
-    // Weft Header Data
     let weftHdrBox = document.getElementById('weftHeaderBox');
     if (weftHdrBox) {
         document.getElementById('weftHdrDesign').innerText = dName;
-        document.getElementById('weftHdrCount').innerText = foundMaster.weftCount || sp.weftCount || foundMaster.counts || sp.counts || '-';
+        document.getElementById('weftHdrCount').innerText = foundOrder.weftCount || foundMaster.weftCount || sp.weftCount || foundMaster.counts || sp.counts || '-';
         document.getElementById('weftHdrWidth').innerText = finalWeftWidthDisplay;
         document.getElementById('weftHdrPick').innerText = actualPick; 
-        document.getElementById('weftHdrWeave').innerText = foundMaster.weaveType || foundMaster.type || sp.weave || sp.type || 'Plain';
+        document.getElementById('weftHdrWeave').innerText = foundOrder.weaveType || foundMaster.weaveType || foundMaster.type || sp.weave || sp.type || 'Plain';
         weftHdrBox.style.display = 'grid';
     }
 
@@ -670,8 +683,6 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
         let cText = item.count ? String(item.count).trim() : '-';
         let clrText = translateColorToTamil(item.color);
 
-        countTotals[cText] = (countTotals[cText] || 0) + val;
-
         let setHtml = '';
         let rInfo = rangeMap[rowNum];
 
@@ -696,8 +707,10 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
             } else {
                 setHtml = null; 
             }
+            countTotals[cText] = (countTotals[cText] || 0) + (val * rInfo.set);
         } else {
             setHtml = `<td class="col-set"></td>`;
+            countTotals[cText] = (countTotals[cText] || 0) + val;
         }
 
         rowsData.push({
@@ -768,7 +781,7 @@ function renderSplitPreviewTable(type, lines, ranges, wrapperId, summaryId, unit
         
         let countSummaryArr = [];
         for(let c in countTotals) {
-            countSummaryArr.push(`<b>${c}:</b> ${finalGrandTotal}`);
+            countSummaryArr.push(`<b>${c}:</b> ${countTotals[c]}`);
         }
         summaryHtml += `<div>COUNT WISE TOTAL: ${countSummaryArr.join(' | ')}</div>`;
     }
@@ -792,6 +805,5 @@ function buildTableRowsHtml(rows) {
     return html;
 }
 </script>
-<script src="config.js"></script>
 </body>
 </html>

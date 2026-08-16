@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Despatch Details - TEXFRIEND</title>
+    <!-- IMPORTANT: config.js must load first -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -21,18 +23,18 @@
             padding: 12px; 
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         .container {
             width: 100%;
-            max-width: 100%;
-            margin: 0;
+            max-width: 850px;
+            margin: 0 auto;
             background: #E8ECE7;
             padding: 18px;
             border-radius: 16px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             border: 1px solid rgba(82, 110, 81, 0.3);
-            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -60,7 +62,6 @@
         }
         .back-btn:hover { background: #000000; }
 
-        /* Checkbox Styling */
         .completed-checkbox {
             display: flex;
             align-items: center;
@@ -317,7 +318,7 @@
             flex: 1;
         }
 
-        /* 📌 Fullscreen Image Popup Modal */
+        /* Fullscreen Image Popup Modal */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
@@ -398,7 +399,6 @@
         <div class="section-title">Item Details</div>
 
         <div id="itemsContainer">
-            <!-- 📌 Initial Row-wise Layout -->
             <div class="item-row">
                 <div class="item-col-group full-width">
                     <label>Design No</label>
@@ -433,13 +433,11 @@
         </div>
 
         <button class="btn" id="saveBtn" onclick="saveDespatchEntry()">Save Despatch Entry</button>
-
-        <!-- 📌 Popup Trigger Button -->
         <button type="button" class="popup-trigger-btn" onclick="openModal('despatchListModal')">📊 View Saved Despatch List</button>
     </div>
 </div>
 
-<!-- 📌 Full-Screen Pop-up Modal for Saved Despatch List -->
+<!-- Saved Despatch List Modal -->
 <div id="despatchListModal" class="overlay-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -474,7 +472,7 @@
     </div>
 </div>
 
-<!-- 📌 Fullscreen Image Popup Modal -->
+<!-- Fullscreen Image Modal -->
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
     <button class="close-fullscreen">Close ✕</button>
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
@@ -517,17 +515,15 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
-// 📌 Fullscreen Image Popup Controls
 window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
+};
 window.closeFullscreenImage = function() {
     document.getElementById('fullscreenModal').style.display = 'none';
-}
+};
 
-// 🚀 LOAD HD Bitmap from merged design_specs
 function loadBitmapImage() {
     let activeDesign = localStorage.getItem('selected_design_number');
     let firstDesignSelect = document.querySelector('.item-design');
@@ -554,13 +550,12 @@ function onDesignSelect(val) {
     if(!val) return;
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    
-    let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
+    let clean = val.toString().replace('#', '').trim().toLowerCase();
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
 
     let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
     let despatchData = JSON.parse(localStorage.getItem('despatch_data')) || [];
-    let rec = despatchData.find(d => d.items && d.items.some(i => i.designNo === val));
+    let rec = despatchData.find(d => d.items && d.items.some(i => (i.designNo || '').toString().replace('#','').trim().toLowerCase() === clean));
 
     if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
         document.getElementById('top_completed_status').checked = true;
@@ -601,10 +596,10 @@ function onPoSelect(poNo) {
                 onDesignSelect(dVal);
             }
         }
-        if(matchedOrder.orderMtr || matchedOrder.meters || matchedOrder.orderMtrs) {
+        if(matchedOrder.orderMtr || matchedOrder.productionMeter || matchedOrder.prodMtr || matchedOrder.meters) {
             var firstOrdMtr = document.querySelector('.item-ord-mtr');
             if(firstOrdMtr) {
-                firstOrdMtr.value = matchedOrder.orderMtr || matchedOrder.meters || matchedOrder.orderMtrs;
+                firstOrdMtr.value = matchedOrder.orderMtr || matchedOrder.productionMeter || matchedOrder.prodMtr || matchedOrder.meters;
                 calculateBalance(firstOrdMtr);
             }
         }
@@ -612,16 +607,18 @@ function onPoSelect(poNo) {
 }
 
 function loadDesignList() {
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
     let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
 
     let allDesigns = new Set();
-    preDesignList.forEach(d => allDesigns.add(d));
-    designMasters.forEach(d => allDesigns.add(d.name));
+    preDesigns.forEach(d => allDesigns.add(d));
+    if(Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
     Object.keys(designSpecs).forEach(d => allDesigns.add(d));
+    if(Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
 
-    preDesignList = Array.from(allDesigns);
+    preDesignList = Array.from(allDesigns).filter(Boolean);
     loadDesignDropdowns();
 }
 
@@ -707,7 +704,6 @@ function addItemRow(design = '', bale = '', noBales = '', ord = '', des = '', ba
     }
 }
 
-// 📌 Completed Checkbox Quick Toggle with Cloud Sync
 async function quickCompleteToggle() {
     if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
     
@@ -749,7 +745,7 @@ async function quickCompleteToggle() {
     }
 
     despatchData.forEach(d => {
-        if(d.items && d.items.some(i => i.designNo === designNo)) {
+        if(d.items && d.items.some(i => (i.designNo || '').toString().replace('#','').trim().toLowerCase() === designNo.toString().replace('#','').trim().toLowerCase())) {
             d.status = statusText;
         }
     });
@@ -761,9 +757,7 @@ async function quickCompleteToggle() {
     let clean = designNo ? designNo.toString().replace('#', '').trim().toLowerCase() : '';
     let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || designNo;
     
-    if(!designSpecs[specKey]) {
-        designSpecs[specKey] = {};
-    }
+    if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = statusText;
     localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
@@ -784,7 +778,6 @@ async function quickCompleteToggle() {
     alert(`Design ${designNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
 }
 
-// 📌 FIREBASE SYNC: saveDespatchEntry
 async function saveDespatchEntry() {
     if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
 
@@ -799,26 +792,18 @@ async function saveDespatchEntry() {
     }
 
     var despatchList = JSON.parse(localStorage.getItem('despatch_data')) || [];
-    
     let firstRowDesign = document.querySelector('.item-design');
     let currentDesignNo = firstRowDesign ? firstRowDesign.value : '';
     
     if(editingIndex === null && currentDesignNo) {
         let alreadyExists = despatchList.some(entry => 
-            entry.items && entry.items.some(i => i.designNo === currentDesignNo)
+            entry.items && entry.items.some(i => (i.designNo || '').toString().replace('#','').trim().toLowerCase() === currentDesignNo.toString().replace('#','').trim().toLowerCase())
         );
         
         if(alreadyExists) {
             let confirmReEntry = confirm("இந்த டிசைனுக்கு ஏற்கனவே என்ட்ரி செய்யப்பட்டுள்ளது. மீண்டும் ரீ-என்ட்ரி செய்ய வேண்டுமா?");
-            if(!confirmReEntry) {
-                return;
-            }
+            if(!confirmReEntry) return;
         }
-    }
-
-    let confirmMsg = editingIndex !== null ? "Indha despatch entry-ai update pannanuma?" : "Indha despatch entry-ai save pannanuma?";
-    if(!confirm(confirmMsg)) {
-        return;
     }
 
     var items = [];
@@ -994,27 +979,25 @@ async function toggleStatus(index, newStatus) {
         despatchList[index].status = newStatus;
         localStorage.setItem('despatch_data', JSON.stringify(despatchList));
 
-        let item = despatchList[index].items ? despatchList[index].items[0] : null;
-        if(item && item.designNo) {
-            let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-            
-            let clean = item.designNo ? item.designNo.toString().replace('#', '').trim().toLowerCase() : '';
-            let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || item.designNo;
-            
-            if(!designSpecs[specKey]) designSpecs[specKey] = {};
-            designSpecs[specKey].status = newStatus;
-            localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-            if(window.firebaseSave) {
-                await window.firebaseSave('design_specs', designSpecs);
-            }
-            if(window.firebaseSaveIndividual) {
-                await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        if(despatchList[index].items && despatchList[index].items.length > 0) {
+            for (let item of despatchList[index].items) {
+                if(item.designNo) {
+                    let clean = item.designNo.toString().replace('#', '').trim().toLowerCase();
+                    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || item.designNo;
+                    if(!designSpecs[specKey]) designSpecs[specKey] = {};
+                    designSpecs[specKey].status = newStatus;
+                    if(window.firebaseSaveIndividual) {
+                        await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
+                    }
+                }
             }
         }
         
+        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
         if(window.firebaseSave) {
             await window.firebaseSave('despatch_data', despatchList);
+            await window.firebaseSave('design_specs', designSpecs);
         }
 
         updateDespatchTable();
@@ -1145,6 +1128,5 @@ function exportToExcel() {
     document.body.removeChild(link);
 }
 </script>
-<script src="config.js"></script>
 </body>
 </html>

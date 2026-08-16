@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Design Master - TEXFRIEND ERP</title>
+    <!-- IMPORTANT: config.js must load first -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         
-        html, body { width: 100%; min-height: 100vh; background: #EAF0EA; color: #1E2B23; }
+        html, body { width: 100%; min-height: 100vh; background: #030712; color: #1E2B23; }
         body { padding: 12px; display: flex; flex-direction: column; align-items: center; }
         
         .main-card {
@@ -84,7 +86,7 @@
         .choice-btn.gallery { background: #3B82F6; }
         .choice-btn.cancel { background: #EF4444; }
 
-        /* 🔥 FULL SCREEN IMAGE MODAL */
+        /* FULL SCREEN IMAGE MODAL */
         .fullscreen-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: rgba(0, 0, 0, 0.95); z-index: 999999; justify-content: center; align-items: center; padding: 0; margin: 0;
@@ -97,7 +99,6 @@
             padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; z-index: 1000000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
         }
 
-        /* Hidden Input Fix */
         .hidden-file-input { opacity: 0; position: absolute; z-index: -1; width: 0; height: 0; }
     </style>
 </head>
@@ -121,8 +122,8 @@
         </div>
         
         <div class="form-row">
-            <div class="form-group"><label>Warp 1 (Grnd)</label><input type="text" id="warpCount" placeholder="2/60"></div>
-            <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
+            <div class="form-group"><label>Warp 1 (Grnd / Base)</label><input type="text" id="warpCount" placeholder="2/60"></div>
+            <div class="form-group"><label>Warp 2 (Top Beam)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
             <div class="form-group"><label>Weft Count</label><input type="text" id="weftCount" placeholder="40s"></div>
             <div class="form-group"><label>Width (Inch)</label><input type="number" id="width" placeholder="66" step="0.01"></div>
         </div>
@@ -168,7 +169,6 @@
     <img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
-<!-- JavaScript Core (Firebase Synced Version) -->
 <script>
     let designList = [];
     let tempBitmapData = "";
@@ -191,16 +191,21 @@
         return foundKey ? foundKey : designNo;
     }
 
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', function() {
         if (!checkUserPermission()) {
             alert("Access Denied! You do not have permission to access this page. ❌");
             window.location.href = "dashboard.html";
             return;
         }
 
-        designList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+        let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+        let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+        
+        let masterNames = Array.isArray(masters) ? masters.map(d => d.name || d.designNo).filter(Boolean) : [];
+        designList = Array.from(new Set([...preDesigns, ...masterNames, ...Object.keys(specs)]));
         loadDesignDropdown();
-    }
+    });
 
     window.openChoiceModal = () => document.getElementById('choiceModal').style.display = 'flex';
     window.closeChoiceModal = () => document.getElementById('choiceModal').style.display = 'none';
@@ -209,8 +214,8 @@
         if(!src || src === '' || src === 'null') return;
         document.getElementById('fullscreenImg').src = src; 
         document.getElementById('fullscreenModal').style.display = 'flex'; 
-    }
-    window.closeFullscreenImage = () => { document.getElementById('fullscreenModal').style.display = 'none'; }
+    };
+    window.closeFullscreenImage = () => { document.getElementById('fullscreenModal').style.display = 'none'; };
 
     window.handleFileSelect = function(input) {
         if (input.files && input.files[0]) {
@@ -221,7 +226,7 @@
                 input.value = ''; 
             });
         }
-    }
+    };
 
     function compressImage(file, maxWidth, maxHeight, quality, callback) {
         let reader = new FileReader();
@@ -237,18 +242,50 @@
                 canvas.width = width; canvas.height = height;
                 let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                 callback(canvas.toDataURL('image/jpeg', quality));
-            }
-        }
+            };
+        };
     }
 
     async function syncDesignMasterToCloud(updatedList, updatedSpecs, activeDesignNo) {
+        let designMasters = Array.isArray(JSON.parse(localStorage.getItem('design_masters_data'))) ? JSON.parse(localStorage.getItem('design_masters_data')) : [];
+        
+        if (activeDesignNo) {
+            let specKey = getSpecKey(activeDesignNo);
+            let s = updatedSpecs[specKey] || {};
+            let mIndex = designMasters.findIndex(m => cleanDesignName(m.name || m.designNo) === cleanDesignName(activeDesignNo));
+            let masterObj = {
+                name: activeDesignNo,
+                designNo: activeDesignNo,
+                warp1: s.warp || '',
+                baseBeamCount: s.warp || '',
+                warp2: s.warp2 || '',
+                topBeamCount: s.warp2 || '',
+                weftCount: s.weft || '',
+                width: s.width || '',
+                reed: s.reed || '',
+                pick: s.pick || '',
+                weave: s.weave || '',
+                typeOfProcess: s.typeOfProcess || '',
+                status: s.status || 'running',
+                bitmap: s.bitmap || ''
+            };
+
+            if (mIndex > -1) {
+                designMasters[mIndex] = { ...designMasters[mIndex], ...masterObj };
+            } else {
+                designMasters.push(masterObj);
+            }
+        }
+
         localStorage.setItem('pre_design_numbers', JSON.stringify(updatedList));
         localStorage.setItem('design_specs', JSON.stringify(updatedSpecs));
+        localStorage.setItem('design_masters_data', JSON.stringify(designMasters));
         if(activeDesignNo) localStorage.setItem('selected_design_number', activeDesignNo);
 
         if (window.firebaseSave) {
             await window.firebaseSave('pre_design_numbers', updatedList);
             await window.firebaseSave('design_specs', updatedSpecs);
+            await window.firebaseSave('design_masters_data', designMasters);
         }
         if (window.firebaseSaveIndividual && activeDesignNo) {
             let key = getSpecKey(activeDesignNo);
@@ -273,16 +310,25 @@
         document.getElementById('addBtn').innerText = "Saving...⏳";
         designList.push(designNo);
         
+        let warp1 = document.getElementById('warpCount').value.trim();
+        let warp2 = document.getElementById('warpCount2').value.trim();
+
         let specs = { 
-            warp: document.getElementById('warpCount').value, 
-            warp2: document.getElementById('warpCount2').value, 
-            weft: document.getElementById('weftCount').value, 
-            width: document.getElementById('width').value, 
-            reed: document.getElementById('reed').value, 
-            pick: document.getElementById('pick').value, 
-            weave: document.getElementById('weave').value, 
-            typeOfProcess: document.getElementById('typeOfProcess').value, 
-            status: 'running', bitmap: tempBitmapData 
+            warp: warp1,
+            baseBeamCount: warp1,
+            warp2: warp2,
+            topBeamCount: warp2,
+            baseCount: warp2 ? `${warp1}, ${warp2}` : warp1,
+            weft: document.getElementById('weftCount').value.trim(), 
+            weftCount: document.getElementById('weftCount').value.trim(), 
+            width: document.getElementById('width').value.trim(), 
+            reed: document.getElementById('reed').value.trim(), 
+            pick: document.getElementById('pick').value.trim(), 
+            weave: document.getElementById('weave').value.trim(), 
+            weaveType: document.getElementById('weave').value.trim(), 
+            typeOfProcess: document.getElementById('typeOfProcess').value.trim(), 
+            status: 'running', 
+            bitmap: tempBitmapData 
         };
         
         let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
@@ -301,7 +347,7 @@
         } finally {
             document.getElementById('addBtn').innerText = "+ Add";
         }
-    }
+    };
 
     window.updateDesign = async function() {
         if (!checkUserPermission()) { alert("Access Denied!"); return; }
@@ -317,15 +363,24 @@
         
         let finalBitmap = (tempBitmapData && tempBitmapData !== "") ? tempBitmapData : (existing.bitmap || "");
 
+        let warp1 = document.getElementById('warpCount').value.trim();
+        let warp2 = document.getElementById('warpCount2').value.trim();
+
         let updatedSpecs = { 
-            warp: document.getElementById('warpCount').value, 
-            warp2: document.getElementById('warpCount2').value, 
-            weft: document.getElementById('weftCount').value, 
-            width: document.getElementById('width').value, 
-            reed: document.getElementById('reed').value, 
-            pick: document.getElementById('pick').value, 
-            weave: document.getElementById('weave').value, 
-            typeOfProcess: document.getElementById('typeOfProcess').value, 
+            ...existing,
+            warp: warp1, 
+            baseBeamCount: warp1,
+            warp2: warp2, 
+            topBeamCount: warp2,
+            baseCount: warp2 ? `${warp1}, ${warp2}` : warp1,
+            weft: document.getElementById('weftCount').value.trim(), 
+            weftCount: document.getElementById('weftCount').value.trim(), 
+            width: document.getElementById('width').value.trim(), 
+            reed: document.getElementById('reed').value.trim(), 
+            pick: document.getElementById('pick').value.trim(), 
+            weave: document.getElementById('weave').value.trim(), 
+            weaveType: document.getElementById('weave').value.trim(), 
+            typeOfProcess: document.getElementById('typeOfProcess').value.trim(), 
             status: existing.status || 'running',
             bitmap: finalBitmap 
         };
@@ -341,7 +396,7 @@
         } finally {
             document.getElementById('editBtn').innerText = "✏️ Update / Edit Design";
         }
-    }
+    };
 
     window.deleteDesign = async function() {
         if (!checkUserPermission()) { alert("Access Denied!"); return; }
@@ -355,11 +410,18 @@
         if(confirm(designNo + " delete pannalama?")){
             document.getElementById('delBtn').innerText = "Del...⏳";
             
-            designList = designList.filter(x => x != designNo);
+            designList = designList.filter(x => cleanDesignName(x) !== cleanDesignName(designNo));
             
             let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
             let key = getSpecKey(designNo);
             if(designSpecs[key]) delete designSpecs[key];
+
+            let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+            if(Array.isArray(designMasters)) {
+                designMasters = designMasters.filter(m => cleanDesignName(m.name || m.designNo) !== cleanDesignName(designNo));
+                localStorage.setItem('design_masters_data', JSON.stringify(designMasters));
+                if (window.firebaseSave) await window.firebaseSave('design_masters_data', designMasters);
+            }
             
             try {
                 localStorage.removeItem('selected_design_number');
@@ -374,7 +436,7 @@
                 document.getElementById('delBtn').innerText = "Delete";
             }
         }
-    }
+    };
 
     function loadDesignDropdown() {
         let select = document.getElementById('designSelect');
@@ -397,13 +459,13 @@
             let key = getSpecKey(val);
             let data = specs[key] || {};
 
-            document.getElementById('warpCount').value = data.warp || '';
-            document.getElementById('warpCount2').value = data.warp2 || '';
-            document.getElementById('weftCount').value = data.weft || '';
+            document.getElementById('warpCount').value = data.warp || data.baseBeamCount || '';
+            document.getElementById('warpCount2').value = data.warp2 || data.topBeamCount || '';
+            document.getElementById('weftCount').value = data.weft || data.weftCount || '';
             document.getElementById('width').value = data.width || '';
             document.getElementById('reed').value = data.reed || '';
             document.getElementById('pick').value = data.pick || '';
-            document.getElementById('weave').value = data.weave || '';
+            document.getElementById('weave').value = data.weave || data.weaveType || '';
             document.getElementById('typeOfProcess').value = data.typeOfProcess || '';
             
             if(data.bitmap && data.bitmap !== "") {
@@ -414,7 +476,7 @@
                 document.getElementById('bitmapPreviewBox').style.display = 'none'; 
             }
         } else { clearForm(); }
-    }
+    };
 
     function clearForm() {
         document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
@@ -423,6 +485,5 @@
         document.getElementById('bitmapPreviewBox').style.display = 'none';
     }
 </script>
-<script src="config.js"></script>
 </body>
 </html>

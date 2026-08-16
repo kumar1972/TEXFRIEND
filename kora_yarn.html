@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kora Yarn - TEXFRIEND</title>
+    <!-- IMPORTANT: config.js must load first -->
+    <script src="config.js"></script>
     <script src="translator.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -280,7 +282,7 @@
         .action-btns { display: flex; gap: 6px; justify-content: center; }
         .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
         .edit-action-btn:hover { background: #475569; }
-        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+        .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
         .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
 
         .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
@@ -487,18 +489,16 @@ document.addEventListener('DOMContentLoaded', function() {
     refreshAllTables();
 });
 
-// 🚀 Safe Firebase Save Helper
-function syncDataToCloud(key, data) {
+async function syncDataToCloud(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
     if (window.firebaseSave) {
-        window.firebaseSave(key, data);
+        await window.firebaseSave(key, data);
     }
     if (window.firebaseSaveIndividual) {
-        window.firebaseSaveIndividual(key, data);
+        await window.firebaseSaveIndividual(key, data);
     }
 }
 
-// 🚀 Manual "+ Add" Logic via Prompt
 function addMasterMill(selectId) {
     let val = prompt("புதிய மில் பெயரை உள்ளிடவும் (Enter new Mill Name):");
     if(val) {
@@ -547,7 +547,6 @@ function addMasterCount(selectId) {
     }
 }
 
-// 🚀 Master List Delete Logic
 function deleteMasterItem(type) {
     let storageKey = ''; let title = '';
     if(type === 'mill') { storageKey = 'tex_master_mills'; title = "Mill"; }
@@ -575,7 +574,6 @@ function deleteMasterItem(type) {
     }
 }
 
-// 🚀 Load Options directly into <select> elements
 function loadMillSuggestions() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
@@ -618,16 +616,43 @@ function loadCountSuggestions() {
     let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let masterCounts = JSON.parse(localStorage.getItem('tex_master_counts')) || [];
+    let specs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let masters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let orders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
     
     let countSet = new Set([...masterCounts]);
     inwards.forEach(item => { if(item.count) countSet.add(item.count.trim()); });
     issues.forEach(item => { if(item.count) countSet.add(item.count.trim()); });
+    
+    Object.values(specs).forEach(s => {
+        if(s.warp) countSet.add(s.warp.trim());
+        if(s.baseBeamCount) countSet.add(s.baseBeamCount.trim());
+        if(s.topBeamCount && s.topBeamCount !== '-') countSet.add(s.topBeamCount.trim());
+        if(s.weft) countSet.add(s.weft.trim());
+        if(s.weftCount) countSet.add(s.weftCount.trim());
+    });
+
+    if(Array.isArray(masters)) {
+        masters.forEach(m => {
+            if(m.warp1) countSet.add(m.warp1.trim());
+            if(m.warp2 && m.warp2 !== '-') countSet.add(m.warp2.trim());
+            if(m.weftCount) countSet.add(m.weftCount.trim());
+        });
+    }
+
+    if(Array.isArray(orders)) {
+        orders.forEach(o => {
+            if(o.baseBeamCount) countSet.add(o.baseBeamCount.trim());
+            if(o.topBeamCount && o.topBeamCount !== '-') countSet.add(o.topBeamCount.trim());
+            if(o.weftCount) countSet.add(o.weftCount.trim());
+        });
+    }
 
     let inVal = document.getElementById('inwardCount').value;
     let issVal = document.getElementById('issueCount').value;
 
     let html = '<option value="">Select Count</option>';
-    Array.from(countSet).sort().forEach(c => { html += `<option value="${c}">${c}</option>`; });
+    Array.from(countSet).filter(Boolean).sort().forEach(c => { html += `<option value="${c}">${c}</option>`; });
     
     document.getElementById('inwardCount').innerHTML = html;
     document.getElementById('issueCount').innerHTML = html;
@@ -655,8 +680,8 @@ window.openFullscreenImage = function(src) {
     if(!src || src === '' || src === 'null') return;
     document.getElementById('fullscreenImg').src = src;
     document.getElementById('fullscreenModal').style.display = 'flex';
-}
-window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; }
+};
+window.closeFullscreenImage = function() { document.getElementById('fullscreenModal').style.display = 'none'; };
 
 function loadBitmapImage() {
     let activeDesign = document.getElementById('designNo').value || localStorage.getItem('selected_design_number');
@@ -679,14 +704,24 @@ function loadBitmapImage() {
 }
 
 function loadDesignDropdown() {
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+
+    let allDesigns = new Set();
+    preDesigns.forEach(d => allDesigns.add(d));
+    if (Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
+    Object.keys(designSpecs).forEach(d => allDesigns.add(d));
+    if (Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
+
     let select = document.getElementById('designNo');
     let html = '<option value="">Select Design No</option>';
-    preDesignList.forEach(d => { html += `<option value="${d}">${d}</option>`; });
+    Array.from(allDesigns).filter(Boolean).forEach(d => { html += `<option value="${d}">${d}</option>`; });
     select.innerHTML = html;
 
     let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && preDesignList.includes(activeDesign)) {
+    if(activeDesign && allDesigns.has(activeDesign)) {
         select.value = activeDesign;
         onDesignSelect(activeDesign);
     } else { loadBitmapImage(); }
@@ -697,18 +732,31 @@ function onDesignSelect(val) {
     if(!val) return;
     localStorage.setItem('selected_design_number', val);
     
+    let clean = cleanDesignName(val);
     let designSpecs = JSON.parse(localStorage.getItem('design_specs') || '{}');
-    let clean = val ? val.toString().replace('#', '').trim().toLowerCase() : '';
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || val;
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === clean) || val;
+    let sp = designSpecs[specKey] || {};
 
-    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
+    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
+    let foundMaster = Array.isArray(designMasters) ? designMasters.find(d => cleanDesignName(d.name || d.designNo) === clean) || {} : {};
+
+    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
+    let foundOrder = Array.isArray(partyOrders) ? partyOrders.find(o => cleanDesignName(o.designNumber || o.designNo) === clean) || {} : {};
+
+    let specStatus = (sp.status || foundOrder.status || '').toLowerCase();
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
-    let rec = issues.find(r => (r.designNo === val || r.designNumber === val));
+    let rec = issues.find(r => cleanDesignName(r.designNo || r.designNumber) === clean);
 
     let cb = document.getElementById('top_completed_status');
     if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
         if(cb) cb.checked = true;
     } else { if(cb) cb.checked = false; }
+
+    // Auto-select Count for Issue if available
+    let resolvedCount = foundOrder.baseBeamCount || sp.baseBeamCount || foundMaster.warp1 || sp.warp || foundOrder.weftCount || sp.weft || '';
+    if(resolvedCount && !document.getElementById('issueCount').value) {
+        document.getElementById('issueCount').value = resolvedCount;
+    }
 }
 
 async function quickCompleteToggle() {
@@ -729,7 +777,7 @@ async function quickCompleteToggle() {
     let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
     let updated = false;
 
-    issues.forEach(r => { if(r.designNo === dNo || r.designNumber === dNo) { r.status = statusText; updated = true; } });
+    issues.forEach(r => { if(cleanDesignName(r.designNo || r.designNumber) === cleanDesignName(dNo)) { r.status = statusText; updated = true; } });
 
     if(!updated) {
         let dateVal = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
@@ -744,8 +792,8 @@ async function quickCompleteToggle() {
     syncDataToCloud('kora_issue_records', issues);
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let clean = dNo ? dNo.toString().replace('#', '').trim().toLowerCase() : '';
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || dNo;
+    let clean = cleanDesignName(dNo);
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === clean) || dNo;
 
     if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = statusText;
@@ -782,7 +830,7 @@ async function saveInward() {
         }
     }
 
-    let btn = document.getElementById('saveInwardBtn'); let origText = btn.innerText; btn.innerText = "⏳ Saving to Cloud...";
+    let btn = document.getElementById('saveInwardBtn'); btn.innerText = "⏳ Saving to Cloud...";
 
     if (editingInwardId) {
         let idx = records.findIndex(r => r.id == editingInwardId);
@@ -835,7 +883,7 @@ async function saveIssue() {
         }
     }
 
-    let btn = document.getElementById('saveIssueBtn'); let origText = btn.innerText; btn.innerText = "⏳ Saving to Cloud...";
+    let btn = document.getElementById('saveIssueBtn'); btn.innerText = "⏳ Saving to Cloud...";
 
     if (editingIssueId) {
         let idx = issues.findIndex(r => r.id == editingIssueId);
@@ -851,7 +899,7 @@ async function saveIssue() {
     }
 
     let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
 
     if(!designSpecs[specKey]) designSpecs[specKey] = {};
     designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
@@ -890,7 +938,7 @@ async function toggleIssueStatus(id, newStatus) {
             let dNo = records[index].designNo;
             if(dNo) {
                 let cleanDNo = cleanDesignName(dNo); let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanDNo) || dNo;
+                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
                 if(!designSpecs[specKey]) designSpecs[specKey] = {};
                 designSpecs[specKey].status = newStatus; 
                 syncDataToCloud('design_specs', designSpecs);
@@ -969,6 +1017,5 @@ async function deleteIssue(id) {
     loadUnitSuggestions(); loadCountSuggestions(); refreshAllTables();
 }
 </script>
-<script src="config.js"></script>
 </body>
 </html>
