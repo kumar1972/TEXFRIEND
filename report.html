@@ -65,7 +65,7 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 11px;
-            background: #1A2421;
+            background: #1A1;
             padding: 6px 12px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -433,6 +433,70 @@
             .header-btns { width: auto; }
             .action-btn { flex: unset; }
         }
+
+        /* 🟢 PRINT STYLES FOR CLEAR & FULL WIDTH A4 OUTPUT 🟢 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            html, body {
+                background: #FFFFFF !important;
+                background-color: #FFFFFF !important;
+                color: #000000 !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .main-card, .modal-content {
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                background: #FFFFFF !important;
+            }
+
+            .top-nav, .report-tabs, .form-section, .header-btns, .close-btn, .no-print {
+                display: none !important;
+            }
+
+            .table-container {
+                border: none !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 11px !important;
+            }
+
+            th {
+                background: #EAF0EA !important;
+                color: #000000 !important;
+                border: 1px solid #444444 !important;
+                padding: 6px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            td {
+                border: 1px solid #999999 !important;
+                padding: 6px !important;
+                color: #000000 !important;
+            }
+
+            tfoot td {
+                background: #F4F7F4 !important;
+                color: #000000 !important;
+                border-top: 2px solid #000000 !important;
+            }
+        }
     </style>
 </head>
 
@@ -445,7 +509,7 @@
         <div id="bitmapDisplayContainer"></div>
     </div>
 
-    <h2 class="card-header" id="pageMainHeader">Management Reports & Analytics</h2>
+    <h2 class="color: #ffffff; /* Inga unga color-a change pannikalam */" id="pageMainHeader">Management Reports & Analytics</h2>
 
     <div class="form-section" id="filterSection">
         <div class="section-badge">Filter Records</div>

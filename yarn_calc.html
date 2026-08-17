@@ -26,7 +26,7 @@
 
         .back-btn {
             display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
-            text-decoration: none; font-weight: 600; font-size: 11px; background: #1A2421; 
+            text-decoration: none; font-weight: 600; font-size: 11px; background: #1A1; 
             padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1);
         }
@@ -152,9 +152,7 @@
     <option value="White"><option value="Black"><option value="Red"><option value="Blue">
     <option value="Green"><option value="Yellow"><option value="Grey"><option value="Navy"><option value="வெள்ளை"><option value="ப்ளூ">
 </datalist>
-<datalist id="millsList">
-    <option value="Mill A"><option value="Mill B"><option value="Own Mill">
-</datalist>
+<datalist id="millsList"></datalist>
 <datalist id="percentList">
     <option value="1"><option value="2"><option value="3"><option value="4"><option value="5">
     <option value="6"><option value="7"><option value="8"><option value="9"><option value="10">
@@ -185,16 +183,19 @@
         <div class="input-grid">
             <div class="form-group"><label>Design No</label><select id="designNo" onchange="loadDesignData()"><option value="">Select Design</option></select></div>
             <div class="form-group"><label>Date</label><input type="date" id="calcDate"></div>
-            <div class="form-group"><label>Base Count</label><input type="text" id="baseCount" list="countsList" value="2/60, 40s"></div>
-            <div class="form-group"><label>Top Beam Count</label><input type="text" id="topBeamCount" list="countsList" placeholder="Top Count"></div>
             
-            <div class="form-group"><label>Finish Reed</label><input type="number" id="finishReed" oninput="calculateTopData()"></div>
-            <div class="form-group"><label>Finish Pick (Auto)</label><input type="number" id="finishPick" oninput="calculateTopData()"></div>
+            <div class="form-group"><label>Warp 1 (Base)</label><input type="text" id="baseCount" list="countsList"></div>
+            <div class="form-group"><label>Warp 2 (Top)</label><input type="text" id="topBeamCount" list="countsList"></div>
+            <div class="form-group"><label>Weft 1</label><input type="text" id="weftCount" list="countsList"></div>
+            <div class="form-group"><label>Weft 2</label><input type="text" id="weftCount2" list="countsList"></div>
+            
+            <div class="form-group"><label>Finish Reed</label><input type="number" id="finishReed" oninput="updateOnloomReedDefault(); calculateTopData()"></div>
+            <div class="form-group"><label>Finish Pick</label><input type="number" id="finishPick" oninput="updateOnloomPickDefault(); calculateTopData()"></div>
             <div class="form-group"><label>Finish Width</label><input type="number" id="finishWidth" oninput="calculateTopData()"></div>
             
-            <div class="form-group"><label>Onloom Reed</label><input type="number" id="onloomReed" value="60" oninput="calculateTopData()"></div>
-            <div class="form-group"><label>Pick Less</label><input type="number" id="pickLess" value="4" oninput="calculateTopData()"></div>
-            <div class="form-group"><label>Onloom Pick (Auto)</label><input type="number" id="onloomPick" readonly></div>
+            <div class="form-group"><label>Onloom Reed</label><input type="number" id="onloomReed" oninput="manualOnloomReed=true; calculateTopData()"></div>
+            <div class="form-group"><label>Pick Less</label><input type="number" id="pickLess" value="4" oninput="updateOnloomPickDefault(); calculateTopData()"></div>
+            <div class="form-group"><label>Onloom Pick</label><input type="number" id="onloomPick" oninput="manualOnloomPick=true; calculateTopData()"></div>
             
             <div class="form-group"><label>Onloom Width (Auto)</label><input type="number" id="onloomWidth" readonly></div>
             <div class="form-group"><label>Onloom Weft Width (Auto)</label><input type="number" id="onloomWeftWidth" readonly placeholder="+3 added"></div>
@@ -321,6 +322,9 @@
     const calcDateEl = document.getElementById('calcDate');
     if (calcDateEl) calcDateEl.valueAsDate = new Date();
 
+    let manualOnloomReed = false;
+    let manualOnloomPick = false;
+
     function checkUserPermission() {
         let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
         if (userRole !== 'Administrator' && userRole !== 'Admin') {
@@ -358,7 +362,54 @@
         initDropdowns();
     });
 
+    function populateMillsDatalist() {
+        let masterMills = JSON.parse(localStorage.getItem('tex_master_mills')) || [];
+        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        
+        let millsSet = new Set();
+        
+        if(Array.isArray(masterMills)) masterMills.forEach(m => { if(m) millsSet.add(String(m).trim()); });
+        if(Array.isArray(inwards)) inwards.forEach(item => { 
+            if(item.supplier) millsSet.add(String(item.supplier).trim()); 
+            if(item.millName) millsSet.add(String(item.millName).trim()); 
+        });
+        if(Array.isArray(issues)) issues.forEach(item => { 
+            if(item.millName) millsSet.add(String(item.millName).trim()); 
+        });
+
+        let html = '';
+        Array.from(millsSet).filter(Boolean).sort().forEach(mill => {
+            html += `<option value="${mill}">`;
+        });
+        
+        let datalist = document.getElementById('millsList');
+        if (datalist) datalist.innerHTML = html;
+    }
+
+    function getMillNameFromKora(designNo, countStr) {
+        let inwards = JSON.parse(localStorage.getItem('kora_stock_records')) || [];
+        let issues = JSON.parse(localStorage.getItem('kora_issue_records')) || [];
+        let allRecords = [...(Array.isArray(inwards)?inwards:[]), ...(Array.isArray(issues)?issues:[])];
+        
+        let cleanDNo = cleanDesignName(designNo);
+        let cleanCount = countStr ? String(countStr).trim().toLowerCase() : '';
+        
+        let match = allRecords.find(r => {
+            let rDno = cleanDesignName(r.designNo || r.designNumber || r.design);
+            let rCount = r.count ? String(r.count).trim().toLowerCase() : '';
+            return rDno === cleanDNo && rCount === cleanCount;
+        });
+        
+        if (match && (match.millName || match.supplier)) {
+            return String(match.millName || match.supplier).trim();
+        }
+        return '';
+    }
+
     function initDropdowns() {
+        populateMillsDatalist(); 
+        
         let preDesigns = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
         let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
@@ -383,6 +434,21 @@
         }
     }
 
+    function updateOnloomReedDefault() {
+        if (!manualOnloomReed) {
+            let fReed = parseFloat(document.getElementById('finishReed').value) || 0;
+            document.getElementById('onloomReed').value = fReed > 0 ? fReed - 8 : '';
+        }
+    }
+
+    function updateOnloomPickDefault() {
+        if (!manualOnloomPick) {
+            let fPick = parseFloat(document.getElementById('finishPick').value) || 0;
+            let pLess = parseFloat(document.getElementById('pickLess').value) || 0;
+            document.getElementById('onloomPick').value = fPick > 0 ? fPick - pLess : '';
+        }
+    }
+
     function loadDesignData() {
         let dName = document.getElementById('designNo').value;
         if(!dName) return;
@@ -391,10 +457,16 @@
         let cleanDNo = cleanDesignName(dName);
         
         let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-        let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo) || {} : {};
+        let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(o => {
+            let dNo = o.designNumber || o.designNo || '';
+            return cleanDesignName(dNo) === cleanDNo;
+        }) || {} : {};
         
         let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-        let foundMaster = Array.isArray(designMasters) ? designMasters.find(d => cleanDesignName(d.name || d.designNo) === cleanDNo) || {} : {};
+        let foundMaster = Array.isArray(designMasters) ? designMasters.find(d => {
+            let mName = d.name || d.designNo || '';
+            return cleanDesignName(mName) === cleanDNo;
+        }) || {} : {};
 
         let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
         let foundSpecKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo);
@@ -402,27 +474,41 @@
 
         let specStatus = (sp.status || matchedOrder.status || foundMaster.status || '').toLowerCase();
         let cb = document.getElementById('top_completed_status');
-        if(cb) {
-            cb.checked = (specStatus === 'completed');
-        }
+        if(cb) cb.checked = (specStatus === 'completed');
 
-        let baseBeamCount = matchedOrder.baseBeamCount || sp.baseBeamCount || foundMaster.warp1 || sp.warp || sp.baseCount || '2/60';
-        let topBeamVal = matchedOrder.topBeamCount || sp.topBeamCount || foundMaster.warp2 || '';
-        let weftCountVal = matchedOrder.weftCount || sp.weftCount || foundMaster.weftCount || sp.weft || '40s';
+        // Populate Main Values prioritizing Design Master
+        document.getElementById('baseCount').value = foundMaster.warp1 || foundMaster.baseCount || sp.baseBeamCount || sp.warp || matchedOrder.baseBeamCount || '';
+        document.getElementById('topBeamCount').value = foundMaster.warp2 || sp.topBeamCount || sp.warp2 || matchedOrder.topBeamCount || '';
+        document.getElementById('weftCount').value = foundMaster.weftCount || foundMaster.weft || sp.weftCount || sp.weft || matchedOrder.weftCount || '';
+        document.getElementById('weftCount2').value = foundMaster.weft2 || sp.weft2 || matchedOrder.weft2 || '';
 
-        document.getElementById('baseCount').value = `${baseBeamCount}, ${weftCountVal}`;
-        document.getElementById('topBeamCount').value = topBeamVal;
-
-        let reed = matchedOrder.reed || foundMaster.reed || sp.reed || 68;
-        let pick = matchedOrder.pick || foundMaster.pick || sp.pick || 64;
-        let width = matchedOrder.width || foundMaster.width || sp.width || 58;
-
-        document.getElementById('finishReed').value = reed;
-        document.getElementById('finishPick').value = pick;
-        document.getElementById('finishWidth').value = width;
+        // Prioritize Design Master for Finish Specs
+        document.getElementById('finishReed').value = foundMaster.reed || sp.reed || sp.finishReed || matchedOrder.reed || '';
+        document.getElementById('finishPick').value = foundMaster.pick || sp.pick || sp.finishPick || matchedOrder.pick || '';
+        document.getElementById('finishWidth').value = foundMaster.width || sp.width || sp.finishWidth || matchedOrder.width || matchedOrder.finishWidth || '';
 
         let orderMtr = parseFloat(matchedOrder.orderMtr || matchedOrder.productionMeter || sp.yarnOrderMtr || sp.orderMtr || foundMaster.orderMtr) || 1000;
         document.getElementById('orderMtr').value = orderMtr;
+
+        // Populate Onloom Values
+        let savedOnloomReed = foundMaster.onloomReed || sp.onloomReed || matchedOrder.onloomReed;
+        let savedOnloomPick = foundMaster.onloomPick || sp.onloomPick || matchedOrder.onloomPick;
+        
+        if (savedOnloomReed) {
+            document.getElementById('onloomReed').value = savedOnloomReed;
+            manualOnloomReed = true;
+        } else {
+            manualOnloomReed = false;
+            updateOnloomReedDefault();
+        }
+
+        if (savedOnloomPick) {
+            document.getElementById('onloomPick').value = savedOnloomPick;
+            manualOnloomPick = true;
+        } else {
+            manualOnloomPick = false;
+            updateOnloomPickDefault();
+        }
 
         buildDynamicTables(sp, foundMaster);
         calculateTopData();
@@ -466,28 +552,38 @@
     }
 
     function buildDynamicTables(sp, foundMaster) {
+        let dWarp = document.getElementById('baseCount').value || '2/60s';
+        let dWeft1 = document.getElementById('weftCount').value || '40s';
+        let dWeft2 = document.getElementById('weftCount2').value || dWeft1;
+
         let warpLines = (foundMaster && foundMaster.warpLines && foundMaster.warpLines.length > 0) ? foundMaster.warpLines : (sp.warpLines || [
-            { count: '2/60s', color: 'White', ends: 60 },
-            { count: '2/60', color: 'Blue', ends: 60 }
+            { count: dWarp, color: 'White', ends: 60 },
+            { count: dWarp, color: 'Blue', ends: 60 }
         ]);
 
         let weftLines = (foundMaster && foundMaster.weftLines && foundMaster.weftLines.length > 0) ? foundMaster.weftLines : (sp.weftLines || [
-            { count: '40', color: 'White', picks: 50 },
-            { count: '40', color: 'Black', picks: 50 }
+            { count: dWeft1, color: 'White', picks: 50 },
+            { count: dWeft2, color: 'Black', picks: 50 }
         ]);
 
         let oReed = parseFloat(document.getElementById('onloomReed').value) || 60;
-        let oWidth = parseFloat(document.getElementById('onloomWidth').value) || 65.73;
-        let targetWarpEnds = Math.round(oReed * oWidth) || 3944;
+        let fWidth = parseFloat(document.getElementById('finishWidth').value) || 58;
+        let fReed = parseFloat(document.getElementById('finishReed').value) || 68;
+        
+        let autoOnloomWidth = (fWidth * fReed) / oReed;
+        let targetWarpEnds = Math.round(oReed * autoOnloomWidth) || 3944;
 
         let resolvedWarp = resolvePatternRepeats(warpLines, foundMaster.warpRanges || sp.warpRanges, targetWarpEnds, 'warp');
         let resolvedWeft = resolvePatternRepeats(weftLines, foundMaster.weftRanges || sp.weftRanges, 4123.80, 'weft');
 
+        let dNo = document.getElementById('designNo').value;
+
         let warpHtml = '';
         resolvedWarp.forEach((w, idx) => {
+            let autoMill = getMillNameFromKora(dNo, w.count) || '';
             warpHtml += `
                 <tr class="warp-row" data-index="${idx}">
-                    <td><input type="text" list="millsList" class="w-mill" value="Mill A"></td>
+                    <td><input type="text" list="millsList" class="w-mill" value="${autoMill}" placeholder="Select Mill"></td>
                     <td><input type="text" list="countsList" class="w-count" value="${w.count}"></td>
                     <td><input type="text" list="coloursList" class="w-color" value="${w.color}"></td>
                     <td><input type="number" class="w-ends-rpt" value="${w.rpt}" oninput="calculateTableRows()"></td>
@@ -503,9 +599,10 @@
 
         let weftHtml = '';
         resolvedWeft.forEach((wf, idx) => {
+            let autoMill = getMillNameFromKora(dNo, wf.count) || '';
             weftHtml += `
                 <tr class="weft-row" data-index="${idx}">
-                    <td><input type="text" list="millsList" class="weft-mill" value="Mill B"></td>
+                    <td><input type="text" list="millsList" class="weft-mill" value="${autoMill}" placeholder="Select Mill"></td>
                     <td><input type="text" list="countsList" class="weft-count" value="${wf.count}"></td>
                     <td><input type="text" list="coloursList" class="weft-color" value="${wf.color}"></td>
                     <td><input type="number" class="weft-picks-rpt" value="${wf.rpt}" oninput="calculateTableRows()"></td>
@@ -525,19 +622,18 @@
         
         let fReed = parseFloat(document.getElementById('finishReed').value) || 0;
         let fWidth = parseFloat(document.getElementById('finishWidth').value) || 0;
-        let oReed = parseFloat(document.getElementById('onloomReed').value) || 1; 
+        let oReed = parseFloat(document.getElementById('onloomReed').value) || 0; 
         
-        let fPick = parseFloat(document.getElementById('finishPick').value) || 0;
-        let pickLess = parseFloat(document.getElementById('pickLess').value) || 0;
+        let autoOnloomWidth = '';
+        if(fWidth > 0 && fReed > 0 && oReed > 0) {
+            autoOnloomWidth = ((fReed * fWidth) / oReed).toFixed(2);
+        } else if (fWidth > 0) {
+            autoOnloomWidth = fWidth.toFixed(2);
+        }
+        document.getElementById('onloomWidth').value = autoOnloomWidth;
 
-        let onloomPick = fPick - pickLess;
-        document.getElementById('onloomPick').value = onloomPick > 0 ? onloomPick : '';
-
-        let autoOnloomWidth = (fReed * fWidth) / oReed;
-        document.getElementById('onloomWidth').value = autoOnloomWidth > 0 ? autoOnloomWidth.toFixed(2) : '';
-
-        let autoOnloomWeftWidth = autoOnloomWidth > 0 ? autoOnloomWidth + 3 : '';
-        document.getElementById('onloomWeftWidth').value = autoOnloomWeftWidth ? autoOnloomWeftWidth.toFixed(2) : '';
+        let autoOnloomWeftWidth = autoOnloomWidth ? (parseFloat(autoOnloomWidth) + 3).toFixed(2) : '';
+        document.getElementById('onloomWeftWidth').value = autoOnloomWeftWidth;
 
         let exPct = parseFloat(document.getElementById('exPercentage').value) || 0;
         let crimpPct = parseFloat(document.getElementById('warpCrimpTop').value) || 0;
@@ -855,17 +951,59 @@
 
         if(!designSpecs[specKey]) designSpecs[specKey] = {};
 
+        designSpecs[specKey].baseBeamCount = document.getElementById('baseCount').value;
+        designSpecs[specKey].topBeamCount = document.getElementById('topBeamCount').value;
+        designSpecs[specKey].weftCount = document.getElementById('weftCount').value;
+        designSpecs[specKey].weft2 = document.getElementById('weftCount2').value;
+
         designSpecs[specKey].yarnOrderMtr = document.getElementById('orderMtr').value;
         designSpecs[specKey].totalDyeingMtr = document.getElementById('totalDyeingMtr').value;
         designSpecs[specKey].weftMtrs = document.getElementById('weftMtrs').value;
         designSpecs[specKey].finishReed = document.getElementById('finishReed').value;
+        designSpecs[specKey].onloomReed = document.getElementById('onloomReed').value;
         designSpecs[specKey].finishPick = document.getElementById('finishPick').value;
+        designSpecs[specKey].onloomPick = document.getElementById('onloomPick').value;
         designSpecs[specKey].finishWidth = document.getElementById('finishWidth').value;
+        designSpecs[specKey].onloomWidth = document.getElementById('onloomWidth').value;
 
         localStorage.setItem('design_specs', JSON.stringify(designSpecs));
 
+        let yarnDataArray = JSON.parse(localStorage.getItem('yarn_calculation_data')) || [];
+        yarnDataArray = yarnDataArray.filter(d => cleanDesignName(d.designNo) !== cleanDNo); 
+
+        document.querySelectorAll('#warpTableBody tr').forEach(r => {
+            let wt = parseFloat(r.querySelector('.w-weight').value) || 0;
+            if (wt > 0) {
+                yarnDataArray.push({
+                    designNo: dName,
+                    type: 'Warp',
+                    millName: r.querySelector('.w-mill').value,
+                    count: r.querySelector('.w-count').value,
+                    color: r.querySelector('.w-color').value,
+                    orderWt: wt
+                });
+            }
+        });
+        
+        document.querySelectorAll('#weftTableBody tr').forEach(r => {
+            let wt = parseFloat(r.querySelector('.weft-weight').value) || 0;
+            if (wt > 0) {
+                yarnDataArray.push({
+                    designNo: dName,
+                    type: 'Weft',
+                    millName: r.querySelector('.weft-mill').value,
+                    count: r.querySelector('.weft-count').value,
+                    color: r.querySelector('.weft-color').value,
+                    orderWt: wt
+                });
+            }
+        });
+
+        localStorage.setItem('yarn_calculation_data', JSON.stringify(yarnDataArray));
+
         if(window.firebaseSave) {
             await window.firebaseSave('design_specs', designSpecs);
+            await window.firebaseSave('yarn_calculation_data', yarnDataArray);
         }
         if(window.firebaseSaveIndividual) {
             await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);

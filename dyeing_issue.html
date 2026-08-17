@@ -22,8 +22,17 @@
 html,body{
     width:100%;
     min-height:100vh;
-    background:#030712;
+    background:#F4F7F4;
     color:#1E2B23;
+}
+
+html{
+    background:#F4F7F4;
+}
+
+body{
+    background:#F4F7F4;
+    overflow-x:hidden;
 }
 
 body{
@@ -31,6 +40,7 @@ body{
     display:flex;
     flex-direction:column;
     align-items:center;
+    min-height:100vh;
 }
 
 .main-card{
@@ -62,14 +72,14 @@ body{
     text-decoration:none;
     font-weight:600;
     font-size:11px;
-    background:#1A2421;
+    background:#1A1;
     padding:8px 16px;
     border-radius:8px;
     box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
 
 .back-btn:hover{
-    background:#000;
+    background:#1A2;
 }
 
 .completed-checkbox{
@@ -305,8 +315,24 @@ select:focus{
     font-weight:700;
     font-size:13px;
     cursor:pointer;
-    background:linear-gradient(135deg,#4A7C59,#33593D);
+    background:linear-gradient(135deg,#4C59,#33593D);
     box-shadow:0 6px 15px rgba(74,124,89,.25);
+}
+
+.preview-trigger-btn{
+    background:linear-gradient(125deg,#64748B,#336569);
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+    width:100%;
+}
+
+.preview-trigger-btn:hover{
+    background:#336655;
 }
 
 .popup-trigger-btn{
@@ -493,6 +519,291 @@ tfoot td{
     border:1px dashed #A0AFA0;
 }
 
+
+/* ============================================================
+   FIXED RESPONSIVE LAYOUT
+   - Keeps the data rows below the Yarn Details header.
+   - Prevents grid columns from collapsing/overlapping.
+   - Mobile uses horizontal scrolling for the 7-column entry grid.
+============================================================ */
+.yarn-grid-scroll{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    padding-bottom:4px;
+}
+
+.yarn-grid-inner{
+    width:100%;
+    min-width:760px;
+}
+
+.issue-grid-header,
+.line-row{
+    width:100%;
+    min-width:760px;
+    grid-template-columns:80px 145px 110px 90px 90px 135px 75px;
+}
+
+.line-row{
+    margin-bottom:8px;
+}
+
+.line-row > *{
+    min-width:0;
+}
+
+.line-row .inp-count,
+.line-row .inp-color,
+.line-row .inp-ordwt,
+.line-row .inp-isswt{
+    min-width:0;
+}
+
+.line-row > div:last-child{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    min-width:75px;
+}
+
+.issue-grid-header{
+    align-items:center;
+}
+
+/* The hidden yarn type must never consume a grid column. */
+.line-row .inp-type{
+    display:none !important;
+}
+
+/* Keep all visible data inside the white card. */
+.main-card,
+.form-section,
+.yarn-grid-scroll{
+    overflow:visible;
+}
+
+/* ============================================================
+   ISSUE PREVIEW
+============================================================ */
+.preview-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    background:rgba(20,30,24,.55);
+    backdrop-filter:blur(3px);
+    z-index:100000;
+    padding:12px;
+    overflow:auto;
+}
+
+.preview-modal.show{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
+
+.preview-window{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.22);
+}
+
+.preview-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:13px 16px;
+    background:#F4F7F4;
+    border-bottom:1px solid #DDE5DD;
+}
+
+.preview-header h3{
+    color:#2F4F38;
+    font-size:15px;
+    margin:0;
+}
+
+.preview-close{
+    width:34px;
+    height:34px;
+    border:0;
+    border-radius:8px;
+    background:#FEE2E2;
+    color:#DC2626;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.preview-body{
+    padding:16px;
+    background:#fff;
+    overflow:auto;
+}
+
+.preview-sheet{
+    background:#fff;
+    color:#111827;
+    width:100%;
+}
+
+.preview-title{
+    text-align:center;
+    color:#2F4F38;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:12px;
+}
+
+.preview-meta{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.preview-meta div{
+    border:1px solid #DDE5DD;
+    border-radius:7px;
+    padding:8px 10px;
+    font-size:11px;
+    background:#FAFCFA;
+}
+
+.preview-table-wrap{
+    width:100%;
+    overflow-x:auto;
+}
+
+.preview-table{
+    width:100%;
+    min-width:700px;
+    border-collapse:collapse;
+    font-size:10px;
+}
+
+.preview-table th,
+.preview-table td{
+    border:1px solid #CBD5CB;
+    padding:7px 6px;
+    text-align:center;
+    color:#1E2B23;
+}
+
+.preview-table th{
+    background:#EAF0EA;
+    color:#2F4F38;
+    font-weight:700;
+}
+
+.preview-total-row td{
+    background:#F4F7F4;
+    font-weight:700;
+}
+
+.preview-footer{
+    display:flex;
+    justify-content:flex-end;
+    padding:12px 16px;
+    background:#F8FAF8;
+    border-top:1px solid #DDE5DD;
+}
+
+.preview-print-btn{
+    border:0;
+    border-radius:9px;
+    padding:10px 18px;
+    background:#2F4F38;
+    color:#fff;
+    font-weight:700;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.preview-print-btn:hover{
+    background:#24402D;
+}
+
+@media(max-width:700px){
+    .preview-modal{
+        padding:6px;
+    }
+
+    .preview-meta{
+        grid-template-columns:1fr;
+    }
+
+    .preview-body{
+        padding:10px;
+    }
+}
+
+@media print{
+    html,body{
+        background:#fff !important;
+        color:#111 !important;
+        min-height:auto !important;
+    }
+
+    body > *:not(#issuePreviewModal){
+        display:none !important;
+    }
+
+    #issuePreviewModal{
+        display:block !important;
+        position:static !important;
+        background:#fff !important;
+        padding:0 !important;
+        width:100% !important;
+        height:auto !important;
+        overflow:visible !important;
+    }
+
+    #issuePreviewModal .preview-window{
+        max-width:none !important;
+        width:100% !important;
+        box-shadow:none !important;
+        border-radius:0 !important;
+    }
+
+    #issuePreviewModal .preview-header,
+    #issuePreviewModal .preview-footer{
+        display:none !important;
+    }
+
+    #issuePreviewModal .preview-body{
+        padding:0 !important;
+        overflow:visible !important;
+    }
+
+    #issuePreviewModal .preview-table-wrap{
+        overflow:visible !important;
+    }
+
+    #issuePreviewModal .preview-table{
+        min-width:0 !important;
+        width:100% !important;
+        font-size:9px !important;
+    }
+
+    #issuePreviewModal .preview-table th,
+    #issuePreviewModal .preview-table td{
+        padding:5px 4px !important;
+    }
+}
+
 @media(max-width:700px){
 
     .main-card{
@@ -556,7 +867,7 @@ tfoot td{
 
     </div>
 
-    <h2 class="card-header">
+    <h2 class="color: #ffffff; /* Inga unga color-a change pannikalam */">
         Dyeing Issue (Warp + Weft)
     </h2>
 
@@ -765,6 +1076,14 @@ tfoot td{
         📊 View Issued Orders List
     </button>
 
+    <button
+        type="button"
+        class="preview-trigger-btn"
+        onclick="openIssuePreview()"
+    >
+        👁️ Preview
+    </button>
+
 </div>
 
 
@@ -828,6 +1147,27 @@ tfoot td{
 
 </div>
 
+
+<div
+    id="issuePreviewModal"
+    class="preview-modal"
+    onclick="if(event.target===this) closeIssuePreview()"
+>
+    <div class="preview-window">
+        <div class="preview-header">
+            <h3>👁️ Dyeing Issue Preview</h3>
+            <button type="button" class="preview-close" onclick="closeIssuePreview()" title="Close">✕</button>
+        </div>
+
+        <div class="preview-body">
+            <div id="issuePreviewContent" class="preview-sheet"></div>
+        </div>
+
+        <div class="preview-footer">
+            <button type="button" class="preview-print-btn" onclick="printIssuePreview()">🖨️ Print</button>
+        </div>
+    </div>
+</div>
 
 <div
     id="fullscreenModal"
@@ -2229,7 +2569,7 @@ function(btn){
 
 
 /* ============================================================
-   LOAD DESIGN ITEMS
+   LOAD DESIGN ITEMS (MODIFIED TO PULL FROM YARN CALCULATIONS)
 ============================================================ */
 
 function loadDesignItems(){
@@ -2363,7 +2703,7 @@ function loadDesignItems(){
 
 
     /* ========================================================
-       DEFAULT VALUES
+       DEFAULT VALUES (FOR FALLBACK UI)
     ======================================================== */
 
     const defaultWarpCount =
@@ -2381,280 +2721,304 @@ function loadDesignItems(){
         foundSpec.weft ||
         '40';
 
-
-    const uiReed =
-        safeNumber(
-            foundMaster.reed ||
-            foundSpec.reed ||
-            foundOrder.reed ||
-            foundSpec.baseReed,
-            52
-        );
-
-    const baseWidth =
-        safeNumber(
-            foundMaster.width ||
-            foundSpec.width ||
-            foundOrder.width ||
-            foundSpec.baseWidth,
-            66.92
-        );
-
-    const totalWarpEnds =
-        Math.max(
-            0,
-            Math.round(
-                uiReed * baseWidth
-            )
-        );
-
-
-    const baseOrderMtr =
-        safeNumber(
-            foundOrder.orderMtr ||
-            foundOrder.productionMeter ||
-            foundOrder.prodMtr ||
-            foundMaster.orderMtr ||
-            foundSpec.orderMtr,
-            100
-        );
-
-    const warpingMts =
-        Math.max(
-            0,
-            baseOrderMtr -
-            (baseOrderMtr*.05)
-        );
-
-
-    const uiPick =
-        safeNumber(
-            foundMaster.pick ||
-            foundSpec.pick ||
-            foundOrder.pick ||
-            foundSpec.basePick,
-            56
-        );
-
-    const weftWidth =
-        safeNumber(
-            foundMaster.weftWidth ||
-            foundSpec.weftWidth,
-            baseWidth+3
-        );
-
-    const totalFabricPick =
-        Math.max(
-            0,
-            weftWidth*uiPick
-        );
-
-    const weftMtrs =
-        Math.max(
-            0,
-            warpingMts*
-            (0.94/0.95)
-        );
-
+    const combinedMap = new Map();
+    const isCombineChecked = document.getElementById('combineToggle')?.checked !== false;
+    let displayList = [];
 
     /* ========================================================
-       PATTERN
+       FETCH FROM YARN CALCULATIONS DATA
     ======================================================== */
 
-    const warpList =
-        resolvePattern(
-            foundMaster.warpLines || [],
-            foundMaster.warpRanges || [],
-            'warp',
-            defaultWarpCount
-        );
+    const yarnCalcRecords = [
+        ...safeArray('yarn_calculation_data'), 
+        ...safeArray('yarn_calculations')
+    ];
+    
+    let matchedYarnData = yarnCalcRecords.filter(
+        r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo
+    );
 
-    const weftList =
-        resolvePattern(
-            foundMaster.weftLines || [],
-            foundMaster.weftRanges || [],
-            'weft',
-            defaultWeftCount
-        );
+    if(matchedYarnData.length === 0){
+        if(foundOrder && foundOrder.yarnDetails && foundOrder.yarnDetails.length > 0) {
+            matchedYarnData = foundOrder.yarnDetails;
+        }
+    }
 
+    if(matchedYarnData.length > 0) {
+        
+        matchedYarnData.forEach(item => {
+            const type = item.type || item.yarnType || 'Combined';
+            const count = String(item.count || '');
+            const color = String(item.color || item.colour || '-');
+            const mill = String(item.millName || item.mill || item.supplier || '');
+            const weight = safeNumber(item.orderWt || item.reqWt || item.weight || item.totalWt || item.requiredWt, 0);
 
-    const combinedMap =
-        new Map();
+            const key = (isCombineChecked ? '' : type + '_') + normalizeText(count) + '_' + normalizeText(color);
 
-    const isCombineChecked =
-        document.getElementById(
-            'combineToggle'
-        )?.checked !== false;
-
-
-    /* ========================================================
-       WARP
-    ======================================================== */
-
-    const totalWarpPattern =
-        warpList.reduce(
-            (sum,item)=>
-            sum+
-            safeNumber(
-                item.patternVal,
-                0
-            ),
-            0
-        );
-
-    warpList.forEach(item=>{
-
-        const calcCount =
-            parseYarnCount(
-                item.count
-            ) ||
-            parseYarnCount(
-                defaultWarpCount
-            ) ||
-            20;
-
-        if(calcCount<=0)
-            return;
-
-        const totalEndsForColor =
-            totalWarpPattern>0
-            ? (
-                safeNumber(
-                    item.patternVal,
-                    0
-                ) /
-                totalWarpPattern
-            ) *
-            totalWarpEnds
-            : 0;
-
-        const weightKg =
-            (
-                totalEndsForColor *
-                warpingMts
-            ) /
-            (
-                1693.33 *
-                calcCount
-            );
-
-        const key =
-            (
-                isCombineChecked
-                ? ''
-                : 'warp_'
-            ) +
-            normalizeText(item.count) +
-            '_' +
-            normalizeText(item.color);
-
-        combinedMap.set(
-            key,
-            {
-                type:'Warp',
-                count:String(item.count),
-                color:String(item.color),
-                orderWt:weightKg
+            if(combinedMap.has(key)){
+                combinedMap.get(key).orderWt += weight;
+                if(mill && !combinedMap.get(key).mill) combinedMap.get(key).mill = mill;
+            } else {
+                combinedMap.set(key, {
+                    type: isCombineChecked ? 'Combined' : type,
+                    count: count,
+                    color: color,
+                    mill: mill,
+                    orderWt: weight
+                });
             }
-        );
+        });
+        displayList = Array.from(combinedMap.values());
+        
+    } else {
 
-    });
+        /* ========================================================
+           OLD FALLBACK LOGIC (IF NO YARN DATA FOUND)
+        ======================================================== */
 
-
-    /* ========================================================
-       WEFT
-    ======================================================== */
-
-    const totalWeftPattern =
-        weftList.reduce(
-            (sum,item)=>
-            sum+
+        const uiReed =
             safeNumber(
-                item.patternVal,
-                0
-            ),
-            0
-        );
+                foundMaster.reed ||
+                foundSpec.reed ||
+                foundOrder.reed ||
+                foundSpec.baseReed,
+                52
+            );
 
-    weftList.forEach(item=>{
+        const baseWidth =
+            safeNumber(
+                foundMaster.width ||
+                foundSpec.width ||
+                foundOrder.width ||
+                foundSpec.baseWidth,
+                66.92
+            );
 
-        const calcCount =
-            parseYarnCount(
-                item.count
-            ) ||
-            parseYarnCount(
+        const totalWarpEnds =
+            Math.max(
+                0,
+                Math.round(
+                    uiReed * baseWidth
+                )
+            );
+
+        const baseOrderMtr =
+            safeNumber(
+                foundOrder.orderMtr ||
+                foundOrder.productionMeter ||
+                foundOrder.prodMtr ||
+                foundMaster.orderMtr ||
+                foundSpec.orderMtr,
+                100
+            );
+
+        const warpingMts =
+            Math.max(
+                0,
+                baseOrderMtr -
+                (baseOrderMtr*.05)
+            );
+
+        const uiPick =
+            safeNumber(
+                foundMaster.pick ||
+                foundSpec.pick ||
+                foundOrder.pick ||
+                foundSpec.basePick,
+                56
+            );
+
+        const weftWidth =
+            safeNumber(
+                foundMaster.weftWidth ||
+                foundSpec.weftWidth,
+                baseWidth+3
+            );
+
+        const totalFabricPick =
+            Math.max(
+                0,
+                weftWidth*uiPick
+            );
+
+        const weftMtrs =
+            Math.max(
+                0,
+                warpingMts*
+                (0.94/0.95)
+            );
+
+        const warpList =
+            resolvePattern(
+                foundMaster.warpLines || [],
+                foundMaster.warpRanges || [],
+                'warp',
+                defaultWarpCount
+            );
+
+        const weftList =
+            resolvePattern(
+                foundMaster.weftLines || [],
+                foundMaster.weftRanges || [],
+                'weft',
                 defaultWeftCount
-            ) ||
-            40;
+            );
 
-        if(calcCount<=0)
-            return;
-
-        const totalWeftPicks =
-            totalWeftPattern>0
-            ? (
+        const totalWarpPattern =
+            warpList.reduce(
+                (sum,item)=>
+                sum+
                 safeNumber(
                     item.patternVal,
                     0
-                ) /
-                totalWeftPattern
-            ) *
-            totalFabricPick
-            : 0;
-
-        const weightKg =
-            (
-                totalWeftPicks *
-                weftMtrs
-            ) /
-            (
-                1693.33 *
-                calcCount
+                ),
+                0
             );
 
-        const key =
-            (
-                isCombineChecked
-                ? ''
-                : 'weft_'
-            ) +
-            normalizeText(item.count) +
-            '_' +
-            normalizeText(item.color);
+        warpList.forEach(item=>{
 
-        if(combinedMap.has(key)){
+            const calcCount =
+                parseYarnCount(
+                    item.count
+                ) ||
+                parseYarnCount(
+                    defaultWarpCount
+                ) ||
+                20;
 
-            const existing =
-                combinedMap.get(key);
+            if(calcCount<=0)
+                return;
 
-            existing.orderWt +=
-                weightKg;
+            const totalEndsForColor =
+                totalWarpPattern>0
+                ? (
+                    safeNumber(
+                        item.patternVal,
+                        0
+                    ) /
+                    totalWarpPattern
+                ) *
+                totalWarpEnds
+                : 0;
 
-            if(isCombineChecked)
-                existing.type='Combined';
+            const weightKg =
+                (
+                    totalEndsForColor *
+                    warpingMts
+                ) /
+                (
+                    1693.33 *
+                    calcCount
+                );
 
-        }else{
+            const key =
+                (
+                    isCombineChecked
+                    ? ''
+                    : 'warp_'
+                ) +
+                normalizeText(item.count) +
+                '_' +
+                normalizeText(item.color);
 
             combinedMap.set(
                 key,
                 {
-                    type:'Weft',
+                    type:'Warp',
                     count:String(item.count),
                     color:String(item.color),
                     orderWt:weightKg
                 }
             );
 
-        }
+        });
 
-    });
+        const totalWeftPattern =
+            weftList.reduce(
+                (sum,item)=>
+                sum+
+                safeNumber(
+                    item.patternVal,
+                    0
+                ),
+                0
+            );
 
+        weftList.forEach(item=>{
 
-    let displayList =
-        Array.from(
-            combinedMap.values()
-        );
+            const calcCount =
+                parseYarnCount(
+                    item.count
+                ) ||
+                parseYarnCount(
+                    defaultWeftCount
+                ) ||
+                40;
 
+            if(calcCount<=0)
+                return;
+
+            const totalWeftPicks =
+                totalWeftPattern>0
+                ? (
+                    safeNumber(
+                        item.patternVal,
+                        0
+                    ) /
+                    totalWeftPattern
+                ) *
+                totalFabricPick
+                : 0;
+
+            const weightKg =
+                (
+                    totalWeftPicks *
+                    weftMtrs
+                ) /
+                (
+                    1693.33 *
+                    calcCount
+                );
+
+            const key =
+                (
+                    isCombineChecked
+                    ? ''
+                    : 'weft_'
+                ) +
+                normalizeText(item.count) +
+                '_' +
+                normalizeText(item.color);
+
+            if(combinedMap.has(key)){
+
+                const existing =
+                    combinedMap.get(key);
+
+                existing.orderWt +=
+                    weightKg;
+
+                if(isCombineChecked)
+                    existing.type='Combined';
+
+            }else{
+
+                combinedMap.set(
+                    key,
+                    {
+                        type:'Weft',
+                        count:String(item.count),
+                        color:String(item.color),
+                        orderWt:weightKg
+                    }
+                );
+
+            }
+
+        });
+
+        displayList = Array.from(combinedMap.values());
+    }
 
     /* ========================================================
        SUBTRACT ALREADY ISSUED
@@ -2718,7 +3082,6 @@ function loadDesignItems(){
 
     });
 
-
     displayList =
         displayList.filter(
             item =>
@@ -2738,7 +3101,7 @@ function loadDesignItems(){
         displayList.forEach(item=>{
 
             const autofillMill =
-                getMillNameFromKora(
+                item.mill || getMillNameFromKora(
                     dNo,
                     item.count
                 );
@@ -4230,6 +4593,127 @@ function renderIssuedList(){
 
 
 /* ============================================================
+   ISSUE PREVIEW + PRINT
+   Preview is UI-only. Existing localStorage/Firebase/cloud logic
+   is intentionally untouched.
+============================================================ */
+function getPreviewRows(){
+    const container=document.getElementById('issueLinesContainer');
+    if(!container) return [];
+
+    return Array.from(container.querySelectorAll('.line-row')).map(row=>({
+        count:row.querySelector('.inp-count')?.value || '-',
+        mill:row.querySelector('.inp-mill')?.value || '-',
+        color:row.querySelector('.inp-color')?.value || '-',
+        orderWt:safeNumber(row.querySelector('.inp-ordwt')?.value,0),
+        issueWt:safeNumber(row.querySelector('.inp-isswt')?.value,0),
+        unit:row.querySelector('.inp-unit')?.value || '-',
+        type:row.querySelector('.inp-type')?.value || 'Combined'
+    }));
+}
+
+function openIssuePreview(){
+    const modal=document.getElementById('issuePreviewModal');
+    const content=document.getElementById('issuePreviewContent');
+    if(!modal || !content) return;
+
+    const date=document.getElementById('issueDate')?.value || '-';
+    const design=document.getElementById('designNumber')?.value || '-';
+    const rows=getPreviewRows();
+
+    let totalOrd=0;
+    let totalIss=0;
+    rows.forEach(r=>{
+        totalOrd += safeNumber(r.orderWt,0);
+        totalIss += safeNumber(r.issueWt,0);
+    });
+
+    const formattedDate = (()=>{
+        if(!date || date==='-') return '-';
+        const d=new Date(date+'T00:00:00');
+        if(Number.isNaN(d.getTime())) return date;
+        return String(d.getDate()).padStart(2,'0')+'/'+
+               String(d.getMonth()+1).padStart(2,'0')+'/'+
+               d.getFullYear();
+    })();
+
+    let tableRows='';
+    if(rows.length){
+        rows.forEach((r,i)=>{
+            tableRows += `
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${escapeHTML(r.type)}</td>
+                    <td>${escapeHTML(r.count)}</td>
+                    <td>${escapeHTML(r.mill)}</td>
+                    <td>${escapeHTML(r.color)}</td>
+                    <td>${safeNumber(r.orderWt,0).toFixed(3)}</td>
+                    <td>${safeNumber(r.issueWt,0).toFixed(3)}</td>
+                    <td>${escapeHTML(r.unit)}</td>
+                </tr>
+            `;
+        });
+    }else{
+        tableRows=`
+            <tr>
+                <td colspan="8" style="padding:18px;">No yarn rows available for preview.</td>
+            </tr>
+        `;
+    }
+
+    content.innerHTML=`
+        <div class="preview-title">Dyeing Issue (Warp + Weft)</div>
+
+        <div class="preview-meta">
+            <div><b>Issue Date:</b> ${escapeHTML(formattedDate)}</div>
+            <div><b>Design No:</b> ${escapeHTML(design)}</div>
+        </div>
+
+        <div class="preview-table-wrap">
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Type</th>
+                        <th>Count</th>
+                        <th>Mill Name</th>
+                        <th>Colour</th>
+                        <th>Ord Wt</th>
+                        <th>Iss Wt</th>
+                        <th>Dyeing Unit</th>
+                    </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+                <tfoot>
+                    <tr class="preview-total-row">
+                        <td colspan="5" style="text-align:right;">Grand Total</td>
+                        <td>${totalOrd.toFixed(3)}</td>
+                        <td>${totalIss.toFixed(3)}</td>
+                        <td>-</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+
+    modal.classList.add('show');
+    document.body.style.overflow='hidden';
+}
+
+function closeIssuePreview(){
+    const modal=document.getElementById('issuePreviewModal');
+    if(modal) modal.classList.remove('show');
+    document.body.style.overflow='';
+}
+
+function printIssuePreview(){
+    const modal=document.getElementById('issuePreviewModal');
+    if(!modal) return;
+    if(!modal.classList.contains('show')) openIssuePreview();
+    setTimeout(()=>window.print(),50);
+}
+
+/* ============================================================
    ESC KEY
 ============================================================ */
 
@@ -4255,6 +4739,18 @@ document.addEventListener(
                 'issuedListModal'
             );
 
+        }
+
+        const previewModal =
+            document.getElementById(
+                'issuePreviewModal'
+            );
+
+        if(
+            previewModal &&
+            previewModal.classList.contains('show')
+        ){
+            closeIssuePreview();
         }
 
         const fullModal =

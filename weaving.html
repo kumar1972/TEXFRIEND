@@ -57,7 +57,7 @@
         text-decoration: none;
         font-weight: 600;
         font-size: 11px;
-        background: #1A2421; 
+        background: #1A1; 
         padding: 6px 12px;
         border-radius: 8px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -145,7 +145,7 @@
         text-transform: uppercase;
         box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
     }
-    .section-badge.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
+    .section-badge.blue { background: linear-gradient(135deg, #3B86, #1D4ED8); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); }
 
     .form-group { margin-bottom: 8px; }
     .form-group label {
@@ -215,7 +215,7 @@
     }
 
     .btn-weave {
-        background: linear-gradient(135deg, #4A7C59, #33593D); color: white; border: none; padding: 12px; border-radius: 8px;
+        background: linear-gradient(135deg, #4AAC59, #33593D); color: white; border: none; padding: 12px; border-radius: 8px;
         font-weight: 700; cursor: pointer; width: 100%; font-size: 12px; margin-top: 8px;
         box-shadow: 0 4px 12px rgba(74, 124, 89, 0.25); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
     }
@@ -231,11 +231,11 @@
     .action-running:hover { background: #B45309; }
 
     .report-btn-group { display: flex; gap: 6px; }
-    .report-btn { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
+    .report-btn { background: linear-gradient(135deg, #3B8AF6, #1D4ED8); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
     .report-btn:hover { transform: translateY(-2px); }
 
     .popup-trigger-btn {
-        background: linear-gradient(135deg, #6366F1, #4338CA);
+        background: linear-gradient(135deg, #6306A1, #43388A);
         color: white; border: none; padding: 12px; border-radius: 8px;
         font-size: 12px; font-weight: bold; cursor: pointer; width: 100%;
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
@@ -264,7 +264,7 @@
     .modal-header h3 { margin: 0; font-size: 14px; color: #1E2B23; font-weight: 800; border:none; padding:0; }
     .modal-actions { display: flex; gap: 6px; }
     
-    .print-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; }
+    .print-btn { background: linear-gradient(135deg, #10BB81, #050869); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; }
     .close-btn {
         background: #FEE2E2; color: #DC2626; border: none; padding: 6px 12px;
         border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px;
@@ -321,7 +321,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 4px;">
-            <h2 style="border:none; margin:0; color:#2F4F38;">Weaving Management</h2>
+            <h2 style="color: #ffffff; /* Inga unga color-a change pannikalam */">Weaving Management</h2>
             <div class="report-btn-group">
                 <button type="button" class="report-btn" onclick="openPreview('warp')">👁️ Warp Preview</button>
                 <button type="button" class="report-btn" onclick="openPreview('weft')">👁️ Weft Preview</button>
@@ -353,8 +353,9 @@
             </div>
 
             <div class="form-grid-row-6">
+                <!-- 🟢 AUTO FILL FROM WARPING MTRS 🟢 -->
                 <div class="form-group">
-                    <label>Order Mtrs (Warping)</label>
+                    <label>Order Mtrs (Warping Mtrs)</label>
                     <input type="number" step="0.01" id="weavingMts" placeholder="Meters" oninput="calcFabricMts()" required>
                 </div>
                 <div class="form-group">
@@ -846,6 +847,24 @@
 
                 let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
                 let matchedOrder = Array.isArray(partyOrders) ? partyOrders.find(o => cleanDesignName(o.designNumber || o.designNo) === cleanDNo) || {} : {};
+
+                // 🟢 FETCH WARPING MTRS FROM WARPING ISSUE RECORDS OR SPECS 🟢
+                let warpingIssues = JSON.parse(localStorage.getItem('warping_issue_records')) || [];
+                let matchedWarping = warpingIssues.slice().reverse().find(w => cleanDesignName(w.designNo) === cleanDNo);
+                
+                let warpingMtrsFound = 0;
+                if (matchedWarping && parseFloat(matchedWarping.warpingMts) > 0) {
+                    warpingMtrsFound = parseFloat(matchedWarping.warpingMts);
+                    if (matchedWarping.unit) document.getElementById('warpingUnitName').value = matchedWarping.unit;
+                    if (matchedWarping.weaverTo) {
+                        document.getElementById('topWeaverName').value = matchedWarping.weaverTo;
+                    }
+                } else if (specs.warpingMts) {
+                    warpingMtrsFound = parseFloat(specs.warpingMts);
+                } else {
+                    let totalDyeing = parseFloat(specs.totalDyeingMtr) || parseFloat(matchedOrder.orderMtr || found.orderMtr) || 0;
+                    warpingMtrsFound = totalDyeing > 0 ? (totalDyeing * 0.95 * 0.95) : 0;
+                }
                 
                 let specStatus = (specs.status || matchedOrder.status || '').toLowerCase();
                 let rec = weavingMasterData.find(r => cleanDesignName(r.designNo || r.designNumber) === cleanDNo);
@@ -860,14 +879,12 @@
                 document.getElementById('warpCount2').value = matchedOrder.topBeamCount || specs.topBeamCount || found.warp2 || specs.warp2 || specs.count2 || ''; 
                 document.getElementById('weftCount').value = matchedOrder.weftCount || specs.weftCount || found.weftCount || specs.weft || '';
 
-                let masterOrderMtr = parseFloat(matchedOrder.orderMtr || matchedOrder.productionMeter || matchedOrder.prodMtr || specs.yarnOrderMtr || specs.orderMtr || found.orderMtr) || 100;
-                let less5PercentMtrs = masterOrderMtr - (masterOrderMtr * 0.05);
-
-                document.getElementById('weavingMts').value = less5PercentMtrs.toFixed(2);
+                // 🟢 AUTO-FILL WITH EXACT WARPING MTRS 🟢
+                document.getElementById('weavingMts').value = warpingMtrsFound > 0 ? warpingMtrsFound.toFixed(2) : '';
                 document.getElementById('crimpPerc').value = "5";
                 
-                let fabricMtrs = less5PercentMtrs - (less5PercentMtrs * 0.05);
-                document.getElementById('fabricMts').value = fabricMtrs.toFixed(2);
+                let fabricMtrs = warpingMtrsFound > 0 ? warpingMtrsFound - (warpingMtrsFound * 0.05) : 0;
+                document.getElementById('fabricMts').value = fabricMtrs > 0 ? fabricMtrs.toFixed(2) : '';
 
                 let defaultWarpCount = matchedOrder.baseBeamCount || found.warp1 || specs.baseBeamCount || found.count1 || specs.warp || '20';
                 let defaultWeftCount = matchedOrder.weftCount || found.weftCount || specs.weftCount || specs.weft || '40';
@@ -875,8 +892,8 @@
                 baseWarpWeights[val] = [];
                 baseWeftWeights[val] = [];
 
-                let uiReed = parseFloat(matchedOrder.reed || found.reed || specs.reed || specs.baseReed) || 52;
-                let baseWidth = parseFloat(matchedOrder.width || found.width || specs.width || specs.baseWidth) || 66.92;
+                let uiReed = parseFloat(specs.onloomReed || found.onloomReed || matchedOrder.reed || found.reed || specs.reed || specs.baseReed) || 52;
+                let baseWidth = parseFloat(specs.onloomWidth || found.onloomWidth || matchedOrder.width || found.width || specs.width || specs.baseWidth) || 66.92;
                 let totalWarpEnds = Math.round(uiReed * baseWidth);
                 
                 let warpData = resolvePattern(found.warpLines || [], found.warpRanges || [], 'warp', defaultWarpCount);
@@ -897,7 +914,7 @@
                     });
                 }
 
-                let uiPick = parseFloat(matchedOrder.pick || found.pick || specs.pick || specs.basePick) || 56;
+                let uiPick = parseFloat(specs.onloomPick || found.onloomPick || matchedOrder.pick || found.pick || specs.pick || specs.basePick) || 56;
                 let weftWidth = parseFloat(found.weftWidth || specs.weftWidth) || (baseWidth + 3);
                 let totalFabricPick = weftWidth * uiPick;
 

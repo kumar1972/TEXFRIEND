@@ -1,1087 +1,321 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ta">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dyeing Receive - TEXFRIEND</title>
-<!-- IMPORTANT: config.js must load first -->
 <script src="config.js"></script>
 <script src="translator.js"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+html,body{width:100%;min-height:100%;background:#F3F6F3;color:#1E2B23}
+body{padding:12px;display:flex;flex-direction:column;align-items:center}
+.main-card{width:100%;max-width:900px;background:#FFF;border:1px solid #E2E8E2;border-radius:20px;padding:20px;box-shadow:0 10px 35px rgba(30,43,35,.06);display:flex;flex-direction:column;gap:15px}
+.top-nav{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.back-btn{display:inline-flex;align-items:center;gap:5px;color:#FFF;text-decoration:none;font-weight:600;font-size:11px;background:#1A1;padding:8px 16px;border-radius:8px}
+.completed-checkbox{display:flex;align-items:center;gap:6px;background:#D8DFD6;padding:6px 12px;border-radius:6px;border:1px solid rgba(82,110,81,.4)}
+.completed-checkbox input{width:16px;height:16px;accent-color:#526E51}
+.completed-checkbox label{color:#3F5A3E;font-size:12px;font-weight:700}
+#bitmapDisplayContainer{text-align:right}
+#bitmapDisplayContainer img{max-height:40px;max-width:120px;border-radius:4px;border:1px solid #BFCDBF;cursor:zoom-in}
+.card-header{font-size:16px;font-weight:700;color:#2F4F38;text-align:left;position:relative;padding-left:12px}
+.card-header:before{content:'';position:absolute;left:0;top:10%;height:80%;width:4px;background:#4A7C59;border-radius:4px}
+.form-section{background:#F8FAF8;border:1px solid #E2E8E2;border-radius:14px;padding:20px 15px 15px;position:relative}
+.section-badge{position:absolute;top:-12px;left:15px;background:#4A7C59;color:#FFF;font-size:10px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:.5px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:10px;font-weight:600;color:#4A554A}
+input,select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #D1DED1;background:#FFF;color:#1E2B23;font-size:11px;font-weight:600;min-width:0}
+input:focus,select:focus{border-color:#4A7C59;outline:none;box-shadow:0 0 0 3px rgba(74,124,89,.15)}
+input[readonly]{background:#F4F7F4;color:#4A7C59}
+.checkbox-container{background:#FFF;padding:12px 15px;border-radius:10px;margin:5px 0 15px;display:flex;align-items:center;justify-content:space-between;border:1px dashed #A0AFA0;gap:10px}
+.receive-box{width:100%;overflow-x:auto;background:#FFF;padding:15px;border-radius:10px;border:1px solid #D1DED1;-webkit-overflow-scrolling:touch}
+.receive-grid-header,.receive-line-row{display:grid;grid-template-columns:90px 120px 130px 95px 105px 95px 80px 90px;gap:6px;min-width:817px}
+.receive-grid-header{margin-bottom:8px;padding:0 4px}
+.receive-grid-header div{font-size:10px;font-weight:700;color:#4A7C59;text-align:center}
+.receive-line-row{align-items:center;margin-bottom:10px}
+.receive-line-row input{padding:10px 4px;font-size:11px;text-align:center}
+.btn-main,.popup-trigger-btn{width:100%;padding:14px;border:0;border-radius:10px;color:#FFF;font-weight:700;font-size:13px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+.btn-main{background:linear-gradient(135deg,#4A79,#33593D);margin-top:0}
+.popup-trigger-btn{background:linear-gradient(135deg,#3BF6,#1D4ED8);margin-top:0}
+.front-action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0}
+.preview-front-btn{width:100%;padding:14px;border:0;border-radius:10px;color:#1D4ED8;background:#DBEE;font-weight:700;font-size:13px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 6px 15px rgba(00,130,246,.15)}
+.preview-front-btn:active{transform:translateY(1px)}
+@media(max-width:520px){
+    .front-action-row{grid-template-columns:1fr}
+}
+.overlay-modal{display:none;position:fixed;inset:0;width:100%;height:100%;background:rgba(18,25,20,.72);backdrop-filter:blur(4px);z-index:99999;padding:12px;opacity:0;transition:opacity .25s}
+.overlay-modal.show{opacity:1}
+.modal-content{background:#FFF;width:100%;height:100%;max-width:1200px;margin:auto;border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.modal-header{padding:12px 16px;background:#F4F7F4;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #E2E8E2}
+.modal-header h3{font-size:15px;color:#1E2B23}
+.modal-actions{display:flex;gap:6px}
+.close-btn,.preview-btn,.print-btn{border:0;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer;font-size:11px}
+.close-btn{background:#FEE2E2;color:#DC2626}
+.preview-btn{background:#DBEAFE;color:#1D4ED8}
+.print-btn{background:#1A2421;color:#FFF}
+.modal-body{padding:12px;overflow:auto;flex:1;background:#FAFCFA}
+.table-container{width:100%;overflow:auto;border-radius:10px;border:1px solid #E2E8E2;background:#FFF}
+table{width:100%;min-width:1050px;border-collapse:separate;border-spacing:0;font-size:11px;text-align:center;white-space:nowrap}
+th,td{padding:10px 12px;text-align:center;border-bottom:1px solid #E2E8E2;color:#1E2B23}
+th{background:#EAF0EA;color:#2F4F38;font-weight:700;font-size:10px;position:sticky;top:0;z-index:10}
+tfoot td{background:#F4F7F4;font-weight:700;border-top:2px solid #D1DED1}
+.action-btns{display:flex;gap:6px;justify-content:center}
+.edit-action-btn{background:#64748B;color:#FFF;border:0;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:10px}
+.del-action-btn{background:#EF4444;color:#FFF;border:0;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:10px}
+.action-complete,.action-running{color:#FFF;border:0;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:9px;font-weight:bold}
+.action-complete{background:#526E51}.action-running{background:#D97706}
+.excess-text{color:#DC2626;font-weight:700}
+.fullscreen-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999999;justify-content:center;align-items:center;padding:20px}
+.fullscreen-modal img{max-width:100%;max-height:85vh;object-fit:contain;border-radius:10px}
+.close-fullscreen{position:absolute;top:20px;right:20px;background:#EF4444;color:#FFF;border:0;padding:10px 18px;border-radius:8px;font-weight:bold}
+.preview-paper{background:#FFF;color:#111;max-width:900px;margin:0 auto;padding:24px;border:1px solid #DDD;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.preview-title{text-align:center;font-size:20px;font-weight:700;margin-bottom:4px}
+.preview-subtitle{text-align:center;font-size:11px;color:#555;margin-bottom:18px}
+.preview-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.preview-info div{border:1px solid #DDD;padding:7px;font-size:10px}
+.preview-paper table{min-width:0;width:100%;font-size:10px;white-space:normal}
+.preview-paper th{position:static;background:#EEE;color:#111}
+.preview-paper th,.preview-paper td{padding:7px;border:1px solid #DDD}
+.preview-total{margin-top:12px;text-align:right;font-weight:700;font-size:11px}
+@media(max-width:600px){
+body{padding:6px;overflow-x:hidden}.main-card{padding:14px;border-radius:14px;max-width:100%;overflow:hidden}.top-nav{align-items:flex-start}.completed-checkbox{padding:5px 8px}
+.form-grid{grid-template-columns:1fr}
+.preview-paper{padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.preview-info{grid-template-columns:1fr 1fr}
+.modal-header h3{font-size:12px}.modal-actions button{padding:7px 8px}
+.modal-body{padding:8px;overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+/* MOBILE: keep the records table and allow horizontal scrolling */
+.table-container{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    border:1px solid #E2E8E2;
+    background:#FFF;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+}
+.table-container table{
+    width:max-content;
+    min-width:1050px!important;
+    display:table;
+    white-space:nowrap;
+    font-size:11px;
+}
+.table-container table thead{display:table-header-group}
+.table-container table tbody{display:table-row-group;width:auto}
+.table-container table tbody tr{display:table-row;width:auto;margin:0;background:#FFF;border:0;border-radius:0;overflow:visible;box-shadow:none}
+.table-container table tbody td{
+    display:table-cell;
+    width:auto;
+    min-width:0!important;
+    padding:9px 12px;
+    text-align:center;
+    white-space:nowrap;
+    word-break:normal;
+    border-bottom:1px solid #E8EEE8;
+}
+.table-container table tbody td::before{content:none!important}
+.table-container table tbody td.action-btns{display:table-cell;white-space:nowrap;min-height:0}
+.table-container table tbody td.action-btns::before{content:none!important}
+.table-container table tfoot{display:table-footer-group;width:auto;margin-top:0}
+.table-container table tfoot tr{display:table-row;width:auto;background:#F4F7F4;border:0;border-radius:0;overflow:visible}
+.table-container table tfoot td{display:table-cell;width:auto;min-width:0!important;padding:9px 12px;border:0;text-align:center;white-space:nowrap}
+.table-container table tfoot td:first-child{display:table-cell;width:auto;text-align:right;border-bottom:0}
+.table-container table tfoot td::before{content:none!important}
 
-    html, body { 
-        width: 100%; 
-        min-height: 100vh; 
-        background: #030712; 
-        color: #1E2B23; 
-    }
-
-    body { 
-        padding: 12px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .main-card {
-        width: 100%;
-        max-width: 900px;
-        margin: 0;
-        background: #FFFFFF;
-        border: 1px solid rgba(82, 110, 81, 0.15);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 10px 35px rgba(30, 43, 35, 0.06);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .top-nav { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 5px; 
-    }
-
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 11px;
-        background: #1A2421; 
-        padding: 8px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.3s ease;
-    }
-    .back-btn:hover { background: #000000; transform: translateY(-2px); }
-
-    .completed-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #D8DFD6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .completed-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: #526E51;
-        margin: 0;
-        padding: 0;
-        border: none;
-    }
-    
-    .completed-checkbox label {
-        margin: 0;
-        color: #3F5A3E;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    #bitmapDisplayContainer {
-        text-align: right;
-    }
-    #bitmapDisplayContainer img {
-        max-height: 40px;
-        border-radius: 4px;
-        border: 1px solid rgba(82, 110, 81, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        cursor: zoom-in;
-        transition: transform 0.2s;
-    }
-    #bitmapDisplayContainer img:hover { transform: scale(1.1); }
-
-    .card-header {
-        font-size: 16px;
-        margin-bottom: 5px;
-        font-weight: 700;
-        color: #2F4F38;
-        text-align: left;
-        position: relative;
-        padding-left: 12px;
-    }
-    .card-header::before {
-        content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 4px;
-        background: #4A7C59; border-radius: 4px;
-    }
-
-    .form-section {
-        background: #F8FAF8;
-        border: 1px solid #E2E8E2;
-        border-radius: 14px;
-        padding: 20px 15px 15px 15px;
-        margin-bottom: 5px;
-        position: relative;
-    }
-    
-    .section-badge {
-        position: absolute;
-        top: -12px;
-        left: 15px;
-        background: #4A7C59;
-        color: #FFF;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(74, 124, 89, 0.25);
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 12px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin-bottom: 12px;
-    }
-
-    .form-group label {
-        font-size: 10px;
-        font-weight: 600;
-        color: #4A554A;
-        white-space: nowrap;
-    }
-
-    input, select {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #D1DED1;
-        background: #FFFFFF;
-        color: #1E2B23;
-        font-size: 11px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 2px 4px rgba(30, 43, 35, 0.02);
-    }
-
-    input:focus, select:focus {
-        border-color: #4A7C59;
-        outline: none;
-        background: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
-    }
-
-    input[readonly] { background: #F4F7F4; color: #4A7C59; border: 1px solid #D1DED1; }
-
-    .checkbox-container {
-        background: #FFFFFF; padding: 12px 15px; border-radius: 10px; 
-        margin-bottom: 15px; display: flex; align-items: center; 
-        justify-content: space-between; border: 1px dashed #A0AFA0;
-    }
-
-    .receive-grid-header {
-        display: grid;
-        grid-template-columns: 0.8fr 1fr 1.3fr 0.9fr 1fr 0.9fr 0.8fr 0.9fr;
-        gap: 6px;
-        padding: 0 4px;
-        margin-bottom: 8px;
-    }
-    .receive-grid-header div {
-        font-size: 10px;
-        font-weight: 700;
-        color: #4A7C59;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .receive-line-row {
-        display: grid;
-        grid-template-columns: 0.8fr 1fr 1.3fr 0.9fr 1fr 0.9fr 0.8fr 0.9fr;
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .receive-line-row input {
-        padding: 10px 4px;
-        font-size: 11px;
-        text-align: center;
-    }
-
-    .btn-main {
-        width: 100%;
-        padding: 14px;
-        margin: 10px 0 0 0;
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        background: linear-gradient(135deg, #4A7C59, #33593D);
-        box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 124, 89, 0.35); }
-    .btn-main:active { transform: translateY(1px); }
-
-    .popup-trigger-btn {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-        color: white; border: none; padding: 14px; border-radius: 10px;
-        font-size: 13px; font-weight: bold; cursor: pointer; width: 100%;
-        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
-        transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px;
-    }
-    .popup-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
-    .popup-trigger-btn:active { transform: translateY(1px); }
-
-    .overlay-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 25, 20, 0.85); backdrop-filter: blur(4px);
-        z-index: 99999; flex-direction: column; padding: 15px; opacity: 0; transition: opacity 0.3s ease;
-    }
-    .overlay-modal.show { opacity: 1; }
-    
-    .modal-content {
-        background: #FFFFFF; width: 100%; height: 100%; border-radius: 16px;
-        display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;
-    }
-    .overlay-modal.show .modal-content { transform: scale(1); }
-
-    .modal-header {
-        padding: 15px 20px; background: #F4F7F4; display: flex;
-        justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8E2;
-    }
-    .modal-header h3 { margin: 0; font-size: 15px; color: #1E2B23; font-weight: 700; }
-    .close-btn {
-        background: #FEE2E2; color: #DC2626; border: none; padding: 8px 14px;
-        border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
-        transition: all 0.2s ease;
-    }
-    .close-btn:hover { background: #FECACA; transform: scale(1.05); }
-
-    .modal-body { padding: 15px; overflow-y: auto; flex: 1; background: #FAFCFA; }
-
-    .fullscreen-modal {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.9); z-index: 999999; justify-content: center; align-items: center;
-        padding: 20px; flex-direction: column;
-    }
-    .fullscreen-modal img {
-        max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-    }
-    .close-fullscreen {
-        position: absolute; top: 20px; right: 20px; background: #EF4444; color: white;
-        border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .table-container {
-        width: 100%; border-radius: 10px; overflow-x: auto;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #E2E8E2; background: #FFFFFF;
-        -webkit-overflow-scrolling: touch;
-    }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; white-space: nowrap; }
-    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E2E8E2; color: #1E2B23; }
-    th { background: #EAF0EA; color: #2F4F38; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #F8FAF8; }
-    tfoot td { background: #F4F7F4; color: #2F4F38; font-weight: 700; border-top: 2px solid #D1DED1; position: sticky; bottom: 0; z-index: 10; }
-    
-    .action-btns { display: flex; gap: 6px; justify-content: center; }
-    .edit-action-btn { background: #64748B; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; }
-    .edit-action-btn:hover { background: #475569; }
-    .del-action-btn { background: #EF4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s ease; }
-    .del-action-btn:hover { background: #DC2626; box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3); }
-
-    .excess-text { color: #DC2626; font-weight: 700; }
-
-    .action-complete { background: #526E51; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
-    .action-running { background: #D97706; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; }
+/* Preview table also scrolls horizontally on small screens */
+.preview-paper table{
+    width:max-content;
+    min-width:1000px;
+    white-space:nowrap;
+}
+}
+@media print{
+html,body{background:#FFF!important;color:#111!important}
+body{padding:0;display:block}
+.main-card,.overlay-modal:not(#printPreviewModal),#fullscreenModal{display:none!important}
+#printPreviewModal{display:block!important;position:static!important;background:#FFF!important;padding:0!important}
+#printPreviewModal .modal-content{display:block!important;height:auto!important;max-width:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+#printPreviewModal .modal-header{display:none!important}
+#printPreviewModal .modal-body{display:block!important;padding:0!important;background:#FFF!important;overflow:visible!important}
+.preview-paper{max-width:none!important;border:0!important;box-shadow:none!important;margin:0!important;padding:12mm!important}
+.preview-paper table{width:100%!important}
+.preview-paper th{background:#EEE!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
-
 <div class="main-card">
-    <div class="top-nav">
-        <a href="dashboard.html" class="back-btn">← Back to Menu</a>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="completed-checkbox">
-                <input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()">
-                <label for="top_completed_status">Completed</label>
-            </div>
-            <div id="bitmapDisplayContainer"></div>
-        </div>
-    </div>
+<div class="top-nav">
+<a href="dashboard.html" class="back-btn">← Back to Menu</a>
+<div style="display:flex;align-items:center;gap:10px">
+<div class="completed-checkbox"><input type="checkbox" id="top_completed_status" onchange="quickCompleteToggle()"><label for="top_completed_status">Completed</label></div>
+<div id="bitmapDisplayContainer"></div>
+</div>
+</div>
+<h2 class="color: #ffffff; /* Inga unga color-a change pannikalam */">Dyeing Colour Received</h2>
 
-    <h2 class="card-header">Dyeing Colour Received</h2>
+<div class="form-section" style="margin-top:10px">
+<div class="section-badge">Receive Info</div>
+<div class="form-grid">
+<div class="form-group"><label>Received Date</label><input type="date" id="receiveDate"></div>
+<div class="form-group"><label>Select Design Number</label><select id="designNumber" onchange="loadPendingItems()"><option value="">Select Design No</option></select></div>
+</div>
+</div>
 
-    <!-- Section: Receive Info -->
-    <div class="form-section" style="margin-top: 10px;">
-        <div class="section-badge">Receive Info</div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Received Date</label>
-                <input type="date" id="receiveDate">
-            </div>
-            <div class="form-group">
-                <label>Select Design Number</label>
-                <select id="designNumber" onchange="loadPendingItems()">
-                    <option value="">Select Design No</option>
-                </select>
-            </div>
-        </div>
-    </div>
+<div class="form-section" style="background:transparent;border:none;padding:0">
+<div class="section-badge" style="top:-15px;left:0">Receiving Items</div>
+<div class="checkbox-container" style="margin-top:20px">
+<label for="combineToggle" style="font-size:11px;font-weight:700;color:#4A7C59;cursor:pointer">🔗 Combine Same Count, Colour & Unit</label>
+<input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width:18px;height:18px;accent-color:#4A7C59">
+</div>
+<div id="receiveLinesContainer"></div>
+</div>
 
-    <!-- Section: Yarn Details -->
-    <div class="form-section" style="background: transparent; border: none; padding: 0;">
-        <div class="section-badge" style="top: -15px; left: 0;">Receiving Items</div>
-        
-        <div class="checkbox-container" style="margin-top: 20px;">
-            <label for="combineToggle" style="font-size: 11px; font-weight: 700; color: #4A7C59; cursor: pointer; margin:0;">🔗 Combine Same Count, Colour & Unit</label>
-            <input type="checkbox" id="combineToggle" checked onchange="loadPendingItems()" style="width: 18px; height: 18px; accent-color: #4A7C59; cursor: pointer;">
-        </div>
+<button class="btn-main" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">✅ Save Received Entry</button>
 
-        <div id="receiveLinesContainer"></div>
-    </div>
-
-    <button class="btn-main" id="saveReceiveBtnTxt" onclick="saveReceiveEntry()">✅ Save Received Entry</button>
+<div class="front-action-row">
     <button class="popup-trigger-btn" onclick="openModal('receivedListModal')">📊 View Received Records</button>
+    <button class="preview-front-btn" onclick="openPreview()">👁 Preview</button>
+</div>
 </div>
 
-<!-- Full-Screen Modal for Received Records List -->
 <div id="receivedListModal" class="overlay-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>📊 Received & Loss Records</h3>
-            <button class="close-btn" onclick="closeModal('receivedListModal')">Close ✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Design</th>
-                            <th>Count</th>
-                            <th>Colour</th>
-                            <th>Dyeing Unit</th>
-                            <th>Issued Wt</th>
-                            <th>Rcvd Wt</th>
-                            <th>Loss Wt</th>
-                            <th>Loss %</th>
-                            <th>Excess Wt</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="receivedListBody"></tbody>
-                    <tfoot id="receivedListFoot"></tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="modal-content">
+<div class="modal-header">
+<h3>📊 Received & Loss Records</h3>
+<div class="modal-actions">
+<button class="close-btn" onclick="closeModal('receivedListModal')">Close ✕</button>
+</div>
+</div>
+<div class="modal-body">
+<div class="table-container"><table>
+<thead><tr><th>Date</th><th>Design</th><th>Count</th><th>Colour</th><th>Dyeing Unit</th><th>Issued Wt</th><th>Rcvd Wt</th><th>Loss Wt</th><th>Loss %</th><th>Excess Wt</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="receivedListBody"></tbody><tfoot id="receivedListFoot"></tfoot>
+</table></div>
+</div>
+</div>
 </div>
 
-<!-- Fullscreen Image Modal -->
+<div id="printPreviewModal" class="overlay-modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>👁 Dyeing Receive Preview</h3>
+<div class="modal-actions">
+<button class="print-btn" onclick="printPreview()">🖨 Print</button>
+<button class="close-btn" onclick="closeModal('printPreviewModal')">Close ✕</button>
+</div>
+</div>
+<div class="modal-body"><div id="previewContent" class="preview-paper"></div></div>
+</div>
+</div>
+
 <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
-    <button class="close-fullscreen">Close ✕</button>
-    <img id="fullscreenImg" src="" alt="Fullscreen Preview">
+<button class="close-fullscreen">Close ✕</button><img id="fullscreenImg" src="" alt="Fullscreen Preview">
 </div>
 
 <script>
-function checkUserPermission() {
-    let userRole = localStorage.getItem('erp_logged_role') || localStorage.getItem('user_role');
-    if (userRole !== 'Administrator' && userRole !== 'Admin') {
-        let permissions = JSON.parse(localStorage.getItem('user_permissions') || '{}');
-        if (permissions['dyeing_receive.html'] === false || permissions['dyeing_receive'] === false) return false;
-    }
-    return true;
+function checkUserPermission(){
+let userRole=localStorage.getItem('erp_logged_role')||localStorage.getItem('user_role');
+if(userRole!=='Administrator'&&userRole!=='Admin'){
+let permissions=JSON.parse(localStorage.getItem('user_permissions')||'{}');
+if(permissions['dyeing_receive.html']===false||permissions['dyeing_receive']===false)return false}
+return true
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (!checkUserPermission()) {
-        alert("Access Denied! You do not have permission to access this page. ❌");
-        window.location.href = "dashboard.html";
-        return;
-    }
-    document.getElementById('receiveDate').valueAsDate = new Date();
-    loadPendingDesigns();
-});
-
-function openModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-    if(modalId === 'receivedListModal') {
-        renderReceivedList();
-    }
+document.addEventListener('DOMContentLoaded',function(){
+if(!checkUserPermission()){alert("Access Denied! You do not have permission to access this page. ❌");location.href="dashboard.html";return}
+document.getElementById('receiveDate').valueAsDate=new Date();loadPendingDesigns()
+})
+function openModal(id){let m=document.getElementById(id);m.style.display='flex';setTimeout(()=>m.classList.add('show'),10);if(id==='receivedListModal')renderReceivedList();if(id==='printPreviewModal')buildPreview()}
+function closeModal(id){let m=document.getElementById(id);m.classList.remove('show');setTimeout(()=>m.style.display='none',250)}
+window.openFullscreenImage=function(src){if(!src||src==='null')return;document.getElementById('fullscreenImg').src=src;document.getElementById('fullscreenModal').style.display='flex'}
+window.closeFullscreenImage=function(){document.getElementById('fullscreenModal').style.display='none'}
+function cleanDesignName(s){return s?s.toString().replace('#','').trim().toLowerCase():''}
+function safeText(v){return String(v??'').replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]))}
+function parseJsonArray(k){try{let v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v:[]}catch(e){return[]}}
+function parseJsonObject(k){try{let v=JSON.parse(localStorage.getItem(k)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(e){return{}}}
+function loadBitmapImage(){
+let a=document.getElementById('designNumber').value||localStorage.getItem('selected_design_number'),s=parseJsonObject('design_specs'),c=document.getElementById('bitmapDisplayContainer'),clean=cleanDesignName(a),key=Object.keys(s).find(k=>cleanDesignName(k)===clean)||a;
+if(a&&s[key]&&s[key].bitmap){let b=s[key].bitmap;c.innerHTML=`<img src="${safeText(b)}" alt="Design Bitmap" onclick="openFullscreenImage(this.src)" title="Click to view full screen">`}else c.innerHTML=''
 }
-
-function closeModal(modalId) {
-    let modal = document.getElementById(modalId);
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
+function loadPendingDesigns(){
+loadBitmapImage();let p=JSON.parse(localStorage.getItem('pre_design_numbers')||'[]'),m=JSON.parse(localStorage.getItem('design_masters_data')||'[]'),s=JSON.parse(localStorage.getItem('design_specs')||'{}'),o=JSON.parse(localStorage.getItem('party_orders_data')||'[]'),i=parseJsonArray('dyeing_issue_records'),all=new Set();
+p.forEach(d=>all.add(d));if(Array.isArray(m))m.forEach(d=>{if(d.name||d.designNo)all.add(d.name||d.designNo)});Object.keys(s).forEach(d=>all.add(d));if(Array.isArray(o))o.forEach(x=>{if(x.designNumber||x.designNo)all.add(x.designNumber||x.designNo)});i.forEach(r=>{let d=r.designNo||r.designNumber||r.design||r.name||'';if(d.trim())all.add(d.trim())});
+let sel=document.getElementById('designNumber');sel.innerHTML='<option value="">Select Design No</option>';Array.from(all).forEach(d=>{if(d)sel.innerHTML+=`<option value="${safeText(d)}">${safeText(d)}</option>`});
+let a=localStorage.getItem('selected_design_number');if(a&&all.has(a)){sel.value=a;loadPendingItems()}
 }
-
-window.openFullscreenImage = function(src) {
-    if(!src || src === '' || src === 'null') return;
-    document.getElementById('fullscreenImg').src = src;
-    document.getElementById('fullscreenModal').style.display = 'flex';
-};
-window.closeFullscreenImage = function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-};
-
-function cleanDesignName(str) {
-    return str ? str.toString().replace('#', '').trim().toLowerCase() : '';
+function loadPendingItems(){
+loadBitmapImage();let d=document.getElementById('designNumber').value,c=document.getElementById('receiveLinesContainer');c.innerHTML='';if(!d)return;
+let specs=parseJsonObject('design_specs'),key=Object.keys(specs).find(k=>cleanDesignName(k)===cleanDesignName(d))||d,status=(specs[key]&&specs[key].status||'').toLowerCase(),receives=parseJsonArray('dyeing_receive_records'),rec=receives.find(r=>cleanDesignName(r.designNo||r.designNumber)===cleanDesignName(d));
+document.getElementById('top_completed_status').checked=status==='completed'||(rec&&rec.status==='completed');
+let issues=parseJsonArray('dyeing_issue_records'),pending=issues.filter(r=>(r.status||'').toLowerCase().trim()!=='received'&&cleanDesignName(r.designNo||r.designNumber||r.design||r.name)===cleanDesignName(d));
+let list=[];
+if(document.getElementById('combineToggle').checked){
+let map=new Map();pending.forEach(x=>{let count=(x.count||x.yarnCount||'-').toString().trim(),color=(x.color||x.colour||'-').toString().trim(),unit=(x.unit||x.dyeingName||'-').toString().trim(),key=count.toLowerCase()+'_'+color.toLowerCase()+'_'+unit.toLowerCase();if(!map.has(key))map.set(key,{count,color,unit,issueWt:0,ids:[]});let q=map.get(key);q.issueWt+=parseFloat(x.issueWt||x.weight||x.wt)||0;q.ids.push(x.id)});list=[...map.values()]
+}else list=pending.map(x=>({count:x.count||x.yarnCount||'-',color:x.color||x.colour||'-',unit:x.unit||x.dyeingName||'-',issueWt:parseFloat(x.issueWt||x.weight||x.wt)||0,ids:[x.id]}));
+if(!list.length){c.innerHTML='<div style="font-size:12px;text-align:center;padding:15px;color:#4A7C59;background:#FFF;border-radius:10px;border:1px solid #D1DED1"><b>No pending issues found for this Design!</b><br><span style="font-size:10px;color:#DC2626">(Note: Make sure you have Issued the Yarn in "Dyeing Issue" page first)</span></div>';return}
+let h='<div class="receive-box"><div class="receive-grid-header"><div>Count</div><div>Colour</div><div>Dyeing Unit</div><div>Iss Wt</div><div>Rcvd Wt</div><div>Loss Wt</div><div>Loss %</div><div>Excess</div></div>';
+list.forEach(x=>h+=`<div class="receive-line-row" data-ids="${x.ids.join(',')}" data-unit="${safeText(x.unit)}"><input class="inp-count" value="${safeText(x.count)}" readonly><input class="inp-color" value="${safeText(x.color)}" readonly><input class="inp-unit" value="${safeText(x.unit)}" readonly><input class="inp-issued" value="${x.issueWt.toFixed(3)}" readonly><input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)"><input class="inp-loss-wt" placeholder="0.00" readonly><input class="inp-loss-perc" placeholder="0%" readonly><input class="inp-excess-wt" placeholder="-" readonly></div>`);
+c.innerHTML=h+'</div>'
 }
-
-function safeText(value) {
-    return String(value ?? '').replace(/[&<>\"']/g, function(ch) {
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch];
-    });
+function calculateLoss(inp){
+let r=inp.closest('.receive-line-row'),issued=parseFloat(r.querySelector('.inp-issued').value)||0,received=parseFloat(inp.value)||0,l=r.querySelector('.inp-loss-wt'),p=r.querySelector('.inp-loss-perc'),e=r.querySelector('.inp-excess-wt');
+if(received>0&&received<=issued){let lw=issued-received,lp=issued?(lw/issued)*100:0;l.value=lw.toFixed(3);p.value=lp.toFixed(2)+'%';if(lp>5){e.value=(lw-issued*.05).toFixed(3);e.style.color='#DC2626'}else{e.value='-';e.style.color='#10B981'}}else if(received>issued){l.value='0.000';p.value='0.00%';e.value='-';e.style.color='#10B981'}else{l.value='';p.value='';e.value='-';e.style.color='#10B981'}
 }
-
-function parseJsonArray(key) {
-    try {
-        const value = JSON.parse(localStorage.getItem(key) || '[]');
-        return Array.isArray(value) ? value : [];
-    } catch (e) {
-        console.warn('Invalid localStorage data:', key, e);
-        return [];
-    }
+async function quickCompleteToggle(){
+if(!checkUserPermission()){alert("Access Denied!");document.getElementById('top_completed_status').checked=!document.getElementById('top_completed_status').checked;return}
+let d=document.getElementById('designNumber').value,done=document.getElementById('top_completed_status').checked;if(!d){alert("Mudhala Design Number select pannunga bro");document.getElementById('top_completed_status').checked=false;return}
+let status=done?'completed':'running',clean=cleanDesignName(d),r=parseJsonArray('dyeing_receive_records'),updated=false;r.forEach(x=>{if(cleanDesignName(x.designNo||x.designNumber)===clean){x.status=status;updated=true}});if(!updated){alert('இந்த Design-க்கு Received record இன்னும் இல்லை. முதலில் Received Entry save செய்யவும்.');document.getElementById('top_completed_status').checked=false;return}
+localStorage.setItem('dyeing_receive_records',JSON.stringify(r));let s=parseJsonObject('design_specs'),k=Object.keys(s).find(x=>cleanDesignName(x)===clean)||d;if(!s[k])s[k]={};s[k].status=status;localStorage.setItem('design_specs',JSON.stringify(s));
+try{if(window.firebaseSave){await window.firebaseSave('dyeing_receive_records',r);await window.firebaseSave('design_specs',s)}if(window.firebaseSaveIndividual)await window.firebaseSaveIndividual(k,s[k])}catch(e){console.error(e)}
+renderReceivedList();alert(`Design ${d} status '${done?'COMPLETED':'RUNNING'}' ah update aagiduchu ✅`)
 }
-
-function parseJsonObject(key) {
-    try {
-        const value = JSON.parse(localStorage.getItem(key) || '{}');
-        return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-    } catch (e) {
-        console.warn('Invalid localStorage data:', key, e);
-        return {};
-    }
+async function saveReceiveEntry(){
+if(!checkUserPermission()){alert("Access Denied!");return}
+let date=document.getElementById('receiveDate').value,d=document.getElementById('designNumber').value,done=document.getElementById('top_completed_status').checked;if(!d){alert("Please select a Design Number!");return}
+let receives=parseJsonArray('dyeing_receive_records'),clean=cleanDesignName(d),rows=document.querySelectorAll('.receive-line-row');if(!rows.length)return;
+let btn=document.getElementById('saveReceiveBtnTxt'),old=btn.innerText;btn.innerText='⏳ Saving to Cloud...';let issues=parseJsonArray('dyeing_issue_records'),saved=0;
+rows.forEach(row=>{let rw=parseFloat(row.querySelector('.inp-received').value)||0;if(rw<=0)return;let issued=parseFloat(row.querySelector('.inp-issued').value)||0;if(issued<=0)return;let ids=(row.dataset.ids||'').split(',').filter(Boolean),unit=row.dataset.unit||'-',loss=parseFloat(row.querySelector('.inp-loss-wt').value)||0,ex=row.querySelector('.inp-excess-wt').value;
+receives.push({id:Date.now()+Math.random(),issueIds:ids,issueId:ids[0],date,unit,designNo:d,count:row.querySelector('.inp-count').value,color:row.querySelector('.inp-color').value,issuedWt:issued.toFixed(3),receivedWt:rw.toFixed(3),lossWt:loss.toFixed(3),lossPerc:row.querySelector('.inp-loss-perc').value||'0%',excessWt:ex&&ex!=='-'?parseFloat(ex).toFixed(3):'-',status:done?'completed':'running'});
+ids.forEach(id=>{let ix=issues.findIndex(x=>String(x.id)===String(id));if(ix>-1)issues[ix].status='Received'});saved++});
+if(saved){let specs=parseJsonObject('design_specs'),k=Object.keys(specs).find(x=>cleanDesignName(x)===clean)||d;if(!specs[k])specs[k]={};specs[k].status=done?'completed':'running';localStorage.setItem('design_specs',JSON.stringify(specs));localStorage.setItem('dyeing_issue_records',JSON.stringify(issues));localStorage.setItem('dyeing_receive_records',JSON.stringify(receives));
+try{if(window.firebaseSave){await window.firebaseSave('dyeing_issue_records',issues);await window.firebaseSave('dyeing_receive_records',receives);await window.firebaseSave('design_specs',specs)}if(window.firebaseSaveIndividual)await window.firebaseSaveIndividual(k,specs[k])}catch(e){alert('Local save completed, but Cloud sync failed. ⚠️');btn.innerText=old;return}
+alert("Received Entry Saved to Cloud Successfully! ✅☁️");document.getElementById('receiveLinesContainer').innerHTML='';document.getElementById('top_completed_status').checked=false;loadPendingDesigns();renderReceivedList()
+}else alert("Please enter Received Weight for at least one item.");btn.innerText=old
 }
-
-function loadBitmapImage() {
-    let activeDesign = document.getElementById('designNumber').value || localStorage.getItem('selected_design_number');
-    let designSpecs = parseJsonObject('design_specs');
-    let bitmapContainer = document.getElementById('bitmapDisplayContainer');
-    
-    let clean = activeDesign ? activeDesign.toString().replace('#', '').trim().toLowerCase() : '';
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === clean) || activeDesign;
-
-    if (activeDesign && designSpecs[specKey] && designSpecs[specKey].bitmap) {
-        let b64 = designSpecs[specKey].bitmap;
-        bitmapContainer.innerHTML = `<img src="${b64}" alt="Design Bitmap" onclick="openFullscreenImage('${b64}')" title="Click to view full screen">`;
-    } else {
-        bitmapContainer.innerHTML = '';
-    }
+async function toggleStatus(id,status){
+if(!checkUserPermission())return;if(!confirm(status==='completed'?'Change this receive entry to Completed?':'Change this receive entry to Running?'))return;
+let r=parseJsonArray('dyeing_receive_records'),ix=r.findIndex(x=>String(x.id)===String(id));if(ix<0)return;r[ix].status=status;localStorage.setItem('dyeing_receive_records',JSON.stringify(r));let d=r[ix].designNo;
+if(d){let s=parseJsonObject('design_specs'),k=Object.keys(s).find(x=>cleanDesignName(x)===cleanDesignName(d))||d;if(!s[k])s[k]={};s[k].status=status;localStorage.setItem('design_specs',JSON.stringify(s));if(window.firebaseSave)await window.firebaseSave('design_specs',s);if(window.firebaseSaveIndividual)await window.firebaseSaveIndividual(k,s[k])}
+if(window.firebaseSave)await window.firebaseSave('dyeing_receive_records',r);renderReceivedList()
 }
-
-function loadPendingDesigns() {
-    loadBitmapImage();
-    let preDesignList = JSON.parse(localStorage.getItem('pre_design_numbers')) || [];
-    let designMasters = JSON.parse(localStorage.getItem('design_masters_data')) || [];
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let partyOrders = JSON.parse(localStorage.getItem('party_orders_data')) || [];
-    let issueRecords = parseJsonArray('dyeing_issue_records');
-
-    let allDesigns = new Set();
-    
-    preDesignList.forEach(d => allDesigns.add(d));
-    if (Array.isArray(designMasters)) designMasters.forEach(d => { if(d.name || d.designNo) allDesigns.add(d.name || d.designNo); });
-    Object.keys(designSpecs).forEach(d => allDesigns.add(d));
-    if (Array.isArray(partyOrders)) partyOrders.forEach(o => { if(o.designNumber || o.designNo) allDesigns.add(o.designNumber || o.designNo); });
-    
-    issueRecords.forEach(r => {
-        let d = r.designNo || r.designNumber || r.design || r.name || "";
-        if (d.trim() !== "") allDesigns.add(d.trim());
-    });
-
-    let select = document.getElementById('designNumber');
-    let html = '<option value="">Select Design No</option>';
-    
-    Array.from(allDesigns).forEach(function(d) {
-        if(d) html += '<option value="' + d + '">' + d + '</option>';
-    });
-    select.innerHTML = html;
-
-    let activeDesign = localStorage.getItem('selected_design_number');
-    if(activeDesign && allDesigns.has(activeDesign)) {
-        select.value = activeDesign;
-        loadPendingItems();
-    }
+async function editReceiveRecord(id){
+if(!checkUserPermission())return;closeModal('receivedListModal');let r=parseJsonArray('dyeing_receive_records'),issues=parseJsonArray('dyeing_issue_records'),ix=r.findIndex(x=>String(x.id)===String(id));if(ix<0)return;let sel=r[ix];document.getElementById('top_completed_status').checked=sel.status==='completed';
+let batch=r.filter(x=>cleanDesignName(x.designNo)===cleanDesignName(sel.designNo)&&x.date===sel.date&&x.unit===sel.unit);batch.forEach(x=>(x.issueIds||[x.issueId]).forEach(i=>{let j=issues.findIndex(q=>String(q.id)===String(i));if(j>-1)issues[j].status='Pending'}));let ids=batch.map(x=>String(x.id));r=r.filter(x=>!ids.includes(String(x.id)));localStorage.setItem('dyeing_receive_records',JSON.stringify(r));localStorage.setItem('dyeing_issue_records',JSON.stringify(issues));if(window.firebaseSave){await window.firebaseSave('dyeing_receive_records',r);await window.firebaseSave('dyeing_issue_records',issues)}
+document.getElementById('receiveDate').value=sel.date;loadPendingDesigns();document.getElementById('designNumber').value=sel.designNo;loadPendingItems();setTimeout(()=>document.querySelectorAll('.receive-line-row').forEach(row=>{let ids=(row.dataset.ids||'').split(',');let m=batch.find(x=>(x.issueIds||[x.issueId]).map(String).some(i=>ids.includes(String(i))));if(m){let inp=row.querySelector('.inp-received');inp.value=m.receivedWt;calculateLoss(inp)}}),150);window.scrollTo({top:0,behavior:'smooth'})
 }
-
-function loadPendingItems() {
-    loadBitmapImage();
-    renderReceivedList(); 
-    let dNoInput = document.getElementById('designNumber').value;
-    let container = document.getElementById('receiveLinesContainer');
-    container.innerHTML = '';
-
-    if(!dNoInput) return;
-
-    let designSpecs = parseJsonObject('design_specs');
-    let cleanKey = dNoInput ? dNoInput.toString().replace('#', '').trim().toLowerCase() : '';
-    let specKey = Object.keys(designSpecs).find(k => (k ? k.toString().replace('#', '').trim().toLowerCase() : '') === cleanKey) || dNoInput;
-
-    let specStatus = (designSpecs[specKey] && designSpecs[specKey].status) ? designSpecs[specKey].status.toLowerCase() : '';
-    let receives = parseJsonArray('dyeing_receive_records');
-    let rec = receives.find(r => cleanDesignName(r.designNo || r.designNumber) === cleanKey);
-
-    if(specStatus === 'completed' || (rec && rec.status && rec.status.toLowerCase() === 'completed')) {
-        document.getElementById('top_completed_status').checked = true;
-    } else {
-        document.getElementById('top_completed_status').checked = false;
-    }
-
-    let issueRecords = parseJsonArray('dyeing_issue_records');
-    
-    let pendingItems = issueRecords.filter(r => {
-        let stat = (r.status || "").toLowerCase().trim();
-        let rDno = cleanDesignName(r.designNo || r.designNumber || r.design || r.name || "");
-        return (stat !== 'received') && (rDno === cleanKey);
-    });
-    
-    let isCombineChecked = document.getElementById('combineToggle').checked;
-
-    if(pendingItems.length > 0) {
-        let displayList = [];
-
-        if (isCombineChecked) {
-            let map = new Map();
-            pendingItems.forEach(item => {
-                let c = (item.count || item.yarnCount || '-').toString().toLowerCase().trim();
-                let col = (item.color || item.colour || '-').toString().toLowerCase().trim();
-                let u = (item.unit || item.dyeingName || '-').toString().toLowerCase().trim();
-                
-                let key = c + '_' + col + '_' + u;
-                if (!map.has(key)) {
-                    map.set(key, {
-                        count: item.count || item.yarnCount || '-',
-                        color: item.color || item.colour || '-',
-                        unit: item.unit || item.dyeingName || '-',
-                        issueWt: 0,
-                        ids: []
-                    });
-                }
-                let obj = map.get(key);
-                obj.issueWt += parseFloat(item.issueWt || item.weight || item.wt) || 0;
-                obj.ids.push(item.id);
-            });
-            displayList = Array.from(map.values());
-        } else {
-            displayList = pendingItems.map(item => ({
-                count: item.count || item.yarnCount || '-',
-                color: item.color || item.colour || '-',
-                unit: item.unit || item.dyeingName || '-',
-                issueWt: parseFloat(item.issueWt || item.weight || item.wt) || 0,
-                ids: [item.id]
-            }));
-        }
-
-        let gridHtml = `
-            <div style="overflow-x: auto; background: #FFFFFF; padding: 15px; border-radius: 10px; border: 1px solid #D1DED1;">
-                <div style="min-width: 650px;">
-                    <div class="receive-grid-header">
-                        <div>Count</div>
-                        <div>Colour</div>
-                        <div>Dyeing Unit</div>
-                        <div>Iss Wt</div>
-                        <div>Rcvd Wt</div>
-                        <div>Loss Wt</div>
-                        <div>Loss %</div>
-                        <div>Excess</div>
-                    </div>
-        `;
-
-        displayList.forEach(item => {
-            gridHtml += `
-                <div class="receive-line-row" data-ids="${item.ids.join(',')}" data-unit="${item.unit}">
-                    <input type="text" class="inp-count" value="${item.count}" readonly>
-                    <input type="text" class="inp-color" value="${item.color}" readonly>
-                    <input type="text" class="inp-unit" value="${item.unit}" readonly>
-                    <input type="text" class="inp-issued" value="${item.issueWt.toFixed(3)}" readonly>
-                    <input type="number" class="inp-received" placeholder="Wt" oninput="calculateLoss(this)">
-                    <input type="text" class="inp-loss-wt" placeholder="0.00" readonly style="color:#D97706; font-weight:bold;">
-                    <input type="text" class="inp-loss-perc" placeholder="0%" readonly>
-                    <input type="text" class="inp-excess-wt" placeholder="-" readonly style="color:#10B981; font-weight:bold;">
-                </div>
-            `;
-        });
-
-        gridHtml += `</div></div>`;
-        container.innerHTML = gridHtml;
-
-    } else {
-        container.innerHTML = `
-            <div style="font-size:12px; text-align:center; padding:15px; color:#4A7C59; background:#FFFFFF; border-radius:10px; border:1px solid #D1DED1;">
-                <b>No pending issues found for this Design!</b><br>
-                <span style="font-size: 10px; color: #DC2626;">(Note: Make sure you have Issued the Yarn in "Dyeing Issue" page first)</span>
-            </div>`;
-    }
+async function deleteReceiveRecord(id){
+if(!checkUserPermission()||!confirm("Are you sure you want to delete this record (and related batch items)? They will revert to Pending status."))return;
+let r=parseJsonArray('dyeing_receive_records'),issues=parseJsonArray('dyeing_issue_records'),ix=r.findIndex(x=>String(x.id)===String(id));if(ix<0)return;let sel=r[ix],batch=r.filter(x=>cleanDesignName(x.designNo)===cleanDesignName(sel.designNo)&&x.date===sel.date&&x.unit===sel.unit);batch.forEach(x=>(x.issueIds||[x.issueId]).forEach(i=>{let j=issues.findIndex(q=>String(q.id)===String(i));if(j>-1)issues[j].status='Pending'}));let ids=batch.map(x=>String(x.id));r=r.filter(x=>!ids.includes(String(x.id)));localStorage.setItem('dyeing_receive_records',JSON.stringify(r));localStorage.setItem('dyeing_issue_records',JSON.stringify(issues));if(window.firebaseSave){await window.firebaseSave('dyeing_receive_records',r);await window.firebaseSave('dyeing_issue_records',issues)}loadPendingDesigns();renderReceivedList();document.getElementById('receiveLinesContainer').innerHTML='';document.getElementById('designNumber').value=''
 }
-
-function calculateLoss(inp) {
-    let row = inp.closest('.receive-line-row');
-    let issuedWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
-    let receivedWt = parseFloat(inp.value) || 0;
-
-    let lossWtInp = row.querySelector('.inp-loss-wt');
-    let lossPercInp = row.querySelector('.inp-loss-perc');
-    let excessWtInp = row.querySelector('.inp-excess-wt');
-
-    if(receivedWt > 0 && receivedWt <= issuedWt) {
-        let lossWt = issuedWt - receivedWt;
-        let lossPerc = (lossWt / issuedWt) * 100;
-        
-        lossWtInp.value = lossWt.toFixed(3);
-        lossPercInp.value = lossPerc.toFixed(2) + '%';
-        
-        if(lossPerc > 5) {
-            let allowedLossWt = issuedWt * 0.05; 
-            let excessWt = lossWt - allowedLossWt;
-            
-            excessWtInp.value = excessWt.toFixed(3);
-            excessWtInp.style.color = "#DC2626";
-            excessWtInp.style.fontWeight = "bold";
-        } else {
-            excessWtInp.value = "-";
-            excessWtInp.style.color = "#10B981";
-            excessWtInp.style.fontWeight = "bold";
-        }
-    } else if (receivedWt > issuedWt) {
-        lossWtInp.value = "0.000";
-        lossPercInp.value = "0.00%";
-        excessWtInp.value = "-";
-    } else {
-        lossWtInp.value = "";
-        lossPercInp.value = "";
-        excessWtInp.value = "";
-        excessWtInp.style.color = "#10B981";
-    }
+function getFilteredRecords(){let r=parseJsonArray('dyeing_receive_records'),d=document.getElementById('designNumber').value.trim();return d?r.filter(x=>cleanDesignName(x.designNo||x.designNumber)===cleanDesignName(d)):r}
+function formatDate(v){let d=new Date(v);return isNaN(d)?safeText(v):('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()}
+function renderReceivedList(){
+let r=getFilteredRecords(),body=document.getElementById('receivedListBody'),foot=document.getElementById('receivedListFoot');body.innerHTML='';foot.innerHTML='';if(!r.length){body.innerHTML='<tr><td colspan="12" style="padding:15px">No Dyeing Orders Received for this design yet.</td></tr>';return}
+let totals={i:0,rcv:0,l:0,e:0};r.slice().reverse().forEach(x=>{let i=parseFloat(x.issuedWt)||0,q=parseFloat(x.receivedWt)||0,l=parseFloat(x.lossWt)||0,e=x.excessWt&&x.excessWt!=='-'?parseFloat(x.excessWt)||0:0;totals.i+=i;totals.rcv+=q;totals.l+=l;totals.e+=e;let st=x.status||'running';body.innerHTML+=`<tr><td>${formatDate(x.date)}</td><td><b>${safeText(x.designNo)}</b></td><td>${safeText(x.count)}</td><td>${safeText(x.color)}</td><td><b>${safeText(x.unit||'-')}</b></td><td>${i.toFixed(3)}</td><td><b style="color:#10B981">${q.toFixed(3)}</b></td><td>${l.toFixed(3)}</td><td>${safeText(x.lossPerc)}</td><td>${e?'<span class="excess-text">'+e.toFixed(3)+'</span>':'-'}</td><td style="font-weight:bold;text-transform:uppercase">${safeText(st)}</td><td class="action-btns">${st==='running'?`<button class="action-complete" onclick="toggleStatus('${x.id}','completed')">Complete</button>`:`<button class="action-running" onclick="toggleStatus('${x.id}','running')">Running</button>`}<button class="edit-action-btn" onclick="editReceiveRecord('${x.id}')">✏️</button><button class="del-action-btn" onclick="deleteReceiveRecord('${x.id}')">🗑️</button></td></tr>`});
+foot.innerHTML=`<tr><td colspan="5" style="text-align:right">Grand Total:</td><td>${totals.i.toFixed(3)}</td><td>${totals.rcv.toFixed(3)}</td><td>${totals.l.toFixed(3)}</td><td>-</td><td>${totals.e?totals.e.toFixed(3):'-'}</td><td colspan="2"></td></tr>`
 }
-
-async function quickCompleteToggle() {
-    if (!checkUserPermission()) {
-        alert("Access Denied! You do not have permission. ❌");
-        document.getElementById('top_completed_status').checked = !document.getElementById('top_completed_status').checked;
-        return;
-    }
-
-    let dNo = document.getElementById('designNumber').value;
-    let isCompleted = document.getElementById('top_completed_status').checked;
-
-    if(!dNo) {
-        alert("Mudhala Design Number select pannunga bro");
-        document.getElementById('top_completed_status').checked = false;
-        return;
-    }
-
-    let statusText = isCompleted ? 'completed' : 'running';
-    let cleanDNo = cleanDesignName(dNo);
-
-    let receives = parseJsonArray('dyeing_receive_records');
-    let updated = false;
-
-    receives.forEach(r => {
-        if(cleanDesignName(r.designNo || r.designNumber) === cleanDNo) {
-            r.status = statusText;
-            updated = true;
-        }
-    });
-
-    if(!updated) {
-        alert('இந்த Design-க்கு Received record இன்னும் இல்லை. முதலில் Received Entry save செய்யவும்.');
-        document.getElementById('top_completed_status').checked = false;
-        return;
-    }
-
-    localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
-
-    let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-    let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
-
-    if(!designSpecs[specKey]) {
-        designSpecs[specKey] = {};
-    }
-    designSpecs[specKey].status = statusText;
-    localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-    try {
-        if (window.firebaseSave) {
-            await window.firebaseSave('dyeing_receive_records', receives);
-            await window.firebaseSave('design_specs', designSpecs);
-        }
-        if (window.firebaseSaveIndividual) {
-            await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-        }
-    } catch(e) {
-        console.error("Firebase Sync Error: ", e);
-    }
-
-    renderReceivedList();
-    alert(`Design ${dNo} status '${isCompleted ? 'COMPLETED' : 'RUNNING'}' ah update aagiduchu ✅`);
+function buildPreview(){
+let r=getFilteredRecords(),d=document.getElementById('designNumber').value||'All Designs',date=document.getElementById('receiveDate').value||'';
+let rows='',ti=0,tr=0,tl=0,te=0;r.slice().reverse().forEach(x=>{let i=parseFloat(x.issuedWt)||0,q=parseFloat(x.receivedWt)||0,l=parseFloat(x.lossWt)||0,e=x.excessWt&&x.excessWt!=='-'?parseFloat(x.excessWt)||0:0;ti+=i;tr+=q;tl+=l;te+=e;rows+=`<tr><td>${formatDate(x.date)}</td><td>${safeText(x.designNo)}</td><td>${safeText(x.count)}</td><td>${safeText(x.color)}</td><td>${safeText(x.unit||'-')}</td><td>${i.toFixed(3)}</td><td>${q.toFixed(3)}</td><td>${l.toFixed(3)}</td><td>${safeText(x.lossPerc)}</td><td>${e?e.toFixed(3):'-'}</td><td>${safeText(x.status||'running')}</td></tr>`});
+document.getElementById('previewContent').innerHTML=`<div class="preview-title">DYEING COLOUR RECEIVED</div><div class="preview-subtitle">TEXFRIEND ERP</div><div class="preview-info"><div><b>Design:</b> ${safeText(d)}</div><div><b>Report Date:</b> ${formatDate(date)}</div><div><b>Records:</b> ${r.length}</div></div><table><thead><tr><th>Date</th><th>Design</th><th>Count</th><th>Colour</th><th>Dyeing Unit</th><th>Issued</th><th>Received</th><th>Loss</th><th>Loss %</th><th>Excess</th><th>Status</th></tr></thead><tbody>${rows||'<tr><td colspan="11">No records</td></tr>'}</tbody><tfoot><tr><td colspan="5" style="text-align:right"><b>Grand Total</b></td><td><b>${ti.toFixed(3)}</b></td><td><b>${tr.toFixed(3)}</b></td><td><b>${tl.toFixed(3)}</b></td><td>-</td><td><b>${te?te.toFixed(3):'-'}</b></td><td></td></tr></tfoot></table><div class="preview-total">Printed from TEXFRIEND ERP</div>`
 }
-
-async function saveReceiveEntry() {
-    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
-
-    let dateVal = document.getElementById('receiveDate').value;
-    let dNo = document.getElementById('designNumber').value;
-    let isCompleted = document.getElementById('top_completed_status').checked;
-
-    if(!dNo) {
-        alert("Please select a Design Number!");
-        return;
-    }
-
-    let receives = parseJsonArray('dyeing_receive_records');
-    let cleanDNo = cleanDesignName(dNo);
-
-    let rows = document.querySelectorAll('#receiveLinesContainer .receive-line-row');
-    if(rows.length === 0) return;
-
-    let btn = document.getElementById('saveReceiveBtnTxt');
-    let origText = btn.innerText;
-    btn.innerText = "⏳ Saving to Cloud...";
-
-    let issues = parseJsonArray('dyeing_issue_records');
-    let savedCount = 0;
-
-    rows.forEach(row => {
-        let rcvWt = parseFloat(row.querySelector('.inp-received').value);
-        
-        if(rcvWt > 0) {
-            let issuedCheck = parseFloat(row.querySelector('.inp-issued').value) || 0;
-            if (issuedCheck <= 0) {
-                return;
-            }
-            let recIdsStr = row.getAttribute('data-ids');
-            let recIds = recIdsStr ? recIdsStr.split(',') : [];
-            let unitName = row.getAttribute('data-unit') || '-';
-            
-            let issuedTotalWt = parseFloat(row.querySelector('.inp-issued').value) || 0;
-            let lossWt = parseFloat(row.querySelector('.inp-loss-wt').value) || 0;
-            let lossPerc = row.querySelector('.inp-loss-perc').value || '0%';
-            let excessVal = row.querySelector('.inp-excess-wt').value;
-            let finalExcess = (excessVal && excessVal !== "-") ? parseFloat(excessVal).toFixed(3) : "-";
-
-            receives.push({
-                id: Date.now() + Math.random(),
-                issueIds: recIds,
-                issueId: recIds[0], 
-                date: dateVal,
-                unit: unitName,
-                designNo: dNo,
-                count: row.querySelector('.inp-count').value,
-                color: row.querySelector('.inp-color').value,
-                issuedWt: issuedTotalWt.toFixed(3),
-                receivedWt: rcvWt.toFixed(3),
-                lossWt: lossWt.toFixed(3),
-                lossPerc: lossPerc,
-                excessWt: finalExcess,
-                status: isCompleted ? "completed" : "running"
-            });
-
-            recIds.forEach(id => {
-                let issueIndex = issues.findIndex(r => String(r.id) === String(id));
-                if(issueIndex !== -1) {
-                    issues[issueIndex].status = "Received";
-                }
-            });
-            savedCount++;
-        }
-    });
-
-    if(savedCount > 0) {
-        let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-        let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
-
-        if(!designSpecs[specKey]) designSpecs[specKey] = {};
-        designSpecs[specKey].status = isCompleted ? 'completed' : 'running';
-        localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-
-        localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
-        localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
-        
-        try {
-            if (window.firebaseSave) {
-                await window.firebaseSave('dyeing_issue_records', issues);
-                await window.firebaseSave('dyeing_receive_records', receives);
-                await window.firebaseSave('design_specs', designSpecs);
-            }
-            if (window.firebaseSaveIndividual) {
-                await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-            }
-        } catch (cloudError) {
-            console.error('Dyeing Receive Cloud Sync Error:', cloudError);
-            alert('Local save completed, but Cloud sync failed. Please check your internet/Firebase connection and try again. ⚠️');
-            btn.innerText = origText;
-            return;
-        }
-
-        alert("Received Entry Saved to Cloud Successfully! ✅☁️");
-        
-        document.getElementById('receiveLinesContainer').innerHTML = '';
-        document.getElementById('top_completed_status').checked = false; 
-        loadPendingDesigns(); 
-        renderReceivedList();
-    } else {
-        alert("Please enter Received Weight for at least one item.");
-    }
-    btn.innerText = origText;
-}
-
-async function toggleStatus(id, newStatus) {
-    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
-    let msg = newStatus === 'completed' ? "Change this receive entry to Completed?" : "Change this receive entry to Running?";
-    if(confirm(msg)) {
-        let records = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
-        let recIndex = records.findIndex(r => String(r.id) === String(id));
-        if(recIndex > -1) {
-            records[recIndex].status = newStatus;
-            localStorage.setItem('dyeing_receive_records', JSON.stringify(records));
-            
-            let dNo = records[recIndex].designNo;
-            if(dNo) {
-                let cleanDNo = cleanDesignName(dNo);
-                let designSpecs = JSON.parse(localStorage.getItem('design_specs')) || {};
-                let specKey = Object.keys(designSpecs).find(k => cleanDesignName(k) === cleanDNo) || dNo;
-
-                if(!designSpecs[specKey]) designSpecs[specKey] = {};
-                designSpecs[specKey].status = newStatus;
-                localStorage.setItem('design_specs', JSON.stringify(designSpecs));
-                
-                if(window.firebaseSave) {
-                    await window.firebaseSave('design_specs', designSpecs);
-                }
-                if(window.firebaseSaveIndividual) {
-                    await window.firebaseSaveIndividual(specKey, designSpecs[specKey]);
-                }
-            }
-
-            if(window.firebaseSave) {
-                await window.firebaseSave('dyeing_receive_records', records);
-            }
-            renderReceivedList();
-        }
-    }
-}
-
-async function editReceiveRecord(recId) {
-    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
-    closeModal('receivedListModal');
-    let receives = parseJsonArray('dyeing_receive_records');
-    let issues = parseJsonArray('dyeing_issue_records');
-    
-    let index = receives.findIndex(r => String(r.id) === String(recId));
-    if(index !== -1) {
-        let selectedRec = receives[index];
-        document.getElementById('top_completed_status').checked = (selectedRec.status === 'completed');
-
-        let batchRecords = receives.filter(r => 
-            cleanDesignName(r.designNo) === cleanDesignName(selectedRec.designNo) && 
-            r.date === selectedRec.date && 
-            r.unit === selectedRec.unit
-        );
-
-        batchRecords.forEach(rec => {
-            let targetIds = rec.issueIds || [rec.issueId];
-            targetIds.forEach(id => {
-                let issueIndex = issues.findIndex(iss => String(iss.id) === String(id));
-                if(issueIndex !== -1) {
-                    issues[issueIndex].status = "Pending";
-                }
-            });
-        });
-        
-        let batchIds = batchRecords.map(b => String(b.id));
-        receives = receives.filter(r => !batchIds.includes(String(r.id)));
-        
-        localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
-        localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
-        
-        if (window.firebaseSave) {
-            await window.firebaseSave('dyeing_receive_records', receives);
-            await window.firebaseSave('dyeing_issue_records', issues);
-        }
-        
-        document.getElementById('receiveDate').value = selectedRec.date;
-        
-        loadPendingDesigns();
-        document.getElementById('designNumber').value = selectedRec.designNo;
-        loadPendingItems();
-        
-        setTimeout(() => {
-            let rows = document.querySelectorAll('#receiveLinesContainer .receive-line-row');
-            rows.forEach(row => {
-                let rowIdsStr = row.getAttribute('data-ids');
-                if(rowIdsStr) {
-                    let rowIds = rowIdsStr.split(',');
-                    let matchedRec = batchRecords.find(br => {
-                        let brIds = (br.issueIds || [br.issueId]).map(String);
-                        return rowIds.some(id => brIds.includes(String(id)));
-                    });
-
-                    if(matchedRec) {
-                        let rcvInp = row.querySelector('.inp-received');
-                        rcvInp.value = matchedRec.receivedWt;
-                        calculateLoss(rcvInp);
-                    }
-                }
-            });
-        }, 150);
-        
-        renderReceivedList();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
-async function deleteReceiveRecord(recId) {
-    if (!checkUserPermission()) { alert("Access Denied! You do not have permission. ❌"); return; }
-    if(!confirm("Are you sure you want to delete this record (and related batch items)? They will revert to Pending status.")) return;
-    
-    let receives = parseJsonArray('dyeing_receive_records');
-    let issues = parseJsonArray('dyeing_issue_records');
-    
-    let index = receives.findIndex(r => String(r.id) === String(recId));
-    if(index !== -1) {
-        let selectedRec = receives[index];
-
-        let batchRecords = receives.filter(r => 
-            cleanDesignName(r.designNo) === cleanDesignName(selectedRec.designNo) && 
-            r.date === selectedRec.date && 
-            r.unit === selectedRec.unit
-        );
-
-        batchRecords.forEach(rec => {
-            let targetIds = rec.issueIds || [rec.issueId];
-            targetIds.forEach(id => {
-                let issueIndex = issues.findIndex(iss => String(iss.id) === String(id));
-                if(issueIndex !== -1) {
-                    issues[issueIndex].status = "Pending";
-                }
-            });
-        });
-        
-        let batchIds = batchRecords.map(b => String(b.id));
-        receives = receives.filter(r => !batchIds.includes(String(r.id)));
-        
-        localStorage.setItem('dyeing_receive_records', JSON.stringify(receives));
-        localStorage.setItem('dyeing_issue_records', JSON.stringify(issues));
-        
-        if (window.firebaseSave) {
-            await window.firebaseSave('dyeing_receive_records', receives);
-            await window.firebaseSave('dyeing_issue_records', issues);
-        }
-        
-        loadPendingDesigns(); 
-        renderReceivedList();
-        
-        document.getElementById('receiveLinesContainer').innerHTML = '';
-        document.getElementById('designNumber').value = '';
-    }
-}
-
-function renderReceivedList() {
-    let receiveRecords = JSON.parse(localStorage.getItem('dyeing_receive_records')) || [];
-    let selectedDesign = document.getElementById('designNumber').value.trim();
-
-    if(selectedDesign) {
-        receiveRecords = receiveRecords.filter(r => cleanDesignName(r.designNo || r.designNumber) === cleanDesignName(selectedDesign));
-    }
-
-    let tbody = document.getElementById('receivedListBody');
-    let tfoot = document.getElementById('receivedListFoot');
-    tbody.innerHTML = '';
-    tfoot.innerHTML = '';
-
-    if(receiveRecords.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" style="padding:15px;">No Dyeing Orders Received for this design yet.</td></tr>`;
-        return;
-    }
-
-    let gIssued = 0;
-    let gRcvd = 0;
-    let gLoss = 0;
-    let gExcess = 0;
-
-    receiveRecords.slice().reverse().forEach(record => {
-        let dObj = new Date(record.date);
-        let dateStr = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
-        
-        let iWt = parseFloat(record.issuedWt) || 0;
-        let rWt = parseFloat(record.receivedWt) || 0;
-        let lWt = parseFloat(record.lossWt) || 0;
-        let eWt = (record.excessWt && record.excessWt !== "-") ? parseFloat(record.excessWt) || 0 : 0;
-
-        gIssued += iWt;
-        gRcvd += rWt;
-        gLoss += lWt;
-        gExcess += eWt;
-
-        let excessDisplay = record.excessWt && record.excessWt !== "-" 
-            ? `<span class="excess-text">${record.excessWt}</span>` 
-            : "-";
-            
-        if(!record.status) record.status = "running";
-        let statusColor = record.status === 'running' ? '#D97706' : '#526E51';
-        let statusBtn = record.status === 'running' 
-            ? `<button class="action-complete" onclick="toggleStatus('${record.id}', 'completed')">Complete</button>` 
-            : `<button class="action-running" onclick="toggleStatus('${record.id}', 'running')">Running</button>`;
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${dateStr}</td>
-                <td><b>${safeText(record.designNo)}</b></td>
-                <td>${safeText(record.count)}</td>
-                <td>${safeText(record.color)}</td>
-                <td><b>${safeText(record.unit || '-')}</b></td>
-                <td>${iWt.toFixed(3)}</td>
-                <td><b style="color:#10B981;">${rWt.toFixed(3)}</b></td>
-                <td>${lWt.toFixed(3)}</td>
-                <td>${safeText(record.lossPerc)}</td>
-                <td>${excessDisplay}</td>
-                <td style="color:${statusColor}; font-weight:bold; text-transform:uppercase;">${record.status}</td>
-                <td class="action-btns">
-                    ${statusBtn}
-                    <button class="edit-action-btn" onclick="editReceiveRecord('${record.id}')" title="Edit Full Batch">✏️</button>
-                    <button class="del-action-btn" onclick="deleteReceiveRecord('${record.id}')" title="Delete Full Batch">🗑️</button>
-                </td>
-            </tr>
-        `;
-    });
-
-    tfoot.innerHTML = `
-        <tr>
-            <td colspan="5" style="text-align: right; padding: 10px;">Grand Total:</td>
-            <td><b>${gIssued.toFixed(3)}</b></td>
-            <td><b style="color:#10B981;">${gRcvd.toFixed(3)}</b></td>
-            <td><b>${gLoss.toFixed(3)}</b></td>
-            <td>-</td>
-            <td><b style="color:#DC2626;">${gExcess > 0 ? gExcess.toFixed(3) : '-'}</b></td>
-            <td colspan="2"></td>
-        </tr>
-    `;
-}
+function openPreview(printNow=false){buildPreview();openModal('printPreviewModal');if(printNow)setTimeout(printPreview,350)}
+function printPreview(){buildPreview();window.print()}
 </script>
 </body>
 </html>

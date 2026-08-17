@@ -18,7 +18,8 @@
         font-family: 'Poppins', sans-serif;
     }
 
-    html, body {
+    html,
+    body {
         width: 100%;
         min-height: 100vh;
         background: #030712;
@@ -240,6 +241,7 @@
         font-size: 10px;
         font-weight: 600;
         color: #4A554A;
+        white-space: nowrap;
     }
 
     input,
@@ -442,18 +444,18 @@
     }
 
     .btn-preview {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        background: linear-gradient(135deg, #32F6, #1D4ED8);
         box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
     }
 
     .btn-save {
-        background: linear-gradient(135deg, #4A7C59, #33593D);
+        background: linear-gradient(135deg, #AC7CAA, #33593D);
         box-shadow: 0 6px 15px rgba(74, 124, 89, 0.25);
     }
 
     .btn-list {
-        background: linear-gradient(135deg, #F59E0B, #D97706);
-        box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25);
+        background: linear-gradient(135deg, #F50B, #D97708);
+        box-shadow: 0 6px 15px rgba(245, 158,11,0.25);
     }
 
     .overlay-modal {
@@ -649,40 +651,43 @@
         font-weight: bold;
     }
 
+    /* 🟢 STRICT PRINT STYLES FOR PREVIEW MODAL TO HIDE MAIN PAGE & FORCE PURE WHITE 🟢 */
     @media print {
         @page {
             size: A4 portrait;
-            margin: 8mm;
+            margin: 10mm;
         }
 
         body * {
-            visibility: hidden;
+            visibility: hidden !important;
         }
 
-        .overlay-modal,
-        .overlay-modal * {
-            visibility: visible;
+        #previewModal,
+        #previewModal * {
+            visibility: visible !important;
+        }
+
+        #previewModal {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: #FFFFFF !important;
+            display: block !important;
+            z-index: 999999 !important;
         }
 
         .overlay-modal {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: auto;
-            padding: 0;
-            z-index: 99999;
-            background: #FFFFFF;
+            background: #FFFFFF !important;
         }
 
         .modal-content {
-            max-height: none !important;
-            height: auto !important;
-            overflow: visible !important;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
+            background: #FFFFFF !important;
             width: 100% !important;
+            height: auto !important;
+            box-shadow: none !important;
+            border: none !important;
         }
 
         .no-print {
@@ -690,38 +695,15 @@
         }
 
         .modal-body {
+            background: #FFFFFF !important;
             padding: 0 !important;
-            background: #FFFFFF;
             width: 100% !important;
         }
 
-        table {
-            font-size: 11px !important;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 4px 6px !important;
-            line-height: 1.2;
-            border-left: none !important;
-            border-right: none !important;
-        }
-
-        .print-flex-row {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            gap: 20px !important;
-            align-items: flex-start !important;
-            justify-content: space-between !important;
-        }
-
-        .print-col-box {
-            flex: 1;
-            min-width: 0;
-            background: #FFF;
-            width: 48%;
+        html,
+        body {
+            background: #FFFFFF !important;
+            color: #000000 !important;
         }
     }
 </style>
@@ -744,7 +726,7 @@
         </div>
     </div>
 
-    <h2 class="page-title">📐 Warp Pattern Entry</h2>
+    <h2 class="color: #ffffff; /* Inga unga color-a change pannikalam */">📐 Warp Pattern Entry</h2>
 
     <div class="form-section" style="margin-top: 5px;">
 
@@ -804,17 +786,28 @@
              style="grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); background:#FFFFFF; padding:12px; border-radius:10px; border:1px dashed #D1DED1; margin-top:5px;">
 
             <div class="form-group">
-                <label>Count 1 (Base)</label>
+                <label>Count 1 (Warp)</label>
                 <input type="text" id="infoCount1" placeholder="C1">
             </div>
 
             <div class="form-group">
-                <label>Count 2 (Top)</label>
+                <label>Count 2 (Warp)</label>
                 <input type="text" id="infoCount2" placeholder="C2">
             </div>
 
+            <!-- 🟢 NEW: Weft 1 and Weft 2 Added Here 🟢 -->
             <div class="form-group">
-                <label>O.Reed</label>
+                <label>Weft 1</label>
+                <input type="text" id="infoWeft1" placeholder="W1">
+            </div>
+
+            <div class="form-group">
+                <label>Weft 2</label>
+                <input type="text" id="infoWeft2" placeholder="W2">
+            </div>
+
+            <div class="form-group">
+                <label>Onloom.Reed</label>
                 <input type="text"
                        id="infoReed"
                        placeholder="Reed"
@@ -822,12 +815,12 @@
             </div>
 
             <div class="form-group">
-                <label>O.Pick</label>
+                <label>Onloom.Pick</label>
                 <input type="text" id="infoPick" placeholder="Pick">
             </div>
 
             <div class="form-group">
-                <label>O.Width</label>
+                <label>Onloom.Width</label>
                 <input type="text" id="infoWidth" placeholder="Width">
             </div>
 
@@ -1518,9 +1511,10 @@ function loadDesignData() {
     const saveBtn =
         document.getElementById('saveBtnTxt');
 
-
     document.getElementById('infoCount1').value = '';
     document.getElementById('infoCount2').value = '';
+    document.getElementById('infoWeft1').value = '';
+    document.getElementById('infoWeft2').value = '';
     document.getElementById('infoOrderMtr').value = '';
     document.getElementById('infoTopBeam').value = '';
     document.getElementById('infoType').value = 'Plain';
@@ -1571,78 +1565,28 @@ function loadDesignData() {
     currentBaseSpecs =
         specs[specKey] || {};
 
-
-    const baseReed =
-        parseFloat(
-            currentBaseSpecs.reed ||
-            currentBaseSpecs.baseReed
-        ) || 0;
-
-
-    const basePick =
-        parseFloat(
-            currentBaseSpecs.pick ||
-            currentBaseSpecs.basePick
-        ) || 0;
-
-
-    const autoReed =
-        baseReed > 0
-            ? baseReed - 8
-            : '';
-
-
-    const autoPick =
-        basePick > 0
-            ? basePick - 4
-            : '';
-
-
     const orders =
         getLocalArray('party_orders_data');
 
-
     const matchedOrder =
         orders.find(function (o) {
-
             return cleanDesignName(
                 o.designNumber ||
                 o.designNo ||
                 o.designName
             ) === cleanDNo;
-
         }) || null;
-
-
-    let matchedProdMtr = 0;
-
-
-    if (matchedOrder) {
-
-        matchedProdMtr =
-            parseFloat(
-                matchedOrder.orderMtr ||
-                matchedOrder.productionMeter ||
-                matchedOrder.prodMtr ||
-                0
-            ) || 0;
-    }
-
 
     const masters =
         getLocalArray('design_masters_data');
 
-
     const found =
         masters.find(function (m) {
-
             return cleanDesignName(
                 m.name ||
                 m.designNo
             ) === cleanDNo;
-
         }) || null;
-
 
     const specStatus =
         (
@@ -1652,82 +1596,106 @@ function loadDesignData() {
             ''
         ).toLowerCase();
 
-
     if (specStatus === 'completed') {
-
         const cb =
             document.getElementById(
                 'top_completed_status'
             );
-
         if (cb) {
             cb.checked = true;
         }
     }
 
-
+    // 🟢 NEW LOGIC: Pull EXACT values stored in Design Master / Party Orders / Yarn Calc 🟢
+    
+    // Warp 1 & Warp 2
     let c1Resolved =
-        (matchedOrder &&
-            matchedOrder.baseBeamCount) ||
-
-        (found &&
-            found.warp1) ||
-
+        (matchedOrder && matchedOrder.baseBeamCount) ||
+        (found && found.warp1) ||
         currentBaseSpecs.baseBeamCount ||
         currentBaseSpecs.warp ||
         currentBaseSpecs.count1 ||
         '';
 
-
     let c2Resolved =
-        (matchedOrder &&
-            matchedOrder.topBeamCount) ||
-
-        (found &&
-            found.warp2) ||
-
+        (matchedOrder && matchedOrder.topBeamCount) ||
+        (found && found.warp2) ||
         currentBaseSpecs.topBeamCount ||
         currentBaseSpecs.warp2 ||
         currentBaseSpecs.count2 ||
         '';
+    if (c2Resolved === '-') c2Resolved = '';
 
+    // Weft 1 & Weft 2
+    let weft1Resolved =
+        (matchedOrder && matchedOrder.weftCount) ||
+        (found && (found.weftCount || found.weft)) ||
+        currentBaseSpecs.weftCount ||
+        currentBaseSpecs.weft ||
+        '';
 
-    if (c2Resolved === '-') {
-        c2Resolved = '';
+    let weft2Resolved =
+        (matchedOrder && matchedOrder.weft2) ||
+        (found && found.weft2) ||
+        currentBaseSpecs.weft2 ||
+        '';
+
+    // Onloom Reed, Pick, Width (Pull directly from saved sources without overriding via formula)
+    let onloomReedResolved =
+        (matchedOrder && matchedOrder.onloomReed) ||
+        (found && found.onloomReed) ||
+        currentBaseSpecs.onloomReed ||
+        (matchedOrder && matchedOrder.reed) ||
+        (found && found.reed) ||
+        currentBaseSpecs.reed ||
+        '';
+
+    let onloomPickResolved =
+        (matchedOrder && matchedOrder.onloomPick) ||
+        (found && found.onloomPick) ||
+        currentBaseSpecs.onloomPick ||
+        (matchedOrder && matchedOrder.pick) ||
+        (found && found.pick) ||
+        currentBaseSpecs.pick ||
+        '';
+
+    let onloomWidthResolved =
+        (matchedOrder && matchedOrder.onloomWidth) ||
+        (found && found.onloomWidth) ||
+        currentBaseSpecs.onloomWidth ||
+        (matchedOrder && matchedOrder.width) ||
+        (found && found.width) ||
+        currentBaseSpecs.width ||
+        '';
+
+    let matchedProdMtr = 0;
+    if (matchedOrder) {
+        matchedProdMtr =
+            parseFloat(
+                matchedOrder.orderMtr ||
+                matchedOrder.productionMeter ||
+                matchedOrder.prodMtr ||
+                0
+            ) || 0;
     }
 
+    document.getElementById('infoCount1').value = c1Resolved;
+    document.getElementById('infoCount2').value = c2Resolved;
+    document.getElementById('infoWeft1').value = weft1Resolved;
+    document.getElementById('infoWeft2').value = weft2Resolved;
 
-    if (
-        found &&
-        Array.isArray(found.warpLines) &&
-        found.warpLines.length > 0
-    ) {
+    document.getElementById('infoReed').value = onloomReedResolved;
+    document.getElementById('infoPick').value = onloomPickResolved;
+    document.getElementById('infoWidth').value = onloomWidthResolved;
 
+    if (found && Array.isArray(found.warpLines) && found.warpLines.length > 0) {
         if (saveBtn) {
             saveBtn.innerText = "✏️ Update";
         }
 
-
-        document.getElementById('infoCount1').value =
-            found.count1 || c1Resolved;
-
-        document.getElementById('infoCount2').value =
-            found.count2 || c2Resolved;
-
-
-        const finalMtrToFill =
-            matchedProdMtr > 0
-                ? matchedProdMtr
-                : (found.orderMtr || '');
-
-
-        document.getElementById('infoOrderMtr').value =
-            finalMtrToFill;
-
-
-        document.getElementById('infoTopBeam').value =
-            found.topBeam || '';
-
+        const finalMtrToFill = matchedProdMtr > 0 ? matchedProdMtr : (found.orderMtr || '');
+        document.getElementById('infoOrderMtr').value = finalMtrToFill;
+        document.getElementById('infoTopBeam').value = found.topBeam || '';
 
         document.getElementById('infoType').value =
             found.type ||
@@ -1736,66 +1704,30 @@ function loadDesignData() {
             currentBaseSpecs.weave ||
             'Plain';
 
-
-        document.getElementById('infoReed').value =
-            found.reed || autoReed;
-
-
-        document.getElementById('infoPick').value =
-            found.pick || autoPick;
-
-
         found.warpLines.forEach(function (l) {
-
             if (!l) return;
-
             addWarpLine(
                 l.count || '',
                 l.color || '',
                 l.beam || 'Ground',
                 l.ends || ''
             );
-
         });
 
-
         if (Array.isArray(found.warpRanges)) {
-
             found.warpRanges.forEach(function (r) {
-
                 if (!r) return;
-
-                addWarpRange(
-                    r.start || '',
-                    r.end || '',
-                    r.set || ''
-                );
-
+                addWarpRange(r.start || '', r.end || '', r.set || '');
             });
         }
-
-
     } else {
-
         if (saveBtn) {
             saveBtn.innerText = "💾 Save";
         }
 
-
-        document.getElementById('infoCount1').value =
-            c1Resolved;
-
-
-        document.getElementById('infoCount2').value =
-            c2Resolved;
-
-
         if (matchedProdMtr > 0) {
-
-            document.getElementById('infoOrderMtr').value =
-                matchedProdMtr;
+            document.getElementById('infoOrderMtr').value = matchedProdMtr;
         }
-
 
         document.getElementById('infoType').value =
             (matchedOrder && matchedOrder.weaveType) ||
@@ -1803,20 +1735,9 @@ function loadDesignData() {
             currentBaseSpecs.weave ||
             'Plain';
 
-
-        document.getElementById('infoReed').value =
-            autoReed;
-
-
-        document.getElementById('infoPick').value =
-            autoPick;
-
-
         loadDefaultRow();
     }
 
-
-    calculateOnloomWidth();
     updateLineNumbers();
     refreshBulkColorDropdown();
 }
@@ -2665,12 +2586,6 @@ window.saveWarpDesign = async function () {
         );
 
 
-    /*
-       IMPORTANT:
-       Existing design/calculation logic preserved.
-       Only condition made safe and readable.
-    */
-
     const hasCurrentBaseSpecs =
         currentBaseSpecs &&
         typeof currentBaseSpecs === 'object' &&
@@ -2689,10 +2604,6 @@ window.saveWarpDesign = async function () {
 
         });
 
-
-    /*
-       Preserve existing re-entry behaviour.
-    */
 
     if (
         !hasCurrentBaseSpecs &&
@@ -2739,7 +2650,6 @@ window.saveWarpDesign = async function () {
 
 
     calculateTopBeam();
-    calculateOnloomWidth();
 
 
     const completedElement =
@@ -2915,44 +2825,34 @@ window.saveWarpDesign = async function () {
         designNo: dNo,
 
         count1:
-            document.getElementById(
-                'infoCount1'
-            ).value.trim(),
+            document.getElementById('infoCount1').value.trim(),
 
         count2:
-            document.getElementById(
-                'infoCount2'
-            ).value.trim(),
+            document.getElementById('infoCount2').value.trim(),
+
+        weftCount:
+            document.getElementById('infoWeft1').value.trim(),
+
+        weft2:
+            document.getElementById('infoWeft2').value.trim(),
 
         orderMtr:
-            document.getElementById(
-                'infoOrderMtr'
-            ).value.trim(),
+            document.getElementById('infoOrderMtr').value.trim(),
 
         topBeam:
-            document.getElementById(
-                'infoTopBeam'
-            ).value.trim(),
+            document.getElementById('infoTopBeam').value.trim(),
 
         type:
-            document.getElementById(
-                'infoType'
-            ).value,
+            document.getElementById('infoType').value,
 
-        reed:
-            document.getElementById(
-                'infoReed'
-            ).value.trim(),
+        onloomReed:
+            document.getElementById('infoReed').value.trim(),
 
-        pick:
-            document.getElementById(
-                'infoPick'
-            ).value.trim(),
+        onloomPick:
+            document.getElementById('infoPick').value.trim(),
 
-        width:
-            document.getElementById(
-                'infoWidth'
-            ).value.trim(),
+        onloomWidth:
+            document.getElementById('infoWidth').value.trim(),
 
         warpLines:
             lines,
@@ -3019,6 +2919,11 @@ window.saveWarpDesign = async function () {
             ? 'completed'
             : 'running';
 
+    designSpecs[specKey].weftCount = document.getElementById('infoWeft1').value.trim();
+    designSpecs[specKey].weft2 = document.getElementById('infoWeft2').value.trim();
+    designSpecs[specKey].onloomReed = document.getElementById('infoReed').value.trim();
+    designSpecs[specKey].onloomPick = document.getElementById('infoPick').value.trim();
+    designSpecs[specKey].onloomWidth = document.getElementById('infoWidth').value.trim();
 
     localStorage.setItem(
         'design_specs',

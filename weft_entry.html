@@ -61,7 +61,7 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 11px;
-            background: #1A2421;
+            background: #1A1;
             padding: 8px 16px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -146,12 +146,12 @@
         }
 
         .section-badge.blue {
-            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            background: linear-gradient(135deg, #3BF6, #1D4ED8);
             box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25);
         }
 
         .section-badge.amber {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
+            background: linear-gradient(135deg, #F50B, #D97706);
             box-shadow: 0 4px 8px rgba(217, 119, 6, 0.25);
         }
 
@@ -186,7 +186,7 @@
             border-radius: 8px;
             border: 1px solid #D1DED1;
             background: #FFFFFF;
-            color: #1E2B23;
+            color: #1E22A3;
             font-size: 11px;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -629,79 +629,161 @@
             transform: scale(1.1);
         }
 
+        /* ========================================================
+           PRINT FIX - ANDROID / CHROME PRINT PREVIEW
+           Prevents black page/background after the real content.
+           Only the preview content is printed.
+        ======================================================== */
         @media print {
             @page {
                 size: A4 portrait;
                 margin: 5mm 8mm;
             }
 
-            body * {
-                visibility: hidden;
-            }
-
-            .overlay-modal,
-            .overlay-modal * {
-                visibility: visible;
-            }
-
-            .overlay-modal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: auto;
-                padding: 0;
-                z-index: 99999;
-                background: #FFFFFF;
-            }
-
-            .modal-content {
-                max-height: none !important;
+            html,
+            body {
+                width: 100% !important;
+                min-height: 0 !important;
                 height: auto !important;
-                overflow: visible !important;
-                box-shadow: none;
-                border: none;
-                border-radius: 0;
-                width: 100% !important;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            .modal-body {
+                margin: 0 !important;
                 padding: 0 !important;
-                background: #FFFFFF;
+                background: #FFFFFF !important;
+                color: #000000 !important;
+                overflow: visible !important;
+            }
+
+            /* Hide the ERP page and show only the preview modal. */
+            body > * {
+                visibility: hidden !important;
+            }
+
+            #previewModal,
+            #previewModal * {
+                visibility: visible !important;
+            }
+
+            #previewModal {
+                display: block !important;
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
                 width: 100% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #FFFFFF !important;
+                opacity: 1 !important;
+                overflow: visible !important;
+                z-index: auto !important;
+                transform: none !important;
+                backdrop-filter: none !important;
+            }
+
+            #previewModal .modal-content {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                height: auto !important;
+                max-height: none !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: #FFFFFF !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                transform: none !important;
+            }
+
+            #previewModal .modal-body {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                height: auto !important;
+                max-height: none !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: #FFFFFF !important;
+            }
+
+            .no-print,
+            #savedListModal,
+            #fullscreenModal {
+                display: none !important;
+                visibility: hidden !important;
             }
 
             table {
-                font-size: 11px !important;
-                width: 100%;
-                border-collapse: collapse;
+                width: 100% !important;
+                max-width: 100% !important;
+                font-size: 10px !important;
+                border-collapse: collapse !important;
+                background: #FFFFFF !important;
+                page-break-inside: auto;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
             }
 
             th,
             td {
-                padding: 3px 6px !important;
-                line-height: 1.2;
+                padding: 3px 5px !important;
+                line-height: 1.2 !important;
+                background: #FFFFFF;
+                color: #000000;
                 border-left: none !important;
                 border-right: none !important;
             }
 
             .print-flex-row {
                 display: flex !important;
+                flex-direction: row !important;
                 flex-wrap: nowrap !important;
-                gap: 20px !important;
+                width: 100% !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 align-items: flex-start !important;
                 justify-content: space-between !important;
+                background: #FFFFFF !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
             }
 
             .print-col-box {
-                flex: 1;
-                min-width: 0;
-                background: #FFF;
-                width: 48%;
+                flex: 1 1 0 !important;
+                width: 50% !important;
+                min-width: 0 !important;
+                max-width: 50% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #FFFFFF !important;
+                page-break-inside: auto;
+            }
+
+            /* Keep the generated preview from inheriting the dark app background. */
+            #previewContent,
+            #previewContent > div,
+            #previewContent > div > div {
+                background: #FFFFFF !important;
+            }
+
+            img {
+                max-width: 100% !important;
             }
         }
 
@@ -812,7 +894,7 @@
         <div class="compact-top-grid">
 
             <div class="form-group">
-                <label>Weft Width</label>
+                <label>Weft Width (Auto)</label>
                 <input type="text"
                        id="infoWeftWidth"
                        placeholder="Width"
@@ -820,10 +902,17 @@
             </div>
 
             <div class="form-group">
-                <label>Weft Count</label>
+                <label>Weft 1</label>
                 <input type="text"
-                       id="infoWeftCount"
-                       placeholder="Count">
+                       id="infoWeft1"
+                       placeholder="W1">
+            </div>
+
+            <div class="form-group">
+                <label>Weft 2</label>
+                <input type="text"
+                       id="infoWeft2"
+                       placeholder="W2">
             </div>
 
             <div class="form-group">
@@ -1548,7 +1637,11 @@ function loadWeftDesignData() {
     ).value = '';
 
     document.getElementById(
-        'infoWeftCount'
+        'infoWeft1'
+    ).value = '';
+
+    document.getElementById(
+        'infoWeft2'
     ).value = '';
 
     document.getElementById(
@@ -1662,61 +1755,46 @@ function loadWeftDesignData() {
         }
     }
 
-    let baseReed =
-        parseFloat(
-            matchedOrder.reed ||
-            sp.reed ||
-            sp.baseReed ||
-            foundMaster.reed ||
-            foundMaster.baseReed ||
-            64
-        ) || 0;
+    // 🟢 Fetch Onloom Width and Pick from saved sources
+    let onloomWidth = parseFloat(
+        sp.onloomWidth ||
+        foundMaster.onloomWidth ||
+        matchedOrder.onloomWidth ||
+        sp.width ||
+        foundMaster.width ||
+        0
+    ) || 0;
 
-    let baseWidth =
-        parseFloat(
-            matchedOrder.width ||
-            sp.width ||
-            sp.baseWidth ||
-            foundMaster.width ||
-            foundMaster.baseWidth ||
-            0
-        ) || 0;
+    let onloomPick = parseFloat(
+        sp.onloomPick ||
+        foundMaster.onloomPick ||
+        matchedOrder.onloomPick ||
+        sp.pick ||
+        foundMaster.pick ||
+        0
+    ) || 0;
 
-    let autoWeftWidth = '';
+    // Weft Width = Onloom Width + 3
+    let autoWeftWidth = onloomWidth > 0 ? (onloomWidth + 3).toFixed(2) : '';
+    
+    // Pick = Onloom Pick
+    let autoPick = onloomPick > 0 ? onloomPick : '';
 
-    if (
-        baseReed > 8 &&
-        baseWidth > 0
-    ) {
+    // Fetch Weft 1 and Weft 2
+    let resolvedWeft1 =
+        sp.weftCount ||
+        sp.weft ||
+        foundMaster.weftCount ||
+        foundMaster.weft ||
+        matchedOrder.weftCount ||
+        '40s';
 
-        let calculatedWidth =
-            (
-                (baseReed * baseWidth) /
-                (baseReed - 8)
-            ) + 3;
+    let resolvedWeft2 =
+        sp.weft2 ||
+        foundMaster.weft2 ||
+        matchedOrder.weft2 ||
+        '';
 
-        autoWeftWidth =
-            calculatedWidth.toFixed(2);
-
-    } else if (baseWidth > 0) {
-
-        autoWeftWidth =
-            (baseWidth + 3).toFixed(2);
-    }
-
-    let basePick =
-        parseFloat(
-            matchedOrder.pick ||
-            sp.pick ||
-            sp.basePick ||
-            foundMaster.pick ||
-            foundMaster.basePick
-        ) || 0;
-
-    let autoPick =
-        basePick > 0
-            ? basePick - 4
-            : '';
 
     let savedYarnOrderMtr =
         parseFloat(
@@ -1747,13 +1825,6 @@ function loadWeftDesignData() {
             ).toFixed(2);
     }
 
-    let resolvedWeftCount =
-        matchedOrder.weftCount ||
-        sp.weftCount ||
-        foundMaster.weftCount ||
-        sp.weft ||
-        '40s';
-
     let resolvedWeave =
         matchedOrder.weaveType ||
         sp.weaveType ||
@@ -1776,8 +1847,8 @@ function loadWeftDesignData() {
             "✏️ Update";
 
         let finalWeftWidth =
-            autoWeftWidth ||
             foundMaster.weftWidth ||
+            autoWeftWidth ||
             '';
 
         document.getElementById(
@@ -1785,16 +1856,21 @@ function loadWeftDesignData() {
         ).value = finalWeftWidth;
 
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
         ).value =
             foundMaster.weftCount ||
-            resolvedWeftCount;
+            resolvedWeft1;
+
+        document.getElementById(
+            'infoWeft2'
+        ).value =
+            foundMaster.weft2 ||
+            resolvedWeft2;
 
         document.getElementById(
             'infoPick'
         ).value =
             foundMaster.weftPick ||
-            foundMaster.pick ||
             autoPick;
 
         document.getElementById(
@@ -1848,9 +1924,14 @@ function loadWeftDesignData() {
             autoWeftWidth;
 
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
         ).value =
-            resolvedWeftCount;
+            resolvedWeft1;
+
+        document.getElementById(
+            'infoWeft2'
+        ).value =
+            resolvedWeft2;
 
         document.getElementById(
             'infoPick'
@@ -2098,7 +2179,12 @@ async function copyToNewDesign() {
 
         weftCount:
             document.getElementById(
-                'infoWeftCount'
+                'infoWeft1'
+            ).value.trim(),
+
+        weft2:
+            document.getElementById(
+                'infoWeft2'
             ).value.trim(),
 
         weftPick:
@@ -2191,12 +2277,17 @@ async function copyToNewDesign() {
 
     copiedSpec.weft =
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
         ).value.trim();
 
     copiedSpec.weftCount =
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
+        ).value.trim();
+
+    copiedSpec.weft2 =
+        document.getElementById(
+            'infoWeft2'
         ).value.trim();
 
     specs[newDNo] = copiedSpec;
@@ -3413,7 +3504,12 @@ async function saveWeftDesign() {
 
         weftCount:
             document.getElementById(
-                'infoWeftCount'
+                'infoWeft1'
+            ).value.trim(),
+
+        weft2:
+            document.getElementById(
+                'infoWeft2'
             ).value.trim(),
 
         weftPick:
@@ -3494,12 +3590,17 @@ async function saveWeftDesign() {
 
     designSpecs[specKey].weft =
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
         ).value.trim();
 
     designSpecs[specKey].weftCount =
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
+        ).value.trim();
+
+    designSpecs[specKey].weft2 =
+        document.getElementById(
+            'infoWeft2'
         ).value.trim();
 
     designSpecs[specKey].weftWidth =
@@ -3799,30 +3900,11 @@ function renderSavedList() {
                     ? '#D97706'
                     : '#526E51';
 
-            let statusBtn =
-                m.status === 'running'
-
-                    ? `
-                        <button
-                            class="action-complete"
-                            onclick="toggleStatus(
-                                ${JSON.stringify(m.name)},
-                                'completed'
-                            )">
-                            Complete
-                        </button>
-                    `
-
-                    : `
-                        <button
-                            class="action-running"
-                            onclick="toggleStatus(
-                                ${JSON.stringify(m.name)},
-                                'running'
-                            )">
-                            Running
-                        </button>
-                    `;
+            let safeDesign = String(m.name || m.designNo || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            
+            let statusBtn = m.status === 'running'
+                ? `<button class="action-complete" onclick="toggleStatus('${safeDesign}', 'completed')">Complete</button>`
+                : `<button class="action-running" onclick="toggleStatus('${safeDesign}', 'running')">Running</button>`;
 
 
             tbody.innerHTML += `
@@ -3863,13 +3945,7 @@ function renderSavedList() {
 
                             <button
                                 class="edit-action-btn"
-                                onclick="editDesignPattern(
-                                    ${JSON.stringify(
-                                        m.name ||
-                                        m.designNo ||
-                                        ''
-                                    )}
-                                )">
+                                onclick="editDesignPattern('${safeDesign}')">
                                 ✏️ Edit
                             </button>
 
@@ -3922,17 +3998,26 @@ function editDesignPattern(dNo) {
         'savedListModal'
     );
 
-    let select =
-        document.getElementById(
-            'designNo'
-        );
+    let select = document.getElementById('designNo');
+    
+    // Ensure option exists in dropdown
+    let optionExists = Array.from(select.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if(!optionExists) {
+        let newOption = document.createElement('option');
+        newOption.value = dNo;
+        newOption.textContent = dNo;
+        select.appendChild(newOption);
+    }
 
-    select.value = dNo;
+    // Set the value (try to match existing option's case if possible)
+    let exactOption = Array.from(select.options).find(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if (exactOption) {
+        select.value = exactOption.value;
+    } else {
+        select.value = dNo;
+    }
 
-    localStorage.setItem(
-        'selected_design_number',
-        dNo
-    );
+    localStorage.setItem('selected_design_number', select.value);
 
     loadWeftDesignData();
 
@@ -3992,9 +4077,15 @@ function previewWeftPattern() {
         ).value ||
         '-';
 
-    let wCount =
+    let wCount1 =
         document.getElementById(
-            'infoWeftCount'
+            'infoWeft1'
+        ).value ||
+        '-';
+
+    let wCount2 =
+        document.getElementById(
+            'infoWeft2'
         ).value ||
         '-';
 
@@ -4042,8 +4133,9 @@ function previewWeftPattern() {
             </span>
 
             <span>
-                Weft Count:
-                ${escapeHTML(wCount)}
+                Counts:
+                ${escapeHTML(wCount1)},
+                ${escapeHTML(wCount2)}
             </span>
 
             <span>

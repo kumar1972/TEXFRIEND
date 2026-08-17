@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Design Master - TEXFRIEND ERP</title>
+    <title>Design Masiter - TEXFRIEND ERP</title>
     <!-- IMPORTANT: config.js must load first -->
     <script src="config.js"></script>
     <script src="translator.js"></script>
@@ -24,7 +24,7 @@
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .back-btn {
             display: inline-flex; align-items: center; gap: 5px; color: #FFFFFF;
-            text-decoration: none; font-weight: 600; font-size: 12px; background: #1A2421; 
+            text-decoration: none; font-weight: 600; font-size: 12px; background: #1A1; 
             padding: 10px 18px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
         }
@@ -65,7 +65,7 @@
 
         .btn-add { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); }
         .btn-del { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(30, 43, 35, 0.1); }
-        .btn-edit { background: linear-gradient(135deg, #3B82F6, #1D4ED8); width: 100%; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.15); margin-top: 10px; text-transform: uppercase; }
+        .btn-edit { background: linear-gradient(135deg, #Aa3B82, #1D44a8); width: 100%; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 6px 15px rgba(30, 43, 35, 0.15); margin-top: 10px; text-transform: uppercase; }
         .btn-add:hover, .btn-del:hover, .btn-edit:hover { transform: translateY(-2px); }
 
         #bitmapPreviewBox { background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #D1DED1; box-shadow: 0 4px 12px rgba(30, 43, 35, 0.05); margin-top: 5px; text-align: center; display: none; }
@@ -109,7 +109,10 @@
         <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
     </div>
 
-    <h2 class="card-header">🎨 Design Setup Master</h2>
+    <h2 class=.card-header {
+    color: #ffffff; /* Inga unga color-a change pannikalam */
+}
+>🎨 Design Setup Master</h2>
 
     <div class="form-section">
         <div class="form-row">
@@ -124,21 +127,27 @@
         <div class="form-row">
             <div class="form-group"><label>Warp 1 (Grnd / Base)</label><input type="text" id="warpCount" placeholder="2/60"></div>
             <div class="form-group"><label>Warp 2 (Top Beam)</label><input type="text" id="warpCount2" placeholder="2/40"></div>
-            <div class="form-group"><label>Weft Count</label><input type="text" id="weftCount" placeholder="40s"></div>
-            <div class="form-group"><label>Width (Inch)</label><input type="number" id="width" placeholder="66" step="0.01"></div>
+            <div class="form-group"><label>Weft 1</label><input type="text" id="weftCount" placeholder="40s"></div>
+            <div class="form-group"><label>Weft 2</label><input type="text" id="weftCount2" placeholder="-"></div>
         </div>
         
         <div class="form-row">
-            <div class="form-group"><label>Reed</label><input type="text" id="reed"></div>
-            <div class="form-group"><label>Pick</label><input type="text" id="pick"></div>
+            <!-- 🟢 Finish Inputs -->
+            <div class="form-group"><label>Finish Reed</label><input type="number" id="reed" oninput="updateFinishReed()"></div>
+            <div class="form-group"><label>Finish Pick</label><input type="number" id="pick" oninput="updateFinishPick()"></div>
+            <div class="form-group"><label>Finish Width</label><input type="number" id="width" placeholder="66" step="0.01" oninput="updateFinishWidth()"></div>
             <div class="form-group"><label>Weave</label><input type="text" id="weave"></div>
         </div>
 
         <div class="form-row">
-            <div class="form-group" style="flex: 1;"><label>Type of Process</label><input type="text" id="typeOfProcess" placeholder="e.g., Bleaching, Dyeing, Printing"></div>
+            <!-- 🟢 Onloom Inputs Auto-Calculate -->
+            <div class="form-group"><label>Onloom Reed</label><input type="number" id="onloomReed" oninput="calcOnloomWidth()"></div>
+            <div class="form-group"><label>Onloom Pick</label><input type="number" id="onloomPick"></div>
+            <div class="form-group"><label>Onloom Width</label><input type="number" id="onloomWidth" step="0.01"></div>
+            <div class="form-group"><label>Type of Process</label><input type="text" id="typeOfProcess" placeholder="e.g., Bleaching, Dyeing"></div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" style="margin-top: 10px;">
             <label>Design Bitmap / Photo Upload</label>
             <button type="button" class="custom-upload-btn" onclick="openChoiceModal()">📷 Take Photo / 🖼️ Choose from Gallery</button>
             
@@ -207,6 +216,44 @@
         loadDesignDropdown();
     });
 
+    // 🟢 AUTO CALCULATION LOGIC 🟢
+    function updateFinishReed() {
+        let fReed = parseFloat(document.getElementById('reed').value) || 0;
+        if(fReed > 0) {
+            document.getElementById('onloomReed').value = fReed - 8;
+        } else {
+            document.getElementById('onloomReed').value = '';
+        }
+        calcOnloomWidth();
+    }
+
+    function updateFinishPick() {
+        let fPick = parseFloat(document.getElementById('pick').value) || 0;
+        if(fPick > 0) {
+            document.getElementById('onloomPick').value = fPick - 4;
+        } else {
+            document.getElementById('onloomPick').value = '';
+        }
+    }
+
+    function updateFinishWidth() {
+        calcOnloomWidth();
+    }
+
+    function calcOnloomWidth() {
+        let fReed = parseFloat(document.getElementById('reed').value) || 0;
+        let fWidth = parseFloat(document.getElementById('width').value) || 0;
+        let oReed = parseFloat(document.getElementById('onloomReed').value) || 0;
+        
+        if(fWidth > 0 && fReed > 0 && oReed > 0) {
+            document.getElementById('onloomWidth').value = ((fReed * fWidth) / oReed).toFixed(2);
+        } else if (fWidth > 0) {
+            document.getElementById('onloomWidth').value = fWidth.toFixed(2);
+        } else {
+            document.getElementById('onloomWidth').value = '';
+        }
+    }
+
     window.openChoiceModal = () => document.getElementById('choiceModal').style.display = 'flex';
     window.closeChoiceModal = () => document.getElementById('choiceModal').style.display = 'none';
 
@@ -261,9 +308,13 @@
                 warp2: s.warp2 || '',
                 topBeamCount: s.warp2 || '',
                 weftCount: s.weft || '',
+                weft2: s.weft2 || '',
                 width: s.width || '',
                 reed: s.reed || '',
                 pick: s.pick || '',
+                onloomReed: s.onloomReed || '', 
+                onloomPick: s.onloomPick || '', 
+                onloomWidth: s.onloomWidth || '', 
                 weave: s.weave || '',
                 typeOfProcess: s.typeOfProcess || '',
                 status: s.status || 'running',
@@ -312,6 +363,8 @@
         
         let warp1 = document.getElementById('warpCount').value.trim();
         let warp2 = document.getElementById('warpCount2').value.trim();
+        let weft1 = document.getElementById('weftCount').value.trim();
+        let weft2 = document.getElementById('weftCount2').value.trim();
 
         let specs = { 
             warp: warp1,
@@ -319,11 +372,15 @@
             warp2: warp2,
             topBeamCount: warp2,
             baseCount: warp2 ? `${warp1}, ${warp2}` : warp1,
-            weft: document.getElementById('weftCount').value.trim(), 
-            weftCount: document.getElementById('weftCount').value.trim(), 
+            weft: weft1, 
+            weftCount: weft1, 
+            weft2: weft2,
             width: document.getElementById('width').value.trim(), 
             reed: document.getElementById('reed').value.trim(), 
             pick: document.getElementById('pick').value.trim(), 
+            onloomReed: document.getElementById('onloomReed').value.trim(),
+            onloomPick: document.getElementById('onloomPick').value.trim(),
+            onloomWidth: document.getElementById('onloomWidth').value.trim(),
             weave: document.getElementById('weave').value.trim(), 
             weaveType: document.getElementById('weave').value.trim(), 
             typeOfProcess: document.getElementById('typeOfProcess').value.trim(), 
@@ -341,9 +398,10 @@
             tempBitmapData = ""; 
             loadDesignDropdown();
             document.getElementById('newDesign').value = '';
-            alert("Design Saved Successfully to Cloud! ✅☁️");
+            
+            if(window.showNotification) window.showNotification("Design Saved Successfully!");
         } catch (err) {
-            alert("Error saving: " + err.message);
+            if(window.showNotification) window.showNotification("Error saving: " + err.message, "error");
         } finally {
             document.getElementById('addBtn').innerText = "+ Add";
         }
@@ -365,6 +423,8 @@
 
         let warp1 = document.getElementById('warpCount').value.trim();
         let warp2 = document.getElementById('warpCount2').value.trim();
+        let weft1 = document.getElementById('weftCount').value.trim();
+        let weft2 = document.getElementById('weftCount2').value.trim();
 
         let updatedSpecs = { 
             ...existing,
@@ -373,11 +433,15 @@
             warp2: warp2, 
             topBeamCount: warp2,
             baseCount: warp2 ? `${warp1}, ${warp2}` : warp1,
-            weft: document.getElementById('weftCount').value.trim(), 
-            weftCount: document.getElementById('weftCount').value.trim(), 
+            weft: weft1, 
+            weftCount: weft1, 
+            weft2: weft2,
             width: document.getElementById('width').value.trim(), 
             reed: document.getElementById('reed').value.trim(), 
             pick: document.getElementById('pick').value.trim(), 
+            onloomReed: document.getElementById('onloomReed').value.trim(),
+            onloomPick: document.getElementById('onloomPick').value.trim(),
+            onloomWidth: document.getElementById('onloomWidth').value.trim(),
             weave: document.getElementById('weave').value.trim(), 
             weaveType: document.getElementById('weave').value.trim(), 
             typeOfProcess: document.getElementById('typeOfProcess').value.trim(), 
@@ -390,9 +454,10 @@
         try {
             await syncDesignMasterToCloud(designList, designSpecs, designNo);
             tempBitmapData = ""; 
-            alert("Updated successfully to Cloud! ✅☁️");
+            
+            if(window.showNotification) window.showNotification("Design Updated Successfully!");
         } catch (err) {
-            alert("Error updating! " + err.message);
+            if(window.showNotification) window.showNotification("Error updating! " + err.message, "error");
         } finally {
             document.getElementById('editBtn').innerText = "✏️ Update / Edit Design";
         }
@@ -429,9 +494,10 @@
 
                 loadDesignDropdown();
                 clearForm();
-                alert("Design deleted successfully from Cloud! 🗑️☁️");
+                
+                if(window.showNotification) window.showNotification("Design deleted successfully!");
             } catch (err) {
-                alert("Error deleting! " + err.message);
+                if(window.showNotification) window.showNotification("Error deleting! " + err.message, "error");
             } finally {
                 document.getElementById('delBtn').innerText = "Delete";
             }
@@ -462,9 +528,38 @@
             document.getElementById('warpCount').value = data.warp || data.baseBeamCount || '';
             document.getElementById('warpCount2').value = data.warp2 || data.topBeamCount || '';
             document.getElementById('weftCount').value = data.weft || data.weftCount || '';
-            document.getElementById('width').value = data.width || '';
-            document.getElementById('reed').value = data.reed || '';
-            document.getElementById('pick').value = data.pick || '';
+            document.getElementById('weftCount2').value = data.weft2 || '';
+            
+            let fReed = data.reed || '';
+            let fPick = data.pick || '';
+            let fWidth = data.width || '';
+
+            document.getElementById('reed').value = fReed;
+            document.getElementById('pick').value = fPick;
+            document.getElementById('width').value = fWidth;
+            
+            let oReed = data.onloomReed || '';
+            let oPick = data.onloomPick || '';
+            let oWidth = data.onloomWidth || '';
+
+            // Auto Calculation on Load if Data is Missing
+            let parsedFReed = parseFloat(fReed) || 0;
+            let parsedFPick = parseFloat(fPick) || 0;
+            let parsedFWidth = parseFloat(fWidth) || 0;
+
+            if (!oReed && parsedFReed > 0) oReed = parsedFReed - 8;
+            if (!oPick && parsedFPick > 0) oPick = parsedFPick - 4;
+            
+            if (!oWidth && parsedFWidth > 0 && parsedFReed > 0 && parseFloat(oReed) > 0) {
+                oWidth = ((parsedFReed * parsedFWidth) / parseFloat(oReed)).toFixed(2);
+            } else if (!oWidth && parsedFWidth > 0) {
+                oWidth = parsedFWidth.toFixed(2);
+            }
+
+            document.getElementById('onloomReed').value = oReed;
+            document.getElementById('onloomPick').value = oPick;
+            document.getElementById('onloomWidth').value = oWidth;
+
             document.getElementById('weave').value = data.weave || data.weaveType || '';
             document.getElementById('typeOfProcess').value = data.typeOfProcess || '';
             

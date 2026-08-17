@@ -102,6 +102,39 @@ window.erpCloudKeys = [
 ];
 
 // ============================================================
+// NOTIFICATION HELPER
+// ============================================================
+
+window.showNotification = function(message, type = 'success') {
+    const oldNotif = document.getElementById('erp-custom-notification');
+    if (oldNotif) oldNotif.remove();
+
+    const notification = document.createElement('div');
+    notification.id = 'erp-custom-notification';
+    notification.innerText = message;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = type === 'success' ? '#10B981' : '#EF4444';
+    notification.style.color = 'white';
+    notification.style.padding = '12px 24px';
+    notification.style.borderRadius = '8px';
+    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    notification.style.zIndex = '999999';
+    notification.style.fontFamily = 'sans-serif';
+    notification.style.fontSize = '14px';
+    notification.style.fontWeight = '600';
+    notification.style.transition = 'opacity 0.3s ease';
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+};
+
+// ============================================================
 // CLOUD → LOCAL SYNC FUNCTION
 // ============================================================
 
@@ -155,36 +188,40 @@ window.syncERPFromCloud = async function () {
 };
 
 // ============================================================
-// LOCAL → CLOUD SAVE
+// LOCAL → CLOUD SAVE (NO POPUP - AUTO BOTH)
 // ============================================================
 
 window.firebaseSave = async function (key, data) {
+    // 1. எப்போதுமே Local-ல் சேமிக்கும்
     window.localSave(key, data);
 
-    if (!window.db || !window._doc || !window._setDoc) {
-        console.warn("Firebase not ready. Local save only:", key);
-        return false;
-    }
-
-    try {
-        const ref = window._doc(window.db, "texfriend_erp", key);
-        await window._setDoc(
-            ref,
-            {
-                content: JSON.stringify(data),
-                updatedAt: new Date().toISOString()
-            },
-            { merge: true }
-        );
-        console.log("☁️ Cloud Saved:", key);
+    // 2. இணையம்/Cloud தயாராக இருந்தால் Cloud-லும் சேமிக்கும்
+    if (window.db && window._setDoc) {
+        try {
+            const ref = window._doc(window.db, "texfriend_erp", key);
+            await window._setDoc(
+                ref,
+                {
+                    content: JSON.stringify(data),
+                    updatedAt: new Date().toISOString()
+                },
+                { merge: true }
+            );
+            console.log("☁️ Cloud Saved:", key);
+            window.showNotification("Successfully Saved (Local & Cloud)!");
+            return true;
+        } catch (error) {
+            console.error("❌ Firebase Save Error:", key, error);
+            window.showNotification("Saved Locally! (Cloud Failed)", "error");
+            return false;
+        }
+    } else {
+        window.showNotification("Successfully Saved Locally!");
         return true;
-    } catch (error) {
-        console.error("❌ Firebase Save Error:", key, error);
-        return false;
     }
 };
 
-window.firebaseSaveIndividual = function (key, data) {
+window.firebaseSaveIndividual = function (key, data, storageType = 'both') {
     return window.firebaseSave(key, data);
 };
 
@@ -389,6 +426,48 @@ window.populateDropdowns = function () {
         console.error("Dropdown Populate Error:", error);
     }
 };
+
+// ============================================================
+// ENTER KEY NAVIGATION (STEP-BY-STEP ACROSS TABS / INPUTS)
+// ============================================================
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        const activeElement = document.activeElement;
+        
+        if (!activeElement) return;
+
+        // Textarea-ல் Enter அழுத்தும்போது புதிய வரிக்குச் செல்ல அனுமதித்தல் (Newline)
+        if (activeElement.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        // Edit அல்லது Delete பட்டன்கள் மீது Enter அழுத்தினால் இயல்பான செயல்பாடு தொடரும்
+        if (activeElement.classList.contains('edit-btn') || activeElement.classList.contains('delete-btn') ||
+            activeElement.id === 'editBtn' || activeElement.id === 'deleteBtn') {
+            return;
+        }
+
+        // டேப்கள் மற்றும் இன்புட் புலங்களை வரிசைப்படுத்துதல்
+        const focusableElements = Array.from(document.querySelectorAll(
+            'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(el => {
+            return el.offsetParent !== null && 
+                   !el.classList.contains('edit-btn') && 
+                   !el.classList.contains('delete-btn');
+        });
+
+        const currentIndex = focusableElements.indexOf(activeElement);
+        
+        if (currentIndex > -1 && currentIndex < focusableElements.length - 1) {
+            event.preventDefault();
+            focusableElements[currentIndex + 1].focus();
+            if (focusableElements[currentIndex + 1].tagName === 'INPUT' && focusableElements[currentIndex + 1].type === 'text') {
+                focusableElements[currentIndex + 1].select();
+            }
+        }
+    }
+});
 
 window.addEventListener("DOMContentLoaded", function () {
     window.populateDropdowns();
