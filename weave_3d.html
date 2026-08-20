@@ -158,7 +158,7 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
  body.printing-graph .print-sheet{box-shadow:none!important;border:none!important;max-width:100%!important;margin:0 auto!important;padding:0!important;background:#fff!important}
  body:not(.printing-graph) #printModalBox{display:none!important}
  body:not(.printing-graph) #fsModal{display:none!important}
- body:not(.printing-graph) .header,body:not(.printing-graph) .control-card{display:none!important}
+ body:not(.printing-graph) .header,body:not(.printing-graph) .card:not(.orders-card):not(.preview-card){display:none!important}
  body:not(.printing-graph) .container{display:flex!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;background:#fff!important}
  body:not(.printing-graph) .orders-card,body:not(.printing-graph) .preview-card{
    display:flex!important;flex-direction:column!important;
@@ -168,14 +168,12 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
  body:not(.printing-graph) .orders-card h3,body:not(.printing-graph) .orders-card div{color:#000!important;border-color:#000!important}
  body:not(.printing-graph) .canvas-wrapper{background:#fff!important;padding:0!important;display:block!important}
  
- /* Print styling for the simplified text lines */
  .order-line{
    background:#fff!important;border:none!important;color:#000!important;
    font-size:12.5px!important;padding:4px 0!important;margin:4px 0!important;
  }
  .order-line b{color:#000!important;}
  
- /* Hide unnecessary elements in print (Headers) */
  .print-hide{display:none!important}
  table{page-break-inside:avoid}
 }
@@ -274,6 +272,8 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
         <button type="button" class="btn-grid-action" onclick="addCol()">➕ Column</button>
         <button type="button" class="btn-grid-action" onclick="addRowTop()">➕ Row</button>
         <button type="button" class="btn-grid-action" onclick="duplicateSet()">⏬ Duplicate</button>
+        <!-- 🟢 NEW CAMERA SCAN FEATURE 🟢 -->
+        <button type="button" class="btn-grid-action" style="background:#d97706; color:white; border:none;" onclick="triggerGraphScan()" title="கிராஃப் பேப்பரை ஸ்கேன் செய்ய">📸 Scan Graph</button>
       </div>
       <div class="matrix-grid-container" id="matrixGridContainer"></div>
       <p style="font-size:.68rem;color:#8fb99a;text-align:center;">1 = Warp Up • 0 = Weft Up</p>
@@ -288,7 +288,6 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
   </div>
 
   <div class="card orders-card">
-    <!-- 🟢 Hidden in Print to remove the round marking 🟢 -->
     <div class="card-title print-hide">
       <h2>4️⃣ Drawing & Denting</h2>
       <span class="badge">AUTO</span>
@@ -298,7 +297,6 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
   </div>
 
   <div class="card preview-card">
-    <!-- 🟢 Hidden in Print to remove the round marking 🟢 -->
     <div class="preview-head print-hide">
       <h3>👁️ 3D Preview</h3>
       <span>படத்தை touch செய்தால் Full Screen</span>
@@ -478,6 +476,70 @@ function duplicateSet(){
  let p=input.split("-").map(Number);if(p.length!==2||!Number.isInteger(p[0])||!Number.isInteger(p[1])||p[0]<1||p[1]>m.length||p[0]>p[1])return alert("❌ சரியான வடிவம்: 1-4");
  weavePatterns.custom=m.slice(p[0]-1,p[1]).map(r=>[...r]).concat(m);buildGridEditor();draw3DWeave()
 }
+
+// 🟢 NEW: CAMERA / IMAGE SCANNER FUNCTION 🟢
+function triggerGraphScan() {
+  let inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.onchange = (e) => {
+    let file = e.target.files[0];
+    if(!file) return;
+    let reader = new FileReader();
+    reader.onload = (event) => {
+       let img = new Image();
+       img.onload = () => processGraphImage(img);
+       img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function processGraphImage(img) {
+  let r = prompt("இந்த படத்தில் உள்ள கட்டங்களை (Grid) மட்டும் கட் (crop) செய்திருக்க வேண்டும்.\n\nஎத்தனை வரிசைகள் (Picks/Rows) உள்ளன? (உதாரணம்: 4)", "4");
+  if(!r) return;
+  let c = prompt("எத்தனை நெடுக்கைகள் (Ends/Cols) உள்ளன? (உதாரணம்: 4)", "4");
+  if(!c) return;
+  
+  let rows = parseInt(r);
+  let cols = parseInt(c);
+  if(isNaN(rows) || isNaN(cols) || rows < 1 || cols < 1) {
+    alert("தவறான உள்ளீடு!");
+    return;
+  }
+
+  let canvas = document.createElement('canvas');
+  let ctx = canvas.getContext('2d');
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+  let cellW = canvas.width / cols;
+  let cellH = canvas.height / rows;
+
+  let newMatrix = [];
+  for(let y=0; y<rows; y++) {
+    let rowArr = [];
+    for(let x=0; x<cols; x++) {
+      let px = Math.floor(x * cellW + cellW/2);
+      let py = Math.floor(y * cellH + cellH/2);
+      let pixel = ctx.getImageData(px, py, 1, 1).data;
+      let brightness = (pixel[0] + pixel[1] + pixel[2]) / 3;
+      // Darker pixels (<128) mean Warp Up (1), Lighter means Weft Up (0)
+      rowArr.push(brightness < 128 ? 1 : 0);
+    }
+    newMatrix.push(rowArr);
+  }
+
+  weavePatterns["custom"] = newMatrix;
+  document.getElementById('weaveType').value = "custom";
+  document.getElementById('gridEditorSection').style.display = 'flex';
+  buildGridEditor();
+  draw3DWeave();
+  alert("✅ புகைப்படம் வெற்றிகரமாக ஸ்கேன் செய்யப்பட்டு Graph-ஆக மாற்றப்பட்டது!");
+}
+
 function buildGridEditor(){
  let box=document.getElementById("matrixGridContainer");box.innerHTML="";let m=weavePatterns.custom,cols=m[0]?.length||0,top=document.createElement("div");top.className="col-del-row";
  for(let c=0;c<cols;c++){let b=document.createElement("button");b.className="btn-col-del";b.textContent="✕";b.onclick=()=>removeCol(c);top.appendChild(b)}
@@ -526,8 +588,6 @@ function updateYarnSummary(type){
  if(a)a.textContent=filled+" / "+count;
  if(h)h.textContent=type==="warp"?"Ends உள்ளிடவும்":"Picks உள்ளிடவும்";
 }
-
-/* 🟢 SIMPLE TAMIL TEXT LOGIC 🟢 */
 function calculateWarpOrders(){
  let total=0;
  for(let i=1;i<=currentWarpCount;i++){
