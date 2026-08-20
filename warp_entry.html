@@ -124,7 +124,7 @@
     .page-title {
         font-size: 16px;
         font-weight: 700;
-        color: #EF4444;
+        color: #2F4F38;
         text-align: left;
         position: relative;
         padding-left: 12px;
@@ -915,9 +915,9 @@
             👁️ Preview
         </button>
 
-        <button class="btn-main btn-save"
-                onclick="saveWarpDesign()"
-                id="saveBtnTxt">
+        <!-- 🟢 FIXED SAVE BUTTON HERE 🟢 -->
+        <button class="btn-main btn-save" id="saveBtnTxt"
+                onclick="saveWarpDesign(); update3DPreviewData()">
             💾 Save
         </button>
 
@@ -4473,6 +4473,36 @@ function previewPattern() {
     openModal(
         'previewModal'
     );
+}
+
+/* ============================================================
+   3D PREVIEW DATA LINK
+============================================================ */
+function update3DPreviewData() {
+    try {
+        let colorInputs = document.querySelectorAll('.inp-color');
+        let endsInputs = document.querySelectorAll('.inp-ends');
+
+        let color1 = colorInputs.length > 0 ? colorInputs[0].value : "White";
+        let ends1 = endsInputs.length > 0 ? endsInputs[0].value : "60";
+
+        let color2 = colorInputs.length > 1 ? colorInputs[1].value : "Blue";
+        let ends2 = endsInputs.length > 1 ? endsInputs[1].value : "60";
+
+        let previewData = [{
+            designNo: "🔴 Live Warp Entry Preview", 
+            warpColor1: color1,
+            warpEnds1: ends1,
+            warpColor2: color2,
+            warpEnds2: ends2,
+            weftColor: "White" 
+        }];
+
+        localStorage.setItem('warp_entry_data', JSON.stringify(previewData));
+        
+    } catch(e) {
+        console.error("3D Preview Data Link Error:", e);
+    }
 }
 
 </script>

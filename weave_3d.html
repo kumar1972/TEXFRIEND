@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>3D Warp & Weft Weave Simulator Pro</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <!-- config.js இல்லை என்றாலும் இது லோக்கல் ஸ்டோரேஜில் வேலை செய்யும் -->
+  <script src="config.js"></script>
+
+  <style>
+    /* 🎨 Mild Green / Soft Dull Tone Theme 🎨 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background-color: #121e19; /* அடர்ந்த பச்சை கலந்த சாம்பல் பின்னணி */
+      color: #e8f5e9;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .header {
+      text-align: center;
+      background: #1c2b25; /* டல்லான பச்சை கார்டு */
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #284036;
+    }
+    .header h1 {
+      font-size: 1.25rem;
+      color: #81c784; /* சாஃப்ட் கிரீன் */
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 0.85rem;
+      color: #a5d6a7;
+    }
+    .control-card, .orders-card, .preview-card {
+      background: #1c2b25;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #284036;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .scroll-box {
+      max-height: 220px;
+      overflow-y: auto;
+      background: #121e19;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #284036;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #81c784;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input, select {
+      background: #121e19;
+      border: 1px solid #284036;
+      color: #e8f5e9;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+      width: 100%;
+    }
+    input[type="color"] {
+      height: 38px;
+      padding: 2px;
+      cursor: pointer;
+      background: #1c2b25;
+    }
+    .flex-row {
+      display: flex;
+      gap: 5px;
+    }
+    .btn-simulate {
+      background: #2e7d32; /* டல்லான பச்சை பட்டன் */
+      color: #e8f5e9;
+      border: 1px solid #1b5e20;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .btn-simulate:active {
+      transform: scale(0.98);
+    }
+    .btn-print-home {
+      background: #0277bd; /* ஹோம் பேஜ் பிரிண்ட் நீல நிற பட்டன் */
+      color: #e1f5fe;
+      border: 1px solid #01579b;
+    }
+    .btn-save-custom {
+      background: #388e3c;
+      color: #e8f5e9;
+      border: 1px solid #2e7d32;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn-graph-preview {
+      background: #43a047;
+      color: #e8f5e9;
+      border: 1px solid #388e3c;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .btn-cloud-action {
+      background: #284036;
+      color: #81c784;
+      border: 1px solid #36574a;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .grid-editor-box {
+      background: #121e19;
+      border: 1px solid #284036;
+      padding: 12px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .grid-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .btn-grid-action {
+      background: #284036;
+      color: #81c784;
+      border: 1px solid #36574a;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .matrix-row-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .matrix-grid-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow: auto;
+      padding: 4px;
+    }
+    .matrix-row {
+      display: flex;
+      gap: 6px;
+    }
+    .matrix-cell {
+      width: 36px;
+      height: 36px;
+      background: #1c2b25;
+      border: 1px solid #284036;
+      color: #81c784;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .matrix-cell.active {
+      background: #4caf50;
+      color: #121e19;
+      border-color: #81c784;
+    }
+    .btn-row-del, .btn-col-del {
+      background: #5c3a3a;
+      color: #f1948a;
+      border: none;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-row-del { width: 28px; height: 36px; }
+    .btn-col-del { width: 36px; height: 24px; font-size: 0.7rem; }
+    .col-del-row { display: flex; gap: 6px; justify-content: center; }
+
+    .orders-card h3 {
+      color: #81c784;
+      font-size: 1rem;
+      border-bottom: 1px solid #284036;
+      padding-bottom: 6px;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      background: #0c1411;
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .fs-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #000000; z-index: 99999; flex-direction: column; overflow: hidden;
+    }
+    .fs-header {
+      width: 100%; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+      background: #1c2b25; position: absolute; top: 0; z-index: 100000;
+    }
+    .close-btn { 
+      font-size: 14px; color: white; cursor: pointer; font-weight: bold; 
+      background: #5c3a3a; border: none; padding: 8px 18px; border-radius: 6px;
+    }
+    .print-btn {
+      font-size: 14px; color: white; cursor: pointer; font-weight: bold; 
+      background: #2e7d32; border: none; padding: 8px 18px; border-radius: 6px;
+    }
+    .fs-content { 
+      flex: 1; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;
+    }
+    .fs-content img { 
+      max-width: 90%; max-height: 85vh; object-fit: contain; transform-origin: center center; will-change: transform; touch-action: none; user-select: none;
+    }
+
+    .print-modal {
+      display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.85); z-index: 999999; justify-content: center; align-items: center; padding: 20px; overflow-y: auto;
+    }
+    .print-sheet {
+      background: white; color: black; padding: 25px; border-radius: 8px; width: 100%; max-width: 500px;
+      display: flex; flex-direction: column; gap: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); margin: auto;
+    }
+
+    /* 🟢 1-Page Perfect Print Fix CSS (Graph & Full Design) 🟢 */
+    @media print {
+      @page { margin: 10mm; size: auto; }
+      html, body { 
+        height: auto !important; min-height: auto !important; margin: 0 !important; padding: 0 !important; 
+        background: #ffffff !important; color: #000000 !important; 
+      }
+      
+      .cell-active, canvas, .print-sheet div {
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+      }
+
+      body.printing-graph > .container { display: none !important; }
+      body.printing-graph #fsModal { display: none !important; }
+      body.printing-graph #printModalBox { 
+        position: static !important; display: block !important; 
+        background: #ffffff !important; padding: 0 !important; margin: 0 !important; width: 100% !important; height: auto !important;
+      }
+      body.printing-graph .print-sheet { 
+        box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 auto !important; padding: 0 !important; background: #ffffff !important;
+      }
+      
+      body:not(.printing-graph) #printModalBox { display: none !important; }
+      body:not(.printing-graph) #fsModal { display: none !important; }
+      
+      body:not(.printing-graph) .header, 
+      body:not(.printing-graph) .control-card { 
+        display: none !important; 
+      }
+      
+      body:not(.printing-graph) .container {
+        display: flex !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important;
+      }
+
+      body:not(.printing-graph) .orders-card, 
+      body:not(.printing-graph) .preview-card {
+        display: flex !important;
+        background: #ffffff !important; 
+        border: 2px solid #000000 !important; 
+        box-shadow: none !important; 
+        color: #000000 !important; 
+        margin-bottom: 20px !important;
+        page-break-inside: avoid;
+      }
+      
+      body:not(.printing-graph) .orders-card h3, 
+      body:not(.printing-graph) .orders-card div { 
+        color: #000000 !important; 
+        border-color: #000000 !important; 
+      }
+      
+      body:not(.printing-graph) .canvas-wrapper {
+        background: #ffffff !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+
+      .print-hide { display: none !important; }
+      table { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>3D Weave Simulation Pro</h1>
+    <p>வார்ப் & வெஃப்ட் தத்ரூப 3D நெசவுத் தோற்றம்</p>
+  </div>
+
+  <div class="control-card">
+    
+    <div style="padding-bottom: 12px; border-bottom: 1px solid #284036; margin-bottom: 5px;">
+      <label style="color: #81c784;">Design Management (Firebase / Local):</label>
+      <select id="designSelect" onchange="loadSelectedDesign()" style="border: 1px solid #284036; margin-bottom: 8px;">
+        <option value="">-- சேமிக்கப்பட்ட டிசைனைத் தேர்ந்தெடுக்கவும் --</option>
+      </select>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-cloud-action" onclick="importFromFirebase()">📥 Import</button>
+        <button type="button" class="btn-cloud-action" onclick="saveDesignToFirebase()">☁️ Save/Sync</button>
+      </div>
+    </div>
+
+    <!-- WARP SCROLL BOX -->
+    <label style="color: #81c784;">WARP (நெடுக்கை) - <span id="warpCountDisplay">10</span> கலர்கள் வரை</label>
+    <div class="scroll-box" id="warpInputsContainer"></div>
+
+    <!-- WEFT SCROLL BOX -->
+    <label style="color: #81c784; margin-top: 10px;">WEFT (பின்னல்) - <span id="weftCountDisplay">6</span> கலர்கள் வரை</label>
+    <div class="scroll-box" id="weftInputsContainer"></div>
+
+    <!-- 🟢 Weave Type (Plain மட்டும்) 🟢 -->
+    <div style="margin-top:10px;">
+      <label>Weave Type:</label>
+      <select id="weaveType" onchange="onWeaveChange()">
+        <optgroup label="Standard Weaves">
+          <option value="plain" selected>Plain Weave (1/1)</option>
+        </optgroup>
+        <optgroup label="Custom Weaves" id="customWeavesGroup">
+          <option value="custom">🛠️ Custom Graph Grid (புதிதாக எடிட் செய்ய)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- GRAPH GRID EDITOR BOX -->
+    <div id="gridEditorSection" class="grid-editor-box" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="color: #81c784; margin:0;">Graph Grid Editor:</label>
+      </div>
+      
+      <div class="grid-controls">
+        <button type="button" class="btn-grid-action" onclick="addCol()">➕ X Axis (Col)</button>
+        <button type="button" class="btn-grid-action" onclick="addRowTop()">➕ Y Axis (Row)</button>
+        <button type="button" class="btn-grid-action" style="background:#0277bd; color:white; border:none;" onclick="duplicateSet()">⏬ Duplicate Set (Select Rows)</button>
+      </div>
+      
+      <div class="matrix-grid-container" id="matrixGridContainer"></div>
+      
+      <p style="font-size:0.7rem; color:#a5d6a7; text-align:center;">1 = Warp Up, 0 = Weft Up</p>
+      <button type="button" class="btn-graph-preview" onclick="openGraphPrintPreview()">🖨️ Print Custom Graph Grid</button>
+      <button type="button" class="btn-save-custom" onclick="saveCustomMatrixAsNewWeave()">💾 Save & Add to Dropdown List</button>
+    </div>
+
+    <!-- Home Page Buttons -->
+    <div style="display: flex; gap: 8px; margin-top: 8px; width: 100%;">
+      <button class="btn-simulate" style="flex: 2;" onclick="draw3DWeave()">3D Preview புதுப்பி</button>
+      <button class="btn-simulate btn-print-home" style="flex: 1;" onclick="window.print()">🖨️ Print Full Design</button>
+    </div>
+  </div>
+
+  <!-- WARP DRAWING & DENTING ORDERS CARD -->
+  <div class="orders-card">
+    <h3>📋 Real Drawing Draft & Denting Calculation</h3>
+    <div id="drawingOrderTxt"><b>Drawing Order:</b> -</div>
+    <div id="dentingOrderTxt"><b>Denting Order:</b> -</div>
+  </div>
+
+  <div class="preview-card">
+    <div class="canvas-wrapper" title="Click to view Full Screen">
+      <canvas id="weaveCanvas" width="800" height="600"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN MODAL -->
+<div id="fsModal" class="fs-modal">
+  <div class="fs-header">
+    <button class="print-btn print-hide" onclick="window.print()">🖨️ Print 3D</button>
+    <button class="close-btn print-hide" onclick="closeFs()">✖ CLOSE</button>
+  </div>
+  <div class="fs-content" id="fsContent">
+    <img id="fsImg" src="" alt="3D Pattern">
+  </div>
+</div>
+
+<!-- GRAPH PRINT PREVIEW MODAL -->
+<div id="printModalBox" class="print-modal">
+  <div class="print-sheet">
+    <h3 class="print-hide" style="text-align:center; color:#121e19; margin-bottom: 10px;">Weave Graph Matrix Design</h3>
+    <div id="printTableContainer" style="display:flex; justify-content:center; margin-bottom: 15px;"></div>
+    <div class="print-hide" style="display:flex; gap:10px; justify-content:flex-end;">
+      <button onclick="window.print()" style="background:#2e7d32; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">Print Graph</button>
+      <button onclick="closeGraphPrintPreview()" style="background:#5c3a3a; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentWarpCount = 10;
+  let currentWeftCount = 6;
+  let activeDesignObj = null;
+  let allCloudDesigns = [];
+
+  let weavePatterns = {
+    "plain": [[1,0],[0,1]],
+    "custom": [[0,0,1,1],[1,0,0,1],[1,1,0,0],[0,1,1,0]]
+  };
+
+  async function importFromFirebase() {
+    try {
+      if (typeof firebase === 'undefined' || !firebase.apps.length) {
+        let localDesigns = [];
+        try {
+          let live = localStorage.getItem('warp_entry_data');
+          if (live) localDesigns = localDesigns.concat(JSON.parse(live));
+          let master = localStorage.getItem('design_masters_data');
+          if (master) localDesigns = localDesigns.concat(JSON.parse(master));
+        } catch(e) {}
+
+        allCloudDesigns = localDesigns;
+        const select = document.getElementById('designSelect');
+        select.innerHTML = '<option value="">-- சேமிக்கப்பட்ட டிசைனைத் தேர்ந்தெடுக்கவும் --</option>';
+        allCloudDesigns.forEach((design, index) => {
+          let opt = document.createElement('option');
+          opt.value = index;
+          opt.textContent = "🎨 Design: " + (design.designNo || design.name || "Unnamed");
+          select.appendChild(opt);
+        });
+        return; 
+      }
+
+      const db = firebase.firestore();
+      const snapshot = await db.collection("weaves").get();
+      allCloudDesigns = [];
+      snapshot.forEach(doc => {
+        allCloudDesigns.push({ id: doc.id, ...doc.data() });
+      });
+
+      const select = document.getElementById('designSelect');
+      select.innerHTML = '<option value="">-- Cloud டிசைனைத் தேர்ந்தெடுக்கவும் --</option>';
+      allCloudDesigns.forEach((design, index) => {
+        let opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = "☁️ Design: " + (design.designNo || design.name || "Unnamed");
+        select.appendChild(opt);
+      });
+      alert("✅ Firebase Cloud-லிருந்து டிசைன்கள் இறக்கப்பட்டது!");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function saveDesignToFirebase() {
+    let dNo = prompt("இந்த டிசைனுக்கான நம்பர் அல்லது பெயர் தரவும்:", activeDesignObj?.designNo || "Design_01");
+    if(!dNo) return;
+
+    try {
+      if (typeof firebase === 'undefined' || !firebase.apps.length) {
+        let designData = {
+          designNo: dNo,
+          customMatrix: weavePatterns["custom"],
+          type: document.getElementById('weaveType').value
+        };
+        let existing = JSON.parse(localStorage.getItem('design_masters_data') || '[]');
+        existing.push(designData);
+        localStorage.setItem('design_masters_data', JSON.stringify(existing));
+        alert("✅ லோக்கல் மெமரியில் வெற்றிகரமாக சேமிக்கப்பட்டது!");
+        importFromFirebase(); 
+        return;
+      }
+
+      const db = firebase.firestore();
+      let designData = {
+        designNo: dNo,
+        customMatrix: weavePatterns["custom"],
+        type: document.getElementById('weaveType').value,
+        timestamp: new Date()
+      };
+      await db.collection("weaves").doc(dNo).set(designData, { merge: true });
+      alert("✅ Firebase Cloud-ல் சேமிக்கப்பட்டது!");
+      importFromFirebase();
+    } catch (e) {
+      console.error(e);
+      alert("❌ Save பிழை: " + e.message);
+    }
+  }
+
+  function generateUI(warpCount, weftCount) {
+    currentWarpCount = warpCount;
+    currentWeftCount = weftCount;
+
+    document.getElementById('warpCountDisplay').innerText = warpCount;
+    document.getElementById('weftCountDisplay').innerText = weftCount;
+
+    let warpContainer = document.getElementById('warpInputsContainer');
+    warpContainer.innerHTML = '';
+    for(let i=1; i<=warpCount; i++) {
+      warpContainer.innerHTML += `
+        <div>
+          <label>Warp ${i}:</label>
+          <div class="flex-row">
+            <input type="color" id="wC${i}" value="${i===1 ? '#f8fafc' : (i===2 ? '#1d4ed8' : '#334155')}">
+            <input type="number" id="wE${i}" value="${i<=2 ? 60 : 0}" placeholder="Ends" oninput="calculateWarpOrders()">
+          </div>
+        </div>
+      `;
+    }
+
+    let weftContainer = document.getElementById('weftInputsContainer');
+    weftContainer.innerHTML = '';
+    for(let i=1; i<=weftCount; i++) {
+      weftContainer.innerHTML += `
+        <div>
+          <label>Weft ${i}:</label>
+          <div class="flex-row">
+            <input type="color" id="weftC${i}" value="${i===1 ? '#f8fafc' : '#334155'}">
+            <input type="number" id="weftP${i}" value="${i<=2 ? 50 : (i===3 ? 10 : 0)}" placeholder="Picks">
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function addCol() {
+    let matrix = weavePatterns["custom"];
+    for(let r=0; r<matrix.length; r++) {
+      matrix[r].push(0);
+    }
+    buildGridEditor();
+    draw3DWeave();
+  }
+
+  function removeCol(colIndex) {
+    let matrix = weavePatterns["custom"];
+    if(matrix[0].length <= 2) {
+      alert("குறைந்தது 2 Columns இருக்க வேண்டும்!");
+      return;
+    }
+    for(let r=0; r<matrix.length; r++) {
+      matrix[r].splice(colIndex, 1);
+    }
+    buildGridEditor();
+    draw3DWeave();
+  }
+
+  function addRowTop() {
+    let matrix = weavePatterns["custom"];
+    let cols = matrix[0] ? matrix[0].length : 4;
+    let newRow = new Array(cols).fill(0);
+    matrix.unshift(newRow); 
+    buildGridEditor();
+    draw3DWeave();
+  }
+
+  function removeRow(index) {
+    let matrix = weavePatterns["custom"];
+    if(matrix.length <= 2) {
+      alert("குறைந்தது 2 வரிசைகள் இருக்க வேண்டும்!");
+      return;
+    }
+    matrix.splice(index, 1);
+    buildGridEditor();
+    draw3DWeave();
+  }
+
+  function duplicateSet() {
+    let matrix = weavePatterns["custom"];
+    let input = prompt(`எந்த வரிசையிலிருந்து (Row) எந்த வரிசை வரை ஒரு செட்டாக காப்பி செய்ய வேண்டும்?\n(மொத்த வரிசைகள்: ${matrix.length})\nஉதாரணம்: 1-4`, "1-" + matrix.length);
+    if (!input) return;
+
+    let parts = input.split("-");
+    if(parts.length !== 2) {
+      alert("❌ தவறான உள்ளீடு! சரியான வடிவம்: 1-4");
+      return;
+    }
+
+    let p1 = parseInt(parts[0].trim());
+    let p2 = parseInt(parts[1].trim());
+
+    if(isNaN(p1) || isNaN(p2) || p1 < 1 || p2 > matrix.length || p1 > p2) {
+      alert(`❌ தவறான எண்கள்! தயவுசெய்து 1 முதல் ${matrix.length} வரை உள்ள எண்களைக் கொடுக்கவும்.`);
+      return;
+    }
+
+    let startIndex = matrix.length - p2;
+    let endIndex = matrix.length - p1 + 1;
+
+    let newRows = matrix.slice(startIndex, endIndex).map(row => [...row]);
+    weavePatterns["custom"] = newRows.concat(matrix);
+
+    buildGridEditor();
+    draw3DWeave();
+  }
+
+  function buildGridEditor() {
+    let container = document.getElementById('matrixGridContainer');
+    container.innerHTML = '';
+    let matrix = weavePatterns["custom"];
+    let colsCount = matrix[0] ? matrix[0].length : 0;
+
+    let colDelRow = document.createElement('div');
+    colDelRow.className = 'col-del-row';
+    for(let c=0; c<colsCount; c++) {
+      let cBtn = document.createElement('button');
+      cBtn.type = 'button';
+      cBtn.className = 'btn-col-del';
+      cBtn.innerText = '✕';
+      cBtn.onclick = () => removeCol(c);
+      colDelRow.appendChild(cBtn);
+    }
+    let spacer = document.createElement('div');
+    spacer.style.width = '28px';
+    colDelRow.appendChild(spacer);
+    container.appendChild(colDelRow);
+
+    matrix.forEach((row, r) => {
+      let rowWrapper = document.createElement('div');
+      rowWrapper.className = 'matrix-row-wrapper';
+
+      let rowDiv = document.createElement('div');
+      rowDiv.className = 'matrix-row';
+
+      row.forEach((val, c) => {
+        let cell = document.createElement('div');
+        cell.className = `matrix-cell ${val === 1 ? 'active' : ''}`;
+        cell.innerText = val;
+        cell.onclick = function() {
+          matrix[r][c] = matrix[r][c] === 1 ? 0 : 1;
+          buildGridEditor(); 
+          draw3DWeave();     
+        };
+        rowDiv.appendChild(cell);
+      });
+
+      rowWrapper.appendChild(rowDiv);
+
+      let delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'btn-row-del';
+      delBtn.innerText = '✕';
+      delBtn.onclick = () => removeRow(r);
+      rowWrapper.appendChild(delBtn);
+
+      container.appendChild(rowWrapper);
+    });
+  }
+
+  function onWeaveChange() {
+    let type = document.getElementById('weaveType').value;
+    let editorBox = document.getElementById('gridEditorSection');
+    
+    if (type === 'plain') {
+      editorBox.style.display = 'none';
+      if(weavePatterns["plain"]) {
+        weavePatterns["custom"] = JSON.parse(JSON.stringify(weavePatterns["plain"]));
+      }
+    } else {
+      editorBox.style.display = 'flex';
+      if (type !== 'custom' && weavePatterns[type]) {
+        weavePatterns["custom"] = JSON.parse(JSON.stringify(weavePatterns[type]));
+      }
+      buildGridEditor();
+    }
+    draw3DWeave();
+  }
+
+  async function saveCustomMatrixAsNewWeave() {
+    let weaveName = prompt("இந்த புதிய Weave டிசைனுக்கு ஒரு பெயர் கொடுக்கவும்:");
+    if (!weaveName || weaveName.trim() === "") return;
+
+    let keyName = "custom_" + Date.now();
+    let newMatrix = JSON.parse(JSON.stringify(weavePatterns["custom"]));
+    weavePatterns[keyName] = newMatrix;
+
+    let select = document.getElementById('weaveType');
+    let customGroup = document.getElementById('customWeavesGroup');
+    
+    let opt = document.createElement('option');
+    opt.value = keyName;
+    opt.textContent = weaveName.trim();
+    customGroup.appendChild(opt);
+    select.value = keyName;
+
+    let savedCustoms = JSON.parse(localStorage.getItem('custom_weaves_list') || '{}');
+    savedCustoms[keyName] = { name: weaveName.trim(), matrix: newMatrix };
+    localStorage.setItem('custom_weaves_list', JSON.stringify(savedCustoms));
+
+    try {
+      if (typeof firebase !== 'undefined' && firebase.apps.length) {
+        const db = firebase.firestore();
+        await db.collection("custom_weaves_list").doc(keyName).set({
+          name: weaveName.trim(),
+          matrix: newMatrix,
+          timestamp: new Date()
+        });
+      }
+    } catch(e) {
+      console.error("Cloud Sync Error: ", e);
+    }
+
+    alert("✅ புதிய Weave டிசைன் வெற்றிகரமாக Local மற்றும் Cloud-ல் சேமிக்கப்பட்டது!");
+  }
+
+  async function loadSavedCustomWeaves() {
+    let customGroup = document.getElementById('customWeavesGroup');
+    let savedCustoms = JSON.parse(localStorage.getItem('custom_weaves_list') || '{}');
+    
+    for(let key in savedCustoms) {
+      weavePatterns[key] = savedCustoms[key].matrix;
+      if(!document.querySelector(`option[value="${key}"]`)) {
+        let opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = savedCustoms[key].name;
+        customGroup.appendChild(opt);
+      }
+    }
+
+    try {
+      if (typeof firebase !== 'undefined' && firebase.apps.length) {
+        const db = firebase.firestore();
+        const snapshot = await db.collection("custom_weaves_list").get();
+        let updated = false;
+
+        snapshot.forEach(doc => {
+          let key = doc.id;
+          let data = doc.data();
+          weavePatterns[key] = data.matrix;
+          
+          if(!document.querySelector(`option[value="${key}"]`)) {
+            let opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = data.name;
+            customGroup.appendChild(opt);
+          }
+
+          if(!savedCustoms[key]) {
+            savedCustoms[key] = { name: data.name, matrix: data.matrix };
+            updated = true;
+          }
+        });
+
+        if(updated) {
+          localStorage.setItem('custom_weaves_list', JSON.stringify(savedCustoms));
+        }
+      }
+    } catch(e) {
+      console.error("Cloud Load Error: ", e);
+    }
+  }
+
+  function calculateWarpOrders() {
+    let totalEnds = 0;
+    let endsList = [];
+    for(let i=1; i<=currentWarpCount; i++) {
+      let e = parseInt(document.getElementById('wE'+i)?.value) || 0;
+      if(e > 0) {
+        totalEnds += e;
+        endsList.push({ id: i, count: e });
+      }
+    }
+
+    if(endsList.length === 0) {
+      document.getElementById('drawingOrderTxt').innerHTML = "<b>Drawing Order:</b> -";
+      document.getElementById('dentingOrderTxt').innerHTML = "<b>Denting Order:</b> -";
+      return;
+    }
+
+    let drawingArr = [];
+    let curShaft = 1;
+    let totalFrames = 4;
+    for(let k=1; k<=totalEnds; k++) {
+      drawingArr.push(`H${curShaft}`);
+      curShaft = (curShaft % totalFrames) + 1;
+    }
+
+    let dentingArr = [];
+    let dentGroup = [];
+    drawingArr.forEach((sh, idx) => {
+      dentGroup.push(sh);
+      if(dentGroup.length === 2 || idx === drawingArr.length - 1) {
+        dentingArr.push(`(${dentGroup.join(',')})`);
+        dentGroup = [];
+      }
+    });
+
+    document.getElementById('drawingOrderTxt').innerHTML = `<b>Drawing Order:</b> ${drawingArr.slice(0, 24).join(', ')} ${drawingArr.length > 24 ? '...' : ''} (Total Ends: ${totalEnds})`;
+    document.getElementById('dentingOrderTxt').innerHTML = `<b>Denting Order:</b> ${dentingArr.slice(0, 12).join(' ')} ${dentingArr.length > 12 ? '...' : ''}`;
+  }
+
+  /* 🟢 PRINT FIX LOGIC (Numbers outside the box without borders) 🟢 */
+  function openGraphPrintPreview() {
+    document.body.classList.add('printing-graph');
+    
+    let type = document.getElementById('weaveType').value;
+    let matrix = weavePatterns[type] ? weavePatterns[type] : weavePatterns["custom"];
+    
+    let container = document.getElementById('printTableContainer');
+    let picks = matrix.length;
+    let shafts = matrix[0].length;
+
+    let html = `<div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; max-width: max-content; margin: 0 auto; background: white;">`;
+    
+    // டேபிளுக்கு (Table) எந்த Outer Border-ம் இல்லை (border: none)
+    html += `<table style="border-collapse:collapse; text-align:center; margin:0;">`;
+    
+    for(let r = 0; r < matrix.length; r++) {
+      html += `<tr>`;
+      
+      // 🟢 Left Pick Number: No border, pushed slightly to the left 🟢
+      html += `<td style="border:none; padding:5px 12px 5px 0; font-weight:bold; color:#000; text-align:right;">${picks - r}</td>`;
+      
+      matrix[r].forEach((val, c) => {
+        let mark = val === 1 ? '×' : '';
+        
+        // 🟢 Matrix கட்டங்களுக்கு மட்டும் தனிப்பட்ட பார்டர் (Outer box effect) 🟢
+        let bTop = r === 0 ? '2px solid #000' : '1px solid #000';
+        let bBottom = r === matrix.length - 1 ? '2px solid #000' : '1px solid #000';
+        let bLeft = c === 0 ? '2px solid #000' : '1px solid #000';
+        let bRight = c === matrix[r].length - 1 ? '2px solid #000' : '1px solid #000';
+
+        html += `<td style="border-top:${bTop}; border-bottom:${bBottom}; border-left:${bLeft}; border-right:${bRight}; width:30px; height:30px; background-color:#fff !important; color:#000 !important; font-size:20px; font-weight:bold; text-align:center; vertical-align:middle; -webkit-print-color-adjust:exact; print-color-adjust:exact;">${mark}</td>`;
+      });
+      html += `</tr>`;
+    }
+    
+    // 🟢 Bottom Shaft Numbers: No border 🟢
+    html += `<tr><td style="border:none;"></td>`;
+    for(let c=1; c<=shafts; c++) {
+      html += `<td style="border:none; padding-top:8px; font-weight:bold; color:#000; text-align:center;">${c}</td>`;
+    }
+    html += `</tr>`;
+    
+    html += `</table>`;
+
+    // Peg Info Container
+    html += `<div style="padding: 15px 0 5px 0; font-weight:bold; font-size:1.1rem; color:#000; text-align:left; -webkit-print-color-adjust:exact; print-color-adjust:exact;">`;
+    html += `Peg Info : (Total Picks= ${picks} / Total Shafts= ${shafts})`;
+    html += `</div>`;
+
+    html += `</div>`;
+    
+    container.innerHTML = html;
+    document.getElementById('printModalBox').style.display = 'flex';
+  }
+
+  function closeGraphPrintPreview() {
+    document.body.classList.remove('printing-graph');
+    document.getElementById('printModalBox').style.display = 'none';
+  }
+
+  function hexToRgb(hex) {
+    let r = parseInt(hex.slice(1, 3), 16);
+    let g = parseInt(hex.slice(3, 5), 16);
+    let b = parseInt(hex.slice(5, 7), 16);
+    return { r, g, b };
+  }
+
+  function shadeColor(rgb, factor) {
+    return `rgb(${Math.min(255, Math.max(0, Math.round(rgb.r * factor)))}, ${Math.min(255, Math.max(0, Math.round(rgb.g * factor)))}, ${Math.min(255, Math.max(0, Math.round(rgb.b * factor)))})`;
+  }
+
+  function isWarpUp(r, c, type) {
+    let matrix = weavePatterns[type] || weavePatterns["plain"];
+    return matrix[r % matrix.length][c % matrix[0].length] === 1;
+  }
+
+  function parseColorName(name) {
+    if (!name) return "#ffffff";
+    let n = String(name).trim().toLowerCase();
+    if (n.includes("white") || n.includes("வெள்ளை")) return "#f8fafc";
+    if (n.includes("blue") || n.includes("ப்ளூ")) return "#1d4ed8";
+    if (n.includes("red") || n.includes("சிவப்பு")) return "#ef4444";
+    if (n.includes("green") || n.includes("பச்சை")) return "#22c55e";
+    if (n.includes("yellow") || n.includes("மஞ்சள்")) return "#eab308";
+    if (n.includes("black") || n.includes("கருப்பு")) return "#0f172a";
+    if (n.includes("grey") || n.includes("சாம்பல்")) return "#64748b";
+    return name.startsWith("#") ? name : "#94a3b8";
+  }
+
+  function loadSelectedDesign() {
+    const select = document.getElementById('designSelect');
+    if (select.selectedIndex <= 0) return;
+    try {
+      const idx = select.value;
+      activeDesignObj = allCloudDesigns[idx];
+      let d = activeDesignObj;
+
+      let wCount = (d.warpLines && d.warpLines.length > 10) ? d.warpLines.length : 10;
+      let weftCount = (d.weftLines && d.weftLines.length > 6) ? d.weftLines.length : 6;
+      generateUI(wCount, weftCount);
+
+      for(let i=1; i<=wCount; i++) document.getElementById('wE'+i).value = 0;
+      if (d.warpLines && d.warpLines.length > 0) {
+        d.warpLines.forEach((line, i) => {
+          document.getElementById('wC' + (i+1)).value = parseColorName(line.color || line.colour);
+          document.getElementById('wE' + (i+1)).value = line.ends || 0;
+        });
+      }
+
+      for(let i=1; i<=weftCount; i++) document.getElementById('weftP'+i).value = 0;
+      if (d.weftLines && d.weftLines.length > 0) {
+        d.weftLines.forEach((line, i) => {
+          document.getElementById('weftC' + (i+1)).value = parseColorName(line.color || line.colour);
+          document.getElementById('weftP' + (i+1)).value = line.picks || line.pick || 0;
+        });
+      } else if (d.weftColor) {
+        document.getElementById('weftC1').value = parseColorName(d.weftColor);
+        document.getElementById('weftP1').value = 60;
+      }
+
+      if (d.customMatrix) {
+        weavePatterns["custom"] = JSON.parse(JSON.stringify(d.customMatrix));
+      } else if (d.type && weavePatterns[d.type]) {
+        weavePatterns["custom"] = JSON.parse(JSON.stringify(weavePatterns[d.type]));
+      }
+
+      document.getElementById('weaveType').value = "custom";
+      document.getElementById('gridEditorSection').style.display = 'flex';
+      buildGridEditor();
+
+      calculateWarpOrders();
+      draw3DWeave(); 
+    } catch(e) { console.error(e); }
+  }
+
+  function draw3DWeave() {
+    const canvas = document.getElementById('weaveCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let warpColorList = [];
+    for(let i=1; i<=currentWarpCount; i++) {
+        let elC = document.getElementById('wC'+i);
+        let elE = document.getElementById('wE'+i);
+        if(elC && elE) {
+            let c = hexToRgb(elC.value);
+            let e = parseInt(elE.value) || 0;
+            for(let j=0; j<e; j++) warpColorList.push(c);
+        }
+    }
+    if(warpColorList.length === 0) warpColorList.push({r:255, g:255, b:255});
+
+    let weftColorList = [];
+    for(let i=1; i<=currentWeftCount; i++) {
+        let elC = document.getElementById('weftC'+i);
+        let elP = document.getElementById('weftP'+i);
+        if(elC && elP) {
+            let c = hexToRgb(elC.value);
+            let p = parseInt(elP.value) || 0;
+            for(let j=0; j<p; j++) weftColorList.push(c);
+        }
+    }
+    if(weftColorList.length === 0) weftColorList.push({r:226, g:232, b:240});
+
+    const weaveType = document.getElementById('weaveType').value;
+
+    const displayEnds = Math.min(Math.max(warpColorList.length, 40), 600);
+    const displayPicks = Math.min(Math.max(weftColorList.length, 40), 600);
+    
+    const yarnSize = Math.max(1.5, canvas.width / displayEnds);
+    const yarnHeight = Math.max(1.5, canvas.height / displayPicks);
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0c1411';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let r = 0; r < displayPicks; r++) {
+      for (let c = 0; c < displayEnds; c++) {
+        let x = c * yarnSize;
+        let y = r * yarnHeight;
+        let warpUp = isWarpUp(r, c, weaveType);
+
+        if (warpUp) {
+          let base = warpColorList[c % warpColorList.length];
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+          ctx.fillRect(x - 0.5, y, yarnSize + 1, yarnHeight);
+
+          let grad = ctx.createLinearGradient(x, y, x + yarnSize, y);
+          grad.addColorStop(0.0, shadeColor(base, 0.4));
+          grad.addColorStop(0.2, shadeColor(base, 0.85));
+          grad.addColorStop(0.5, shadeColor(base, 1.25));
+          grad.addColorStop(0.8, shadeColor(base, 0.85));
+          grad.addColorStop(1.0, shadeColor(base, 0.35));
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(x, y - 0.5, yarnSize, yarnHeight + 1, 1);
+          ctx.fill();
+        } else {
+          let base = weftColorList[r % weftColorList.length];
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+          ctx.fillRect(x, y - 0.5, yarnSize, yarnHeight + 1);
+
+          let grad = ctx.createLinearGradient(x, y, x, y + yarnHeight);
+          grad.addColorStop(0.0, shadeColor(base, 0.4));
+          grad.addColorStop(0.2, shadeColor(base, 0.85));
+          grad.addColorStop(0.5, shadeColor(base, 1.25));
+          grad.addColorStop(0.8, shadeColor(base, 0.85));
+          grad.addColorStop(1.0, shadeColor(base, 0.35));
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(x - 0.5, y, yarnSize + 1, yarnHeight, 1);
+          ctx.fill();
+        }
+      }
+    }
+  }
+
+  const modal = document.getElementById('fsModal');
+  const fsImg = document.getElementById('fsImg');
+  const fsContent = document.getElementById('fsContent');
+  
+  let scale = 1, panning = false;
+  let pointX = 0, pointY = 0, startX = 0, startY = 0;
+  let initialDistance = 0;
+
+  document.getElementById('weaveCanvas').onclick = function() {
+    const mainCanvas = document.getElementById('weaveCanvas');
+    fsImg.src = mainCanvas.toDataURL("image/png");
+    scale = 1; pointX = 0; pointY = 0;
+    updateTransform();
+    modal.style.display = 'flex';
+  };
+
+  function closeFs() {
+    modal.style.display = 'none';
+  }
+
+  function updateTransform() {
+    fsImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+  }
+
+  fsContent.onmousedown = (e) => { startX = e.clientX - pointX; startY = e.clientY - pointY; panning = true; };
+  fsContent.onmouseup = () => { panning = false; };
+  fsContent.onmousemove = (e) => { if (!panning) return; pointX = e.clientX - startX; pointY = e.clientY - startY; updateTransform(); };
+
+  fsContent.ontouchstart = (e) => {
+    if (e.touches.length === 1) {
+      startX = e.touches[0].clientX - pointX;
+      startY = e.touches[0].clientY - pointY;
+      panning = true;
+    } else if (e.touches.length === 2) {
+      initialDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      panning = false;
+    }
+  };
+
+  fsContent.ontouchmove = (e) => {
+    if (e.touches.length === 1 && panning) {
+      pointX = e.touches[0].clientX - startX;
+      pointY = e.touches[0].clientY - startY;
+      updateTransform();
+    } else if (e.touches.length === 2) {
+      let currentDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      if (initialDistance > 0) {
+        let factor = currentDistance / initialDistance;
+        scale = Math.max(1, Math.min(scale * factor, 6));
+        updateTransform();
+      }
+      initialDistance = currentDistance;
+    }
+  };
+
+  fsContent.ontouchend = () => { panning = false; initialDistance = 0; };
+
+  window.onload = () => {
+    generateUI(10, 6); 
+    loadSavedCustomWeaves();
+    importFromFirebase();
+    calculateWarpOrders();
+    setTimeout(draw3DWeave, 100);
+  };
+</script>
+
+</body>
+</html>

@@ -103,7 +103,7 @@
         .page-title {
             font-size: 16px;
             font-weight: 700;
-            color: #EF4444;
+            color: #DAA520;
             text-align: left;
             position: relative;
             padding-left: 12px;
@@ -281,7 +281,7 @@
             padding: 5px 0;
             font-size: 10px;
             font-weight: 700;
-            color: #2F4F38;
+            color: #EF4444;
             text-align: center;
             text-transform: uppercase;
         }
@@ -1045,9 +1045,10 @@
             👁️ Preview
         </button>
 
+        <!-- 🟢 இங்க Save Button-ல் update3DPreviewData() சேர்க்கப்பட்டுள்ளது 🟢 -->
         <button
             class="btn-main btn-save"
-            onclick="saveWeftDesign()"
+            onclick="saveWeftDesign(); update3DPreviewData()"
             id="saveBtnTxt">
             💾 Save
         </button>
@@ -1272,7 +1273,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         loadDesignDropdown();
-        loadDefaultRow();
+        
+        // 🟢 பிழை சரிசெய்யப்பட்டது: Design Select ஆகவில்லை என்றால் மட்டுமே காலியான பாக்ஸ் வரும்
+        if (document.getElementById('designNo').value === "") {
+            loadDefaultRow();
+        }
 
     } catch (error) {
 
@@ -1285,8 +1290,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
 /* ============================================================
-   MODAL
+   MODALS
 ============================================================ */
 
 function openModal(modalId) {
@@ -1401,11 +1407,6 @@ function loadBitmapImage() {
     ) {
 
         let b64 = designSpecs[specKey].bitmap;
-
-        /*
-         * Use DOM instead of injecting base64 directly into
-         * onclick HTML.
-         */
 
         imgHtml = `
             <img
@@ -1755,7 +1756,7 @@ function loadWeftDesignData() {
         }
     }
 
-    // 🟢 Fetch Onloom Width and Pick from saved sources
+    // Fetch Onloom Width and Pick from saved sources
     let onloomWidth = parseFloat(
         sp.onloomWidth ||
         foundMaster.onloomWidth ||
@@ -1886,15 +1887,14 @@ function loadWeftDesignData() {
             foundMaster.weaveType ||
             resolvedWeave;
 
-        foundMaster.weftLines.forEach(l => {
-
+                foundMaster.weftLines.forEach(l => {
             addWeftLine(
                 l.count || '',
-                l.color || '',
-                l.picks ?? ''
+                l.color || l.colour || '', // color மற்றும் colour இரண்டையும் செக் செய்யும்
+                l.picks || l.pick || ''
             );
-
         });
+
 
         if (
             Array.isArray(
@@ -1979,7 +1979,6 @@ function loadDefaultRow() {
 
 /* ============================================================
    COPY DESIGN
-   FIXED: ACTUALLY COPIES CURRENT PATTERN
 ============================================================ */
 
 async function copyToNewDesign() {
@@ -4731,6 +4730,45 @@ function authorizationAlert() {
     alert(
         "Access Denied! You do not have permission to access this page. ❌"
     );
+}
+
+
+/* ============================================================
+   3D PREVIEW DATA LINK (FOR WEFT)
+============================================================ */
+function update3DPreviewData() {
+    try {
+        let lines = [];
+        document.querySelectorAll('.line-item').forEach(row => {
+            let color = row.querySelector('.inp-color').value.trim();
+            let picks = row.querySelector('.inp-picks').value.trim();
+            if (color || picks) {
+                lines.push({ color: color, picks: parseFloat(picks) || 0 });
+            }
+        });
+
+        let weave = document.getElementById('infoWeave').value;
+
+        // Warp Entry-ல் சேமிக்கப்பட்ட பழைய Data-வை எடுத்து, அதனுடன் Weft-ஐ சேர்க்கிறோம்
+        let existingStr = localStorage.getItem('warp_entry_data');
+        let previewData = [];
+        if (existingStr) {
+            previewData = JSON.parse(existingStr);
+        }
+
+        if (previewData.length === 0) {
+            previewData.push({ designNo: "🔴 Live Entry Preview" });
+        }
+
+        previewData[0].designNo = "🔴 Live Entry Preview";
+        previewData[0].weftLines = lines;
+        if (weave) previewData[0].type = weave;
+
+        localStorage.setItem('warp_entry_data', JSON.stringify(previewData));
+
+    } catch(e) {
+        console.error("3D Preview Data Link Error:", e);
+    }
 }
 
 </script>
