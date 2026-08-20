@@ -161,7 +161,7 @@ select{
     text-align:center;
     border-bottom:2px solid #4A7C59;
     padding-bottom:5px;
-    margin-bottom:7px;
+    margin-bottom:10px;
 }
 
 .company-header h1{
@@ -178,27 +178,27 @@ select{
 }
 
 /* =========================================================
-   DESIGN INFO
+   DESIGN INFO (1st Image Style)
 ========================================================= */
 
 .design-info-box,
 .weft-info-box{
     background:#F8FAF8;
-    border:1px solid #D1DED1;
-    border-radius:6px;
-    padding:7px 8px;
+    border:1px solid #4A7C59; /* Green rounded border */
+    border-radius:8px;
+    padding:10px 12px;
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:5px;
-    font-size:9px;
+    gap:8px;
+    font-size:10px;
     font-weight:600;
-    color:#2F4F38;
-    margin-bottom:6px;
+    color:#1E2B23;
+    margin-bottom:12px;
 }
 
 .design-info-box div span,
 .weft-info-box div span{
-    color:#4A7C59;
+    color:#1E2B23;
     font-weight:700;
 }
 
@@ -207,67 +207,60 @@ select{
 ========================================================= */
 
 .section-title{
-    font-size:10px;
-    color:#ffffff;
-    background:#4A7C59;
-    padding:5px 8px;
-    border-radius:6px;
+    font-size:11px;
+    color:#2F4F38;
     display:inline-block;
-    margin-top:3px;
-    margin-bottom:4px;
+    margin-top:5px;
+    margin-bottom:5px;
     font-weight:700;
 }
 
 /* =========================================================
-   TABLE
+   TABLE (1st Image Style - Gentle Grid)
 ========================================================= */
-
-.dual-table-wrapper{
-    display:flex;
-    gap:8px;
-    width:100%;
-}
-
-.single-table-col{
-    flex:1;
-    min-width:0;
-}
 
 .table-container{
     width:100%;
     overflow:hidden;
-    border-radius:5px;
-    border:1px solid #CBD5CB;
     background:#ffffff;
     margin-bottom:4px;
+    border:none; /* Removed outer border */
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    font-size:9px;
+    font-size:10px;
     text-align:center;
     background:#ffffff;
 }
 
+/* Gentle dashed bottom borders, NO vertical borders */
 th,
 td{
-    padding:5px 4px;
+    padding:6px 4px;
     color:#1E2B23;
-    border:1px solid #CBD5CB;
+    border:none;
+    border-bottom:1px dashed #CBD5CB; 
     background:#ffffff;
 }
 
 th{
-    background:#EAF0EA;
+    background:#ffffff;
     color:#2F4F38;
     font-weight:700;
-    font-size:8px;
+    font-size:9px;
+    border-top:2px solid #4A7C59;    /* Solid green top */
+    border-bottom:2px solid #4A7C59; /* Solid green bottom */
+    text-transform:uppercase;
 }
+
+/* Removing the dashed border for the last row is handled in print cleanly */
 
 .col-no{
     width:10%;
     text-align:center;
+    font-weight:bold;
 }
 
 .col-count{
@@ -293,22 +286,15 @@ th{
     font-weight:700;
 }
 
-.dash-sep{
-    color:#889988;
-    font-size:7px;
-    letter-spacing:1px;
-}
-
 /* =========================================================
-   SUMMARY (REVISED TO MATCH 1ST IMAGE LAYOUT)
+   SUMMARY (1st Image Style)
 ========================================================= */
 
 .summary-box{
     background:#F4F7F4;
-    border:1px solid #CBD5CB;
-    border-radius:6px;
-    padding:0; /* No padding so internal divs touch edges */
-    text-align:center; /* Center aligned */
+    border:none; /* Clean look */
+    padding:0;
+    text-align:center;
     font-size:10px;
     font-weight:600;
     color:#2F4F38;
@@ -384,181 +370,143 @@ th{
 ========================================================= */
 
 @media(max-width:700px){
-
     body{
         padding:5px;
         background:#ffffff !important;
     }
-
     .main-card{
         padding:7px;
         border-radius:8px;
         box-shadow:none;
     }
-
-    .header-bar h3{
-        font-size:11px;
-    }
-
-    .preview-btn{
-        font-size:10px;
-        padding:6px 10px;
-    }
-
     .design-info-box,
     .weft-info-box{
         grid-template-columns:repeat(4,1fr);
-        font-size:7px;
-        gap:3px;
-        padding:5px;
-    }
-
-    .section-title{
         font-size:8px;
-        padding:4px 6px;
+        gap:4px;
+        padding:8px;
     }
-
-    .dual-table-wrapper{
-        gap:5px;
-    }
-
     table{
-        font-size:7px;
+        font-size:8px;
     }
-
     th{
-        font-size:7px;
+        font-size:8px;
     }
-
-    th,
-    td{
+    th, td{
         padding:4px 2px;
-    }
-
-    .dash-sep{
-        font-size:5px;
-        letter-spacing:0;
     }
 }
 
 /* =========================================================
-   PRINT
+   PRINT (Strictly matching 1st image Gentle Grid)
 ========================================================= */
 
 @media print{
-
     @page{
         size:A4 portrait;
         margin:8mm;
     }
 
-    html,
-    body{
-        width:100% !important;
-        min-height:0 !important;
-        height:auto !important;
-        margin:0 !important;
-        padding:0 !important;
-        background:#ffffff !important;
-        color:#000000 !important;
+    html, body {
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #FFFFFF !important;
+        color: #000000 !important;
     }
 
-    body{
-        display:block !important;
+    /* Hide unneeded elements */
+    .main-card, 
+    .top-nav, 
+    .no-print, 
+    .modal-header,
+    #savedListModal,
+    #fullscreenModal {
+        display: none !important;
     }
 
-    body *{
-        visibility:hidden !important;
+    #previewModal {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        background: #FFFFFF !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
-    #previewModal,
-    #previewModal *{
-        visibility:visible !important;
+    #previewModal * {
+        visibility: visible !important;
     }
 
-    #previewModal{
-        display:block !important;
-        position:absolute !important;
-        inset:0 !important;
-        width:100% !important;
-        height:auto !important;
-        background:#ffffff !important;
-        z-index:999999 !important;
+    .overlay-modal {
+        background: #FFFFFF !important;
     }
 
-    .modal-content{
-        width:100% !important;
-        height:auto !important;
-        display:block !important;
-        background:#ffffff !important;
+    .modal-content {
+        background: #FFFFFF !important;
+        width: 100% !important;
+        height: auto !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: visible !important;
+        transform: none !important;
     }
 
-    .modal-header{
-        display:none !important;
+    .modal-body {
+        background: #FFFFFF !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
     }
 
-    .modal-body{
-        width:100% !important;
-        max-width:none !important;
-        height:auto !important;
-        overflow:visible !important;
-        padding:0 !important;
-        margin:0 !important;
-        background:#ffffff !important;
+    /* Print Table gentle borders */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        background: #ffffff !important;
+        border: none !important;
+        page-break-inside: auto;
     }
 
-    .no-print{
-        display:none !important;
+    th, td {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 6px 4px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1px dashed #cccccc !important;
     }
 
-    .company-header{
-        display:block !important;
+    th {
+        border-top: 2px solid #4A7C59 !important;
+        border-bottom: 2px solid #4A7C59 !important;
+        color: #2F4F38 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
-    table{
-        width:100% !important;
-        border-collapse:collapse !important;
-        background:#ffffff !important;
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
     }
 
-    th,
-    td{
-        border:1px solid #888888 !important;
-        background:#ffffff !important;
-        color:#000000 !important;
-        padding:5px !important;
+    .design-info-box, .weft-info-box {
+        background: #F8FAF8 !important;
+        border: 1px solid #4A7C59 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
-    th{
-        background:#EAF0EA !important;
-        color:#000000 !important;
+    .summary-box {
+        background: #ffffff !important;
     }
 
-    .section-title{
-        background:#4A7C59 !important;
-        color:#ffffff !important;
-        -webkit-print-color-adjust:exact !important;
-        print-color-adjust:exact !important;
-    }
-
-    .summary-box{
-        background:#F4F7F4 !important;
-        color:#000000 !important;
-        -webkit-print-color-adjust:exact !important;
-        print-color-adjust:exact !important;
-    }
-
-    .design-info-box,
-    .weft-info-box{
-        background:#F8FAF8 !important;
-        color:#000000 !important;
-        -webkit-print-color-adjust:exact !important;
-        print-color-adjust:exact !important;
-    }
-
-    .page-break{
-        page-break-before:always;
-        break-before:page;
+    .page-break {
+        page-break-before: always;
+        break-before: page;
     }
 }
 </style>
@@ -636,42 +584,42 @@ th{
         style="display:none;">
 
         <div>
-            டிசைன்:
+            Design:
             <span id="hdrDesign">-</span>
         </div>
 
         <div>
-            கவுண்ட்ஸ்:
+            Counts:
             <span id="hdrCounts">-</span>
         </div>
 
         <div>
-            ஆர்டர் மீட்டர்:
+            Order Mtr:
             <span id="hdrMtr">-</span>
         </div>
 
         <div>
-            டாப் பீம்:
+            Top Beam:
             <span id="hdrTopBeam">-</span>
         </div>
 
         <div>
-            வகை:
+            Type:
             <span id="hdrType">-</span>
         </div>
 
         <div>
-            O.ரீட்:
+            Reed:
             <span id="hdrReed">-</span>
         </div>
 
         <div>
-            O.பிக்:
+            Pick:
             <span id="hdrPick">-</span>
         </div>
 
         <div>
-            O.அகலம்:
+            Width:
             <span id="hdrWidth">-</span>
         </div>
 
@@ -683,8 +631,9 @@ th{
 
     <div id="warpSection">
 
+        <!-- Removed emoji and bg for clean look like 1st image -->
         <h3 class="section-title">
-            🧵 வார்ப் பேட்டர்ன் பிரிவ்யூ
+            Warp Pattern
         </h3>
 
         <div id="warpContainerWrapper">
@@ -695,11 +644,11 @@ th{
 
                     <thead>
                         <tr>
-                            <th class="col-no">எண்</th>
-                            <th class="col-count">கவுண்ட்</th>
-                            <th class="col-color">நிறம்</th>
-                            <th class="col-val">எண்ட்ஸ்</th>
-                            <th class="col-set">செட்</th>
+                            <th class="col-no">NO</th>
+                            <th class="col-count">COUNT</th>
+                            <th class="col-color">COLOUR</th>
+                            <th class="col-val">ENDS<br><span style="font-size:6px;">GRND|TOP</span></th>
+                            <th class="col-set">SET</th>
                         </tr>
                     </thead>
 
@@ -734,7 +683,7 @@ th{
     <div id="weftSection">
 
         <h3 class="section-title">
-            🧶 வெப்ட் பேட்டர்ன் பிரிவ்யூ
+            Weft Pattern
         </h3>
 
         <!-- WEFT HEADER -->
@@ -779,11 +728,11 @@ th{
 
                     <thead>
                         <tr>
-                            <th class="col-no">எண்</th>
-                            <th class="col-count">கவுண்ட்</th>
-                            <th class="col-color">நிறம்</th>
-                            <th class="col-val">பிக்ஸ்</th>
-                            <th class="col-set">செட்</th>
+                            <th class="col-no">NO</th>
+                            <th class="col-count">COUNT</th>
+                            <th class="col-color">COLOUR</th>
+                            <th class="col-val">PICKS</th>
+                            <th class="col-set">SET</th>
                         </tr>
                     </thead>
 
@@ -1339,46 +1288,50 @@ function loadDesignDetails(){
 
     document.getElementById(
         "hdrDesign"
-    ).innerText = dName;
+    ).innerHTML = `<b># ${dName}</b>`;
 
     document.getElementById(
         "hdrCounts"
-    ).innerText = warpCountsDisplay;
+    ).innerHTML = `<b>${warpCountsDisplay}</b>`;
 
     document.getElementById(
         "hdrMtr"
-    ).innerText = orderMeterVal;
+    ).innerHTML = `<b>${orderMeterVal}</b>`;
 
     document.getElementById(
         "hdrTopBeam"
-    ).innerText =
+    ).innerHTML =
         warp2 && warp2 !== "-"
-        ? warp2
-        : "-";
+        ? `<b>${warp2}</b>`
+        : `<b>-</b>`;
 
     document.getElementById(
         "hdrType"
-    ).innerText =
+    ).innerHTML = `<b>${
         foundMaster.type ||
         sp.type ||
         foundOrder.weaveType ||
         sp.weaveType ||
-        "Plain";
+        "Plain"
+    }</b>`;
 
     document.getElementById(
         "hdrReed"
-    ).innerText =
-        onloomReedVal || "-";
+    ).innerHTML = `<b>${
+        onloomReedVal || "-"
+    }</b>`;
 
     document.getElementById(
         "hdrPick"
-    ).innerText =
-        onloomPickVal || "-";
+    ).innerHTML = `<b>${
+        onloomPickVal || "-"
+    }</b>`;
 
     document.getElementById(
         "hdrWidth"
-    ).innerText =
-        onloomWidthVal || "-";
+    ).innerHTML = `<b>${
+        onloomWidthVal || "-"
+    }</b>`;
 
     document.getElementById(
         "designHeaderBox"
@@ -1414,32 +1367,30 @@ function loadDesignDetails(){
 
     document.getElementById(
         "weftHdrDesign"
-    ).innerText = dName;
+    ).innerHTML = `<b># ${dName}</b>`;
 
     document.getElementById(
         "weftHdrCount"
-    ).innerText =
-        weftCountsDisplay;
+    ).innerHTML = `<b>${weftCountsDisplay}</b>`;
 
     document.getElementById(
         "weftHdrWidth"
-    ).innerText =
-        finalWeftWidthDisplay;
+    ).innerHTML = `<b>${finalWeftWidthDisplay}</b>`;
 
     document.getElementById(
         "weftHdrPick"
-    ).innerText =
-        onloomPickVal || "-";
+    ).innerHTML = `<b>${onloomPickVal || "-"}</b>`;
 
     document.getElementById(
         "weftHdrWeave"
-    ).innerText =
+    ).innerHTML = `<b>${
         foundOrder.weaveType ||
         foundMaster.weaveType ||
         foundMaster.type ||
         sp.weave ||
         sp.type ||
-        "Plain";
+        "Plain"
+    }</b>`;
 
     document.getElementById(
         "weftHeaderBox"
@@ -1747,42 +1698,22 @@ function renderSplitPreviewTable(
 
 
     /* -----------------------------------------------------
-       HEADER
+       HEADER (Updated Unit Name to match 1st Image Style)
     ----------------------------------------------------- */
 
     let headerHtml = `
         <tr>
-
-            <th class="col-no">
-                எண்
-            </th>
-
-            <th class="col-count">
-                கவுண்ட்
-            </th>
-
-            <th class="col-color">
-                நிறம்
-            </th>
-
-            <th class="col-val">
-                ${
-                    unitName === "Ends"
-                    ? "எண்ட்ஸ்"
-                    : "பிக்ஸ்"
-                }
-            </th>
-
-            <th class="col-set">
-                செட்
-            </th>
-
+            <th class="col-no">NO</th>
+            <th class="col-count">COUNT</th>
+            <th class="col-color">COLOUR</th>
+            <th class="col-val">${unitName.toUpperCase()}<br><span style="font-size:6px; font-weight:normal;">GRND|TOP</span></th>
+            <th class="col-set">SET</th>
         </tr>
     `;
 
 
     /* -----------------------------------------------------
-       SPLIT AFTER 35
+       SPLIT AFTER 35 (🟢 DOUBLE COLUMN LAYOUT LOGIC 🟢)
     ----------------------------------------------------- */
 
     let col1 = rowsData.slice(0,35);
@@ -1791,30 +1722,11 @@ function renderSplitPreviewTable(
     let t1 = buildTableRowsHtml(col1);
     let t2 = buildTableRowsHtml(col2);
 
-    let secondTable = "";
-
-    if(t2 !== ""){
-        secondTable = `
-            <div class="single-table-col">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            ${headerHtml}
-                        </thead>
-                        <tbody>
-                            ${t2}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-    }
-
     wrapper.innerHTML = `
-        <div class="dual-table-wrapper">
-            <div class="single-table-col">
-                <div class="table-container">
-                    <table>
+        <div style="display:flex; gap:15px; width:100%; align-items:flex-start; justify-content:space-between; page-break-inside: avoid;">
+            <div style="flex:1; width:48%; background:#FFF;">
+                <div class="table-container" style="border:none; box-shadow:none; margin-bottom:0;">
+                    <table style="width:100%; border-collapse:collapse;">
                         <thead>
                             ${headerHtml}
                         </thead>
@@ -1824,7 +1736,20 @@ function renderSplitPreviewTable(
                     </table>
                 </div>
             </div>
-            ${secondTable}
+            <div style="flex:1; width:48%; background:#FFF;">
+                ${t2 !== "" ? `
+                <div class="table-container" style="border:none; box-shadow:none; margin-bottom:0;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            ${headerHtml}
+                        </thead>
+                        <tbody>
+                            ${t2}
+                        </tbody>
+                    </table>
+                </div>
+                ` : ""}
+            </div>
         </div>
     `;
 
@@ -1871,9 +1796,9 @@ function renderSplitPreviewTable(
             finalCountTotals = baseCountTotals;
         }
 
-        // --- Exact replica of Image 1 Layout (Centered) ---
+        // --- Exact replica of Image 1 Layout (Centered, Solid Green Top) ---
         summaryHtml += `
-            <div style="padding:10px; border-bottom:1px dashed #CBD5CB;">
+            <div style="padding:10px; border-top:2px solid #4A7C59; border-bottom:1px dashed #CBD5CB;">
                 <span style="color:#2F4F38; font-weight:700;">Total Pattern Ends:</span>
                 <span style="color:#1E2B23; font-weight:800; font-size:12px; margin-left:10px;">${grandTotalPattern}</span>
             </div>
@@ -1911,9 +1836,9 @@ function renderSplitPreviewTable(
         let pickNum = parseFloat(onloomPick) || 60;
         let finalPickTotal = weftWidth * pickNum;
 
-        // Weft Logic Layout exactly like Image 1 (Centered)
+        // Weft Logic Layout exactly like Image 1 (Centered, Solid Green Top)
         summaryHtml += `
-            <div style="padding:10px; border-bottom:1px dashed #CBD5CB;">
+            <div style="padding:10px; border-top:2px solid #4A7C59; border-bottom:1px dashed #CBD5CB;">
                 <span style="color:#2F4F38; font-weight:700;">Total Pattern Picks:</span>
                 <span style="color:#1E2B23; font-weight:800; font-size:12px; margin-left:10px;">${grandTotalPattern}</span>
             </div>
