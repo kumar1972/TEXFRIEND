@@ -88,7 +88,7 @@ body{
 
 .header-bar h3{
     font-size:13px;
-    color:#EF4444;
+    color:#FFFFFF;
     font-weight:700;
 }
 
@@ -166,14 +166,14 @@ select{
 
 .company-header h1{
     font-size:16px;
-    color:#EF4444;
+    color:#FFFFFF;
     font-weight:700;
     text-transform:uppercase;
 }
 
 .company-header p{
     font-size:9px;
-    color:#EF4444;
+    color:#FFFFFF;
     white-space:pre-line;
 }
 
@@ -300,26 +300,21 @@ th{
 }
 
 /* =========================================================
-   SUMMARY
+   SUMMARY (REVISED TO MATCH 1ST IMAGE LAYOUT)
 ========================================================= */
 
 .summary-box{
     background:#F4F7F4;
     border:1px solid #CBD5CB;
     border-radius:6px;
-    padding:6px 8px;
-    text-align:left;
-    font-size:9px;
+    padding:0; /* No padding so internal divs touch edges */
+    text-align:center; /* Center aligned */
+    font-size:10px;
     font-weight:600;
     color:#2F4F38;
     margin-bottom:8px;
     line-height:1.6;
-}
-
-.summary-box .line-1{
-    border-bottom:1px dashed #CBD5CB;
-    padding-bottom:2px;
-    margin-bottom:2px;
+    overflow: hidden;
 }
 
 .summary-box b{
@@ -443,11 +438,6 @@ th{
     .dash-sep{
         font-size:5px;
         letter-spacing:0;
-    }
-
-    .summary-box{
-        font-size:7px;
-        padding:5px;
     }
 }
 
@@ -1617,21 +1607,13 @@ function renderSplitPreviewTable(
     ----------------------------------------------------- */
 
     let rowsData = [];
-
-    let countTotals = {};
-
+    let baseCountTotals = {}; 
     let totalMultiplierSum = 0;
-
     let totalSetsSum = 0;
-
     let remainderSum = 0;
-
     let pureSum = 0;
-
     let rangeCoveredSum = 0;
-
-    let rangeLineIndices =
-        new Set();
+    let rangeLineIndices = new Set();
 
 
     if(
@@ -1641,54 +1623,66 @@ function renderSplitPreviewTable(
 
         ranges.forEach(function(r){
 
-            let start =
-                parseInt(r.start) || 0;
+            let start = parseInt(r.start) || 0;
+            let end = parseInt(r.end) || 0;
 
-            let end =
-                parseInt(r.end) || 0;
-
-            for(
-                let k=start;
-                k<=end;
-                k++
-            ){
-
+            for(let k=start; k<=end; k++){
                 rangeLineIndices.add(k);
-
             }
 
         });
 
     }
 
-
     lines.forEach(function(item,index){
 
-        let rowNum =
-            index + 1;
-
-        let val =
-            parseFloat(
-                type === "warp"
-                ? item.ends
-                : item.picks
-            ) || 0;
-
+        let rowNum = index + 1;
+        let val = parseFloat(type === "warp" ? item.ends : item.picks) || 0;
+        
         pureSum += val;
-
-        if(
-            rangeLineIndices.has(rowNum)
-        ){
-
+        
+        if(rangeLineIndices.has(rowNum)){
             rangeCoveredSum += val;
-
         }
 
     });
 
+    remainderSum = pureSum - rangeCoveredSum;
 
-    remainderSum =
-        pureSum - rangeCoveredSum;
+
+    /* -----------------------------------------------------
+       FLAT PATTERN BUILDER (For Accurate Count Distribution)
+    ----------------------------------------------------- */
+    let flatPattern = [];
+    let idxI = 0;
+    
+    while (idxI < lines.length) {
+        let start = idxI + 1;
+        let range = (ranges || []).find(r => r.start === start);
+        
+        if (range && range.end >= range.start) {
+            let end = range.end;
+            let set = range.set;
+            
+            for (let rep = 0; rep < set; rep++) {
+                for (let j = start - 1; j < end; j++) {
+                    if (lines[j]) {
+                        flatPattern.push({
+                            count: lines[j].count ? String(lines[j].count).trim() : "-",
+                            ends: parseFloat(type === "warp" ? lines[j].ends : lines[j].picks) || 0
+                        });
+                    }
+                }
+            }
+            idxI = end;
+        } else {
+            flatPattern.push({
+                count: lines[idxI].count ? String(lines[idxI].count).trim() : "-",
+                ends: parseFloat(type === "warp" ? lines[idxI].ends : lines[idxI].picks) || 0
+            });
+            idxI++;
+        }
+    }
 
 
     /* -----------------------------------------------------
@@ -1697,32 +1691,12 @@ function renderSplitPreviewTable(
 
     lines.forEach(function(item,index){
 
-        let rowNum =
-            index + 1;
-
-        let val =
-            parseFloat(
-                type === "warp"
-                ? item.ends
-                : item.picks
-            ) || 0;
-
-        let cText =
-            item.count
-            ? String(item.count).trim()
-            : "-";
-
-        let clrText =
-            translateColorToTamil(
-                item.color
-            );
-
-
+        let rowNum = index + 1;
+        let val = parseFloat(type === "warp" ? item.ends : item.picks) || 0;
+        let cText = item.count ? String(item.count).trim() : "-";
+        let clrText = translateColorToTamil(item.color);
         let setHtml = "";
-
-        let rInfo =
-            rangeMap[rowNum];
-
+        let rInfo = rangeMap[rowNum];
 
         if(rInfo){
 
@@ -1730,93 +1704,43 @@ function renderSplitPreviewTable(
 
                 let rangeSum = 0;
 
-                for(
-                    let k=rInfo.start;
-                    k<=rInfo.end;
-                    k++
-                ){
-
-                    let subItem =
-                        lines[k-1];
-
-                    rangeSum +=
-                        parseFloat(
-                            type === "warp"
-                            ? subItem.ends
-                            : subItem.picks
-                        ) || 0;
-
+                for(let k=rInfo.start; k<=rInfo.end; k++){
+                    let subItem = lines[k-1];
+                    rangeSum += parseFloat(type === "warp" ? subItem.ends : subItem.picks) || 0;
                 }
 
+                let totalProduct = rangeSum * rInfo.set;
 
-                let totalProduct =
-                    rangeSum * rInfo.set;
+                totalMultiplierSum += totalProduct;
+                totalSetsSum += rInfo.set;
 
-
-                totalMultiplierSum +=
-                    totalProduct;
-
-                totalSetsSum +=
-                    rInfo.set;
-
-
-                let spanRows =
-                    (
-                        rInfo.end -
-                        rInfo.start
-                    ) + 1;
-
+                let spanRows = (rInfo.end - rInfo.start) + 1;
 
                 setHtml = `
-                    <td
-                        rowspan="${spanRows}"
-                        class="col-set"
-                        style="vertical-align:middle;">
-
-                        X ${rInfo.set}
-                        = ${totalProduct}
-
+                    <td rowspan="${spanRows}" class="col-set" style="vertical-align:middle;">
+                        X ${rInfo.set} = ${totalProduct}
                     </td>
                 `;
 
-            }
-            else{
-
+            } else {
                 setHtml = null;
-
             }
 
+            baseCountTotals[cText] = (baseCountTotals[cText] || 0) + (val * rInfo.set);
 
-            countTotals[cText] =
-                (
-                    countTotals[cText] || 0
-                ) +
-                (
-                    val * rInfo.set
-                );
+        } else {
+
+            setHtml = `<td class="col-set"></td>`;
+            baseCountTotals[cText] = (baseCountTotals[cText] || 0) + val;
 
         }
-        else{
-
-            setHtml =
-                `<td class="col-set"></td>`;
-
-            countTotals[cText] =
-                (
-                    countTotals[cText] || 0
-                ) + val;
-
-        }
-
 
         rowsData.push({
-
             rowNum:rowNum,
             count:cText,
             color:clrText,
             val:val,
             setHtml:setHtml
-
         });
 
     });
@@ -1861,310 +1785,146 @@ function renderSplitPreviewTable(
        SPLIT AFTER 35
     ----------------------------------------------------- */
 
-    let col1 =
-        rowsData.slice(0,35);
+    let col1 = rowsData.slice(0,35);
+    let col2 = rowsData.slice(35);
 
-    let col2 =
-        rowsData.slice(35);
-
-
-    let t1 =
-        buildTableRowsHtml(col1);
-
-    let t2 =
-        buildTableRowsHtml(col2);
-
+    let t1 = buildTableRowsHtml(col1);
+    let t2 = buildTableRowsHtml(col2);
 
     let secondTable = "";
 
     if(t2 !== ""){
-
         secondTable = `
             <div class="single-table-col">
-
                 <div class="table-container">
-
                     <table>
-
                         <thead>
                             ${headerHtml}
                         </thead>
-
                         <tbody>
                             ${t2}
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
         `;
-
     }
 
-
     wrapper.innerHTML = `
-
         <div class="dual-table-wrapper">
-
             <div class="single-table-col">
-
                 <div class="table-container">
-
                     <table>
-
                         <thead>
                             ${headerHtml}
                         </thead>
-
                         <tbody>
                             ${t1}
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
             ${secondTable}
-
         </div>
-
     `;
 
 
     /* -----------------------------------------------------
-       GRAND TOTAL
-    ----------------------------------------------------- */
-
-    let finalGrandTotal = 0;
-
-
-    if(type === "warp"){
-
-        let reed =
-            parseFloat(onloomReed) ||
-            parseFloat(
-                foundMaster.reed ||
-                sp.reed
-            ) || 0;
-
-        let width =
-            parseFloat(onloomWidth) ||
-            parseFloat(
-                foundMaster.width ||
-                sp.width
-            ) || 0;
-
-
-        if(
-            reed > 0 &&
-            width > 0
-        ){
-
-            finalGrandTotal =
-                Math.round(
-                    reed * width
-                );
-
-        }
-        else{
-
-            finalGrandTotal =
-                totalMultiplierSum +
-                remainderSum;
-
-            if(finalGrandTotal === 0){
-
-                finalGrandTotal =
-                    pureSum;
-
-            }
-
-        }
-
-    }
-    else{
-
-        let weftWidth =
-            parseFloat(
-                foundMaster.weftWidth ||
-                sp.weftWidth
-            ) ||
-            (
-                parseFloat(onloomWidth) > 0
-                ? parseFloat(onloomWidth) + 3
-                : 67.44
-            );
-
-
-        let pickNum =
-            parseFloat(onloomPick) ||
-            60;
-
-
-        finalGrandTotal =
-            weftWidth * pickNum;
-
-    }
-
-
-    /* -----------------------------------------------------
-       SUMMARY
+       GRAND TOTAL & SUMMARY (🟢 NEW CENTERED LOGIC 🟢)
     ----------------------------------------------------- */
 
     let summaryHtml = "";
+    let grandTotalPattern = totalMultiplierSum + remainderSum;
+    if(grandTotalPattern === 0) grandTotalPattern = pureSum;
 
+    if(type === "warp"){
+        
+        let reed = parseFloat(onloomReed) || parseFloat(foundMaster.reed || sp.reed) || 0;
+        let width = parseFloat(onloomWidth) || parseFloat(foundMaster.width || sp.width) || 0;
+        let baseTotalEnds = Math.round(reed * width);
+        let finalCountTotals = {};
+        
+        let repeatsStr = "";
+        let remEndsStr = "";
+        let totalEndsStr = grandTotalPattern;
 
-    if(type === "weft"){
+        if(baseTotalEnds > 0 && grandTotalPattern > 0) {
+            let repeats = Math.floor(baseTotalEnds / grandTotalPattern);
+            let remEnds = baseTotalEnds % grandTotalPattern;
+            
+            repeatsStr = repeats;
+            remEndsStr = remEnds;
+            totalEndsStr = baseTotalEnds;
 
-        let storedWidthVal =
-            parseFloat(
-                foundMaster.weftWidth ||
-                sp.weftWidth
-            ) ||
-            (
-                parseFloat(onloomWidth) > 0
-                ? parseFloat(onloomWidth) + 3
-                : 67.44
-            );
+            flatPattern.forEach(item => {
+                finalCountTotals[item.count] = (finalCountTotals[item.count] || 0) + (item.ends * repeats);
+            });
+            
+            let endsToDistribute = remEnds;
+            for (const item of flatPattern) {
+                if (endsToDistribute <= 0) break;
+                const take = Math.min(item.ends, endsToDistribute);
+                finalCountTotals[item.count] = (finalCountTotals[item.count] || 0) + take;
+                endsToDistribute -= take;
+            }
+        } else {
+            finalCountTotals = baseCountTotals;
+        }
 
-
-        let pickNum =
-            parseFloat(onloomPick) ||
-            60;
-
-
+        // --- Exact replica of Image 1 Layout (Centered) ---
         summaryHtml += `
-
-            <div class="line-1">
-
-                Total Pattern Picks:
-                <b>${pureSum}</b>
-
+            <div style="padding:10px; border-bottom:1px dashed #CBD5CB;">
+                <span style="color:#2F4F38; font-weight:700;">Total Pattern Ends:</span>
+                <span style="color:#1E2B23; font-weight:800; font-size:12px; margin-left:10px;">${grandTotalPattern}</span>
             </div>
-
-            <div>
-
-                Weft Width
-                ${storedWidthVal}
-                X Pick
-                ${pickNum}
-                =
-                <b>
-                    ${finalGrandTotal.toFixed(2)}
-                    Total Pick
-                </b>
-
-            </div>
-
         `;
 
-    }
-    else{
-
-        let calculatedPatternEnds =
-            totalMultiplierSum +
-            remainderSum;
-
-
-        if(
-            calculatedPatternEnds === 0
-        ){
-
-            calculatedPatternEnds =
-                pureSum;
-
-        }
-
-
-        summaryHtml += `
-
-            <div class="line-1">
-
-                Total Pattern Ends:
-                <b>${calculatedPatternEnds}</b>
-
-            </div>
-
-        `;
-
-
-        if(
-            ranges &&
-            ranges.length > 0
-        ){
-
+        if(repeatsStr !== "") {
             summaryHtml += `
-
-                <div class="line-1">
-
-                    ${totalSetsSum}
-                    Set +
-                    ${remainderSum}
-                    Ends =
-                    <b>
-                        ${finalGrandTotal}
-                        Total Ends
-                    </b>
-
+                <div style="padding:12px; border-bottom:1px dashed #CBD5CB; font-size:12px; font-weight:700; color:#1E2B23;">
+                    ${repeatsStr} Set + ${remEndsStr} Ends = ${totalEndsStr} Total Ends
                 </div>
-
             `;
-
-        }
-        else{
-
+        } else {
             summaryHtml += `
-
-                <div class="line-1">
-
-                    Total Ends:
-                    <b>${finalGrandTotal}</b>
-
+                <div style="padding:12px; border-bottom:1px dashed #CBD5CB; font-size:12px; font-weight:700; color:#1E2B23;">
+                    Total Ends: ${totalEndsStr}
                 </div>
-
             `;
-
         }
-
 
         let countSummaryArr = [];
-
-        for(
-            let c in countTotals
-        ){
-
-            countSummaryArr.push(
-                `<b>${c}:</b>
-                 ${countTotals[c]}`
-            );
-
+        for(let c in finalCountTotals){
+            countSummaryArr.push(`<span style="color:#1E2B23; font-weight:700;">${c}:</span> <span style="color:#4A554A;">${finalCountTotals[c]} Ends</span>`);
         }
 
-
         summaryHtml += `
-
-            <div>
-
-                COUNT WISE TOTAL:
-                ${countSummaryArr.join(" | ")}
-
+            <div style="padding:10px; font-size:10px; background:#EAF0EA;">
+                <span style="color:#4A7C59; font-weight:800; margin-right:8px; text-transform:uppercase;">COUNT WISE TOTAL:</span>
+                ${countSummaryArr.join(" &nbsp;&nbsp;|&nbsp;&nbsp; ")}
             </div>
-
         `;
 
+    } else {
+        
+        let weftWidth = parseFloat(foundMaster.weftWidth || sp.weftWidth) || (parseFloat(onloomWidth) > 0 ? parseFloat(onloomWidth) + 3 : 67.44);
+        let pickNum = parseFloat(onloomPick) || 60;
+        let finalPickTotal = weftWidth * pickNum;
+
+        // Weft Logic Layout exactly like Image 1 (Centered)
+        summaryHtml += `
+            <div style="padding:10px; border-bottom:1px dashed #CBD5CB;">
+                <span style="color:#2F4F38; font-weight:700;">Total Pattern Picks:</span>
+                <span style="color:#1E2B23; font-weight:800; font-size:12px; margin-left:10px;">${grandTotalPattern}</span>
+            </div>
+            <div style="padding:12px; font-size:12px; font-weight:700; color:#1E2B23; background:#EAF0EA;">
+                Weft Width ${weftWidth.toFixed(2)} X Pick ${pickNum} = ${finalPickTotal.toFixed(2)} Total Pick
+            </div>
+        `;
     }
 
-
-    summaryBox.innerHTML =
-        summaryHtml;
-
-    summaryBox.style.display =
-        "block";
-
+    summaryBox.innerHTML = summaryHtml;
+    summaryBox.style.display = "block";
 }
 
 
