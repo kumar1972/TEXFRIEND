@@ -379,7 +379,7 @@
     <label style="color: #81c784; margin-top: 10px;">WEFT (பின்னல்) - <span id="weftCountDisplay">6</span> கலர்கள் வரை</label>
     <div class="scroll-box" id="weftInputsContainer"></div>
 
-    <!-- 🟢 Weave Type (Plain மட்டும்) 🟢 -->
+    <!-- Weave Type -->
     <div style="margin-top:10px;">
       <label>Weave Type:</label>
       <select id="weaveType" onchange="onWeaveChange()">
@@ -847,7 +847,6 @@
     document.getElementById('dentingOrderTxt').innerHTML = `<b>Denting Order:</b> ${dentingArr.slice(0, 12).join(' ')} ${dentingArr.length > 12 ? '...' : ''}`;
   }
 
-  /* 🟢 PRINT FIX LOGIC (Numbers outside the box without borders) 🟢 */
   function openGraphPrintPreview() {
     document.body.classList.add('printing-graph');
     
@@ -860,19 +859,16 @@
 
     let html = `<div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; max-width: max-content; margin: 0 auto; background: white;">`;
     
-    // டேபிளுக்கு (Table) எந்த Outer Border-ம் இல்லை (border: none)
     html += `<table style="border-collapse:collapse; text-align:center; margin:0;">`;
     
     for(let r = 0; r < matrix.length; r++) {
       html += `<tr>`;
       
-      // 🟢 Left Pick Number: No border, pushed slightly to the left 🟢
       html += `<td style="border:none; padding:5px 12px 5px 0; font-weight:bold; color:#000; text-align:right;">${picks - r}</td>`;
       
       matrix[r].forEach((val, c) => {
         let mark = val === 1 ? '×' : '';
         
-        // 🟢 Matrix கட்டங்களுக்கு மட்டும் தனிப்பட்ட பார்டர் (Outer box effect) 🟢
         let bTop = r === 0 ? '2px solid #000' : '1px solid #000';
         let bBottom = r === matrix.length - 1 ? '2px solid #000' : '1px solid #000';
         let bLeft = c === 0 ? '2px solid #000' : '1px solid #000';
@@ -883,7 +879,6 @@
       html += `</tr>`;
     }
     
-    // 🟢 Bottom Shaft Numbers: No border 🟢
     html += `<tr><td style="border:none;"></td>`;
     for(let c=1; c<=shafts; c++) {
       html += `<td style="border:none; padding-top:8px; font-weight:bold; color:#000; text-align:center;">${c}</td>`;
@@ -892,7 +887,6 @@
     
     html += `</table>`;
 
-    // Peg Info Container
     html += `<div style="padding: 15px 0 5px 0; font-weight:bold; font-size:1.1rem; color:#000; text-align:left; -webkit-print-color-adjust:exact; print-color-adjust:exact;">`;
     html += `Peg Info : (Total Picks= ${picks} / Total Shafts= ${shafts})`;
     html += `</div>`;
@@ -906,6 +900,38 @@
   function closeGraphPrintPreview() {
     document.body.classList.remove('printing-graph');
     document.getElementById('printModalBox').style.display = 'none';
+  }
+
+  // 🟢 COLOR PARSING LOGIC 🟢
+  // We added textile color mapping here so that names like "Navy", "D. Grey", "1/2 Salavai"
+  // from the Warp Entry page properly convert to hex colors in this 3D Simulator.
+  function parseColorName(name) {
+    if (!name) return "#ffffff";
+    let n = String(name).trim().toLowerCase();
+    
+    if (n.startsWith("#") && (n.length === 4 || n.length === 7)) return n;
+
+    if (n.includes("salavai") || n.includes("சலவை") || n.includes("cream") || n.includes("கிரீம்")) return "#fdfbf7";
+    if (n.includes("navy") || n.includes("நேவி")) return "#1e3a8a"; 
+    if (n.includes("d. grey") || n.includes("d. கிரே") || n.includes("dark grey")) return "#334155";
+    if (n.includes("l. grey") || n.includes("l. கிரே") || n.includes("light grey")) return "#94a3b8";
+    if (n.includes("grey") || n.includes("gray") || n.includes("கிரே") || n.includes("சாம்பல்")) return "#64748b";
+    if (n.includes("black") || n.includes("கருப்பு")) return "#0f172a";
+    if (n.includes("white") || n.includes("வெள்ளை")) return "#f8fafc";
+    if (n.includes("red") || n.includes("சிவப்பு")) return "#ef4444";
+    if (n.includes("green") || n.includes("பச்சை") || n.includes("கிரீன்")) return "#22c55e";
+    if (n.includes("blue") || n.includes("ப்ளூ")) return "#3b82f6";
+    if (n.includes("yellow") || n.includes("மஞ்சள்")) return "#eab308";
+    if (n.includes("gold") || n.includes("கோல்டு")) return "#fbbf24";
+    if (n.includes("olive") || n.includes("ஆலிவ்")) return "#65a30d";
+    if (n.includes("brown") || n.includes("பிரவுன்")) return "#92400e";
+    if (n.includes("maroon") || n.includes("மெரூன்")) return "#9f1239";
+    if (n.includes("orange") || n.includes("ஆரஞ்சு")) return "#f97316";
+    if (n.includes("pink") || n.includes("பிங்க்") || n.includes("rose") || n.includes("ரோஸ்")) return "#ec4899";
+    if (n.includes("violet") || n.includes("வைலட்") || n.includes("purple") || n.includes("பர்புள்")) return "#8b5cf6";
+    if (n.includes("khaki") || n.includes("காக்கி")) return "#d4d4d8"; 
+    
+    return "#94a3b8"; 
   }
 
   function hexToRgb(hex) {
@@ -924,19 +950,6 @@
     return matrix[r % matrix.length][c % matrix[0].length] === 1;
   }
 
-  function parseColorName(name) {
-    if (!name) return "#ffffff";
-    let n = String(name).trim().toLowerCase();
-    if (n.includes("white") || n.includes("வெள்ளை")) return "#f8fafc";
-    if (n.includes("blue") || n.includes("ப்ளூ")) return "#1d4ed8";
-    if (n.includes("red") || n.includes("சிவப்பு")) return "#ef4444";
-    if (n.includes("green") || n.includes("பச்சை")) return "#22c55e";
-    if (n.includes("yellow") || n.includes("மஞ்சள்")) return "#eab308";
-    if (n.includes("black") || n.includes("கருப்பு")) return "#0f172a";
-    if (n.includes("grey") || n.includes("சாம்பல்")) return "#64748b";
-    return name.startsWith("#") ? name : "#94a3b8";
-  }
-
   function loadSelectedDesign() {
     const select = document.getElementById('designSelect');
     if (select.selectedIndex <= 0) return;
@@ -952,6 +965,7 @@
       for(let i=1; i<=wCount; i++) document.getElementById('wE'+i).value = 0;
       if (d.warpLines && d.warpLines.length > 0) {
         d.warpLines.forEach((line, i) => {
+          // 🟢 Converts fetched names into HEX and updates UI color inputs
           document.getElementById('wC' + (i+1)).value = parseColorName(line.color || line.colour);
           document.getElementById('wE' + (i+1)).value = line.ends || 0;
         });
