@@ -444,7 +444,7 @@
     }
 
     .btn-preview {
-        background: linear-gradient(135deg, #32F6, #1D4ED8);
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
         box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
     }
 
@@ -454,7 +454,7 @@
     }
 
     .btn-list {
-        background: linear-gradient(135deg, #F50B, #D97708);
+        background: linear-gradient(135deg, #F59E0B, #D97706);
         box-shadow: 0 6px 15px rgba(245, 158,11,0.25);
     }
 
@@ -658,28 +658,39 @@
             margin: 10mm;
         }
 
-        body * {
-            visibility: hidden !important;
-        }
-
-        #previewModal,
-        #previewModal * {
-            visibility: visible !important;
-        }
-
-        #previewModal {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
+        html, body {
+            height: auto !important;
+            min-height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
             background: #FFFFFF !important;
+            color: #000000 !important;
+        }
+
+        /* 🟢 தேவையற்ற அனைத்தையும் மறைக்கிறோம் 🟢 */
+        .main-card, 
+        .top-nav, 
+        .no-print, 
+        .modal-header,
+        #savedListModal,
+        #fullscreenModal {
+            display: none !important;
+        }
+
+        /* 🟢 Preview Modal மட்டும் Print ஆக வேண்டும் 🟢 */
+        #previewModal {
+            position: static !important;
             display: block !important;
-            z-index: 999999 !important;
+            width: 100% !important;
+            height: auto !important;
+            background: #FFFFFF !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .overlay-modal {
             background: #FFFFFF !important;
+            backdrop-filter: none !important;
         }
 
         .modal-content {
@@ -688,22 +699,25 @@
             height: auto !important;
             box-shadow: none !important;
             border: none !important;
-        }
-
-        .no-print {
-            display: none !important;
+            overflow: visible !important;
+            transform: none !important;
         }
 
         .modal-body {
             background: #FFFFFF !important;
             padding: 0 !important;
             width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
         }
 
-        html,
-        body {
-            background: #FFFFFF !important;
-            color: #000000 !important;
+        table {
+            page-break-inside: auto;
+        }
+        
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
     }
 </style>
@@ -726,7 +740,7 @@
         </div>
     </div>
 
-    <h2 class="color: #ffffff; /* Inga unga color-a change pannikalam */">📐 Warp Pattern Entry</h2>
+    <h2 class="page-title" style="color: #2F4F38;">📐 Warp Pattern Entry</h2>
 
     <div class="form-section" style="margin-top: 5px;">
 
@@ -795,7 +809,6 @@
                 <input type="text" id="infoCount2" placeholder="C2">
             </div>
 
-            <!-- 🟢 NEW: Weft 1 and Weft 2 Added Here 🟢 -->
             <div class="form-group">
                 <label>Weft 1</label>
                 <input type="text" id="infoWeft1" placeholder="W1">
@@ -915,7 +928,6 @@
             👁️ Preview
         </button>
 
-        <!-- 🟢 FIXED SAVE BUTTON HERE 🟢 -->
         <button class="btn-main btn-save" id="saveBtnTxt"
                 onclick="saveWarpDesign(); update3DPreviewData()">
             💾 Save
@@ -1606,9 +1618,6 @@ function loadDesignData() {
         }
     }
 
-    // 🟢 NEW LOGIC: Pull EXACT values stored in Design Master / Party Orders / Yarn Calc 🟢
-    
-    // Warp 1 & Warp 2
     let c1Resolved =
         (matchedOrder && matchedOrder.baseBeamCount) ||
         (found && found.warp1) ||
@@ -1626,7 +1635,6 @@ function loadDesignData() {
         '';
     if (c2Resolved === '-') c2Resolved = '';
 
-    // Weft 1 & Weft 2
     let weft1Resolved =
         (matchedOrder && matchedOrder.weftCount) ||
         (found && (found.weftCount || found.weft)) ||
@@ -1640,7 +1648,6 @@ function loadDesignData() {
         currentBaseSpecs.weft2 ||
         '';
 
-    // Onloom Reed, Pick, Width (Pull directly from saved sources without overriding via formula)
     let onloomReedResolved =
         (matchedOrder && matchedOrder.onloomReed) ||
         (found && found.onloomReed) ||
