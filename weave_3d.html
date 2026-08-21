@@ -1945,140 +1945,165 @@ function getCurrentData(){
 }
 
 /* =========================================================
-   SAVE SAME DESIGN
+   SAVE SAME DESIGN — FIXED
 ========================================================= */
 
 async function saveCurrentDesign(){
 
-    let data=
-        getCurrentData();
+    try{
 
-    let name=
-        activeDesignObj
-        ?designName(activeDesignObj)
-        :prompt(
-            "Design Number / Name",
-            "Design_01"
-        );
+        let data = getCurrentData();
 
-    if(!name)
-        return;
+        let name =
+            activeDesignObj
+            ? designName(activeDesignObj)
+            : prompt(
+                "Design Number / Name",
+                "Design_01"
+            );
 
-    data.designNo=name;
-    data.name=name;
+        if(!name)
+            return;
 
-    if(activeDesignObj?.id)
-        data.id=
-            activeDesignObj.id;
+        /* Preserve existing Firebase ID */
+        if(activeDesignObj?.id){
+            data.id = activeDesignObj.id;
+        }
 
-    data.timestamp=
-        new Date().toISOString();
+        data.designNo = name;
+        data.name = name;
+        data.timestamp = new Date().toISOString();
 
-    let local=
-        safeJSON(
+        /* -------------------------------------------------
+           LOCAL DESIGN MASTER
+        ------------------------------------------------- */
+
+        let local = safeJSON(
             "design_masters_data",
             []
         );
 
-    if(!Array.isArray(local))
-        local=[];
+        if(!Array.isArray(local))
+            local = [];
 
-    local=
-        mergeDesigns(
-            local.filter(
-                x=>
-                    designName(x)!==name
-            ),
-            [data]
+        /*
+           Remove old same design
+           Then ADD updated design
+        */
+
+        local = local.filter(
+            x => designName(x) !== name
         );
 
-    localStorage.setItem(
-        "design_masters_data",
-        JSON.stringify(local)
-    );
+        local.push(clone(data));
 
-    let cache=
-        mergeDesigns(
-            allCloudDesigns.filter(
-                x=>
-                    designName(x)!==name
-            ),
-            [data]
+        localStorage.setItem(
+            "design_masters_data",
+            JSON.stringify(local)
         );
 
-    allCloudDesigns=cache;
+        /* -------------------------------------------------
+           CACHE UPDATE
+        ------------------------------------------------- */
 
-    localStorage.setItem(
-        "weave_designs_cache",
-        JSON.stringify(cache)
-    );
+        let cache = Array.isArray(allCloudDesigns)
+            ? allCloudDesigns.filter(
+                x => designName(x) !== name
+            )
+            : [];
 
-    activeDesignObj=
-        clone(data);
+        cache.push(clone(data));
 
-    populateDesignSelect(false);
+        allCloudDesigns = mergeDesigns(cache);
 
-    let idx=
-        allCloudDesigns.findIndex(
-            x=>
-                designName(x)===name
+        localStorage.setItem(
+            "weave_designs_cache",
+            JSON.stringify(allCloudDesigns)
         );
 
-    if(idx>=0)
-        $("designSelect").value=idx;
+        /* -------------------------------------------------
+           ACTIVE DESIGN
+        ------------------------------------------------- */
 
-    try{
+        activeDesignObj = clone(data);
 
-        if(
-            window.firebase?.apps?.length
-        ){
+        localStorage.setItem(
+            "weave_last_design_name",
+            name
+        );
 
-            let db=
-                firebase.firestore();
+        $("activeDesignText").textContent =
+            "Active Design: " + name;
 
-            let docId=
-                activeDesignObj.id ||
+        /* Keep dropdown on saved design */
+
+        populateDesignSelect(false);
+
+        let idx = allCloudDesigns.findIndex(
+            x => designName(x) === name
+        );
+
+        if(idx >= 0){
+            $("designSelect").value = idx;
+        }
+
+        /* -------------------------------------------------
+           FIREBASE
+        ------------------------------------------------- */
+
+        if(window.firebase?.apps?.length){
+
+            let db = firebase.firestore();
+
+            let docId =
+                data.id ||
                 name;
 
             await db
                 .collection("weaves")
-                .doc(docId)
+                .doc(String(docId))
                 .set(
                     data,
-                    {merge:true}
+                    { merge:true }
                 );
 
             setStatus(
-                "✅ Same Design updated in Firebase + Local"
+                "✅ Same Design Saved Successfully — Firebase + Local"
             );
 
         }else{
 
             setStatus(
-                "✅ Same Design updated locally"
+                "✅ Same Design Saved Successfully — Local"
             );
 
         }
 
-    }catch(e){
+        /* -------------------------------------------------
+           REFRESH ONLY NECESSARY PARTS
+        ------------------------------------------------- */
 
-        console.error(e);
-
-        setStatus(
-            "⚠️ Local updated; Firebase error"
-        );
-
-    }
-
-    if(
-        $("fsModal")?.style.display==="flex"
-    ){
+        calculateDenting();
 
         draw3DWeave();
 
-    }
+    }catch(error){
 
-    calculateDenting();
+        console.error(
+            "SAVE SAME DESIGN ERROR:",
+            error
+        );
+
+        setStatus(
+            "⚠️ Save Error: " + error.message
+        );
+
+        alert(
+            "Save செய்யும்போது Error ஏற்பட்டுள்ளது.\n\n" +
+            error.message
+        );
+
+    }
 
 }
 
