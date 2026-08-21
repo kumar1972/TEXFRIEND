@@ -2745,17 +2745,15 @@ function draw3DWeave(){
         let physW_mm = (realWarpLength / reed) * 25.4;
         let physH_mm = (realWeftLength / pick) * 25.4;
 
-        /* 🟢 DYNAMIC SCALE: Auto-fit the repeat size 🟢
-           Ensures the entire repeat (e.g., 105mm) fits inside the screen 
-           and allows the ruler to adapt fully to the screen width. */
-        let px_per_mm = Math.min(availW / physW_mm, availH / physH_mm);
-        if (px_per_mm > 15) px_per_mm = 15; // Limit max zoom
+        /* 🟢 DYNAMIC SCALE: EXACTLY 2 REPEATS FIT IN SCREEN 🟢 */
+        let px_per_mm = Math.min(availW / (physW_mm * 2 || 1), availH / (physH_mm * 2 || 1));
+        if (px_per_mm > 25) px_per_mm = 25; // Limit max zoom
         if (px_per_mm < 1.5) px_per_mm = 1.5; // Limit min zoom
 
         let cw = (25.4 / reed) * px_per_mm;
         let ch = (25.4 / pick) * px_per_mm;
 
-        /* 🟢 FILL PREVIEW BOX COMPLETELY 🟢 */
+        /* 🟢 FILL PREVIEW BOX COMPLETELY (NO BLACK SPACE) 🟢 */
         const ends = Math.ceil(availW / cw);
         const picks = Math.ceil(availH / ch);
 
@@ -2764,8 +2762,7 @@ function draw3DWeave(){
 
         // Origin at Bottom-Left corner
         let offsetX = RULER;
-        let offsetY = availH - (picks * ch); 
-
+        
         /* BACKGROUND */
         ctx.fillStyle = "#09110d";
         ctx.fillRect(RULER, 0, availW, availH);
@@ -2805,7 +2802,7 @@ function draw3DWeave(){
                     ];
 
                 const x = offsetX + (col * cw);
-                const y = offsetY + (r * ch);
+                const y = availH - ((r + 1) * ch); // Draws from Bottom to Top matching Ruler
 
                 if(useGradient){
 
@@ -2899,7 +2896,7 @@ function draw3DWeave(){
 
                 ctx.moveTo(
                     ix,
-                    offsetY
+                    0
                 );
 
                 ctx.lineTo(
@@ -2912,7 +2909,7 @@ function draw3DWeave(){
             }
 
             for(
-                let iy = offsetY;
+                let iy = 0;
                 iy <= availH + 0.1;
                 iy += ch
             ){
@@ -2938,92 +2935,106 @@ function draw3DWeave(){
         }
 
         /* =========================================================
-           👑 BLACK & WHITE 2-SIDE CM RULER (Bottom & Left) 👑
+           👑 PROFESSIONAL BLACK & WHITE CM RULER 👑
+           (Clean, Crisp, Non-Overlapping)
         ========================================================= */
-        
-        // Clear background for Rulers (Pure White)
-        ctx.fillStyle = "#ffffff"; 
+
+        // Background
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, RULER, c.height);                   // Left Ruler
         ctx.fillRect(0, availH, c.width, RULER);               // Bottom Ruler
-
-        // Corner Box at bottom-left
-        ctx.fillStyle = "#f8f9fa";
+        ctx.fillStyle = "#f1f5f9";                             // Corner
         ctx.fillRect(0, availH, RULER, RULER);
 
-        // Crisp Black Border Lines
+        // Border separating Canvas and Ruler
         ctx.beginPath();
-        ctx.strokeStyle = "#000000"; 
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(RULER, 0, actualDrawW, availH);
-        ctx.strokeRect(0, availH, RULER, RULER); // Corner box inner border
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 1;
+        ctx.moveTo(RULER + 0.5, 0);
+        ctx.lineTo(RULER + 0.5, availH + 0.5);
+        ctx.lineTo(c.width, availH + 0.5);
         ctx.stroke();
 
         let max_mm_x = actualDrawW / px_per_mm;
         let max_mm_y = actualDrawH / px_per_mm;
 
-        // --- BOTTOM SCALE (X-Axis: Warp w) ---
+        ctx.fillStyle = "#000000";
+        ctx.font = "10px Arial, sans-serif"; // Removed 'bold' for a cleaner look
+
+        // --- BOTTOM SCALE (X-Axis) ---
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
         for(let mm = 0; mm <= max_mm_x; mm++) {
             let isCm = (mm % 10 === 0);
-            let isHalf = (mm % 5 === 0);
+            let isHalf = (mm % 5 === 0 && !isCm);
 
-            // Directly scaling mm for perfectly aligned ticks
-            let x = offsetX + Math.round(mm * px_per_mm) + 0.5; 
+            // Hide tiny mm ticks if they get too dense
+            if (!isCm && !isHalf && px_per_mm < 2.5) continue;
+
+            let x = offsetX + (mm * px_per_mm);
             if(x > offsetX + actualDrawW) break;
 
-            let tickLen = isCm ? 12 : (isHalf ? 8 : 4);
-            
+            let drawX = Math.floor(x) + 0.5; // Crisp lines
+            let tickLen = isCm ? 12 : (isHalf ? 7 : 4);
+
             ctx.beginPath();
-            ctx.moveTo(x, availH);
-            ctx.lineTo(x, availH + tickLen);
-            ctx.lineWidth = isCm ? 1.5 : 0.8;
-            ctx.strokeStyle = isCm ? "#000000" : "#555555"; // Black for main ticks
+            ctx.moveTo(drawX, availH);
+            ctx.lineTo(drawX, availH + tickLen);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = isCm ? "#000000" : "#64748b";
             ctx.stroke();
 
             if (isCm && mm > 0) {
-                ctx.fillStyle = "#000000"; // Black text
-                ctx.font = "bold 10px Arial, sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
                 let cmVal = (mm / 10);
-                ctx.fillText(cmVal, x, availH + 22);
+                // Prevent numbers from overlapping if zoomed out
+                let skipLabel = false;
+                let cmWidthPx = 10 * px_per_mm;
+                if (cmWidthPx < 20 && cmVal % 2 !== 0) skipLabel = true;
+                if (cmWidthPx < 10 && cmVal % 5 !== 0) skipLabel = true;
+
+                if(!skipLabel) {
+                    ctx.fillText(cmVal, drawX, availH + 14);
+                }
             }
         }
 
-        // --- LEFT SCALE (Y-Axis - Bottom to Top: Weft L / Pick) ---
+        // --- LEFT SCALE (Y-Axis) ---
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
         for(let mm = 0; mm <= max_mm_y; mm++) {
             let isCm = (mm % 10 === 0);
-            let isHalf = (mm % 5 === 0);
+            let isHalf = (mm % 5 === 0 && !isCm);
 
-            // Directly scaling mm for perfectly aligned ticks
-            let y = availH - Math.round(mm * px_per_mm) + 0.5;
+            if (!isCm && !isHalf && px_per_mm < 2.5) continue;
+
+            let y = availH - (mm * px_per_mm);
             if(y < 0) break;
 
-            let tickLen = isCm ? 12 : (isHalf ? 8 : 4);
-            
+            let drawY = Math.floor(y) + 0.5;
+            let tickLen = isCm ? 12 : (isHalf ? 7 : 4);
+
             ctx.beginPath();
-            ctx.moveTo(RULER, y);
-            ctx.lineTo(RULER - tickLen, y);
-            ctx.lineWidth = isCm ? 1.5 : 0.8;
-            ctx.strokeStyle = isCm ? "#000000" : "#555555";
+            ctx.moveTo(RULER, drawY);
+            ctx.lineTo(RULER - tickLen, drawY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = isCm ? "#000000" : "#64748b";
             ctx.stroke();
 
             if (isCm && mm > 0) {
-                ctx.fillStyle = "#000000";
                 let cmVal = (mm / 10);
-                ctx.save();
-                ctx.translate(RULER - 22, y);
-                ctx.rotate(-Math.PI/2);
-                ctx.font = "bold 10px Arial, sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(cmVal, 0, 0);
-                ctx.restore();
+                let skipLabel = false;
+                let cmWidthPx = 10 * px_per_mm;
+                if (cmWidthPx < 20 && cmVal % 2 !== 0) skipLabel = true;
+                if (cmWidthPx < 10 && cmVal % 5 !== 0) skipLabel = true;
+
+                if(!skipLabel) {
+                    ctx.fillText(cmVal, RULER - 14, drawY);
+                }
             }
         }
 
-        // --- Corner 'cm' Label (Black Color) ---
+        // --- Corner 'cm' Label ---
         ctx.fillStyle = "#000000";
-        ctx.font = "bold 12px Arial, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("cm", RULER/2, availH + RULER/2);
@@ -3035,7 +3046,6 @@ function draw3DWeave(){
         let text1 = `W: (${realWarpLength} ÷ ${reed}) × 25.4 = ${repeat_width_mm.toFixed(2)} mm`;
         let text2 = `H: (${realWeftLength} ÷ ${pick}) × 25.4 = ${repeat_height_mm.toFixed(2)} mm`;
 
-        // 🟢 FIXED: Dynamic box width perfectly aligns to text size 🟢
         ctx.font = "bold 11px Arial, sans-serif";
         let tw1 = ctx.measureText(text1).width;
         let tw2 = ctx.measureText(text2).width;
