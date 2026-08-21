@@ -723,22 +723,6 @@ input[type=color]{
 
 <div class="card">
 
-    <div class="step">
-
-        <div class="step-no">1</div>
-
-        <div>
-
-            <h3>டிசைனைத் தேர்வு செய்யுங்கள்</h3>
-
-            <p>
-                தேர்வு செய்த Design-ஐ edit செய்து அதே Design-ல் Save செய்யலாம்
-            </p>
-
-        </div>
-
-    </div>
-
     <label>🎨 Design</label>
 
     <select id="designSelect"
@@ -2746,30 +2730,49 @@ function draw3DWeave(){
         if(!warp.length) warp=[rgb("#f8fafc")];
         if(!weft.length) weft=[rgb("#dbe4df")];
 
-        /* 🟢 EXACTLY 2 REPEATS FOR 3D PREVIEW 🟢 */
-        const ends = realWarpLength > 0 ? Math.min(realWarpLength * 2, 800) : 40;
-        const picks = realWeftLength > 0 ? Math.min(realWeftLength * 2, 800) : 40;
+        /* 🟢 RULER OFFSET (Bottom & Left Only) 🟢 */
+        const RULER = 32;
+        const availW = c.width - RULER;   // Canvas width minus left ruler
+        const availH = c.height - RULER;  // Canvas height minus bottom ruler
 
-        /* 🟢 RULER OFFSET 🟢 */
-        const RULER = 28;
-        const drawW = c.width - RULER;
-        const drawH = c.height - RULER;
+        // 🟢 FINISHED REED & PICK FORMULA 🟢
+        let uiReed = parseFloat(document.getElementById('infoReed')?.value);
+        let uiPick = parseFloat(document.getElementById('infoPick')?.value);
+        
+        let reed = uiReed || parseFloat(activeDesignObj?.finishedReed || activeDesignObj?.reed) || 64;
+        let pick = uiPick || parseFloat(activeDesignObj?.finishedPick || activeDesignObj?.finishPick || activeDesignObj?.pick || activeDesignObj?.weftPick || activeDesignObj?.weft) || 48;
 
-        const cw = drawW / ends;
-        const ch = drawH / picks;
+        let physW_mm = (realWarpLength / reed) * 25.4;
+        let physH_mm = (realWeftLength / pick) * 25.4;
+
+        /* 🟢 DYNAMIC SCALE: Auto-fit the repeat size 🟢
+           Ensures the entire repeat (e.g., 105mm) fits inside the screen 
+           and allows the ruler to adapt fully to the screen width. */
+        let px_per_mm = Math.min(availW / physW_mm, availH / physH_mm);
+        if (px_per_mm > 15) px_per_mm = 15; // Limit max zoom
+        if (px_per_mm < 1.5) px_per_mm = 1.5; // Limit min zoom
+
+        let cw = (25.4 / reed) * px_per_mm;
+        let ch = (25.4 / pick) * px_per_mm;
+
+        /* 🟢 FILL PREVIEW BOX COMPLETELY 🟢 */
+        const ends = Math.ceil(availW / cw);
+        const picks = Math.ceil(availH / ch);
+
+        let actualDrawW = availW;
+        let actualDrawH = availH;
+
+        // Origin at Bottom-Left corner
+        let offsetX = RULER;
+        let offsetY = availH - (picks * ch); 
 
         /* BACKGROUND */
         ctx.fillStyle = "#09110d";
-        ctx.fillRect(RULER, 0, drawW, drawH);
+        ctx.fillRect(RULER, 0, availW, availH);
 
         const type=
             $("weaveType")?.value ||
             "plain";
-
-        /*
-           Gradient only when cells
-           are large enough.
-        */
 
         const useGradient=
             cw>=4 &&
@@ -2787,12 +2790,10 @@ function draw3DWeave(){
                 col++
             ){
 
-                const up=
-                    isWarpUp(
-                        r,
-                        col,
-                        type
-                    );
+                /* 🟢 SEAMLESS TILING FIX 🟢 */
+                let r_weave = r % Math.max(1, realWeftLength);
+                let c_weave = col % Math.max(1, realWarpLength);
+                const up = isWarpUp(r_weave, c_weave, type);
 
                 const base=
                     up
@@ -2803,9 +2804,8 @@ function draw3DWeave(){
                         r%weft.length
                     ];
 
-                // 🟢 SHIFTED BY RULER SIZE 🟢
-                const x = RULER + (col * cw);
-                const y = r * ch;
+                const x = offsetX + (col * cw);
+                const y = offsetY + (r * ch);
 
                 if(useGradient){
 
@@ -2890,8 +2890,8 @@ function draw3DWeave(){
             ctx.lineWidth=.35;
 
             for(
-                let ix = RULER;
-                ix <= c.width;
+                let ix = offsetX;
+                ix <= offsetX + actualDrawW + 0.1;
                 ix += cw
             ){
 
@@ -2899,12 +2899,12 @@ function draw3DWeave(){
 
                 ctx.moveTo(
                     ix,
-                    0
+                    offsetY
                 );
 
                 ctx.lineTo(
                     ix,
-                    drawH
+                    availH
                 );
 
                 ctx.stroke();
@@ -2912,8 +2912,8 @@ function draw3DWeave(){
             }
 
             for(
-                let iy = 0;
-                iy <= drawH;
+                let iy = offsetY;
+                iy <= availH + 0.1;
                 iy += ch
             ){
 
@@ -2925,7 +2925,7 @@ function draw3DWeave(){
                 );
 
                 ctx.lineTo(
-                    c.width,
+                    offsetX + actualDrawW,
                     iy
                 );
 
@@ -2938,92 +2938,123 @@ function draw3DWeave(){
         }
 
         /* =========================================================
-           🟢 DYNAMIC CM SCALE RULER (Based on Formula) 🟢
+           👑 BLACK & WHITE 2-SIDE CM RULER (Bottom & Left) 👑
         ========================================================= */
-        ctx.fillStyle = "#e2e8f0"; 
-        ctx.fillRect(0, 0, RULER, drawH); 
-        ctx.fillRect(RULER, drawH, drawW, RULER); 
-
-        // Fetch physical specs for scaling (fallback to 64/48 if none)
-        let reed = parseFloat(activeDesignObj?.onloomReed || activeDesignObj?.reed) || 64;
-        let pick = parseFloat(activeDesignObj?.onloomPick || activeDesignObj?.pick || activeDesignObj?.weftPick) || 48;
-
-        // Calculate pixels per mm
-        // 1 mm width = (cw * reed) / 25.4
-        let px_per_mm_x = cw * (reed / 25.4);
-        let px_per_mm_y = ch * (pick / 25.4);
         
-        ctx.fillStyle = "#0f172a";
-        ctx.strokeStyle = "#475569";
-        ctx.lineWidth = 1;
-        ctx.font = "bold 11px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        // Clear background for Rulers (Pure White)
+        ctx.fillStyle = "#ffffff"; 
+        ctx.fillRect(0, 0, RULER, c.height);                   // Left Ruler
+        ctx.fillRect(0, availH, c.width, RULER);               // Bottom Ruler
 
-        // Left Scale (Y-axis / Picks)
-        let max_mm_y = drawH / px_per_mm_y;
-        for(let mm = 0; mm <= max_mm_y; mm++) {
-            let isCm = (mm % 10 === 0);
-            let isHalf = (mm % 5 === 0);
+        // Corner Box at bottom-left
+        ctx.fillStyle = "#f8f9fa";
+        ctx.fillRect(0, availH, RULER, RULER);
 
-            if (!isCm && !isHalf && px_per_mm_y < 4) continue;
+        // Crisp Black Border Lines
+        ctx.beginPath();
+        ctx.strokeStyle = "#000000"; 
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(RULER, 0, actualDrawW, availH);
+        ctx.strokeRect(0, availH, RULER, RULER); // Corner box inner border
+        ctx.stroke();
 
-            let y = mm * px_per_mm_y;
-            let tick = isCm ? RULER : (isHalf ? RULER * 0.5 : RULER * 0.25);
-            
-            ctx.beginPath();
-            ctx.moveTo(RULER, y);
-            ctx.lineTo(RULER - tick, y);
-            ctx.stroke();
+        let max_mm_x = actualDrawW / px_per_mm;
+        let max_mm_y = actualDrawH / px_per_mm;
 
-            if (isCm && mm > 0) {
-                ctx.save();
-                ctx.translate(RULER - 14, y);
-                ctx.rotate(-Math.PI/2);
-                ctx.fillText((mm/10), 0, 0);
-                ctx.restore();
-            }
-        }
-
-        // Bottom Scale (X-axis / Ends)
-        let max_mm_x = drawW / px_per_mm_x;
+        // --- BOTTOM SCALE (X-Axis: Warp w) ---
         for(let mm = 0; mm <= max_mm_x; mm++) {
             let isCm = (mm % 10 === 0);
             let isHalf = (mm % 5 === 0);
 
-            if (!isCm && !isHalf && px_per_mm_x < 4) continue;
+            // Directly scaling mm for perfectly aligned ticks
+            let x = offsetX + Math.round(mm * px_per_mm) + 0.5; 
+            if(x > offsetX + actualDrawW) break;
 
-            let x = RULER + (mm * px_per_mm_x);
-            let tick = isCm ? RULER : (isHalf ? RULER * 0.5 : RULER * 0.25);
+            let tickLen = isCm ? 12 : (isHalf ? 8 : 4);
             
             ctx.beginPath();
-            ctx.moveTo(x, drawH);
-            ctx.lineTo(x, drawH + tick);
+            ctx.moveTo(x, availH);
+            ctx.lineTo(x, availH + tickLen);
+            ctx.lineWidth = isCm ? 1.5 : 0.8;
+            ctx.strokeStyle = isCm ? "#000000" : "#555555"; // Black for main ticks
             ctx.stroke();
 
             if (isCm && mm > 0) {
-                ctx.fillText((mm/10), x, drawH + 16);
+                ctx.fillStyle = "#000000"; // Black text
+                ctx.font = "bold 10px Arial, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                let cmVal = (mm / 10);
+                ctx.fillText(cmVal, x, availH + 22);
             }
         }
 
-        // Corner Box & Label
-        ctx.fillStyle = "#cbd5e1";
-        ctx.fillRect(0, drawH, RULER, RULER);
-        ctx.fillStyle = "#334155";
-        ctx.font = "bold 10px Arial";
-        ctx.fillText("cm", RULER/2, drawH + RULER/2);
+        // --- LEFT SCALE (Y-Axis - Bottom to Top: Weft L / Pick) ---
+        for(let mm = 0; mm <= max_mm_y; mm++) {
+            let isCm = (mm % 10 === 0);
+            let isHalf = (mm % 5 === 0);
 
-        // Display Repeat Size Logic Proof
+            // Directly scaling mm for perfectly aligned ticks
+            let y = availH - Math.round(mm * px_per_mm) + 0.5;
+            if(y < 0) break;
+
+            let tickLen = isCm ? 12 : (isHalf ? 8 : 4);
+            
+            ctx.beginPath();
+            ctx.moveTo(RULER, y);
+            ctx.lineTo(RULER - tickLen, y);
+            ctx.lineWidth = isCm ? 1.5 : 0.8;
+            ctx.strokeStyle = isCm ? "#000000" : "#555555";
+            ctx.stroke();
+
+            if (isCm && mm > 0) {
+                ctx.fillStyle = "#000000";
+                let cmVal = (mm / 10);
+                ctx.save();
+                ctx.translate(RULER - 22, y);
+                ctx.rotate(-Math.PI/2);
+                ctx.font = "bold 10px Arial, sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(cmVal, 0, 0);
+                ctx.restore();
+            }
+        }
+
+        // --- Corner 'cm' Label (Black Color) ---
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 12px Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("cm", RULER/2, availH + RULER/2);
+
+        // --- Premium Proof Box ---
         let repeat_width_mm = (realWarpLength / reed) * 25.4;
         let repeat_height_mm = (realWeftLength / pick) * 25.4;
 
-        ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-        ctx.fillRect(c.width - 150, 0, 150, 48);
-        ctx.fillStyle = "#8fe19d";
-        ctx.font = "bold 10px Arial";
+        let text1 = `W: (${realWarpLength} ÷ ${reed}) × 25.4 = ${repeat_width_mm.toFixed(2)} mm`;
+        let text2 = `H: (${realWeftLength} ÷ ${pick}) × 25.4 = ${repeat_height_mm.toFixed(2)} mm`;
+
+        // 🟢 FIXED: Dynamic box width perfectly aligns to text size 🟢
+        ctx.font = "bold 11px Arial, sans-serif";
+        let tw1 = ctx.measureText(text1).width;
+        let tw2 = ctx.measureText(text2).width;
+        let maxTw = Math.max(tw1, tw2);
+        
+        let boxWidth = maxTw + 30; // 15px padding on each side
+        let boxX = c.width - boxWidth - 10; // 10px margin from the right edge
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; // Pure Black semi-transparent background
+        ctx.strokeStyle = "#ffffff"; // White border
+        ctx.lineWidth = 1.5;
+        
+        ctx.fillRect(boxX, 10, boxWidth, 46);
+        ctx.strokeRect(boxX, 10, boxWidth, 46);
+        
+        ctx.fillStyle = "#ffffff"; // White Text
         ctx.textAlign = "right";
-        ctx.fillText(`1 Repeat = ${repeat_width_mm.toFixed(2)} mm W`, c.width - 10, 16);
-        ctx.fillText(`1 Repeat = ${repeat_height_mm.toFixed(2)} mm H`, c.width - 10, 34);
+        ctx.fillText(text1, c.width - 25, 26);
+        ctx.fillText(text2, c.width - 25, 44);
 
     });
 
@@ -3538,6 +3569,7 @@ function printDesign(){
                 setTimeout(() => {
                     window.print();
                     setTimeout(()=>{
+                        // /* document.body.classList.0 = ""; */ (Syntax Error Fixed)
                         document.body.classList.remove("printing-design");
                     },500);
                 }, 100);
