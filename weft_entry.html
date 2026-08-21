@@ -205,12 +205,8 @@
             width: 100%;
         }
 
-        /* 🟢 input & select added here to support datalist 🟢 */
-        .input-group-btn input,
         .input-group-btn select {
             flex: 1;
-            background: #FFFFFF;
-            color: #1E2B23;
         }
 
         .btn-copy-design {
@@ -633,157 +629,7 @@
             transform: scale(1.1);
         }
 
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 5mm 8mm;
-            }
-
-            html,
-            body {
-                width: 100% !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #FFFFFF !important;
-                color: #000000 !important;
-                overflow: visible !important;
-            }
-
-            body > * {
-                visibility: hidden !important;
-            }
-
-            #previewModal,
-            #previewModal * {
-                visibility: visible !important;
-            }
-
-            #previewModal {
-                display: block !important;
-                position: static !important;
-                left: auto !important;
-                top: auto !important;
-                width: 100% !important;
-                min-width: 0 !important;
-                max-width: none !important;
-                height: auto !important;
-                min-height: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: #FFFFFF !important;
-                opacity: 1 !important;
-                overflow: visible !important;
-                z-index: auto !important;
-                transform: none !important;
-                backdrop-filter: none !important;
-            }
-
-            #previewModal .modal-content {
-                display: block !important;
-                width: 100% !important;
-                max-width: none !important;
-                min-width: 0 !important;
-                height: auto !important;
-                max-height: none !important;
-                min-height: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #FFFFFF !important;
-                box-shadow: none !important;
-                border: none !important;
-                border-radius: 0 !important;
-                transform: none !important;
-            }
-
-            #previewModal .modal-body {
-                display: block !important;
-                width: 100% !important;
-                max-width: none !important;
-                min-width: 0 !important;
-                height: auto !important;
-                max-height: none !important;
-                min-height: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #FFFFFF !important;
-            }
-
-            .no-print,
-            #savedListModal,
-            #fullscreenModal {
-                display: none !important;
-                visibility: hidden !important;
-            }
-
-            table {
-                width: 100% !important;
-                max-width: 100% !important;
-                font-size: 10px !important;
-                border-collapse: collapse !important;
-                background: #FFFFFF !important;
-                page-break-inside: auto;
-            }
-
-            thead {
-                display: table-header-group;
-            }
-
-            tr {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-
-            th,
-            td {
-                padding: 3px 5px !important;
-                line-height: 1.2 !important;
-                background: #FFFFFF;
-                color: #000000;
-                border-left: none !important;
-                border-right: none !important;
-            }
-
-            .print-flex-row {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                width: 100% !important;
-                gap: 8px !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                align-items: flex-start !important;
-                justify-content: space-between !important;
-                background: #FFFFFF !important;
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-
-            .print-col-box {
-                flex: 1 1 0 !important;
-                width: 50% !important;
-                min-width: 0 !important;
-                max-width: 50% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #FFFFFF !important;
-                page-break-inside: auto;
-            }
-
-            #previewContent,
-            #previewContent > div,
-            #previewContent > div > div {
-                background: #FFFFFF !important;
-            }
-
-            img {
-                max-width: 100% !important;
-            }
-        }
-
+        /* 🟢 FULLSCREEN MODAL CSS 🟢 */
         .fullscreen-modal {
             display: none;
             position: fixed;
@@ -804,7 +650,6 @@
             max-height: 85vh;
             object-fit: contain;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
         }
 
         .close-fullscreen {
@@ -817,9 +662,99 @@
             padding: 10px 18px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* 🟢 PRINT CARD STYLING (HIDDEN ON SCREEN) 🟢 */
+        .print-card {
+            display: none !important; 
+        }
+
+        /* 🟢 STRICT PRINT STYLES FOR PREVIEW MODAL TO HIDE MAIN PAGE & FORCE PURE WHITE 🟢 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            #previewModal,
+            #previewModal * {
+                visibility: visible !important;
+            }
+
+            #previewModal {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: #FFFFFF !important;
+                display: block !important;
+                z-index: 999999 !important;
+            }
+
+            .overlay-modal {
+                background: #FFFFFF !important;
+            }
+
+            .modal-content {
+                background: #FFFFFF !important;
+                width: 100% !important;
+                height: auto !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .modal-body {
+                background: #FFFFFF !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            html,
+            body {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
+            
+            /* 🟢 SPECIFIC STYLES FOR PRINTING THE DESIGN / GRAPH 🟢 */
+            body.printing-design .container,
+            body.printing-design #fsModal,
+            body.printing-design #printModalBox {
+                display: none !important;
+            }
+
+            body.printing-design .print-card {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                min-height: 100vh;
+                background: #FFFFFF !important;
+                z-index: 999999;
+                visibility: visible !important;
+            }
+            
+            body.printing-design .print-card * {
+                visibility: visible !important;
+            }
+
+            body.printing-design {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
         }
 
         @media (max-width: 600px) {
@@ -875,9 +810,10 @@
             <label>Select Design Number</label>
 
             <div class="input-group-btn">
-                <!-- 🟢 Editable Input with Datalist 🟢 -->
-                <input type="text" id="designNo" list="designList" placeholder="Select or type Design No" onchange="loadWeftDesignData()" autocomplete="off">
-                <datalist id="designList"></datalist>
+                <!-- 🟢 Standard Dropdown restored 🟢 -->
+                <select id="designNo" onchange="loadWeftDesignData()">
+                    <option value="">Select Design No</option>
+                </select>
 
                 <button
                     class="btn-copy-design"
@@ -929,14 +865,12 @@
 
             <div class="form-group">
                 <label>Weave</label>
-                <!-- 🟢 Editable Input with Datalist 🟢 -->
-                <input type="text" id="infoWeave" list="fabricTypeList" value="Plain" placeholder="Select or Type">
-                <datalist id="fabricTypeList">
-                    <option value="Plain"></option>
-                    <option value="Twill"></option>
-                    <option value="Dobby"></option>
-                    <option value="Seersucker"></option>
-                </datalist>
+                <select id="infoWeave">
+                    <option value="Plain">Plain</option>
+                    <option value="Twill">Twill</option>
+                    <option value="Dobby">Dobby</option>
+                    <option value="Seersucker">Seersucker</option>
+                </select>
             </div>
 
         </div>
@@ -1067,7 +1001,7 @@
 
 <!-- ================= PREVIEW MODAL ================= -->
 
-<div id="previewModal" class="overlay-modal">
+<div id="previewModal" class="overlay-modal" style="display: none;">
 
     <div class="modal-content">
 
@@ -1105,7 +1039,7 @@
 
 <!-- ================= SAVED LIST ================= -->
 
-<div id="savedListModal" class="overlay-modal">
+<div id="savedListModal" class="overlay-modal" style="display: none;">
 
     <div
         class="modal-content"
@@ -1158,7 +1092,7 @@
 <div
     id="fullscreenModal"
     class="fullscreen-modal"
-    onclick="closeFullscreenImage()">
+    onclick="closeFullscreenImage()" style="display: none;">
 
     <button
         class="close-fullscreen"
@@ -1174,6 +1108,11 @@
 
 </div>
 
+<!-- 🟢 PRINT CARD (HIDDEN FROM NORMAL SCREEN) 🟢 -->
+<div class="card print-card" id="designPrintCard" style="display: none;">
+    <h3 style="color:#000; margin-bottom:8px; text-align:center;">Weave Design</h3>
+    <img id="designPrintImage" alt="Print Preview" style="width:100%; max-width:800px; height:auto; display:block; margin:auto;" />
+</div>
 
 <script>
 
@@ -1471,7 +1410,7 @@ function loadBitmapImage() {
 
 
 /* ============================================================
-   DESIGN DROPDOWN
+   DESIGN DROPDOWN (NATIVE SELECT)
 ============================================================ */
 
 function loadDesignDropdown() {
@@ -1499,60 +1438,41 @@ function loadDesignDropdown() {
     let allDesigns = new Set();
 
     if (Array.isArray(preDesigns)) {
-
         preDesigns.forEach(d => {
-
             if (d !== null && d !== undefined && d !== '') {
                 allDesigns.add(String(d));
             }
-
         });
     }
 
     if (Array.isArray(designMasters)) {
-
         designMasters.forEach(d => {
-
-            let value =
-                d.name ||
-                d.designNo;
-
+            let value = d.name || d.designNo;
             if (value) {
                 allDesigns.add(String(value));
             }
-
         });
     }
 
     Object.keys(designSpecs).forEach(k => {
-
         if (k) {
             allDesigns.add(String(k));
         }
-
     });
 
     if (Array.isArray(partyOrders)) {
-
         partyOrders.forEach(o => {
-
-            let value =
-                o.designNumber ||
-                o.designNo;
-
+            let value = o.designNumber || o.designNo;
             if (value) {
                 allDesigns.add(String(value));
             }
-
         });
     }
 
     let select = document.getElementById('designNo');
-    let datalist = document.getElementById('designList');
+    if (!select) return;
 
-    if (!select || !datalist) return;
-
-    datalist.innerHTML = '';
+    select.innerHTML = '<option value="">Select Design No</option>';
 
     Array.from(allDesigns)
         .filter(Boolean)
@@ -1565,24 +1485,20 @@ function loadDesignDropdown() {
         .forEach(d => {
             let option = document.createElement('option');
             option.value = d;
-            datalist.appendChild(option);
+            option.textContent = d;
+            select.appendChild(option);
         });
 
     let activeDesign = localStorage.getItem('selected_design_number');
 
-    if (
-        activeDesign &&
-        Array.from(allDesigns).some(
-            d =>
-                cleanDesignName(d) ===
-                cleanDesignName(activeDesign)
-        )
-    ) {
-
-        select.value = Array.from(allDesigns).find(
-            d => cleanDesignName(d) === cleanDesignName(activeDesign)
-        );
-        loadWeftDesignData();
+    if (activeDesign) {
+        let exactOption = Array.from(select.options).find(opt => cleanDesignName(opt.value) === cleanDesignName(activeDesign));
+        if(exactOption) {
+            select.value = exactOption.value;
+            loadWeftDesignData();
+        } else {
+            loadBitmapImage();
+        }
     } else {
         loadBitmapImage();
     }
@@ -1644,7 +1560,7 @@ function loadWeftDesignData() {
 
     document.getElementById(
         'infoWeave'
-    ).value = '';
+    ).value = 'Plain';
 
     document.getElementById(
         'displayTotalPicks'
@@ -1745,7 +1661,6 @@ function loadWeftDesignData() {
         }
     }
 
-    // Fetch Onloom Width and Pick from saved sources
     let onloomWidth = parseFloat(
         sp.onloomWidth ||
         foundMaster.onloomWidth ||
@@ -1764,13 +1679,9 @@ function loadWeftDesignData() {
         0
     ) || 0;
 
-    // Weft Width = Onloom Width + 3
     let autoWeftWidth = onloomWidth > 0 ? (onloomWidth + 3).toFixed(2) : '';
-    
-    // Pick = Onloom Pick
     let autoPick = onloomPick > 0 ? onloomPick : '';
 
-    // Fetch Weft 1 and Weft 2
     let resolvedWeft1 =
         sp.weftCount ||
         sp.weft ||
@@ -1784,7 +1695,6 @@ function loadWeftDesignData() {
         foundMaster.weft2 ||
         matchedOrder.weft2 ||
         '';
-
 
     let savedYarnOrderMtr =
         parseFloat(
@@ -1824,59 +1734,31 @@ function loadWeftDesignData() {
         'Plain';
 
 
-    /* ============================================
-       EXISTING WEFT PATTERN
-    ============================================ */
-
     if (
         Array.isArray(foundMaster.weftLines) &&
         foundMaster.weftLines.length > 0
     ) {
 
-        saveBtn.innerText =
-            "✏️ Update";
+        saveBtn.innerText = "✏️ Update";
 
-        let finalWeftWidth =
-            foundMaster.weftWidth ||
-            autoWeftWidth ||
-            '';
+        let finalWeftWidth = foundMaster.weftWidth || autoWeftWidth || '';
 
-        document.getElementById(
-            'infoWeftWidth'
-        ).value = finalWeftWidth;
+        document.getElementById('infoWeftWidth').value = finalWeftWidth;
+        document.getElementById('infoWeft1').value = foundMaster.weftCount || resolvedWeft1;
+        document.getElementById('infoWeft2').value = foundMaster.weft2 || resolvedWeft2;
+        document.getElementById('infoPick').value = foundMaster.weftPick || autoPick;
+        document.getElementById('infoWeftMtrs').value = foundMaster.weftMtrs || sp.weftMtrs || calculatedWeftMtrs;
 
-        document.getElementById(
-            'infoWeft1'
-        ).value =
-            foundMaster.weftCount ||
-            resolvedWeft1;
+        let weaveTypeVal = foundMaster.weaveType || resolvedWeave || 'Plain';
+        let infoWeaveSelect = document.getElementById('infoWeave');
+        let optionExists = Array.from(infoWeaveSelect.options).some(opt => opt.value === weaveTypeVal);
+        if (optionExists) {
+            infoWeaveSelect.value = weaveTypeVal;
+        } else {
+            infoWeaveSelect.value = 'Plain';
+        }
 
-        document.getElementById(
-            'infoWeft2'
-        ).value =
-            foundMaster.weft2 ||
-            resolvedWeft2;
-
-        document.getElementById(
-            'infoPick'
-        ).value =
-            foundMaster.weftPick ||
-            autoPick;
-
-        document.getElementById(
-            'infoWeftMtrs'
-        ).value =
-            foundMaster.weftMtrs ||
-            sp.weftMtrs ||
-            calculatedWeftMtrs;
-
-        document.getElementById(
-            'infoWeave'
-        ).value =
-            foundMaster.weaveType ||
-            resolvedWeave;
-
-                foundMaster.weftLines.forEach(l => {
+        foundMaster.weftLines.forEach(l => {
             addWeftLine(
                 l.count || '',
                 l.color || l.colour || '', 
@@ -1904,39 +1786,22 @@ function loadWeftDesignData() {
 
     } else {
 
-        saveBtn.innerText =
-            "💾 Save";
+        saveBtn.innerText = "💾 Save";
 
-        document.getElementById(
-            'infoWeftWidth'
-        ).value =
-            autoWeftWidth;
+        document.getElementById('infoWeftWidth').value = autoWeftWidth;
+        document.getElementById('infoWeft1').value = resolvedWeft1;
+        document.getElementById('infoWeft2').value = resolvedWeft2;
+        document.getElementById('infoPick').value = autoPick;
+        document.getElementById('infoWeftMtrs').value = sp.weftMtrs || calculatedWeftMtrs;
 
-        document.getElementById(
-            'infoWeft1'
-        ).value =
-            resolvedWeft1;
-
-        document.getElementById(
-            'infoWeft2'
-        ).value =
-            resolvedWeft2;
-
-        document.getElementById(
-            'infoPick'
-        ).value =
-            autoPick;
-
-        document.getElementById(
-            'infoWeftMtrs'
-        ).value =
-            sp.weftMtrs ||
-            calculatedWeftMtrs;
-
-        document.getElementById(
-            'infoWeave'
-        ).value =
-            resolvedWeave;
+        let weaveTypeVal = resolvedWeave || 'Plain';
+        let infoWeaveSelect = document.getElementById('infoWeave');
+        let optionExists = Array.from(infoWeaveSelect.options).some(opt => opt.value === weaveTypeVal);
+        if (optionExists) {
+            infoWeaveSelect.value = weaveTypeVal;
+        } else {
+            infoWeaveSelect.value = 'Plain';
+        }
 
         loadDefaultRow();
     }
@@ -1972,241 +1837,96 @@ function loadDefaultRow() {
 
 async function copyToNewDesign() {
 
-    let currentDNo =
-        document.getElementById(
-            'designNo'
-        ).value;
+    const select = document.getElementById('designNo');
+    if (!select) return;
+
+    let currentDNo = select.value;
 
     if (!currentDNo) {
-
-        alert(
-            "முதலில் எந்த டிசைனை காப்பி செய்ய வேண்டுமோ அதை செலக்ட் செய்யுங்கள் ப்ரோ!"
-        );
-
+        alert("முதலில் எந்த டிசைனை காப்பி செய்ய வேண்டுமோ அதை செலக்ட் செய்யுங்கள் ப்ரோ!");
         return;
     }
 
-    let newDNo =
-        prompt(
-            `'${currentDNo}' டிசைனை காப்பி செய்கிறீர்கள்.\n\nபுதிய டிசைன் நம்பரை உள்ளிடவும்:`
-        );
+    let newDNo = prompt(`'${currentDNo}' டிசைனை காப்பி செய்கிறீர்கள்.\n\nபுதிய டிசைன் நம்பரை உள்ளிடவும்:`);
 
-    if (
-        !newDNo ||
-        newDNo.trim() === ''
-    ) {
+    if (!newDNo || newDNo.trim() === '') {
         return;
     }
 
     newDNo = newDNo.trim();
 
-    let cleanNew =
-        cleanDesignName(newDNo);
+    let cleanNew = cleanDesignName(newDNo);
 
-    let allExisting =
-        new Set();
+    let allExisting = new Set();
 
-    let preDesignList =
-        safeParseJSON(
-            localStorage.getItem(
-                'pre_design_numbers'
-            ),
-            []
-        );
-
-    let masters =
-        safeParseJSON(
-            localStorage.getItem(
-                'design_masters_data'
-            ),
-            []
-        );
-
-    let specs =
-        safeParseJSON(
-            localStorage.getItem(
-                'design_specs'
-            ),
-            {}
-        );
+    let preDesignList = safeParseJSON(localStorage.getItem('pre_design_numbers'), []);
+    let masters = safeParseJSON(localStorage.getItem('design_masters_data'), []);
+    let specs = safeParseJSON(localStorage.getItem('design_specs'), {});
 
     if (Array.isArray(preDesignList)) {
-
-        preDesignList.forEach(x =>
-            allExisting.add(
-                cleanDesignName(x)
-            )
-        );
+        preDesignList.forEach(x => allExisting.add(cleanDesignName(x)));
     }
 
     if (Array.isArray(masters)) {
-
         masters.forEach(m => {
-
             if (m.name || m.designNo) {
-
-                allExisting.add(
-                    cleanDesignName(
-                        m.name ||
-                        m.designNo
-                    )
-                );
+                allExisting.add(cleanDesignName(m.name || m.designNo));
             }
         });
     }
 
     Object.keys(specs).forEach(k => {
-
-        allExisting.add(
-            cleanDesignName(k)
-        );
+        allExisting.add(cleanDesignName(k));
     });
 
     if (allExisting.has(cleanNew)) {
-
-        alert(
-            "இந்த டிசைன் நம்பர் ஏற்கனவே உள்ளது! வேறு நம்பரை கொடுக்கவும்."
-        );
-
+        alert("இந்த டிசைன் நம்பர் ஏற்கனவே உள்ளது! வேறு நம்பரை கொடுக்கவும்.");
         return;
     }
 
-
-    /* ============================================
-       READ CURRENT FORM
-    ============================================ */
-
     let lines = [];
+    document.querySelectorAll('.line-item').forEach(row => {
+        let count = row.querySelector('.inp-count').value.trim();
+        let color = row.querySelector('.inp-color').value.trim();
+        let picks = row.querySelector('.inp-picks').value.trim();
 
-    document
-        .querySelectorAll('.line-item')
-        .forEach(row => {
-
-            let count =
-                row.querySelector(
-                    '.inp-count'
-                ).value.trim();
-
-            let color =
-                row.querySelector(
-                    '.inp-color'
-                ).value.trim();
-
-            let picks =
-                row.querySelector(
-                    '.inp-picks'
-                ).value.trim();
-
-            if (
-                count ||
-                color ||
-                picks
-            ) {
-
-                lines.push({
-                    count: count,
-                    color: color,
-                    picks:
-                        parseFloat(picks) ||
-                        0
-                });
-            }
-        });
-
+        if (count || color || picks) {
+            lines.push({
+                count: count,
+                color: color,
+                picks: parseFloat(picks) || 0
+            });
+        }
+    });
 
     let ranges = [];
+    document.querySelectorAll('.range-item').forEach(row => {
+        let start = row.querySelector('.inp-start').value.trim();
+        let end = row.querySelector('.inp-end').value.trim();
+        let set = row.querySelector('.inp-set').value.trim();
 
-    document
-        .querySelectorAll('.range-item')
-        .forEach(row => {
-
-            let start =
-                row.querySelector(
-                    '.inp-start'
-                ).value.trim();
-
-            let end =
-                row.querySelector(
-                    '.inp-end'
-                ).value.trim();
-
-            let set =
-                row.querySelector(
-                    '.inp-set'
-                ).value.trim();
-
-            if (
-                start &&
-                end &&
-                set
-            ) {
-
-                ranges.push({
-                    start: parseInt(start),
-                    end: parseInt(end),
-                    set: parseInt(set)
-                });
-            }
-        });
-
-
-    /* ============================================
-       COPY FORM VALUES
-    ============================================ */
+        if (start && end && set) {
+            ranges.push({
+                start: parseInt(start),
+                end: parseInt(end),
+                set: parseInt(set)
+            });
+        }
+    });
 
     let copiedMaster = {
-
         name: newDNo,
-
         designNo: newDNo,
-
-        weftWidth:
-            document.getElementById(
-                'infoWeftWidth'
-            ).value.trim(),
-
-        weftCount:
-            document.getElementById(
-                'infoWeft1'
-            ).value.trim(),
-
-        weft2:
-            document.getElementById(
-                'infoWeft2'
-            ).value.trim(),
-
-        weftPick:
-            document.getElementById(
-                'infoPick'
-            ).value.trim(),
-
-        weftMtrs:
-            document.getElementById(
-                'infoWeftMtrs'
-            ).value.trim(),
-
-        weaveType:
-            document.getElementById(
-                'infoWeave'
-            ).value.trim(),
-
-        weftLines:
-            JSON.parse(
-                JSON.stringify(lines)
-            ),
-
-        weftRanges:
-            JSON.parse(
-                JSON.stringify(ranges)
-            ),
-
+        weftWidth: document.getElementById('infoWeftWidth').value.trim(),
+        weftCount: document.getElementById('infoWeft1').value.trim(),
+        weft2: document.getElementById('infoWeft2').value.trim(),
+        weftPick: document.getElementById('infoPick').value.trim(),
+        weftMtrs: document.getElementById('infoWeftMtrs').value.trim(),
+        weaveType: document.getElementById('infoWeave').value.trim(),
+        weftLines: JSON.parse(JSON.stringify(lines)),
+        weftRanges: JSON.parse(JSON.stringify(ranges)),
         status: 'running'
     };
-
-
-    /* ============================================
-       SAVE NEW DESIGN LOCALLY
-    ============================================ */
 
     masters.push(copiedMaster);
 
@@ -2216,146 +1936,54 @@ async function copyToNewDesign() {
 
     preDesignList.push(newDNo);
 
-    localStorage.setItem(
-        'pre_design_numbers',
-        JSON.stringify(preDesignList)
-    );
+    localStorage.setItem('pre_design_numbers', JSON.stringify(preDesignList));
+    localStorage.setItem('design_masters_data', JSON.stringify(masters));
 
-    localStorage.setItem(
-        'design_masters_data',
-        JSON.stringify(masters)
-    );
-
-
-    /* ============================================
-       COPY DESIGN SPEC
-    ============================================ */
-
-    let cleanCurrent =
-        cleanDesignName(currentDNo);
-
-    let currentSpecKey =
-        Object.keys(specs).find(
-            k =>
-                cleanDesignName(k) ===
-                cleanCurrent
-        );
+    let cleanCurrent = cleanDesignName(currentDNo);
+    let currentSpecKey = Object.keys(specs).find(k => cleanDesignName(k) === cleanCurrent);
 
     let copiedSpec = {};
 
-    if (
-        currentSpecKey &&
-        specs[currentSpecKey]
-    ) {
-
-        copiedSpec =
-            JSON.parse(
-                JSON.stringify(
-                    specs[currentSpecKey]
-                )
-            );
+    if (currentSpecKey && specs[currentSpecKey]) {
+        copiedSpec = JSON.parse(JSON.stringify(specs[currentSpecKey]));
     }
 
     copiedSpec.status = 'running';
-
-    copiedSpec.weftMtrs =
-        document.getElementById(
-            'infoWeftMtrs'
-        ).value.trim();
-
-    copiedSpec.weft =
-        document.getElementById(
-            'infoWeft1'
-        ).value.trim();
-
-    copiedSpec.weftCount =
-        document.getElementById(
-            'infoWeft1'
-        ).value.trim();
-
-    copiedSpec.weft2 =
-        document.getElementById(
-            'infoWeft2'
-        ).value.trim();
+    copiedSpec.weftMtrs = document.getElementById('infoWeftMtrs').value.trim();
+    copiedSpec.weft = document.getElementById('infoWeft1').value.trim();
+    copiedSpec.weftCount = document.getElementById('infoWeft1').value.trim();
+    copiedSpec.weft2 = document.getElementById('infoWeft2').value.trim();
 
     specs[newDNo] = copiedSpec;
 
-    localStorage.setItem(
-        'design_specs',
-        JSON.stringify(specs)
-    );
-
-
-    /* ============================================
-       FIREBASE SYNC
-    ============================================ */
+    localStorage.setItem('design_specs', JSON.stringify(specs));
 
     try {
-
         if (window.firebaseSave) {
-
-            await window.firebaseSave(
-                'pre_design_numbers',
-                preDesignList
-            );
-
-            await window.firebaseSave(
-                'design_masters_data',
-                masters
-            );
-
-            await window.firebaseSave(
-                'design_specs',
-                specs
-            );
+            await window.firebaseSave('pre_design_numbers', preDesignList);
+            await window.firebaseSave('design_masters_data', masters);
+            await window.firebaseSave('design_specs', specs);
         }
 
         if (window.firebaseSaveIndividual) {
-
-            await window.firebaseSaveIndividual(
-                newDNo,
-                specs[newDNo]
-            );
+            await window.firebaseSaveIndividual(newDNo, specs[newDNo]);
         }
-
     } catch (error) {
-
-        console.error(
-            "Copy Design Firebase Error:",
-            error
-        );
-
-        alert(
-            "Design local-ஆக copy செய்யப்பட்டது. ஆனால் Cloud sync fail ஆனது. Internet/Firebase connection check pannunga."
-        );
+        console.error("Copy Design Firebase Error:", error);
+        alert("Design local-ஆக copy செய்யப்பட்டது. ஆனால் Cloud sync fail ஆனது. Internet/Firebase connection check pannunga.");
     }
 
+    const option = document.createElement('option');
+    option.text = newDNo;
+    option.value = newDNo;
+    select.add(option);
+    select.value = newDNo;
 
-    /* ============================================
-       UPDATE UI
-    ============================================ */
-
-    const designElement = document.getElementById('designNo');
-    if (designElement) {
-        designElement.value = newDNo;
-        const datalist = document.getElementById('designList');
-        if (datalist) {
-            const option = document.createElement('option');
-            option.value = newDNo;
-            datalist.appendChild(option);
-        }
-    }
-
-    localStorage.setItem(
-        'selected_design_number',
-        newDNo
-    );
+    localStorage.setItem('selected_design_number', newDNo);
 
     loadWeftDesignData();
 
-    alert(
-        `✅ '${currentDNo}' → '${newDNo}'\n\nWeft Pattern முழுவதும் copy செய்யப்பட்டது.\n\nதேவைப்பட்டால் Colour / Picks / Set மாற்றி Save செய்யலாம்.`
-    );
+    alert(`✅ '${currentDNo}' → '${newDNo}'\n\nWeft Pattern முழுவதும் copy செய்யப்பட்டது.\n\nதேவைப்பட்டால் Colour / Picks / Set மாற்றி Save செய்யலாம்.`);
 }
 
 
@@ -2481,7 +2109,6 @@ function addWeftLine(
     picks = '',
     insertAfterElem = null
 ) {
-    // 🟢 NEW: Auto-fill the count from General Specs by default, but it remains editable! 🟢
     if (!count) {
         const w1 = document.getElementById('infoWeft1');
         if (w1 && w1.value) {
@@ -2541,22 +2168,12 @@ function addWeftLine(
         </div>
     `;
 
-
-    /* ============================================
-       COLOR BLUR
-    ============================================ */
-
     row.querySelector(
         '.inp-color'
     ).addEventListener(
         'blur',
         refreshBulkColorDropdown
     );
-
-
-    /* ============================================
-       PICK ENTER
-    ============================================ */
 
     row.querySelector(
         '.inp-picks'
@@ -2598,22 +2215,12 @@ function addWeftLine(
         }
     );
 
-
-    /* ============================================
-       PICK CALCULATION
-    ============================================ */
-
     row.querySelector(
         '.inp-picks'
     ).addEventListener(
         'input',
         calculateWeftValues
     );
-
-
-    /* ============================================
-       INSERT
-    ============================================ */
 
     row.querySelector(
         '.btn-insert-small'
@@ -2629,11 +2236,6 @@ function addWeftLine(
             );
         }
     );
-
-
-    /* ============================================
-       DELETE
-    ============================================ */
 
     row.querySelector(
         '.btn-del-small'
@@ -2671,11 +2273,6 @@ function addWeftLine(
         }
     );
 
-
-    /* ============================================
-       INSERT INTO DOM
-    ============================================ */
-
     if (
         insertAfterElem &&
         insertAfterElem.nextSibling
@@ -2690,7 +2287,6 @@ function addWeftLine(
 
         container.appendChild(row);
     }
-
 
     updateLineNumbers();
     calculateWeftValues();
@@ -2756,7 +2352,6 @@ function addWeftRange(
         );
     });
 
-
     row.querySelector(
         '.inp-set'
     ).addEventListener(
@@ -2806,7 +2401,6 @@ function addWeftRange(
             calculateWeftValues();
         }
     );
-
 
     container.appendChild(row);
 
@@ -3520,11 +3114,6 @@ async function saveWeftDesign() {
 
     } else {
 
-        /*
-         * Preserve existing fields that may be used
-         * by other modules.
-         */
-
         masters[idx] = {
             ...masters[idx],
             ...masterData
@@ -3975,22 +3564,24 @@ function editDesignPattern(dNo) {
     );
 
     let select = document.getElementById('designNo');
-    
-    let datalist = document.getElementById('designList');
-    if(datalist) {
-        let optionExists = Array.from(datalist.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
-        if(!optionExists) {
-            let newOption = document.createElement('option');
-            newOption.value = dNo;
-            datalist.appendChild(newOption);
-        }
+    if (!select) return;
+
+    let optionExists = Array.from(select.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if(!optionExists) {
+        let newOption = document.createElement('option');
+        newOption.value = dNo;
+        newOption.textContent = dNo;
+        select.appendChild(newOption);
     }
 
-    if (select) {
+    let exactOption = Array.from(select.options).find(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if (exactOption) {
+        select.value = exactOption.value;
+    } else {
         select.value = dNo;
     }
 
-    localStorage.setItem('selected_design_number', dNo);
+    localStorage.setItem('selected_design_number', select.value);
 
     loadWeftDesignData();
 

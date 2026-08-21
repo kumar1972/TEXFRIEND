@@ -270,7 +270,6 @@
         width: 100%;
     }
 
-    .input-group-btn input,
     .input-group-btn select {
         flex: 1;
         background: #FFFFFF;
@@ -445,7 +444,7 @@
     }
 
     .btn-preview {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        background: linear-gradient(135deg, #32F6, #1D4ED8);
         box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
     }
 
@@ -455,7 +454,7 @@
     }
 
     .btn-list {
-        background: linear-gradient(135deg, #F59E0B, #D97706);
+        background: linear-gradient(135deg, #F50B, #D97708);
         box-shadow: 0 6px 15px rgba(245, 158,11,0.25);
     }
 
@@ -737,9 +736,10 @@
             <label>Design Number</label>
 
             <div class="input-group-btn">
-                <!-- 🟢 Editable Input with Datalist 🟢 -->
-                <input type="text" id="designNo" list="designList" placeholder="Select or type Design No" onchange="loadDesignData()" autocomplete="off">
-                <datalist id="designList"></datalist>
+
+                <select id="designNo" onchange="loadDesignData()">
+                    <option value="">Select Design No</option>
+                </select>
 
                 <button class="btn-copy-design"
                         onclick="copyToNewDesign()"
@@ -772,14 +772,12 @@
 
             <div class="form-group">
                 <label>Fabric Type</label>
-                <!-- 🟢 Editable Input with Datalist 🟢 -->
-                <input type="text" id="infoType" list="fabricTypeList" value="Plain" placeholder="Select or Type">
-                <datalist id="fabricTypeList">
-                    <option value="Plain"></option>
-                    <option value="Twill"></option>
-                    <option value="Dobby"></option>
-                    <option value="Seersucker"></option>
-                </datalist>
+                <select id="infoType">
+                    <option value="Plain">Plain</option>
+                    <option value="Twill">Twill</option>
+                    <option value="Dobby">Dobby</option>
+                    <option value="Seersucker">Seersucker</option>
+                </select>
             </div>
 
         </div>
@@ -797,6 +795,7 @@
                 <input type="text" id="infoCount2" placeholder="C2">
             </div>
 
+            <!-- 🟢 NEW: Weft 1 and Weft 2 Added Here 🟢 -->
             <div class="form-group">
                 <label>Weft 1</label>
                 <input type="text" id="infoWeft1" placeholder="W1">
@@ -916,6 +915,7 @@
             👁️ Preview
         </button>
 
+        <!-- 🟢 FIXED SAVE BUTTON HERE 🟢 -->
         <button class="btn-main btn-save" id="saveBtnTxt"
                 onclick="saveWarpDesign(); update3DPreviewData()">
             💾 Save
@@ -1297,7 +1297,7 @@ function loadBitmapImage() {
 
 
 /* ============================================================
-   DESIGN DROPDOWN (UPGRADED TO DATALIST)
+   DESIGN DROPDOWN
 ============================================================ */
 
 function loadDesignDropdown() {
@@ -1314,53 +1314,100 @@ function loadDesignDropdown() {
     const partyOrders =
         getLocalArray('party_orders_data');
 
+
     const allDesigns = new Set();
 
+
     preDesigns.forEach(function (d) {
+
         if (d !== null && d !== undefined && d !== '') {
             allDesigns.add(d);
         }
+
     });
 
+
     designMasters.forEach(function (d) {
+
         if (!d || typeof d !== 'object') return;
-        const value = d.name || d.designNo;
+
+        const value =
+            d.name || d.designNo;
+
         if (value) {
             allDesigns.add(value);
         }
+
     });
 
+
     Object.keys(designSpecs).forEach(function (k) {
+
         if (k) {
             allDesigns.add(k);
         }
+
     });
 
+
     partyOrders.forEach(function (o) {
+
         if (!o || typeof o !== 'object') return;
-        const value = o.designNumber || o.designNo;
+
+        const value =
+            o.designNumber ||
+            o.designNo;
+
         if (value) {
             allDesigns.add(value);
         }
+
     });
 
-    const datalist = document.getElementById('designList');
-    if (datalist) {
-        datalist.innerHTML = '';
-        Array.from(allDesigns).filter(Boolean).forEach(function (d) {
-            const option = document.createElement('option');
+
+    const select =
+        document.getElementById('designNo');
+
+    if (!select) return;
+
+
+    select.innerHTML =
+        '<option value="">Select Design No</option>';
+
+
+    Array.from(allDesigns)
+        .filter(Boolean)
+        .forEach(function (d) {
+
+            const option =
+                document.createElement('option');
+
             option.value = d;
-            datalist.appendChild(option);
+            option.textContent = d;
+
+            select.appendChild(option);
+
         });
-    }
 
-    const activeDesign = localStorage.getItem('selected_design_number');
-    const designElement = document.getElementById('designNo');
 
-    if (activeDesign && Array.from(allDesigns).some(d => cleanDesignName(d) === cleanDesignName(activeDesign))) {
-        if (designElement) designElement.value = activeDesign;
+    const activeDesign =
+        localStorage.getItem('selected_design_number');
+
+
+    if (
+        activeDesign &&
+        Array.from(allDesigns).some(function (d) {
+            return cleanDesignName(d) ===
+                   cleanDesignName(activeDesign);
+        })
+    ) {
+
+        select.value = activeDesign;
+
         loadDesignData();
+
     } else {
+
         loadBitmapImage();
     }
 }
@@ -1429,10 +1476,13 @@ function loadDesignData() {
 
     if (!designElement) return;
 
+
     const dNo =
         designElement.value;
 
+
     loadBitmapImage();
+
 
     if (dNo) {
         localStorage.setItem(
@@ -1441,11 +1491,13 @@ function loadDesignData() {
         );
     }
 
+
     const linesContainer =
         document.getElementById('warpLinesContainer');
 
     const rangesContainer =
         document.getElementById('warpRangesContainer');
+
 
     if (linesContainer) {
         linesContainer.innerHTML = '';
@@ -1454,6 +1506,7 @@ function loadDesignData() {
     if (rangesContainer) {
         rangesContainer.innerHTML = '';
     }
+
 
     const saveBtn =
         document.getElementById('saveBtnTxt');
@@ -1469,6 +1522,7 @@ function loadDesignData() {
     document.getElementById('infoPick').value = '';
     document.getElementById('infoWidth').value = '';
 
+
     const topCheckbox =
         document.getElementById('top_completed_status');
 
@@ -1476,55 +1530,88 @@ function loadDesignData() {
         topCheckbox.checked = false;
     }
 
+
     if (!dNo) {
+
         if (saveBtn) {
             saveBtn.innerText = "💾 Save";
         }
+
         currentBaseSpecs = {};
+
         loadDefaultRow();
         refreshBulkColorDropdown();
+
         return;
     }
 
-    const cleanDNo = cleanDesignName(dNo);
-    const specs = getLocalObject('design_specs');
 
-    const specKey = Object.keys(specs).find(function (k) {
-        return cleanDesignName(k) === cleanDNo;
-    }) || dNo;
+    const cleanDNo =
+        cleanDesignName(dNo);
 
-    currentBaseSpecs = specs[specKey] || {};
 
-    const orders = getLocalArray('party_orders_data');
-    const matchedOrder = orders.find(function (o) {
-        return cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo;
-    }) || null;
+    const specs =
+        getLocalObject('design_specs');
 
-    const masters = getLocalArray('design_masters_data');
-    const found = masters.find(function (m) {
-        return cleanDesignName(m.name || m.designNo) === cleanDNo;
-    }) || null;
 
-    const specStatus = (
-        currentBaseSpecs.status ||
-        (matchedOrder && matchedOrder.status) ||
-        (found && found.status) ||
-        ''
-    ).toLowerCase();
+    const specKey =
+        Object.keys(specs).find(function (k) {
+
+            return cleanDesignName(k) === cleanDNo;
+
+        }) || dNo;
+
+
+    currentBaseSpecs =
+        specs[specKey] || {};
+
+    const orders =
+        getLocalArray('party_orders_data');
+
+    const matchedOrder =
+        orders.find(function (o) {
+            return cleanDesignName(
+                o.designNumber ||
+                o.designNo ||
+                o.designName
+            ) === cleanDNo;
+        }) || null;
+
+    const masters =
+        getLocalArray('design_masters_data');
+
+    const found =
+        masters.find(function (m) {
+            return cleanDesignName(
+                m.name ||
+                m.designNo
+            ) === cleanDNo;
+        }) || null;
+
+    const specStatus =
+        (
+            currentBaseSpecs.status ||
+            (matchedOrder && matchedOrder.status) ||
+            (found && found.status) ||
+            ''
+        ).toLowerCase();
 
     if (specStatus === 'completed') {
-        const cb = document.getElementById('top_completed_status');
+        const cb =
+            document.getElementById(
+                'top_completed_status'
+            );
         if (cb) {
             cb.checked = true;
         }
     }
 
-    // 🟢 FIXED MAPPING: Pull EXACT values stored in Design Master 🟢
+    // 🟢 NEW LOGIC: Pull EXACT values stored in Design Master / Party Orders / Yarn Calc 🟢
     
     // Warp 1 & Warp 2
     let c1Resolved =
         (matchedOrder && matchedOrder.baseBeamCount) ||
-        (found && (found.count1 || found.warp1)) ||
+        (found && found.warp1) ||
         currentBaseSpecs.baseBeamCount ||
         currentBaseSpecs.warp ||
         currentBaseSpecs.count1 ||
@@ -1532,7 +1619,7 @@ function loadDesignData() {
 
     let c2Resolved =
         (matchedOrder && matchedOrder.topBeamCount) ||
-        (found && (found.count2 || found.warp2)) ||
+        (found && found.warp2) ||
         currentBaseSpecs.topBeamCount ||
         currentBaseSpecs.warp2 ||
         currentBaseSpecs.count2 ||
@@ -1553,6 +1640,7 @@ function loadDesignData() {
         currentBaseSpecs.weft2 ||
         '';
 
+    // Onloom Reed, Pick, Width (Pull directly from saved sources without overriding via formula)
     let onloomReedResolved =
         (matchedOrder && matchedOrder.onloomReed) ||
         (found && found.onloomReed) ||
@@ -1729,68 +1817,39 @@ function calculateTopBeam() {
 
 
 /* ============================================================
-   COPY DESIGN (UPGRADED FOR DATALIST)
+   COPY DESIGN
 ============================================================ */
 
 async function copyToNewDesign() {
 
-    const designElement =
-        document.getElementById('designNo');
+    const select = document.getElementById('designNo');
+    if (!select) return;
 
-    if (!designElement) return;
-
-
-    const currentDNo =
-        designElement.value;
-
+    const currentDNo = select.value;
 
     if (!currentDNo) {
-
-        alert(
-            "முதலில் எந்த டிசைனை காப்பி செய்ய வேண்டுமோ அதை செலக்ட் செய்யுங்கள் ப்ரோ!"
-        );
-
+        alert("முதலில் எந்த டிசைனை காப்பி செய்ய வேண்டுமோ அதை செலக்ட் செய்யுங்கள் ப்ரோ!");
         return;
     }
 
-
-    let newDNo =
-        prompt(
-            `'${currentDNo}' டிசைனை காப்பி செய்கிறீர்கள்.\n\nபுதிய டிசைன் நம்பரை (New Design Number) உள்ளிடவும்:`
-        );
-
+    let newDNo = prompt(`'${currentDNo}' டிசைனை காப்பி செய்கிறீர்கள்.\n\nபுதிய டிசைன் நம்பரை (New Design Number) உள்ளிடவும்:`);
 
     if (!newDNo || newDNo.trim() === '') {
         return;
     }
 
+    newDNo = newDNo.trim();
 
-    newDNo =
-        newDNo.trim();
+    const preDesignList = getLocalArray('pre_design_numbers');
 
-
-    const preDesignList =
-        getLocalArray('pre_design_numbers');
-
-
-    const alreadyExists =
-        preDesignList.some(function (d) {
-
-            return cleanDesignName(d) ===
-                   cleanDesignName(newDNo);
-
-        });
-
+    const alreadyExists = preDesignList.some(function (d) {
+        return cleanDesignName(d) === cleanDesignName(newDNo);
+    });
 
     if (alreadyExists) {
-
-        alert(
-            "இந்த டிசைன் நம்பர் ஏற்கனவே உள்ளது! வேறு நம்பரை கொடுக்கவும்."
-        );
-
+        alert("இந்த டிசைன் நம்பர் ஏற்கனவே உள்ளது! வேறு நம்பரை கொடுக்கவும்.");
         return;
     }
-
 
     preDesignList.push(newDNo);
 
@@ -1799,62 +1858,34 @@ async function copyToNewDesign() {
         JSON.stringify(preDesignList)
     );
 
-
     try {
-
         if (window.firebaseSave) {
-
-            await window.firebaseSave(
-                'pre_design_numbers',
-                preDesignList
-            );
+            await window.firebaseSave('pre_design_numbers', preDesignList);
         }
-
     } catch (e) {
-
-        console.error(
-            'Firebase pre-design save error:',
-            e
-        );
+        console.error('Firebase pre-design save error:', e);
     }
 
-
-    if (designElement) {
-        designElement.value = newDNo;
-        const datalist = document.getElementById('designList');
-        if (datalist) {
-            const option = document.createElement('option');
-            option.value = newDNo;
-            datalist.appendChild(option);
-        }
+    if (select) {
+        const option = document.createElement('option');
+        option.text = newDNo;
+        option.value = newDNo;
+        select.add(option);
+        select.value = newDNo;
     }
 
-    localStorage.setItem(
-        'selected_design_number',
-        newDNo
-    );
-
+    localStorage.setItem('selected_design_number', newDNo);
 
     currentBaseSpecs = {};
 
+    document.getElementById('saveBtnTxt').innerText = "💾 Save";
 
-    document.getElementById('saveBtnTxt').innerText =
-        "💾 Save";
-
-
-    const cb =
-        document.getElementById(
-            'top_completed_status'
-        );
-
+    const cb = document.getElementById('top_completed_status');
     if (cb) {
         cb.checked = false;
     }
 
-
-    alert(
-        `✅ '${newDNo}' டிசைனுக்கு வெற்றிகரமாக காப்பி செய்யப்பட்டது!\n\nஇப்போது நீங்கள் 'Bulk Color Changer' மூலம் கலரை மாற்றிவிட்டு 'Save' பட்டனை அழுத்தவும்.`
-    );
+    alert(`✅ '${newDNo}' டிசைனுக்கு வெற்றிகரமாக காப்பி செய்யப்பட்டது!\n\nஇப்போது நீங்கள் 'Bulk Color Changer' மூலம் கலரை மாற்றிவிட்டு 'Save' பட்டனை அழுத்தவும்.`);
 }
 
 
@@ -1979,7 +2010,7 @@ function applyBulkColorChange() {
 
 
 /* ============================================================
-   ADD WARP LINE (🟢 ENHANCED AUTO-FILL FOR COUNT 🟢)
+   ADD WARP LINE
 ============================================================ */
 
 function addWarpLine(
@@ -3242,8 +3273,22 @@ function editDesignPattern(dNo) {
 
     if (!select) return;
 
-    // 🟢 Handled gracefully for the input list 🟢
-    select.value = dNo;
+    let optionExists = Array.from(select.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if(!optionExists) {
+        let newOption = document.createElement('option');
+        newOption.value = dNo;
+        newOption.textContent = dNo;
+        select.appendChild(newOption);
+    }
+
+    let exactOption = Array.from(select.options).find(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+    if (exactOption) {
+        select.value = exactOption.value;
+    } else {
+        select.value = dNo;
+    }
+
+    localStorage.setItem('selected_design_number', select.value);
 
     loadDesignData();
 
@@ -3518,7 +3563,7 @@ function previewPattern() {
 
     let currentLinesInCol1 = 0;
 
-    const MAX_LINES_COL1 = 45;
+    const MAX_LINES_COL1 = 35;
 
 
     let groundTotal = 0;
