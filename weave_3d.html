@@ -272,7 +272,6 @@ canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 4px 12px rgba(0,0,0
         <button type="button" class="btn-grid-action" onclick="addCol()">➕ Column</button>
         <button type="button" class="btn-grid-action" onclick="addRowTop()">➕ Row</button>
         <button type="button" class="btn-grid-action" onclick="duplicateSet()">⏬ Duplicate</button>
-        <!-- 🟢 NEW CAMERA SCAN FEATURE 🟢 -->
         <button type="button" class="btn-grid-action" style="background:#d97706; color:white; border:none;" onclick="triggerGraphScan()" title="கிராஃப் பேப்பரை ஸ்கேன் செய்ய">📸 Scan Graph</button>
       </div>
       <div class="matrix-grid-container" id="matrixGridContainer"></div>
@@ -477,7 +476,6 @@ function duplicateSet(){
  weavePatterns.custom=m.slice(p[0]-1,p[1]).map(r=>[...r]).concat(m);buildGridEditor();draw3DWeave()
 }
 
-// 🟢 NEW: CAMERA / IMAGE SCANNER FUNCTION 🟢
 function triggerGraphScan() {
   let inp = document.createElement('input');
   inp.type = 'file';
@@ -526,7 +524,6 @@ function processGraphImage(img) {
       let py = Math.floor(y * cellH + cellH/2);
       let pixel = ctx.getImageData(px, py, 1, 1).data;
       let brightness = (pixel[0] + pixel[1] + pixel[2]) / 3;
-      // Darker pixels (<128) mean Warp Up (1), Lighter means Weft Up (0)
       rowArr.push(brightness < 128 ? 1 : 0);
     }
     newMatrix.push(rowArr);
@@ -588,6 +585,8 @@ function updateYarnSummary(type){
  if(a)a.textContent=filled+" / "+count;
  if(h)h.textContent=type==="warp"?"Ends உள்ளிடவும்":"Picks உள்ளிடவும்";
 }
+
+/* 🟢 UPDATED LOGIC BUG FIX 🟢 */
 function calculateWarpOrders(){
  let total=0;
  for(let i=1;i<=currentWarpCount;i++){
@@ -612,7 +611,15 @@ function openGraphPrintPreview(){
 function closeGraphPrintPreview(){document.body.classList.remove("printing-graph");document.getElementById("printModalBox").style.display="none"}
 function hexToRgb(h){h=h||"#ffffff";return{r:parseInt(h.slice(1,3),16)||255,g:parseInt(h.slice(3,5),16)||255,b:parseInt(h.slice(5,7),16)||255}}
 function shadeColor(x,f){return`rgb(${Math.min(255,Math.max(0,Math.round(x.r*f)))},${Math.min(255,Math.max(0,Math.round(x.g*f)))},${Math.min(255,Math.max(0,Math.round(x.b*f)))})`}
-function isWarpUp(r,c,t){let m=weavePatterns[t]||weavePatterns.plain;return m[r%m.length][c%m[0].length]===1}
+
+/* 🟢 FIX APPLIED HERE 🟢 */
+function isWarpUp(r,c,t){
+ let m=weavePatterns[t]||weavePatterns.plain;
+ let rowIdx=(m.length-1)-(r%m.length);
+ let colIdx=c%m[0].length;
+ return m[rowIdx][colIdx]===1;
+}
+
 function draw3DWeave(){
  let canvas=document.getElementById("weaveCanvas"),ctx=canvas.getContext("2d"),warp=[],weft=[];
  for(let i=1;i<=currentWarpCount;i++){let c=document.getElementById("wC"+i),e=document.getElementById("wE"+i);if(c&&e){let rgb=hexToRgb(c.value),n=parseInt(e.value)||0;for(let j=0;j<n;j++)warp.push(rgb)}}
