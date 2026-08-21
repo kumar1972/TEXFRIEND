@@ -270,6 +270,7 @@
         width: 100%;
     }
 
+    .input-group-btn input,
     .input-group-btn select {
         flex: 1;
         background: #FFFFFF;
@@ -658,39 +659,28 @@
             margin: 10mm;
         }
 
-        html, body {
-            height: auto !important;
-            min-height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #FFFFFF !important;
-            color: #000000 !important;
+        body * {
+            visibility: hidden !important;
         }
 
-        /* 🟢 தேவையற்ற அனைத்தையும் மறைக்கிறோம் 🟢 */
-        .main-card, 
-        .top-nav, 
-        .no-print, 
-        .modal-header,
-        #savedListModal,
-        #fullscreenModal {
-            display: none !important;
-        }
-
-        /* 🟢 Preview Modal மட்டும் Print ஆக வேண்டும் 🟢 */
-        #previewModal {
-            position: static !important;
-            display: block !important;
-            width: 100% !important;
-            height: auto !important;
-            background: #FFFFFF !important;
+        #previewModal,
+        #previewModal * {
             visibility: visible !important;
-            opacity: 1 !important;
+        }
+
+        #previewModal {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: #FFFFFF !important;
+            display: block !important;
+            z-index: 999999 !important;
         }
 
         .overlay-modal {
             background: #FFFFFF !important;
-            backdrop-filter: none !important;
         }
 
         .modal-content {
@@ -699,25 +689,22 @@
             height: auto !important;
             box-shadow: none !important;
             border: none !important;
-            overflow: visible !important;
-            transform: none !important;
+        }
+
+        .no-print {
+            display: none !important;
         }
 
         .modal-body {
             background: #FFFFFF !important;
             padding: 0 !important;
             width: 100% !important;
-            max-width: 100% !important;
-            overflow: visible !important;
         }
 
-        table {
-            page-break-inside: auto;
-        }
-        
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
+        html,
+        body {
+            background: #FFFFFF !important;
+            color: #000000 !important;
         }
     }
 </style>
@@ -740,7 +727,7 @@
         </div>
     </div>
 
-    <h2 class="page-title" style="color: #2F4F38;">📐 Warp Pattern Entry</h2>
+    <h2 class="page-title">📐 Warp Pattern Entry</h2>
 
     <div class="form-section" style="margin-top: 5px;">
 
@@ -750,10 +737,9 @@
             <label>Design Number</label>
 
             <div class="input-group-btn">
-
-                <select id="designNo" onchange="loadDesignData()">
-                    <option value="">Select Design No</option>
-                </select>
+                <!-- 🟢 Editable Input with Datalist 🟢 -->
+                <input type="text" id="designNo" list="designList" placeholder="Select or type Design No" onchange="loadDesignData()" autocomplete="off">
+                <datalist id="designList"></datalist>
 
                 <button class="btn-copy-design"
                         onclick="copyToNewDesign()"
@@ -786,12 +772,14 @@
 
             <div class="form-group">
                 <label>Fabric Type</label>
-                <select id="infoType">
-                    <option value="Plain">Plain</option>
-                    <option value="Twill">Twill</option>
-                    <option value="Dobby">Dobby</option>
-                    <option value="Seersucker">Seersucker</option>
-                </select>
+                <!-- 🟢 Editable Input with Datalist 🟢 -->
+                <input type="text" id="infoType" list="fabricTypeList" value="Plain" placeholder="Select or Type">
+                <datalist id="fabricTypeList">
+                    <option value="Plain"></option>
+                    <option value="Twill"></option>
+                    <option value="Dobby"></option>
+                    <option value="Seersucker"></option>
+                </datalist>
             </div>
 
         </div>
@@ -1309,7 +1297,7 @@ function loadBitmapImage() {
 
 
 /* ============================================================
-   DESIGN DROPDOWN
+   DESIGN DROPDOWN (UPGRADED TO DATALIST)
 ============================================================ */
 
 function loadDesignDropdown() {
@@ -1326,100 +1314,53 @@ function loadDesignDropdown() {
     const partyOrders =
         getLocalArray('party_orders_data');
 
-
     const allDesigns = new Set();
 
-
     preDesigns.forEach(function (d) {
-
         if (d !== null && d !== undefined && d !== '') {
             allDesigns.add(d);
         }
-
     });
 
-
     designMasters.forEach(function (d) {
-
         if (!d || typeof d !== 'object') return;
-
-        const value =
-            d.name || d.designNo;
-
+        const value = d.name || d.designNo;
         if (value) {
             allDesigns.add(value);
         }
-
     });
 
-
     Object.keys(designSpecs).forEach(function (k) {
-
         if (k) {
             allDesigns.add(k);
         }
-
     });
 
-
     partyOrders.forEach(function (o) {
-
         if (!o || typeof o !== 'object') return;
-
-        const value =
-            o.designNumber ||
-            o.designNo;
-
+        const value = o.designNumber || o.designNo;
         if (value) {
             allDesigns.add(value);
         }
-
     });
 
-
-    const select =
-        document.getElementById('designNo');
-
-    if (!select) return;
-
-
-    select.innerHTML =
-        '<option value="">Select Design No</option>';
-
-
-    Array.from(allDesigns)
-        .filter(Boolean)
-        .forEach(function (d) {
-
-            const option =
-                document.createElement('option');
-
+    const datalist = document.getElementById('designList');
+    if (datalist) {
+        datalist.innerHTML = '';
+        Array.from(allDesigns).filter(Boolean).forEach(function (d) {
+            const option = document.createElement('option');
             option.value = d;
-            option.textContent = d;
-
-            select.appendChild(option);
-
+            datalist.appendChild(option);
         });
+    }
 
+    const activeDesign = localStorage.getItem('selected_design_number');
+    const designElement = document.getElementById('designNo');
 
-    const activeDesign =
-        localStorage.getItem('selected_design_number');
-
-
-    if (
-        activeDesign &&
-        Array.from(allDesigns).some(function (d) {
-            return cleanDesignName(d) ===
-                   cleanDesignName(activeDesign);
-        })
-    ) {
-
-        select.value = activeDesign;
-
+    if (activeDesign && Array.from(allDesigns).some(d => cleanDesignName(d) === cleanDesignName(activeDesign))) {
+        if (designElement) designElement.value = activeDesign;
         loadDesignData();
-
     } else {
-
         loadBitmapImage();
     }
 }
@@ -1488,13 +1429,10 @@ function loadDesignData() {
 
     if (!designElement) return;
 
-
     const dNo =
         designElement.value;
 
-
     loadBitmapImage();
-
 
     if (dNo) {
         localStorage.setItem(
@@ -1503,13 +1441,11 @@ function loadDesignData() {
         );
     }
 
-
     const linesContainer =
         document.getElementById('warpLinesContainer');
 
     const rangesContainer =
         document.getElementById('warpRangesContainer');
-
 
     if (linesContainer) {
         linesContainer.innerHTML = '';
@@ -1518,7 +1454,6 @@ function loadDesignData() {
     if (rangesContainer) {
         rangesContainer.innerHTML = '';
     }
-
 
     const saveBtn =
         document.getElementById('saveBtnTxt');
@@ -1534,7 +1469,6 @@ function loadDesignData() {
     document.getElementById('infoPick').value = '';
     document.getElementById('infoWidth').value = '';
 
-
     const topCheckbox =
         document.getElementById('top_completed_status');
 
@@ -1542,85 +1476,55 @@ function loadDesignData() {
         topCheckbox.checked = false;
     }
 
-
     if (!dNo) {
-
         if (saveBtn) {
             saveBtn.innerText = "💾 Save";
         }
-
         currentBaseSpecs = {};
-
         loadDefaultRow();
         refreshBulkColorDropdown();
-
         return;
     }
 
+    const cleanDNo = cleanDesignName(dNo);
+    const specs = getLocalObject('design_specs');
 
-    const cleanDNo =
-        cleanDesignName(dNo);
+    const specKey = Object.keys(specs).find(function (k) {
+        return cleanDesignName(k) === cleanDNo;
+    }) || dNo;
 
+    currentBaseSpecs = specs[specKey] || {};
 
-    const specs =
-        getLocalObject('design_specs');
+    const orders = getLocalArray('party_orders_data');
+    const matchedOrder = orders.find(function (o) {
+        return cleanDesignName(o.designNumber || o.designNo || o.designName) === cleanDNo;
+    }) || null;
 
+    const masters = getLocalArray('design_masters_data');
+    const found = masters.find(function (m) {
+        return cleanDesignName(m.name || m.designNo) === cleanDNo;
+    }) || null;
 
-    const specKey =
-        Object.keys(specs).find(function (k) {
-
-            return cleanDesignName(k) === cleanDNo;
-
-        }) || dNo;
-
-
-    currentBaseSpecs =
-        specs[specKey] || {};
-
-    const orders =
-        getLocalArray('party_orders_data');
-
-    const matchedOrder =
-        orders.find(function (o) {
-            return cleanDesignName(
-                o.designNumber ||
-                o.designNo ||
-                o.designName
-            ) === cleanDNo;
-        }) || null;
-
-    const masters =
-        getLocalArray('design_masters_data');
-
-    const found =
-        masters.find(function (m) {
-            return cleanDesignName(
-                m.name ||
-                m.designNo
-            ) === cleanDNo;
-        }) || null;
-
-    const specStatus =
-        (
-            currentBaseSpecs.status ||
-            (matchedOrder && matchedOrder.status) ||
-            (found && found.status) ||
-            ''
-        ).toLowerCase();
+    const specStatus = (
+        currentBaseSpecs.status ||
+        (matchedOrder && matchedOrder.status) ||
+        (found && found.status) ||
+        ''
+    ).toLowerCase();
 
     if (specStatus === 'completed') {
-        const cb =
-            document.getElementById(
-                'top_completed_status'
-            );
+        const cb = document.getElementById('top_completed_status');
         if (cb) {
             cb.checked = true;
         }
     }
 
+    // 🟢 FIXED MAPPING: Pull EXACT values stored in Design Master 🟢
+    
+    // Warp 1 & Warp 2
     let c1Resolved =
         (matchedOrder && matchedOrder.baseBeamCount) ||
-        (found && found.warp1) ||
+        (found && (found.count1 || found.warp1)) ||
         currentBaseSpecs.baseBeamCount ||
         currentBaseSpecs.warp ||
         currentBaseSpecs.count1 ||
@@ -1628,13 +1532,14 @@ function loadDesignData() {
 
     let c2Resolved =
         (matchedOrder && matchedOrder.topBeamCount) ||
-        (found && found.warp2) ||
+        (found && (found.count2 || found.warp2)) ||
         currentBaseSpecs.topBeamCount ||
         currentBaseSpecs.warp2 ||
         currentBaseSpecs.count2 ||
         '';
     if (c2Resolved === '-') c2Resolved = '';
 
+    // Weft 1 & Weft 2
     let weft1Resolved =
         (matchedOrder && matchedOrder.weftCount) ||
         (found && (found.weftCount || found.weft)) ||
@@ -1824,7 +1729,7 @@ function calculateTopBeam() {
 
 
 /* ============================================================
-   COPY DESIGN
+   COPY DESIGN (UPGRADED FOR DATALIST)
 ============================================================ */
 
 async function copyToNewDesign() {
@@ -1914,23 +1819,15 @@ async function copyToNewDesign() {
     }
 
 
-    const select =
-        document.getElementById('designNo');
-
-
-    if (select) {
-
-        const option =
-            document.createElement('option');
-
-        option.text = newDNo;
-        option.value = newDNo;
-
-        select.add(option);
-
-        select.value = newDNo;
+    if (designElement) {
+        designElement.value = newDNo;
+        const datalist = document.getElementById('designList');
+        if (datalist) {
+            const option = document.createElement('option');
+            option.value = newDNo;
+            datalist.appendChild(option);
+        }
     }
-
 
     localStorage.setItem(
         'selected_design_number',
@@ -2082,7 +1979,7 @@ function applyBulkColorChange() {
 
 
 /* ============================================================
-   ADD WARP LINE
+   ADD WARP LINE (🟢 ENHANCED AUTO-FILL FOR COUNT 🟢)
 ============================================================ */
 
 function addWarpLine(
@@ -2092,6 +1989,13 @@ function addWarpLine(
     ends = '',
     insertAfterElem = null
 ) {
+    // 🟢 NEW: Auto-fill the count from General Specs by default, but it remains editable! 🟢
+    if (!count) {
+        const c1 = document.getElementById('infoCount1');
+        if (c1 && c1.value) {
+            count = c1.value;
+        }
+    }
 
     const container =
         document.getElementById(
@@ -3338,29 +3242,8 @@ function editDesignPattern(dNo) {
 
     if (!select) return;
 
-
-    const option =
-        Array.from(select.options)
-            .find(function (opt) {
-
-                return cleanDesignName(
-                    opt.value
-                ) === cleanDesignName(dNo);
-
-            });
-
-
-    if (option) {
-
-        select.value =
-            option.value;
-
-    } else {
-
-        select.value =
-            dNo;
-    }
-
+    // 🟢 Handled gracefully for the input list 🟢
+    select.value = dNo;
 
     loadDesignData();
 
@@ -3635,7 +3518,7 @@ function previewPattern() {
 
     let currentLinesInCol1 = 0;
 
-    const MAX_LINES_COL1 = 35;
+    const MAX_LINES_COL1 = 45;
 
 
     let groundTotal = 0;

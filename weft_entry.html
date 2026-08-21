@@ -205,8 +205,12 @@
             width: 100%;
         }
 
+        /* 🟢 input & select added here to support datalist 🟢 */
+        .input-group-btn input,
         .input-group-btn select {
             flex: 1;
+            background: #FFFFFF;
+            color: #1E2B23;
         }
 
         .btn-copy-design {
@@ -629,11 +633,6 @@
             transform: scale(1.1);
         }
 
-        /* ========================================================
-           PRINT FIX - ANDROID / CHROME PRINT PREVIEW
-           Prevents black page/background after the real content.
-           Only the preview content is printed.
-        ======================================================== */
         @media print {
             @page {
                 size: A4 portrait;
@@ -652,7 +651,6 @@
                 overflow: visible !important;
             }
 
-            /* Hide the ERP page and show only the preview modal. */
             body > * {
                 visibility: hidden !important;
             }
@@ -775,7 +773,6 @@
                 page-break-inside: auto;
             }
 
-            /* Keep the generated preview from inheriting the dark app background. */
             #previewContent,
             #previewContent > div,
             #previewContent > div > div {
@@ -878,9 +875,9 @@
             <label>Select Design Number</label>
 
             <div class="input-group-btn">
-                <select id="designNo" onchange="loadWeftDesignData()">
-                    <option value="">Select Design No</option>
-                </select>
+                <!-- 🟢 Editable Input with Datalist 🟢 -->
+                <input type="text" id="designNo" list="designList" placeholder="Select or type Design No" onchange="loadWeftDesignData()" autocomplete="off">
+                <datalist id="designList"></datalist>
 
                 <button
                     class="btn-copy-design"
@@ -932,9 +929,14 @@
 
             <div class="form-group">
                 <label>Weave</label>
-                <input type="text"
-                       id="infoWeave"
-                       placeholder="Weave">
+                <!-- 🟢 Editable Input with Datalist 🟢 -->
+                <input type="text" id="infoWeave" list="fabricTypeList" value="Plain" placeholder="Select or Type">
+                <datalist id="fabricTypeList">
+                    <option value="Plain"></option>
+                    <option value="Twill"></option>
+                    <option value="Dobby"></option>
+                    <option value="Seersucker"></option>
+                </datalist>
             </div>
 
         </div>
@@ -1045,7 +1047,6 @@
             👁️ Preview
         </button>
 
-        <!-- 🟢 இங்க Save Button-ல் update3DPreviewData() சேர்க்கப்பட்டுள்ளது 🟢 -->
         <button
             class="btn-main btn-save"
             onclick="saveWeftDesign(); update3DPreviewData()"
@@ -1274,7 +1275,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         loadDesignDropdown();
         
-        // 🟢 பிழை சரிசெய்யப்பட்டது: Design Select ஆகவில்லை என்றால் மட்டுமே காலியான பாக்ஸ் வரும்
         if (document.getElementById('designNo').value === "") {
             loadDefaultRow();
         }
@@ -1547,13 +1547,12 @@ function loadDesignDropdown() {
         });
     }
 
-    let select =
-        document.getElementById('designNo');
+    let select = document.getElementById('designNo');
+    let datalist = document.getElementById('designList');
 
-    if (!select) return;
+    if (!select || !datalist) return;
 
-    select.innerHTML =
-        '<option value="">Select Design No</option>';
+    datalist.innerHTML = '';
 
     Array.from(allDesigns)
         .filter(Boolean)
@@ -1564,20 +1563,12 @@ function loadDesignDropdown() {
             })
         )
         .forEach(d => {
-
-            let option =
-                document.createElement('option');
-
+            let option = document.createElement('option');
             option.value = d;
-            option.textContent = d;
-
-            select.appendChild(option);
+            datalist.appendChild(option);
         });
 
-    let activeDesign =
-        localStorage.getItem(
-            'selected_design_number'
-        );
+    let activeDesign = localStorage.getItem('selected_design_number');
 
     if (
         activeDesign &&
@@ -1588,14 +1579,12 @@ function loadDesignDropdown() {
         )
     ) {
 
-        select.value = Array.from(allDesigns)
-            .find(
-                d =>
-                    cleanDesignName(d) ===
-                    cleanDesignName(activeDesign)
-            );
-
+        select.value = Array.from(allDesigns).find(
+            d => cleanDesignName(d) === cleanDesignName(activeDesign)
+        );
         loadWeftDesignData();
+    } else {
+        loadBitmapImage();
     }
 }
 
@@ -1890,7 +1879,7 @@ function loadWeftDesignData() {
                 foundMaster.weftLines.forEach(l => {
             addWeftLine(
                 l.count || '',
-                l.color || l.colour || '', // color மற்றும் colour இரண்டையும் செக் செய்யும்
+                l.color || l.colour || '', 
                 l.picks || l.pick || ''
             );
         });
@@ -2346,14 +2335,16 @@ async function copyToNewDesign() {
        UPDATE UI
     ============================================ */
 
-    loadDesignDropdown();
-
-    let select =
-        document.getElementById(
-            'designNo'
-        );
-
-    select.value = newDNo;
+    const designElement = document.getElementById('designNo');
+    if (designElement) {
+        designElement.value = newDNo;
+        const datalist = document.getElementById('designList');
+        if (datalist) {
+            const option = document.createElement('option');
+            option.value = newDNo;
+            datalist.appendChild(option);
+        }
+    }
 
     localStorage.setItem(
         'selected_design_number',
@@ -2490,6 +2481,13 @@ function addWeftLine(
     picks = '',
     insertAfterElem = null
 ) {
+    // 🟢 NEW: Auto-fill the count from General Specs by default, but it remains editable! 🟢
+    if (!count) {
+        const w1 = document.getElementById('infoWeft1');
+        if (w1 && w1.value) {
+            count = w1.value;
+        }
+    }
 
     let container =
         document.getElementById(
@@ -2509,17 +2507,20 @@ function addWeftLine(
         <input
             type="text"
             class="inp-count"
-            placeholder="Count">
+            placeholder="Count"
+            value="${escapeHTML(count)}">
 
         <input
             type="text"
             class="inp-color"
-            placeholder="Colour">
+            placeholder="Colour"
+            value="${escapeHTML(color)}">
 
         <input
             type="number"
             class="inp-picks"
-            placeholder="Picks">
+            placeholder="Picks"
+            value="${escapeHTML(picks)}">
 
         <div class="action-cell-row">
 
@@ -2539,19 +2540,6 @@ function addWeftLine(
 
         </div>
     `;
-
-
-    row.querySelector(
-        '.inp-count'
-    ).value = count;
-
-    row.querySelector(
-        '.inp-color'
-    ).value = color;
-
-    row.querySelector(
-        '.inp-picks'
-    ).value = picks;
 
 
     /* ============================================
@@ -2736,17 +2724,20 @@ function addWeftRange(
         <input
             type="number"
             class="inp-start"
-            placeholder="Start">
+            placeholder="Start"
+            value="${escapeHTML(start)}">
 
         <input
             type="number"
             class="inp-end"
-            placeholder="End">
+            placeholder="End"
+            value="${escapeHTML(end)}">
 
         <input
             type="number"
             class="inp-set"
-            placeholder="Set">
+            placeholder="Set"
+            value="${escapeHTML(set)}">
 
         <button
             type="button"
@@ -2754,20 +2745,6 @@ function addWeftRange(
             ×
         </button>
     `;
-
-
-    row.querySelector(
-        '.inp-start'
-    ).value = start;
-
-    row.querySelector(
-        '.inp-end'
-    ).value = end;
-
-    row.querySelector(
-        '.inp-set'
-    ).value = set;
-
 
     row.querySelectorAll(
         'input'
@@ -3999,24 +3976,21 @@ function editDesignPattern(dNo) {
 
     let select = document.getElementById('designNo');
     
-    // Ensure option exists in dropdown
-    let optionExists = Array.from(select.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
-    if(!optionExists) {
-        let newOption = document.createElement('option');
-        newOption.value = dNo;
-        newOption.textContent = dNo;
-        select.appendChild(newOption);
+    let datalist = document.getElementById('designList');
+    if(datalist) {
+        let optionExists = Array.from(datalist.options).some(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
+        if(!optionExists) {
+            let newOption = document.createElement('option');
+            newOption.value = dNo;
+            datalist.appendChild(newOption);
+        }
     }
 
-    // Set the value (try to match existing option's case if possible)
-    let exactOption = Array.from(select.options).find(opt => cleanDesignName(opt.value) === cleanDesignName(dNo));
-    if (exactOption) {
-        select.value = exactOption.value;
-    } else {
+    if (select) {
         select.value = dNo;
     }
 
-    localStorage.setItem('selected_design_number', select.value);
+    localStorage.setItem('selected_design_number', dNo);
 
     loadWeftDesignData();
 
@@ -4166,7 +4140,7 @@ function previewWeftPattern() {
 
     let currentLinesInCol1 = 0;
 
-    const MAX_LINES_COL1 = 35;
+    const MAX_LINES_COL1 = 45;
 
     let totalPicksPattern = 0;
 
@@ -4734,7 +4708,7 @@ function authorizationAlert() {
 
 
 /* ============================================================
-   3D PREVIEW DATA LINK (FOR WEFT)
+   3D PREVIEW DATA LINK
 ============================================================ */
 function update3DPreviewData() {
     try {
@@ -4749,7 +4723,6 @@ function update3DPreviewData() {
 
         let weave = document.getElementById('infoWeave').value;
 
-        // Warp Entry-ல் சேமிக்கப்பட்ட பழைய Data-வை எடுத்து, அதனுடன் Weft-ஐ சேர்க்கிறோம்
         let existingStr = localStorage.getItem('warp_entry_data');
         let previewData = [];
         if (existingStr) {
