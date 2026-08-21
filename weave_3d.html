@@ -700,6 +700,13 @@ input[type=color]{
 
 <div class="container">
 
+<!-- BACK TO MENU CARD -->
+<div class="card print-hide" style="padding: 10px; margin-bottom: 2px;">
+    <button class="btn btn-dark" onclick="window.location.href='dashboard.html'" style="display: inline-flex; align-items: center; padding: 8px 14px; min-height: auto; width: auto;">
+        ← Back to Menu
+    </button>
+</div>
+
 <!-- HEADER -->
 
 <div class="header">
@@ -2470,73 +2477,59 @@ function processGraphImage(img){
         0
     );
 
-    let nw=[];
+    let cellW = c.width / cols;
+    let cellH = c.height / rows;
 
-    for(
-        let r=0;
-        r<rows;
-        r++
-    ){
+    let cellAverages = [];
+    let rawMatrix = [];
 
-        let row=[];
+    /* Scan center 50% box of each cell to ignore grid lines perfectly */
+    for(let r=0; r<rows; r++){
+        let rowData = [];
+        for(let k=0; k<cols; k++){
+            let startX = Math.floor(k * cellW + cellW * 0.25);
+            let startY = Math.floor(r * cellH + cellH * 0.25);
+            let w = Math.floor(cellW * 0.5) || 1;
+            let h = Math.floor(cellH * 0.5) || 1;
 
-        for(
-            let k=0;
-            k<cols;
-            k++
-        ){
-
-            let px=
-                Math.floor(
-                    k*c.width/cols+
-                    c.width/(2*cols)
-                );
-
-            let py=
-                Math.floor(
-                    r*c.height/rows+
-                    c.height/(2*rows)
-                );
-
-            let p=
-                x.getImageData(
-                    px,
-                    py,
-                    1,
-                    1
-                ).data;
-                
-            let brightness=(p[0]+p[1]+p[2])/3;
-
-            row.push(
-                brightness<128
-                ?1
-                :0
-            );
-
+            let imgData = x.getImageData(startX, startY, w, h).data;
+            let sum = 0;
+            for(let i=0; i<imgData.length; i+=4){
+                sum += 0.299*imgData[i] + 0.587*imgData[i+1] + 0.114*imgData[i+2];
+            }
+            let avg = sum / (w * h);
+            rowData.push(avg);
+            cellAverages.push(avg);
         }
-
-        nw.push(row);
-
+        rawMatrix.push(rowData);
     }
 
-    weavePatterns.custom=nw;
+    /* Dynamic AI Threshold for light/dark adjustments */
+    let minAvg = Math.min(...cellAverages);
+    let maxAvg = Math.max(...cellAverages);
+    let threshold = (minAvg + maxAvg) / 2;
 
-    $("weaveType").value=
-        "custom";
+    let nw = [];
+    for(let r=0; r<rows; r++){
+        let finalRow = [];
+        for(let k=0; k<cols; k++){
+            finalRow.push(rawMatrix[r][k] < threshold ? 1 : 0);
+        }
+        nw.push(finalRow);
+    }
 
-    $("gridEditorSection")
-        .style.display="block";
+    weavePatterns.custom = nw;
+    $("weaveType").value = "custom";
+    $("gridEditorSection").style.display = "block";
 
     buildGridEditor();
-    
     draw3DWeave();
 
     alert("✅ புகைப்படம் வெற்றிகரமாக ஸ்கேன் செய்யப்பட்டு Graph-ஆக மாற்றப்பட்டது!");
 }
 
 /* =========================================================
-   GRAPH → 3D (FIXED BOTTOM-UP MAPPING)
+   🟢 GRAPH → 3D (FIXED TOP-DOWN VISUAL MAPPING) 🟢
 ========================================================= */
 
 function isWarpUp(r,c,type){
@@ -2556,7 +2549,8 @@ function isWarpUp(r,c,type){
     )
         return true;
 
-    let rr=(m.length-1)-(r%m.length);
+    // DIRECT MAPPING - Canvas Top matches Graph Editor Top
+    let rr=r%m.length;
     let cc=c%m[0].length;
 
     return m[rr][cc]===1;
@@ -2746,63 +2740,27 @@ function draw3DWeave(){
 
         }
 
-        if(!warp.length)
-            warp=[
-                rgb("#f8fafc")
-            ];
+        let realWarpLength = warp.length;
+        let realWeftLength = weft.length;
 
-        if(!weft.length)
-            weft=[
-                rgb("#dbe4df")
-            ];
+        if(!warp.length) warp=[rgb("#f8fafc")];
+        if(!weft.length) weft=[rgb("#dbe4df")];
 
-        /*
-           PERFORMANCE LIMIT
+        /* 🟢 EXACTLY 2 REPEATS FOR 3D PREVIEW 🟢 */
+        const ends = realWarpLength > 0 ? Math.min(realWarpLength * 2, 800) : 40;
+        const picks = realWeftLength > 0 ? Math.min(realWeftLength * 2, 800) : 40;
 
-           Previous:
-           500 × 500 = 250,000 cells
+        /* 🟢 RULER OFFSET 🟢 */
+        const RULER = 28;
+        const drawW = c.width - RULER;
+        const drawH = c.height - RULER;
 
-           New:
-           180 × 140 = 25,200 cells maximum
-        */
-
-        const MAX_ENDS=180;
-        const MAX_PICKS=140;
-
-        const ends=
-            Math.min(
-                Math.max(
-                    warp.length,
-                    40
-                ),
-                MAX_ENDS
-            );
-
-        const picks=
-            Math.min(
-                Math.max(
-                    weft.length,
-                    40
-                ),
-                MAX_PICKS
-            );
-
-        const cw=
-            c.width/ends;
-
-        const ch=
-            c.height/picks;
+        const cw = drawW / ends;
+        const ch = drawH / picks;
 
         /* BACKGROUND */
-
-        ctx.fillStyle="#09110d";
-
-        ctx.fillRect(
-            0,
-            0,
-            c.width,
-            c.height
-        );
+        ctx.fillStyle = "#09110d";
+        ctx.fillRect(RULER, 0, drawW, drawH);
 
         const type=
             $("weaveType")?.value ||
@@ -2845,11 +2803,9 @@ function draw3DWeave(){
                         r%weft.length
                     ];
 
-                const x=
-                    col*cw;
-
-                const y=
-                    r*ch;
+                // 🟢 SHIFTED BY RULER SIZE 🟢
+                const x = RULER + (col * cw);
+                const y = r * ch;
 
                 if(useGradient){
 
@@ -2934,21 +2890,21 @@ function draw3DWeave(){
             ctx.lineWidth=.35;
 
             for(
-                let x=0;
-                x<=c.width;
-                x+=cw
+                let ix = RULER;
+                ix <= c.width;
+                ix += cw
             ){
 
                 ctx.beginPath();
 
                 ctx.moveTo(
-                    x,
+                    ix,
                     0
                 );
 
                 ctx.lineTo(
-                    x,
-                    c.height
+                    ix,
+                    drawH
                 );
 
                 ctx.stroke();
@@ -2956,21 +2912,21 @@ function draw3DWeave(){
             }
 
             for(
-                let y=0;
-                y<=c.height;
-                y+=ch
+                let iy = 0;
+                iy <= drawH;
+                iy += ch
             ){
 
                 ctx.beginPath();
 
                 ctx.moveTo(
-                    0,
-                    y
+                    RULER,
+                    iy
                 );
 
                 ctx.lineTo(
                     c.width,
-                    y
+                    iy
                 );
 
                 ctx.stroke();
@@ -2980,6 +2936,94 @@ function draw3DWeave(){
             ctx.globalAlpha=1;
 
         }
+
+        /* =========================================================
+           🟢 DYNAMIC CM SCALE RULER (Based on Formula) 🟢
+        ========================================================= */
+        ctx.fillStyle = "#e2e8f0"; 
+        ctx.fillRect(0, 0, RULER, drawH); 
+        ctx.fillRect(RULER, drawH, drawW, RULER); 
+
+        // Fetch physical specs for scaling (fallback to 64/48 if none)
+        let reed = parseFloat(activeDesignObj?.onloomReed || activeDesignObj?.reed) || 64;
+        let pick = parseFloat(activeDesignObj?.onloomPick || activeDesignObj?.pick || activeDesignObj?.weftPick) || 48;
+
+        // Calculate pixels per mm
+        // 1 mm width = (cw * reed) / 25.4
+        let px_per_mm_x = cw * (reed / 25.4);
+        let px_per_mm_y = ch * (pick / 25.4);
+        
+        ctx.fillStyle = "#0f172a";
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 1;
+        ctx.font = "bold 11px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Left Scale (Y-axis / Picks)
+        let max_mm_y = drawH / px_per_mm_y;
+        for(let mm = 0; mm <= max_mm_y; mm++) {
+            let isCm = (mm % 10 === 0);
+            let isHalf = (mm % 5 === 0);
+
+            if (!isCm && !isHalf && px_per_mm_y < 4) continue;
+
+            let y = mm * px_per_mm_y;
+            let tick = isCm ? RULER : (isHalf ? RULER * 0.5 : RULER * 0.25);
+            
+            ctx.beginPath();
+            ctx.moveTo(RULER, y);
+            ctx.lineTo(RULER - tick, y);
+            ctx.stroke();
+
+            if (isCm && mm > 0) {
+                ctx.save();
+                ctx.translate(RULER - 14, y);
+                ctx.rotate(-Math.PI/2);
+                ctx.fillText((mm/10), 0, 0);
+                ctx.restore();
+            }
+        }
+
+        // Bottom Scale (X-axis / Ends)
+        let max_mm_x = drawW / px_per_mm_x;
+        for(let mm = 0; mm <= max_mm_x; mm++) {
+            let isCm = (mm % 10 === 0);
+            let isHalf = (mm % 5 === 0);
+
+            if (!isCm && !isHalf && px_per_mm_x < 4) continue;
+
+            let x = RULER + (mm * px_per_mm_x);
+            let tick = isCm ? RULER : (isHalf ? RULER * 0.5 : RULER * 0.25);
+            
+            ctx.beginPath();
+            ctx.moveTo(x, drawH);
+            ctx.lineTo(x, drawH + tick);
+            ctx.stroke();
+
+            if (isCm && mm > 0) {
+                ctx.fillText((mm/10), x, drawH + 16);
+            }
+        }
+
+        // Corner Box & Label
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillRect(0, drawH, RULER, RULER);
+        ctx.fillStyle = "#334155";
+        ctx.font = "bold 10px Arial";
+        ctx.fillText("cm", RULER/2, drawH + RULER/2);
+
+        // Display Repeat Size Logic Proof
+        let repeat_width_mm = (realWarpLength / reed) * 25.4;
+        let repeat_height_mm = (realWeftLength / pick) * 25.4;
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+        ctx.fillRect(c.width - 150, 0, 150, 48);
+        ctx.fillStyle = "#8fe19d";
+        ctx.font = "bold 10px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText(`1 Repeat = ${repeat_width_mm.toFixed(2)} mm W`, c.width - 10, 16);
+        ctx.fillText(`1 Repeat = ${repeat_height_mm.toFixed(2)} mm H`, c.width - 10, 34);
 
     });
 
