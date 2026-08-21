@@ -1147,6 +1147,7 @@ let currentWeftCount = 6;
 let activeDesignObj = null;
 let allCloudDesigns = [];
 
+/* 🟢 DEFAULT WEAVES (Right-Hand Twill Default) 🟢 */
 let weavePatterns = {
 
     plain:[
@@ -1155,17 +1156,17 @@ let weavePatterns = {
     ],
 
     twill:[
-        [1,1,0,0],
-        [0,1,1,0],
         [0,0,1,1],
+        [0,1,1,0],
+        [1,1,0,0],
         [1,0,0,1]
     ],
 
     custom:[
-        [1,0,0,1],
-        [1,1,0,0],
+        [0,0,1,1],
         [0,1,1,0],
-        [0,0,1,1]
+        [1,1,0,0],
+        [1,0,0,1]
     ]
 
 };
@@ -2533,9 +2534,9 @@ function isWarpUp(r,c,type){
     )
         return true;
 
-    // DIRECT MAPPING - Canvas Top matches Graph Editor Top
-    let rr=r%m.length;
-    let cc=c%m[0].length;
+    // 🟢 FIX: Reverse row reading so Canvas Bottom matches Graph Bottom
+    let rr = (m.length - 1) - (r % m.length);
+    let cc = c % m[0].length;
 
     return m[rr][cc]===1;
 
@@ -2762,7 +2763,8 @@ function draw3DWeave(){
 
         // Origin at Bottom-Left corner
         let offsetX = RULER;
-        
+        let offsetY = 0; 
+
         /* BACKGROUND */
         ctx.fillStyle = "#09110d";
         ctx.fillRect(RULER, 0, availW, availH);
@@ -2787,10 +2789,8 @@ function draw3DWeave(){
                 col++
             ){
 
-                /* 🟢 SEAMLESS TILING FIX 🟢 */
-                let r_weave = r % Math.max(1, realWeftLength);
-                let c_weave = col % Math.max(1, realWarpLength);
-                const up = isWarpUp(r_weave, c_weave, type);
+                /* 🟢 PERFECT SEAMLESS WEAVE (Fixed weave breaking bug) 🟢 */
+                const up = isWarpUp(r, col, type);
 
                 const base=
                     up
@@ -2989,8 +2989,8 @@ function draw3DWeave(){
                 // Prevent numbers from overlapping if zoomed out
                 let skipLabel = false;
                 let cmWidthPx = 10 * px_per_mm;
-                if (cmWidthPx < 20 && cmVal % 2 !== 0) skipLabel = true;
-                if (cmWidthPx < 10 && cmVal % 5 !== 0) skipLabel = true;
+                if (cmWidthPx < 18 && cmVal % 2 !== 0) skipLabel = true;
+                if (cmWidthPx < 9 && cmVal % 5 !== 0) skipLabel = true;
 
                 if(!skipLabel) {
                     ctx.fillText(cmVal, drawX, availH + 14);
@@ -3024,8 +3024,8 @@ function draw3DWeave(){
                 let cmVal = (mm / 10);
                 let skipLabel = false;
                 let cmWidthPx = 10 * px_per_mm;
-                if (cmWidthPx < 20 && cmVal % 2 !== 0) skipLabel = true;
-                if (cmWidthPx < 10 && cmVal % 5 !== 0) skipLabel = true;
+                if (cmWidthPx < 18 && cmVal % 2 !== 0) skipLabel = true;
+                if (cmWidthPx < 9 && cmVal % 5 !== 0) skipLabel = true;
 
                 if(!skipLabel) {
                     ctx.fillText(cmVal, RULER - 14, drawY);
@@ -3046,6 +3046,7 @@ function draw3DWeave(){
         let text1 = `W: (${realWarpLength} ÷ ${reed}) × 25.4 = ${repeat_width_mm.toFixed(2)} mm`;
         let text2 = `H: (${realWeftLength} ÷ ${pick}) × 25.4 = ${repeat_height_mm.toFixed(2)} mm`;
 
+        // 🟢 FIXED: Dynamic box width perfectly aligns to text size 🟢
         ctx.font = "bold 11px Arial, sans-serif";
         let tw1 = ctx.measureText(text1).width;
         let tw2 = ctx.measureText(text2).width;
